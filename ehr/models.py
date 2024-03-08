@@ -1,35 +1,38 @@
 from django.db import models
 
 
-class Patient_Data(models.Models):
+class PatientData(models.Model):
     pass
 
-class Paypoint(models.Models):
+class Paypoint(models.Model):
     pass
 
-class Nursing_Station(models.Models):
+class VitalSigns(models.Model):
     pass
 
-class Consultation(models.Models):
+class ConsultationNotes(models.Model):
     pass
 
-class Investigation(models.Models):
+class Investigation(models.Model):
     pass
 
-class Phatology(models.Models):
+class Phatology(models.Model):
     pass
 
-class Radiology(models.Models):
+class Radiology(models.Model):
     pass
 
-class Pharmacy(models.Models):
+class Pharmacy(models.Model):
     pass
 
-class Ward(models.Models):
+class Ward(models.Model):
     pass
 
-class Theatre(models.Models):
+class Theatre(models.Model):
     pass
 
-class ICU(models.Models):
+class ICU(models.Model):
+    pass
+
+class Physio(models.Model):
     pass

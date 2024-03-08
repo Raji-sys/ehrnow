@@ -1,0 +1,152 @@
+{%extends "base.html" %}
+<h1>Report</h1>
+{% block title %}Report{% endblock%}
+{% block main %}
+{%load widget_tweaks %}
+{% if request.GET.urlencode and users %}
+<p class="font-bold text-green-700 text-xl max-sm:text-md">EXPORT REPORT</p>
+<div class="text-center">
+<p class="mt-2">
+    <a class=" mb-4 focus:opacity-10 border-b-4 border-gray-500 focus:border-green-600 bg-gradient-to-r from-green-900 via-green-600 to-green-900 
+    px-4 py-2 text-white rounded shadow-lg hover:shadow-xl text-center" href="{% url 'staff:csvfile' %}?{{request.GET.urlencode}}">
+    <i class="fa-solid fa-table fa-2xl"></i></a>
+    <a class=" mb-4 focus:opacity-10 border-b-4 border-gray-500 focus:border-green-600 bg-gradient-to-r from-cyan-900 via-cyan-600 to-cyan-900 
+    px-4 py-2 text-white  rounded shadow-lg hover:shadow-xl text-center" href="{% url 'staff:pdffile' %}?{{request.GET.urlencode}}">
+    <i class="fa-solid fa-file-pdf fa-2xl"></i></a>
+    <a href="{% url 'staff:report' %}" class="focus:opacity-10 border-b-4 border-gray-500 focus:border-green-600 bg-gradient-to-r from-orange-700 
+    via-orange-600 to-orange-900 px-4 p-2 text-white  rounded shadow-lg hover:shadow-xl text-center">
+    <i class="fa-solid fa-rotate fa-2xl"></i></a>
+</p>
+<div class="mt-4 mb-4">
+</div>
+</div>
+
+{%endif%}
+{% if users %}
+{%else %}
+{%endif%}
+
+<div class="p-1 border-t-2 border-green-800 mt-1 max-sm:p-1 text-center">
+    <form method="get">
+        <div class="mt-2 text-xs border-green-800 p-1 flex max-sm:grid max-sm:grid-cols-3">
+                {% for field in govFilter.form %}
+                <span>{{field.label_tag}} 
+                    {%render_field field class="text-xs mt-2 focus:outline-none border-b-4 border-gray-300 inBtn text-white mb-2 rounded shadow-lg hover:shadow-xl flex "%}
+                </span>
+                {%endfor%}
+            </div>
+            <section class="mb-1 border-t-2 border-green-800"></section>
+                <button type="submit" class="mb-1 mt-1 focus:opacity-10 border-b-4 border-gray-500 focus:border-green-600 bg-gradient-to-r from-green-900 
+                via-green-600 to-green-900 text-white w-1/8 rounded shadow-lg hover:shadow-xl text-center px-4 py-2"><i class="fa-solid fa-search fa-2xl"></i></button>
+    </form>
+        
+   <table class="table-auto mt-2 border-green-800 max-sm:flex flex shadow-2xl rounded-xl text-sm mb-10 justify-center items-center">
+        {% for message in messages %}
+      <div class="mt-4">
+        {%if message.success %}
+           <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
+            <a href class="uk-alert-close font-bold" uk-close></a>
+            <p class="text-green-700 font-semibold">{{ message }}</p>
+            </div>
+            {%else%}
+            <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
+            <a href class="uk-alert-close font-bold" uk-close></a>
+            <p class="text-rose-700 font-semibold">{{ message }}</p>
+            </div> 
+        {% endif %}
+      </div>
+      {% endfor %}
+        <tbody class="shadow-2xl rounded-xl max-sm:p-2 p-2 overflow-x-auto mx-0 text-green-800 border-2 border-green-800 bg-white">
+            <tr class="bg-gradient-to-r from-green-800 via-green-600 to-green-800 rounded-xl text-white text-sm">
+                <th scope="col" class="border-l-2 border-b-2 border-b-white border-green-800 border-t-2 border-t-white p-2">S/N</th>
+                <th scope="col" class="border-2 p-2 border-white ">NAME</th>
+                <th scope="col" class="border-2 p-2 border-white">FILE NUMBER</th>
+                <!-- <th scope="col" class="border-2 p-2 border-white">IPPIS NUMBER</th> -->
+                <th scope="col" class="border-2 p-2 border-white" >DATE OF BIRTH</th>
+                <th scope="col" class="border-2 p-2 border-white">STATE</th>
+                <!-- <th scope="col" class="border-2 p-2 border-white">LGA</th> -->
+                <!-- <th scope="col" class="border-2 p-2 border-white" >QUALIFICATION</th> -->
+                <th scope="col" class="border-2 p-2 border-white">DATE OF FIRST APPT</th>
+                <th scope="col" class="border-2 p-2 border-white">DATE OF CURRENT APPT</th>
+                <th scope="col" class="border-2 p-2 border-white">CURRENT POST</th>
+                <th scope="col" class="border-2 p-2 border-white" >DEPARTMENT</th>
+                <th scope="col" class="border-2 p-2 border-white">GRADE LEVEL</th>
+                <th scope="col" class="border-2 border-green-800 text-gray-100 p-2 border-t-2 border-t-white border-b-white">GEO-POLITICAL ZONE</th>
+            </tr>   
+        {% for u in page_obj %}
+
+            {% if u.is_active and u.is_superuser == False %}
+        <tr class="text-xs">
+
+            <td class="border-2 p-4 border-green-800 text-center">
+                {{forloop.counter|default_if_none:''}}
+            </td>
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p class="">{{u.last_name|upper|default_if_none:''}} {{u.personaldetail.middlename|default_if_none:''|upper}} {{u.first_name|default_if_none:''|upper}}</p>
+            </td>
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p class="">{{u.personaldetail.staff_no|default_if_none:''}} </p>
+            </td>
+            <!-- <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.governmentappointment.ippis_no|default_if_none:''}}</p>
+            </td> -->
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p class="">{{u.personaldetail.date_of_birth|default_if_none:''|date:'d/M/Y'}} </p>
+            </td>
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.personaldetail.state|default_if_none:''|upper}}</p>
+            </td>
+            <!-- <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.personaldetail.lga|default_if_none:''|upper}}</p>
+            </td>
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.personaldetail.qualification|default_if_none:''|upper}}</p>
+            </td> -->
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.governmentappointment.date_of_first_appointment|default_if_none:''|date:'d/M/Y'}}</p>
+            </td>
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.governmentappointment.date_of_capt|default_if_none:''|date:'d/M/Y'}}</p>
+            </td>
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.governmentappointment.current_post|default_if_none:''|upper}}</p>
+            </td>
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.governmentappointment.department|default_if_none:''|upper}}</p>
+            </td>
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.governmentappointment.grade_level|default_if_none:''}}</p>
+            </td>
+            </td>
+            <td class="border-2 p-4 border-green-800 text-center">
+                <p>{{u.personaldetail.zone|default_if_none:''|upper}}</p>
+            </td>        
+            </tr>
+            {% endif %}
+            {% empty %}
+            <div>
+                <p class=" text-2xl text-blue-500 mt-4 mb-4 uppercase">not found</p>
+                <div class="mb-6">
+                    <a href="{% url 'staff:report' %}" class="mt-4 focus:opacity-10 border-b-4 border-gray-500 focus:border-green-600 bg-gradient-to-r 
+                from-orange-700 via-orange-600 to-orange-900 px-10 p-4 text-white rounded shadow-lg hover:shadow-xl text-center w-full">
+                <i class="fa-solid fa-rotate fa-2xl"></i></a>
+            </div>
+            </div>
+         {% endfor %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+    <td class="p-4 text-center">
+            
+</td>
+        </tr>
+        </tbody>
+</table>
+
+</div>
+{% endblock %}
