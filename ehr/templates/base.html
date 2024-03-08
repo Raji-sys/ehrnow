@@ -1,15 +1,13 @@
 {% load static %}
-{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html>
 <head>
-  {% tailwind_css %}
   <title>{% block title %}{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   		<link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
 		<link rel="stylesheet" href="{% static 'uikit/css/uikit.min.css' %}" type="text/css">
-		<script src="{%static '_hyperscript.js' %}"></script>
-		<script src="{%static 'htmx.min.js'%}"></script>
+		<script src="{%static 'js/_hyperscript.js' %}"></script>
+		<script src="{%static 'js/htmx.min.js'%}"></script>
 		<script src="{% static 'uikit/js/uikit.min.js' %}"></script>
 		<script src="{% static 'uikit/js/uikit-icons.js' %}"></script>
 
