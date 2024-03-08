@@ -15,7 +15,7 @@ from .filters import *
 from django.contrib.auth import get_user_model
 from io import BytesIO
 from django.template.loader import get_template
-# from xhtml2pdf import pisa
+from xhtml2pdf import pisa
 import datetime
 from django.conf import settings
 import os
@@ -48,15 +48,15 @@ def log_anonymous_required(view_function, redirect_to=None):
 class IndexView(TemplateView):
     template_name = "index.html"
 
-# @method_decorator(log_anonymous_required, name='dispatch')
-# class CustomLoginView(LoginView):
-#     template_name = 'login.html'
+@method_decorator(log_anonymous_required, name='dispatch')
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
 
-#     def get_success_url(self):
-#         if self.request.user.is_superuser:
-#             return reverse_lazy('index')
-#         else:
-#             return reverse_lazy('profile_details', args=[self.request.user.username])
+    def get_success_url(self):
+        if self.request.user.is_superuser:
+            return reverse_lazy('index')
+        # else:
+        #     return reverse_lazy('profile_details', args=[self.request.user.username])
 
 
 # @method_decorator(login_required(login_url='login'), name='dispatch')

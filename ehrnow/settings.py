@@ -25,10 +25,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django_browser_reload',
-    # 'django_filters',
-    # 'django_fastdev',
-    # 'import_export',
+    'tailwind',
+    'theme',
+    'django_browser_reload',
+    'django_filters',
+    'django_fastdev',
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -39,6 +41,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
+
 ]
 
 ROOT_URLCONF = 'ehrnow.urls'
@@ -58,6 +62,10 @@ TEMPLATES = [
         },
     },
 ]
+
+TAILWIND_APP_NAME='theme'
+INTERNAL_IPS=['127.0.0.1']
+NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 WSGI_APPLICATION = 'ehrnow.wsgi.application'
 

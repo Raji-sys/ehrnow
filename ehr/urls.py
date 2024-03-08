@@ -18,7 +18,7 @@ urlpatterns = [
     # path('notice/', NoticeView.as_view(), name='notice'),
 
     # path('register/', UserRegistrationView.as_view(), name='register'),
-    # path('login/', CustomLoginView.as_view(), name='login'),
+    path('login/', CustomLoginView.as_view(), name='login'),
     # path('logout/', CustomLogoutView.as_view(), name='logout'),
 
     # path('profile/<str:username>/',ProfileDetailView.as_view(), name='profile_details'),
