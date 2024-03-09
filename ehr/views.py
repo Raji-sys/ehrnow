@@ -48,6 +48,10 @@ def log_anonymous_required(view_function, redirect_to=None):
 class IndexView(TemplateView):
     template_name = "index.html"
 
+
+class GetStartedView(TemplateView):
+    template_name = "get_started.html"
+
 @method_decorator(log_anonymous_required, name='dispatch')
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -75,32 +79,33 @@ class CustomLoginView(LoginView):
 #     return user_passes_test(lambda u: not u.is_authenticated or u.is_superuser, login_url=redirect_to)(view_function)
 
 
-# @method_decorator(reg_anonymous_required, name='dispatch')
-# class UserRegistrationView(CreateView):
-#     form_class = CustomUserCreationForm
-#     template_name = 'registration/register.html'
-#     success_url = ""
+@method_decorator(reg_anonymous_required, name='dispatch')
+class UserRegistrationView(CreateView):
+    form_class = CustomUserCreationForm
+    template_name = 'registration/register.html'
+    success_url = ""
 
-#     def form_valid(self, form):
-#         if form.is_valid():
-#             response = super().form_valid(form)
-#             user = User.objects.get(username=form.cleaned_data['username'])
-#             profile_instance = Profile(user=user)
-#             profile_instance.save()
-#             govapp_instance = GovernmentAppointment(user=user)
-#             govapp_instance.save()
-#             messages.success(
-#                 self.request, f"Registration for: {user.get_full_name()} was successful")
-#             return response
-#         else:
-#             print("Form errors:", form.errors)
-#             return self.form_invalid(form)
+    def form_valid(self, form):
+        if form.is_valid():
+            response = super().form_valid(form)
+            user = User.objects.get(username=form.cleaned_data['username'])
+            profile_instance = Profile(user=user)
+            profile_instance.save()
+            # govapp_instance = GovernmentAppointment(user=user)
+            # govapp_instance.save()
+            messages.success(
+                self.request, f"Registration for: {user.get_full_name()} was successful")
+            return response
+        else:
+            print("Form errors:", form.errors)
+            return self.form_invalid(form)
 
-#     def get_success_url(self):
-#         if self.request.user.is_superuser:
-#             return reverse_lazy('patient')
-#         else:
-#             return reverse_lazy('index')
+    def get_success_url(self):
+        if self.request.user.is_superuser:
+            pass
+            # return reverse_lazy('patient')
+        else:
+            return reverse_lazy('index')
 
 
 # @method_decorator(login_required(login_url='login'), name='dispatch')

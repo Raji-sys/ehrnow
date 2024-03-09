@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
+    path('get-started/', GetStartedView.as_view(), name='get_started'),
     # path('patients/', PatientListView.as_view(), name='patient'),
 
 
@@ -17,7 +18,7 @@ urlpatterns = [
     # path('stats/', StatsView.as_view(), name='stats'),
     # path('notice/', NoticeView.as_view(), name='notice'),
 
-    # path('register/', UserRegistrationView.as_view(), name='register'),
+    path('register/', UserRegistrationView.as_view(), name='register'),
     path('login/', CustomLoginView.as_view(), name='login'),
     # path('logout/', CustomLogoutView.as_view(), name='logout'),
 
