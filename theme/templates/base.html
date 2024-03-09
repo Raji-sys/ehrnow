@@ -3,54 +3,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  {% tailwind_css %}
-  <title>{% block title %}{% endblock %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  		<link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
-  		<link rel="stylesheet" href="{% static 'fontawesomefree/css/fontawesome.css' %}" type='text/css'>
-		<link rel="stylesheet" href="{% static 'fontawesomefree/css/solid.css' %}" type='text/css'>
-		<link rel="stylesheet" href="{% static 'uikit/css/uikit.min.css' %}" type="text/css">
-		<script src="{%static '_hyperscript.js' %}"></script>
-		<script src="{%static 'htmx.min.js'%}"></script>
-		<script src="{% static 'uikit/js/uikit.min.js' %}"></script>
-		<script src="{% static 'uikit/js/uikit-icons.js' %}"></script>
+{% tailwind_css %} 
+<title>{% block title %}{% endblock %}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" sizes="180x180" href="{%static 'favicon/apple-touch-icon.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{%static 'favicon/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{%static 'favicon/favicon-16x16.png' %}">
+<link rel="manifest" href="{%static 'favicon/site.webmanifest' %}">
+<link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
+<link rel="stylesheet" href="{% static 'uikit/css/uikit.min.css' %}" type="text/css">
+<!-- <link rel="stylesheet" href="{% static 'images/style.css' %}" type="text/css"> -->
+<script src="{%static 'js/_hyperscript.js' %}"></script>
+<script src="{%static 'js/htmx.min.js'%}"></script>
+<script src="{% static 'uikit/js/uikit.min.js' %}"></script>
+<script src="{% static 'uikit/js/uikit-icons.js' %}"></script>
 
 </head>
-	<body class="uppercase">
-		<style>
 
-		</style>		
-			<header class="bg-cyan-800 p-2">
-					<nav class="flex flex-row max-xs:flex-wrap max-sm:flex-col justify-between mt-0 max-sm:gap-4 gap-10 p-1 rounded-sm">
-						{% if request.user.is_authenticated %}
-						  <div class="">
-							<a href="{% url 'index' %}" class="focus:opacity-10 border-b-2 border-gray-500 focus:border-green-600 
-							bg-white text-cyan-900 p-2 px-4 rounded shadow-lg hover:shadow-xl 
-							text-center w-full"><i class="fa-solid fa-house fa-lg"></i></a>
-						</div> 
-					
-						<div class="">
-						<a href="#"><i class="text-white fa-solid fa-circle-user fa-lg"></i>
-						<span class="border-b-2 border-cyan-800 text-white text-lg uppercase"> {{request.user}}</span></span></a>
-						</div>
+<body>
+{% block content %}
+<header class="">
+	<nav class="">
 
-						<div class="">									
-						<a class="focus:opacity-10 p-2 px-4 border-b-4 border-white focus:border-green-600 bg-gradient-to-l from-red-900 via-red-700 to-red-900 text-white rounded shadow-lg hover:shadow-xl text-center text-xs max-sm:w-1/2 w-full" href="{% url 'logout' %}">
-						<i class="fa-solid fa-arrow-right-from-bracket fa-lg"></i></a>
-						</div>
-						{% endif %}
-					</nav>
-				</header>
-	{%if request.user.is_authenticated and request.path != '/' %}
-	<div class="flex justify-center text-center text-gray-800 font-medium text-sm align-middle items-center p-3 m-auto bg-gray-200 gap-4 mx-auto">
-		<a href="{%url 'staff'%}" class="focus:opacity-10 bg-green-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-rectangle-list fa-xl"></i></a>
-        <a href="{%url 'report' %}" class="focus:opacity-10 bg-indigo-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-file fa-xl"></i></a>
-        <a href="{%url 'stats' %}" class="focus:opacity-10 bg-orange-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-list-ol fa-xl"></i></a>
-        <a href="{%url 'notice' %}" class="focus:opacity-10 bg-cyan-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-bell fa-xl"></i></a>
-	</div>
-	{% endif %}
-					{% block content %}
-					
-					{% endblock %}
-	</body>
+	</nav>
+</header>
+{% endblock %}
+</body>
 </html>
