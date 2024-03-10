@@ -5,7 +5,7 @@
 {%block content %}
 <div class="bgd uk-background-cover uk-background-fixed uk-height-viewport uk-panel uk-flex uk-flex-center uk-flex-middle">
     <style>
-        .bgd{background-image: url('{% static "images/8.png" %}');}
+        .bgd{background-image: url('{% static "images/4.jpg" %}');}
     </style>
     <div class="uk-overlay rounded-3xl bg-white uk-position-center">
 <ul  class="uk-subnav uk-subnav-pill text-center flex justify-center items-center" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
@@ -15,46 +15,92 @@
 
 <ul class="uk-switcher uk-margin">
     <li>
-    <form class="uk-form-stacked uk-margin-large" action="{%url 'login' %}">
-        <div class="uk-margin">
-            <label for="form-horizontal-text" class="uk-form-label">username</label>
-            <div class="uk-form-controls">
-                <input type="text" class="uk-input" id="form-horizontal-text" placeholder="username">
+        <form class="uk-form-stacked uk-margin-large" action="{%url 'login' %}">
+            <div class="text-center">
+            <div class="uk-margin">
+                <label for="form-horizontal-text" class="uk-form-label">username</label>
+                <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: user"></span>
+                <div class="uk-form-controls">
+                    <input type="text" class="uk-input" id="form-horizontal-text">
+                </div>
             </div>
         </div>
         <div class="uk-margin">
             <label for="form-horizontal-password" class="uk-form-label">password</label>
-            <div class="uk-form-controls">
-                <input type="text" class="uk-input" id="form-horizontal-password" placeholder="password">
+            <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: lock"></span>
+                <div class="uk-form-controls">
+                    <input type="text" class="uk-input" id="form-horizontal-password">
+                </div>
             </div>
         </div>
+        <div class="uk-margin">
+            <button type="submit" class="py-2 px-4 h-10 bg-green-600 text-white rounded focus:opacity-10">login</button>
+        </div>
+    </div>
     </form>
     </li>
     <li>
-        <form class="uk-form-stacked uk-margin-large" action="{%url 'register' %}">
+        <form class="uk-form-stacked uk-margin-large">
+            <div class="text-center">
             <div class="uk-margin">
-                <label for="form-horizontal-text" class="uk-form-label">username</label>
+                <label for="form-horizontal-username" class="uk-form-label">username</label>
+                <div class="uk-inline">
+                    <span class="uk-form-icon" uk-icon="icon: user"></span>
                 <div class="uk-form-controls">
-                    <input type="text" class="uk-input" id="form-horizontal-text" placeholder="username">
+                    <input type="text" class="uk-input" id="form-horizontal-username">
+                </div>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label for="form-horizontal-email" class="uk-form-label">email</label>
+                <div class="uk-inline">
+                    <span class="uk-form-icon" uk-icon="icon: mail"></span>
+                <div class="uk-form-controls">
+                    <input type="text" class="uk-input" id="form-horizontal-email">
+                </div>
                 </div>
             </div>
             <div class="uk-margin">
                 <label for="form-horizontal-firstname" class="uk-form-label">first name</label>
+                <div class="uk-inline">
+                    <span class="uk-form-icon" uk-icon="icon: user"></span>
                 <div class="uk-form-controls">
-                    <input type="text" class="uk-input" id="form-horizontal-firstname" placeholder="firstname">
+                    <input type="text" class="uk-input" id="form-horizontal-firstname">
+                </div>
                 </div>
             </div>
             <div class="uk-margin">
                 <label for="form-horizontal-surname" class="uk-form-label">last name</label>
+                <div class="uk-inline">
+                    <span class="uk-form-icon" uk-icon="icon: user"></span>
                 <div class="uk-form-controls">
-                    <input type="text" class="uk-input" id="form-horizontal-surname" placeholder="surrname">
+                    <input type="text" class="uk-input" id="form-horizontal-surname">
+                </div>
                 </div>
             </div>
             <div class="uk-margin">
                 <label for="form-horizontal-password" class="uk-form-label">password</label>
+                <div class="uk-inline">
+                    <span class="uk-form-icon" uk-icon="icon: lock"></span>
                 <div class="uk-form-controls">
-                    <input type="text" class="uk-input" id="form-horizontal-password" placeholder="password">
+                    <input type="text" class="uk-input" id="form-horizontal-password">
                 </div>
+            </div>
+            </div>
+            <div class="uk-margin">
+                <label for="form-horizontal-conpassword" class="uk-form-label">confirm password</label>
+                <div class="uk-inline">
+                    <span class="uk-form-icon" uk-icon="icon: lock"></span>
+                <div class="uk-form-controls">
+                    <input type="text" class="uk-input" id="form-horizontal-conpassword">
+                </div>
+            </div>
+            </div>
+            <div class="uk-margin">
+                <button type="submit" class="py-2 px-4 h-10 bg-green-600 text-white rounded focus:opacity-10">register</button>
+            </div>
             </div>
         </form>
     </li>
