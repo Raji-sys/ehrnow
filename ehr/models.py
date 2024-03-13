@@ -170,7 +170,7 @@ class VitalSigns(models.Model):
             return f"{self.full_name}"
 
 
-class ClinicalNotes(models.Model):
+class ClinicalNote(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('transaction date', auto_now_add=True)
