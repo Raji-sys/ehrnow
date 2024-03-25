@@ -53,8 +53,18 @@ class Profile(models.Model):
 
 
 class Clinic(models.Model):
-    clinics=(('A & E','A & E'),('SOPD','SOPD'),('SPINE SOPD','SPINE SOPD'),('GOPD','GOPD'),('NHIS','NHIS'),('DENTAL','DENTAL'),('O & G','O & G','UROLOGY','UROGOLY'),('DERMATOLOGY','DERMATOLOGY'),('PAEDIATRY','PAEDIATRY'))
-    name = models.Choices(choices=clinics, null=True, blank=True, max_length=200)
+    clinics=(
+        ('A & E','A & E'),
+        ('SOPD','SOPD'),
+        ('SPINE SOPD','SPINE SOPD'),
+        ('GOPD','GOPD'),
+        ('NHIS','NHIS'),
+        ('DENTAL','DENTAL'),
+        ('O & G','O & G'),
+        ('UROLOGY','UROGOLY'),
+        ('DERMATOLOGY','DERMATOLOGY'),
+        ('PAEDIATRY','PAEDIATRY'))
+    name = models.CharField(choices=clinics, null=True, blank=True, max_length=200)
 
     def get_absolute_url(self):
         return reverse('clinic_details', args=[self.name])
@@ -94,7 +104,6 @@ class PatientData(models.Model):
     nok_addr = models.CharField('next of kin address', max_length=300, null=True, blank=True)
     nok_rel = models.CharField('relationship with first next of kin', max_length=300, null=True, blank=True)
     # nok_photo = models.ImageField('first next of kin photo', null=True, blank=True)
-    created = models.DateTimeField('date added', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
@@ -131,7 +140,6 @@ class Paypoint(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     status=models.BooleanField(default=False)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -148,15 +156,14 @@ class Paypoint(models.Model):
 class VitalSigns(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    body_temperature=models.CharField(max_lenth=10, null=True, blank=True)
-    pulse_rate=models.CharField(max_lenth=10, null=True, blank=True)
-    respiration_rate=models.CharField(max_lenth=10, null=True, blank=True)
-    blood_pressure=models.CharField(max_lenth=10, null=True, blank=True)
-    blood_oxygen=models.CharField(max_lenth=10, null=True, blank=True)
-    blood_glucose=models.CharField(max_lenth=10, null=True, blank=True)
-    weight=models.CharField(max_lenth=10, null=True, blank=True)
-    height=models.CharField(max_lenth=10, null=True, blank=True)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
+    body_temperature=models.CharField(max_length=10, null=True, blank=True)
+    pulse_rate=models.CharField(max_length=10, null=True, blank=True)
+    respiration_rate=models.CharField(max_length=10, null=True, blank=True)
+    blood_pressure=models.CharField(max_length=10, null=True, blank=True)
+    blood_oxygen=models.CharField(max_length=10, null=True, blank=True)
+    blood_glucose=models.CharField(max_length=10, null=True, blank=True)
+    weight=models.CharField(max_length=10, null=True, blank=True)
+    height=models.CharField(max_length=10, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -173,7 +180,6 @@ class VitalSigns(models.Model):
 class ClinicalNote(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -190,7 +196,6 @@ class ClinicalNote(models.Model):
 class Phatology(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -207,7 +212,6 @@ class Phatology(models.Model):
 class Radiology(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -224,7 +228,6 @@ class Radiology(models.Model):
 class Pharmacy(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -241,7 +244,6 @@ class Pharmacy(models.Model):
 class Physio(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -258,7 +260,6 @@ class Physio(models.Model):
 class Ward(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -275,7 +276,6 @@ class Ward(models.Model):
 class Theatre(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -292,7 +292,6 @@ class Theatre(models.Model):
 class ICU(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -326,7 +325,6 @@ class NHIS(models.Model):
 class PandO(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -340,27 +338,9 @@ class PandO(models.Model):
             return f"{self.full_name}"
 
 
-# class OT(models.Model):
-#     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     created = models.DateTimeField('transaction date', auto_now_add=True)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
-
-
 class Audit(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
