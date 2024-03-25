@@ -27,6 +27,7 @@
           {{form.errors}}
           {% endif %}
       </div>
+      
     <form action="" method="POST" class="text-xs ">
       {% csrf_token %}
       <div class="mb-2 uppercase text-cyan-900">
@@ -72,7 +73,6 @@
         <p class="mt-4 text-cyan-800 text-xs">
           <a
             class="border-b-2 border-blue-600 text-sm text-blue-800 ml-1"
-            href="{%url 'register' %}"
             >register</a
           >
           instead

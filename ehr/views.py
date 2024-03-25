@@ -54,7 +54,7 @@ class GetStartedView(TemplateView):
 
 @method_decorator(log_anonymous_required, name='dispatch')
 class CustomLoginView(LoginView):
-    template_name = 'login.html'
+    template_name = 'get_started.html'
 
     def get_success_url(self):
         if self.request.user.is_superuser:
