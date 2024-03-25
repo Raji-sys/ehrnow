@@ -59,8 +59,9 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         if self.request.user.is_superuser:
             return reverse_lazy('index')
-        # else:
-        #     return reverse_lazy('profile_details', args=[self.request.user.username])
+        else:
+            pass
+            # return reverse_lazy('profile_details', args=[self.request.user.username])
 
 
 # @method_decorator(login_required(login_url='login'), name='dispatch')
