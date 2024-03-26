@@ -44,21 +44,22 @@ def log_anonymous_required(view_function, redirect_to=None):
 #     return path
 
 
-# @method_decorator(login_required(login_url='login'), name='dispatch')
 class IndexView(TemplateView):
     template_name = "index.html"
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class GetStartedView(TemplateView):
     template_name = "get_started.html"
 
+
 @method_decorator(log_anonymous_required, name='dispatch')
 class CustomLoginView(LoginView):
-    template_name = 'get_started.html'
+    template_name = 'login.html'
 
     def get_success_url(self):
         if self.request.user.is_superuser:
-            return reverse_lazy('index')
+            return reverse_lazy('get_started')
         else:
             pass
             # return reverse_lazy('profile_details', args=[self.request.user.username])
