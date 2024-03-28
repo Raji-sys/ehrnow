@@ -16,14 +16,14 @@ class Profile(models.Model):
     dep = (
         ('INFORMATION TECH', 'INFORMATION TECH'),
         ('INTERNAL AUDIT', 'INTERNAL AUDIT'),
-        ('MEDICAL RECORD', 'MEDICAL RECORD'),
+        ('REVENUE', 'REVENUE'),
+        ('HMS', 'HMS'),
         ('DOCTORS', 'DOCTORS'),
         ('NURSES', 'NURSES'),
         ('PATHOLOGY', 'PATHOLOGY'),
         ('PHARMACY', 'PHARMACY'),
         ('PHYSIOTHERAPHY', 'PHYSIOTHERAPHY'),
         ('PROSTHETIC AND ORTHOTICS', 'PROSTHETIC AND ORTHOTICS'),
-        ('OCCUPATIONAL THERAPHY', 'OCCUPATIONAL THERAPHY'),
         ('RADIOLOGY', 'RADIOLOGY'),
     )
     department = models.CharField(choices=dep, blank=True, max_length=300, null=True)
