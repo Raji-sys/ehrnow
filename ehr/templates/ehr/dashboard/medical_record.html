@@ -3,9 +3,61 @@
 {%block title%}MEDICAL RECORD{%endblock%}
 
 {%block content %}
-<div class="uk-container mt-10 p-3 ">
-    <div>
-        <h1 class="enom md:text-6xl text-center bg-gradient-to-r from-green-600 via-stone-500 to-indigo-600 text-transparent bg-clip-text font-semibold">MEDICAL RECORD</h1>
+<div class=" p-10">
+    
+    <div class="grid grid-cols-3 gap-4">
+        <div class="col-span-1 bg-red-500 hidden lg:grid">1</div>
+        <div class="col-span-2 bg-green-500"><div>
+            <h1 class="enom md:text-4xl text-center bg-gradient-to-r from-green-600 via-stone-500 to-indigo-600 text-transparent bg-clip-text font-semibold">MEDICAL RECORD</h1>
+        </div></div>
     </div>
+        <div class="uppercase text-center rounded-xl p-4 md:p-14 shadow-black shadow-sm bg-gray-50">
+            <div class="md:grid grid-cols-1 bg-gray-700 text-white shadow-xl rounded shadow-black">
+                <div>
+                    <p>{{request.user}}</p>
+                    <p>{{request.user.email}}</p>
+                </div>
+                
+            </div>
+            <div>
+                <div class="grid grid-cols-1 gap-4 uppercase text-center rounded-xl p-4 md:p-10 shadow-black shadow-2xl bg-gray-50">
+                    <div>
+                        <a href="" class="text-xs md:text-sm font-semibold text-white">
+                            <div class="bg-emerald-600 rounded-2xl shadow-2xl p-4 md:p-10 border-2 hover:border-white border-white-400 hover:bg-white">NEW PATIENT REGISTRATION</div>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="" class="text-xs md:text-sm font-semibold text-white">
+                            <div class="bg-indigo-600 rounded-2xl shadow-2xl p-4 md:p-10 border-2 hover:border-white border-white-400 hover:bg-white">RETURNING PATIENT</div>
+                        </a>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 uppercase text-center rounded-xl p-4 md:p-10 shadow-black shadow-2xl bg-gray-50 mt-2">
+                    <div>
+                        <a href="" class="text-xs md:text-sm font-semibold text-white">
+                            <div class="bg-amber-600 rounded-2xl shadow-2xl p-4 md:p-6 border-2 hover:border-white border-white-400 hover:bg-white">PATIENT REPORT</div>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="" class="text-xs md:text-sm font-semibold text-white">
+                            <div class="bg-stone-600 rounded-2xl shadow-2xl p-4 md:p-6 border-2 hover:border-white border-white-400 hover:bg-white">PATIENT STATISTICS</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 gap-2 uppercase text-center rounded-xl p-4 md:p-6 shadow-black shadow-2xl bg-gray-600">
+                <div class="mt-4">
+                    <a class="text-xs md:text-sm font-semibold text-cyan-600">
+                        <div class="md:text-xl text-center bg-white p-4 md:p-6 rounded-2xl">appointment schedule</div>
+                        </a>
+                </div>
+                <hr>
+                <div>
+                    <h1>patient directory</h1>
+                </div>
+            </div>
+        </div>
+</div>
+
 </div>
 {%endblock%}

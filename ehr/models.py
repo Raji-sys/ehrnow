@@ -136,6 +136,13 @@ class PatientData(models.Model):
         return False
 
 
+class Visit(models.Model):
+    patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
+    clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
+    pay_status=models.BooleanField(default=False)
+    created = models.DateTimeField('date', auto_now_add=True)
+
+
 class Paypoint(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
