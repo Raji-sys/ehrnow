@@ -22,9 +22,25 @@
 
 <body>
 {% block content %}
-<header class="">
-	<nav class="">
+<header class="bg-cyan-800 p-2">
+	<nav class="flex flex-row max-xs:flex-wrap max-sm:flex-col justify-between mt-0 max-sm:gap-4 gap-10 p-1 rounded-sm">
+		{% if request.user.is_authenticated %}
+		  <div class="">
+			<a href="{% url 'index' %}" class="focus:opacity-10 border-b-2 border-gray-500 focus:border-green-600 
+			bg-white text-cyan-900 p-2 px-4 rounded shadow-lg hover:shadow-xl 
+			text-center w-full"><i class="fa-solid fa-house fa-lg"></i></a>
+		</div> 
+	
+		<div class="">
+		<a href="#"><i class="text-white fa-solid fa-circle-user fa-lg"></i>
+		<span class="border-b-2 border-cyan-800 text-white text-lg uppercase"> {{request.user}}</span></span></a>
+		</div>
 
+		<div class="">									
+		<a class="focus:opacity-10 p-2 px-4 border-b-4 border-white focus:border-green-600 bg-gradient-to-l from-red-900 via-red-700 to-red-900 text-white rounded shadow-lg hover:shadow-xl text-center text-xs max-sm:w-1/2 w-full" href="{% url 'logout' %}">
+		<i class="fa-solid fa-arrow-right-from-bracket fa-lg"></i></a>
+		</div>
+		{% endif %}
 	</nav>
 </header>
 {% endblock %}

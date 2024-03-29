@@ -44,15 +44,6 @@ def log_anonymous_required(view_function, redirect_to=None):
 #     return path
 
 
-class IndexView(TemplateView):
-    template_name = "index.html"
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class GetStartedView(TemplateView):
-    template_name = "get_started.html"
-
-
 @method_decorator(log_anonymous_required, name='dispatch')
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -65,14 +56,14 @@ class CustomLoginView(LoginView):
             # return reverse_lazy('profile_details', args=[self.request.user.username])
 
 
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class CustomLogoutView(LogoutView):
-#     template_name = 'login.html'
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class CustomLogoutView(LogoutView):
+    template_name = 'login.html'
 
-#     def dispatch(self, request, *args, **kwargs):
-#         response = super().dispatch(request, *args, **kwargs)
-#         messages.success(request, 'logout successful')
-#         return response
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        messages.success(request, 'logout successful')
+        return response
 
 
 def reg_anonymous_required(view_function, redirect_to=None):
@@ -180,3 +171,71 @@ def reg_anonymous_required(view_function, redirect_to=None):
 #         context['qualifications'] = qualifications
 #         context['Qualform'] = QualForm()
 #         return context
+
+class IndexView(TemplateView):
+    template_name = "index.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class GetStartedView(TemplateView):
+    template_name = "get_started.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class MedicalRecordView(TemplateView):
+    template_name = "ehr/dashboard/medical_record.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class RevenueView(TemplateView):
+    template_name = "ehr/dashboard/revenue.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class NursingView(TemplateView):
+    template_name = "ehr/dashboard/nursing.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ClinicView(TemplateView):
+    template_name = "ehr/dashboard/clinic.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class RadiologyView(TemplateView):
+    template_name = "ehr/dashboard/radiology.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PhatologyView(TemplateView):
+    template_name = "ehr/dashboard/phatology.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PharmacyView(TemplateView):
+    template_name = "ehr/dashboard/pharmacy.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PhysioView(TemplateView):
+    template_name = "ehr/dashboard/physio.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class TheatreView(TemplateView):
+    template_name = "ehr/dashboard/theatre.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class WardView(TemplateView):
+    template_name = "ehr/dashboard/ward.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ICUView(TemplateView):
+    template_name = "ehr/dashboard/icu.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AuditView(TemplateView):
+    template_name = "ehr/dashboard/audit.html"
