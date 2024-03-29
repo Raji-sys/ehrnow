@@ -137,6 +137,7 @@ class PatientData(models.Model):
 
 
 class Visit(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
     clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
     pay_status=models.BooleanField(default=False)
