@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_fastdev',
     'import_export',
+    'fontawesomefree',
 ]
 
 MIDDLEWARE = [
