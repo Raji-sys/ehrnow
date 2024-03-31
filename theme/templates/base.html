@@ -32,12 +32,15 @@
 			  <div class="bg-white rounded p-1 text-xs text-emerald-700 text-center flex justify-center items-center align-middle">
 				<a href="{% url 'get_started' %}" class="focus:opacity-10 text-white text-center" uk-icon="icon: home; ratio:2"></a>
 			</div> 
-			<span class="enom md:text-xl text-center text-white font-semibold mt-2">
+			<span class="enom md:text-md text-center text-white font-semibold m-3">
 					{%block title%}{%endblock%}
 			</span>
+			<div class="flex">
+				<span class="text-white m-2 enom">{{request.user}}</span>
 				<div class="bg-red-500 rounded text-white text-center flex justify-center items-center align-middle p-1 text-xs">
 					<a href="{% url 'logout' %}" class="focus:opacity-10" uk-icon="icon: sign-out; ratio:2"></a>
 				</div>
+			</div>
 			{% endif %}
 		</nav>
 	</header>
