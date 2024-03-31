@@ -1,9 +1,7 @@
-from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.views.generic.base import TemplateView
-from django.views.generic import DetailView, ListView
 from django.views import View
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -21,6 +19,9 @@ from django.conf import settings
 import os
 import csv
 from django.db.models import Count
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.contrib import messages
+from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView
 User = get_user_model()
 
 
@@ -239,3 +240,132 @@ class ICUView(TemplateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class AuditView(TemplateView):
     template_name = "ehr/dashboard/audit.html"
+
+# Mixins
+class ReceptionistRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='Receptionist').exists()
+
+class PaymentClerkRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='PaymentClerk').exists()
+
+class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='Doctor').exists()
+
+
+# Views for Receptionist
+class CreatePatientView(ReceptionistRequiredMixin, CreateView):
+    model = PatientData
+    form_class = PatientForm
+
+    def form_valid(self, form):
+        patient = form.save()
+        handover = PatientHandover.objects.create(
+            patient=patient,
+            status='waiting_for_payment'
+        )
+        messages.success(self.request, 'Patient created successfully. Please hand over to the payment clerk.')
+        return redirect('receptionist_dashboard')
+
+class ReceptionistDashboardView(ReceptionistRequiredMixin, ListView):
+    model = PatientHandover
+    template_name = 'receptionist_dashboard.html'
+    context_object_name = 'handovers'
+
+    def get_queryset(self):
+        return PatientHandover.objects.filter(status__in=['waiting_for_clinic_assignment', 'waiting_for_vital_signs'])
+
+class HandleAppointmentView(ReceptionistRequiredMixin, CreateView):
+    model = Appointment
+    form_class = AppointmentForm
+    template_name = 'handle_appointment.html'
+
+    def form_valid(self, form):
+        appointment = form.save(commit=False)
+        patient = appointment.patient
+        clinic = appointment.clinic
+
+        handover = PatientHandover.objects.create(
+            patient=patient,
+            clinic=clinic,
+            status='waiting_for_payment'
+        )
+
+        messages.success(self.request, 'Patient handed over for payment.')
+        return redirect('receptionist_dashboard')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_new_appointment'] = True
+        return context
+
+class AssignClinicView(ReceptionistRequiredMixin, UpdateView):
+    model = PatientHandover
+    fields = ['clinic']
+    template_name = 'assign_clinic.html'
+
+    def form_valid(self, form):
+        handover = form.save(commit=False)
+        handover.status = 'waiting_for_vital_signs'
+        handover.save()
+        messages.success(self.request, 'Patient assigned to the clinic successfully.')
+        return redirect('receptionist_dashboard')
+
+# Views for Payment Clerk
+class PaymentView(PaymentClerkRequiredMixin, FormView):
+    template_name = 'payment.html'
+    form_class = forms.Form  # Replace with your payment form if needed
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        handover_id = self.kwargs.get('handover_id')
+        handover = get_object_or_404(PatientHandover, id=handover_id)
+        context['patient'] = handover.patient
+        context['handover'] = handover
+        return context
+
+    def form_valid(self, form):
+        handover_id = self.kwargs.get('handover_id')
+        handover = get_object_or_404(PatientHandover, id=handover_id)
+        patient = handover.patient
+
+        # Process payment
+        payment = Paypoint.objects.create(patient=patient, status='paid')
+
+        # Update the PatientHandover status to 'waiting_for_vital_signs'
+        handover.status = 'waiting_for_vital_signs'
+        handover.save()
+
+        messages.success(self.request, 'Payment successful. Patient handed over for vital signs.')
+        return redirect('payment_clerk_dashboard')
+
+
+class PaymentClerkDashboardView(PaymentClerkRequiredMixin, ListView):
+    model = PatientHandover
+    template_name = 'payment_clerk_dashboard.html'
+    context_object_name = 'handovers'
+
+    def get_queryset(self):
+        return PatientHandover.objects.filter(status='waiting_for_payment')
+
+
+class NursingDeskView(LoginRequiredMixin, ListView):
+    model = PatientHandover
+    template_name = 'nursing_desk.html'
+    context_object_name = 'handovers'
+
+    def get_queryset(self):
+        return PatientHandover.objects.filter(status='waiting_for_vital_signs')
+
+class ConsultationRoomView(DoctorRequiredMixin, DetailView):
+    model = PatientHandover
+    template_name = 'consultation_room.html'
+    context_object_name = 'handover'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        handover = self.get_object()
+        context['patient'] = handover.patient
+        return context

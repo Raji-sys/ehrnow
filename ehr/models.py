@@ -147,18 +147,17 @@ class Visit(models.Model):
 class Paypoint(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    status=models.BooleanField(default=False)
+    # status=models.BooleanField(default=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+    ], default='pending')
+    # created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
         return reverse('pay_details', args=[self.user])
-
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
 
 
 class VitalSigns(models.Model):
@@ -249,6 +248,33 @@ class Pharmacy(models.Model):
             return f"{self.full_name}"
 
 
+
+class Appointment(models.Model):
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='appointments')
+    appointment_date = models.DateTimeField()
+    reason = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=20, choices=[
+        ('scheduled', 'Scheduled'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ], default='scheduled')
+    
+
+class PatientHandover(models.Model):
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handovers')
+    status = models.CharField(max_length=30, choices=[
+        ('waiting_for_payment', 'Waiting for Payment'),
+        ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
+        ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    
 class Physio(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)

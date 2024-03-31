@@ -27,6 +27,20 @@ urlpatterns = [
     path('get-started/icu', ICUView.as_view(), name='icu'),
     path('get-started/audit', AuditView.as_view(), name='audit'),
  
+    # Receptionist URLs
+    path('create-patient/', views.CreatePatientView.as_view(), name='create_patient'),
+    path('receptionist-dashboard/', views.ReceptionistDashboardView.as_view(), name='receptionist_dashboard'),
+    path('handle-appointment/<int:pk>/', views.HandleAppointmentView.as_view(), name='handle_appointment'),
+    path('assign-clinic/<int:pk>/', views.AssignClinicView.as_view(), name='assign_clinic'),
+
+    # Payment Clerk URLs
+    path('payment/<int:handover_id>/', views.PaymentView.as_view(), name='payment'),
+    path('payment-clerk-dashboard/', views.PaymentClerkDashboardView.as_view(), name='payment_clerk_dashboard'),
+
+    # Doctor URLs
+
+    # Other URLs for NursingDesk, ConsultationRoom, etc
+
     # path('patients/', PatientListView.as_view(), name='patient'),
 
 
