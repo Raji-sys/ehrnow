@@ -140,19 +140,43 @@ class Visit(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
     clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
-    pay_status=models.BooleanField(default=False)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
+
+
+class Appointment(models.Model):
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='appointments')
+    appointment_date = models.DateTimeField()
+    reason = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=20, choices=[
+        ('scheduled', 'Scheduled'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ], default='scheduled')
+    
+
+class PatientHandover(models.Model):
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handovers')
+    status = models.CharField(max_length=30, choices=[
+        ('waiting_for_payment', 'Waiting for Payment'),
+        ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
+        ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Paypoint(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     # status=models.BooleanField(default=False)
+    service=models.CharField(max_length=100, null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
-    status = models.CharField(max_length=20, choices=[
-        ('pending', 'Pending'),
-        ('paid', 'Paid'),
-    ], default='pending')
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'),('paid', 'Paid'),], default='pending')
     # created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -187,6 +211,18 @@ class VitalSigns(models.Model):
 class ClinicalNote(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    note=models.TextField(null=True, blank=True)
+
+    """
+    this need the to be choice 
+    """
+    diagnosis = models.CharField(max_length=300, null=True, blank=True)
+    prescription = models.CharField(max_length=300, null=True, blank=True)
+    Phatology = models.CharField(max_length=300, null=True, blank=True)
+    radiology = models.CharField(max_length=300, null=True, blank=True)
+    """
+    a remainder for later
+    """
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -203,6 +239,7 @@ class ClinicalNote(models.Model):
 class Phatology(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -219,6 +256,7 @@ class Phatology(models.Model):
 class Radiology(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -235,6 +273,7 @@ class Radiology(models.Model):
 class Pharmacy(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -247,37 +286,11 @@ class Pharmacy(models.Model):
         if self.user:
             return f"{self.full_name}"
 
-
-
-class Appointment(models.Model):
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='appointments')
-    appointment_date = models.DateTimeField()
-    reason = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=20, choices=[
-        ('scheduled', 'Scheduled'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
-    ], default='scheduled')
-    
-
-class PatientHandover(models.Model):
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handovers')
-    status = models.CharField(max_length=30, choices=[
-        ('waiting_for_payment', 'Waiting for Payment'),
-        ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
-        ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
-    ])
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
     
 class Physio(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -294,6 +307,7 @@ class Physio(models.Model):
 class Ward(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -310,6 +324,7 @@ class Ward(models.Model):
 class Theatre(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -326,6 +341,7 @@ class Theatre(models.Model):
 class ICU(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -342,6 +358,7 @@ class ICU(models.Model):
 class NHIS(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('transaction date', auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -359,6 +376,7 @@ class NHIS(models.Model):
 class PandO(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):

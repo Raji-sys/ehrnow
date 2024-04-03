@@ -269,6 +269,7 @@ class CreatePatientView(ReceptionistRequiredMixin, CreateView):
         messages.success(self.request, 'Patient created successfully. Please hand over to the payment clerk.')
         return redirect('receptionist_dashboard')
 
+
 class ReceptionistDashboardView(ReceptionistRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'receptionist_dashboard.html'
@@ -277,15 +278,16 @@ class ReceptionistDashboardView(ReceptionistRequiredMixin, ListView):
     def get_queryset(self):
         return PatientHandover.objects.filter(status__in=['waiting_for_clinic_assignment', 'waiting_for_vital_signs'])
 
-class HandleAppointmentView(ReceptionistRequiredMixin, CreateView):
-    model = Appointment
-    form_class = AppointmentForm
-    template_name = 'handle_appointment.html'
+
+class HandleVisitView(ReceptionistRequiredMixin, CreateView):
+    model = Visit
+    form_class = VisitForm
+    template_name = 'handle_visit.html'
 
     def form_valid(self, form):
-        appointment = form.save(commit=False)
-        patient = appointment.patient
-        clinic = appointment.clinic
+        visit = form.save(commit=False)
+        patient = visit.patient
+        clinic = visit.clinic
 
         handover = PatientHandover.objects.create(
             patient=patient,
@@ -316,7 +318,7 @@ class AssignClinicView(ReceptionistRequiredMixin, UpdateView):
 # Views for Payment Clerk
 class PaymentView(PaymentClerkRequiredMixin, FormView):
     template_name = 'payment.html'
-    form_class = forms.Form  # Replace with your payment form if needed
+    form_class = PaypointForm  # Replace with your payment form if needed
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
