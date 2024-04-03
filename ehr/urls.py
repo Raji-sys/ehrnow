@@ -30,7 +30,7 @@ urlpatterns = [
     # Receptionist URLs
     path('create-patient/', views.CreatePatientView.as_view(), name='create_patient'),
     path('receptionist-dashboard/', views.ReceptionistDashboardView.as_view(), name='receptionist_dashboard'),
-    path('handle-appointment/<int:pk>/', views.HandleAppointmentView.as_view(), name='handle_appointment'),
+    path('handle-appointment/<int:pk>/', views.HandleVisitView.as_view(), name='handle_appointment'),
     path('assign-clinic/<int:pk>/', views.AssignClinicView.as_view(), name='assign_clinic'),
 
     # Payment Clerk URLs

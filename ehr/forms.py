@@ -11,10 +11,10 @@ class PatientForm(forms.ModelForm):
 class VisitForm(forms.ModelForm):
     class Meta:
         model = Visit
-        fields = ['clinic', 'appointment_date']
+        fields = ['clinic']
 
 
 class PaypointForm(forms.ModelForm):
     class Meta:
         model = Paypoint
-        fields = ['__all__']
+        fields = '__all__'

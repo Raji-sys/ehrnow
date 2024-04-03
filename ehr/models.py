@@ -136,6 +136,20 @@ class PatientData(models.Model):
         return False
 
 
+class Paypoint(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    # status=models.BooleanField(default=False)
+    service=models.CharField(max_length=100, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'),('paid', 'Paid'),], default='pending')
+    # created_at = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def get_absolute_url(self):
+        return reverse('pay_details', args=[self.user])
+
+
 class Visit(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
@@ -168,20 +182,6 @@ class PatientHandover(models.Model):
     ])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
-class Paypoint(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    # status=models.BooleanField(default=False)
-    service=models.CharField(max_length=100, null=True, blank=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
-    status = models.CharField(max_length=20, choices=[('pending', 'Pending'),('paid', 'Paid'),], default='pending')
-    # created_at = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
 
 
 class VitalSigns(models.Model):

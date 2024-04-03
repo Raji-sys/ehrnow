@@ -258,6 +258,7 @@ class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 # Views for Receptionist
 class CreatePatientView(ReceptionistRequiredMixin, CreateView):
     model = PatientData
+    template_name= 'ehr/patient/new_patient.html'
     form_class = PatientForm
 
     def form_valid(self, form):
