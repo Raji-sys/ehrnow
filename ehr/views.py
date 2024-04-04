@@ -242,45 +242,45 @@ class AuditView(TemplateView):
     template_name = "ehr/dashboard/audit.html"
 
 # Mixins
-class ReceptionistRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+class RecordRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.groups.filter(name='Receptionist').exists()
+        return self.request.user.groups.filter(name='Record').exists()
 
-class PaymentClerkRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+class RevenueRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.groups.filter(name='PaymentClerk').exists()
+        return self.request.user.groups.filter(name='Revenue').exists()
 
 class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.groups.filter(name='Doctor').exists()
 
 
-# Views for Receptionist
-class CreatePatientView(ReceptionistRequiredMixin, CreateView):
+# Views for Record officer
+class CreatePatientView(RecordRequiredMixin, CreateView):
     model = PatientData
     template_name= 'ehr/patient/new_patient.html'
     form_class = PatientForm
 
     def form_valid(self, form):
         patient = form.save()
-        handover = PatientHandover.objects.create(
-            patient=patient,
-            status='waiting_for_payment'
-        )
-        messages.success(self.request, 'Patient created successfully. Please hand over to the payment clerk.')
-        return redirect('receptionist_dashboard')
+        handover_instance=PatientHandover(patient=patient,status='waiting_for_payment')
+        handover_instance.save()
+        visit_instance=Visit(patient=patient)
+        visit_instance.save()
+        messages.success(self.request, 'Patient created successfully. Please hand over to the paypoint.')
+        return redirect('record_dashboard')
 
 
-class ReceptionistDashboardView(ReceptionistRequiredMixin, ListView):
+class RecordDashboardView(RecordRequiredMixin, ListView):
     model = PatientHandover
-    template_name = 'receptionist_dashboard.html'
+    template_name = 'record_dashboard.html'
     context_object_name = 'handovers'
 
     def get_queryset(self):
         return PatientHandover.objects.filter(status__in=['waiting_for_clinic_assignment', 'waiting_for_vital_signs'])
 
 
-class HandleVisitView(ReceptionistRequiredMixin, CreateView):
+class HandleVisitView(RecordRequiredMixin, CreateView):
     model = Visit
     form_class = VisitForm
     template_name = 'handle_visit.html'
@@ -297,14 +297,14 @@ class HandleVisitView(ReceptionistRequiredMixin, CreateView):
         )
 
         messages.success(self.request, 'Patient handed over for payment.')
-        return redirect('receptionist_dashboard')
+        return redirect('record_dashboard')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_new_appointment'] = True
+        context['is_new_visit'] = True
         return context
 
-class AssignClinicView(ReceptionistRequiredMixin, UpdateView):
+class AssignClinicView(RecordRequiredMixin, UpdateView):
     model = PatientHandover
     fields = ['clinic']
     template_name = 'assign_clinic.html'
@@ -317,7 +317,7 @@ class AssignClinicView(ReceptionistRequiredMixin, UpdateView):
         return redirect('receptionist_dashboard')
 
 # Views for Payment Clerk
-class PaymentView(PaymentClerkRequiredMixin, FormView):
+class PaymentView(RevenueRequiredMixin, FormView):
     template_name = 'payment.html'
     form_class = PaypointForm  # Replace with your payment form if needed
 
@@ -345,7 +345,7 @@ class PaymentView(PaymentClerkRequiredMixin, FormView):
         return redirect('payment_clerk_dashboard')
 
 
-class PaymentClerkDashboardView(PaymentClerkRequiredMixin, ListView):
+class RevenueDashboardView(RevenueRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'payment_clerk_dashboard.html'
     context_object_name = 'handovers'

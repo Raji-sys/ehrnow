@@ -1,0 +1,10 @@
+{% extends 'base.html'%}
+{% load static %}
+{%block title%}new patient registration{%endblock%}
+{%block content %}
+<form method="post">
+    {% csrf_token %}
+    {{form.as_ul}}
+    <button type="submit">submit</button>
+</form>
+{%endblock%}

@@ -106,6 +106,7 @@ class PatientData(models.Model):
     # nok_photo = models.ImageField('first next of kin photo', null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
+
     def save(self, *args, **kwargs):
         if not self.created:
             self.created = timezone.now()
@@ -165,11 +166,6 @@ class Appointment(models.Model):
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=20, choices=[
-        ('scheduled', 'Scheduled'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
-    ], default='scheduled')
     
 
 class PatientHandover(models.Model):
