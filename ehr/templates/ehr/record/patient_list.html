@@ -1,0 +1,9 @@
+{% extends 'base.html'%}
+{% load static %}
+{%block title%}patient record library{%endblock%}
+{%block content %}
+
+{%for h in handovers%}
+    <p>{{h}}</p>
+{%endfor%}
+{%endblock%}

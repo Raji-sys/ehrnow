@@ -1,0 +1,9 @@
+{% extends 'base.html'%}
+{% load static %}
+{%block title%}consultation waiting list{%endblock%}
+{%block content %}
+
+{%for h in handovers%}
+    <p>{{h}}</p>
+{%endfor%}
+{%endblock%}

@@ -1,0 +1,13 @@
+{% extends 'base.html'%}
+{% load static %}
+{%block title%}assign clinic{%endblock%}
+{%block content %}
+<h1>Payment Details</h1>
+<p>Handover Id: {{handover.id}}</p>
+<p>Patient: {{patient.name}}</p>
+<form method="post">
+    {% csrf_token %}
+    {{form.as_ul}}
+    <button type="submit">submit</button>
+</form>
+{%endblock%}

@@ -175,6 +175,7 @@ class PatientHandover(models.Model):
         ('waiting_for_payment', 'Waiting for Payment'),
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
         ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
+        ('waiting_for_consultation', 'Waiting for Consultation'),
     ])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
