@@ -278,7 +278,10 @@ class RecordDashboardView(RecordRequiredMixin, ListView):
 
     def get_queryset(self):
         return PatientHandover.objects.filter(status__in=['waiting_for_clinic_assignment', 'waiting_for_vital_signs'])
-
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 class AssignClinicView(RecordRequiredMixin, UpdateView):
     model = PatientHandover
@@ -354,6 +357,9 @@ class RevenueDashboardView(RevenueRequiredMixin, ListView):
     def get_queryset(self):
         return PatientHandover.objects.filter(status='waiting_for_payment')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 class NursingDeskView(LoginRequiredMixin, ListView):
     model = PatientHandover
@@ -362,17 +368,20 @@ class NursingDeskView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return PatientHandover.objects.filter(status='waiting_for_vital_signs')
-
-class ConsultationRoomView(DoctorRequiredMixin, DetailView):
-    model = PatientHandover
-    template_name = 'ehr/doctor/doctors_list.html'
-    context_object_name = 'handover'
-
-    def get_queryset(self):
-        return PatientHandover.objects.filter(status='waiting_for_vital_signs')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        handover = self.get_object()
-        context['patient'] = handover.patient
+        return context
+
+
+class ConsultationRoomView(DoctorRequiredMixin, ListView):
+    model = PatientHandover
+    template_name = 'ehr/doctor/doctors_list.html'
+    context_object_name = 'handovers'
+
+    def get_queryset(self):
+        return PatientHandover.objects.filter(status='waiting_for_consultation') 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         return context

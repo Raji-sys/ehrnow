@@ -3,7 +3,15 @@
 {%block title%}consultation waiting list{%endblock%}
 {%block content %}
 
-{%for h in handovers%}
-    <p>{{h}}</p>
-{%endfor%}
+<h2>Patients Waiting for Consultation</h2>
+<ul>
+    {% for h in handovers %}
+        {% if h.status == 'waiting_for_consultation' %}
+            <li>
+                Patient Number: {{ h.patient.patient_number }}, 
+                <a href="{% url 'patient_details' h.patient.id %}">{{ h.patient.name }}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul
 {%endblock%}
