@@ -54,7 +54,7 @@ class CustomLoginView(LoginView):
             return reverse_lazy('get_started')
         else:
             pass
-            # return reverse_lazy('profile_details', args=[self.request.user.username])
+            # return reverse_lazy('profile_folder', args=[self.request.user.username])
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -107,12 +107,12 @@ def reg_anonymous_required(view_function, redirect_to=None):
 #     model = User
 #     template_name = 'patient/update-user.html'
 #     form_class = UserForm
-#     success_url = reverse_lazy('profile_details')
+#     success_url = reverse_lazy('profile_folder')
 
 #     def get_success_url(self):
 #         messages.success(
 #             self.request, 'patient Information Updated Successfully')
-#         return reverse_lazy('profile_details', kwargs={'username': self.object.username})
+#         return reverse_lazy('profile_folder', kwargs={'username': self.object.username})
 
 #     def form_valid(self, form):
 #         if form.is_valid():
@@ -124,54 +124,6 @@ def reg_anonymous_required(view_function, redirect_to=None):
 #     def form_invalid(self, form):
 #         messages.error(self.request, 'error updating patient information')
 #         return self.render_to_response(self.get_context_data(form=form))
-
-
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class UpdateProfileView(UpdateView):
-#     model = Profile
-#     template_name = 'patient/update-profile.html'
-#     form_class = ProfileForm
-#     success_url = reverse_lazy('profile_details')
-
-#     def get_success_url(self):
-#         messages.success(
-#             self.request, 'patient Information Updated Successfully')
-#         return reverse_lazy('profile_details', kwargs={'username': self.object.user})
-
-#     def form_valid(self, form):
-#         if form.is_valid():
-#             form.save()
-#             return super().form_valid(form)
-#         else:
-#             return self.form_invalid(form)
-
-#     def form_invalid(self, form):
-#         messages.error(self.request, 'error updating patient information')
-#         return self.render_to_response(self.get_context_data(form=form))
-
-
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class ProfileDetailView(DetailView):
-#     template_name = 'patient/profile_details.html'
-#     model = Profile
-
-#     def get_object(self, queryset=None):
-#         if self.request.user.is_superuser:
-#             username_from_url = self.kwargs.get('username')
-#             user = get_object_or_404(User, username=username_from_url)
-#         else:
-#             user = self.request.user
-#         return get_object_or_404(Profile, user=user)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         profile = context['object']
-
-#         qualifications = Qualification.objects.filter(user=profile.user)
-
-#         context['qualifications'] = qualifications
-#         context['Qualform'] = QualForm()
-#         return context
 
 class IndexView(TemplateView):
     template_name = "index.html"
@@ -256,20 +208,97 @@ class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 
 # Views for Record officer
-class CreatePatientView(RecordRequiredMixin, CreateView):
+class PatientVisitView(RecordRequiredMixin, CreateView):
     model = PatientData
-    template_name= 'ehr/record/new_patient.html'
     form_class = PatientForm
- 
+    template_name = 'ehr/record/new_patient.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        file_no = self.request.GET.get('file_no')
+        if file_no:
+            try:
+                patient = PatientData.objects.get(file_no=file_no)
+                kwargs['instance'] = patient
+            except PatientData.DoesNotExist:
+                pass
+        return kwargs
+
     def form_valid(self, form):
         patient = form.save()
-        handover_instance=PatientHandover(patient=patient,status='waiting_for_payment')
-        handover_instance.save()
-        visit_instance=Visit(patient=patient)
-        visit_instance.save()
-        messages.success(self.request, 'Patient created successfully. Please hand over to the paypoint.')
+        visit = Visit(patient=patient)
+        visit.save()
+        handover = PatientHandover(patient=patient, status='waiting_for_payment')
+        handover.save()
+
+        if 'file_no' in self.request.GET:
+            messages.success(self.request, 'Patient visit created successfully. Please hand over to the paypoint.')
+        else:
+            messages.success(self.request, 'New patient created successfully. Please hand over to the paypoint.')
+
         return redirect('record_dash')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        file_no = self.request.GET.get('file_no')
+        if file_no:
+            try:
+                patient = PatientData.objects.get(file_no=file_no)
+                context['is_new_visit'] = True
+            except PatientData.DoesNotExist:
+                context['is_new_visit'] = False
+        else:
+            context['is_new_visit'] = False
+        return context
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PatientFolderView(DetailView):
+    template_name = 'ehr/patient/patient_folder.html'
+    model = PatientData
+
+    def get_object(self, queryset=None):
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            file_number = self.kwargs.get('file_no')
+            return get_object_or_404(PatientData, file_no=file_number)
+        else:
+            return None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        patient = context['object']
+
+        vitals = VitalSigns.objects.filter(patient=patient.file_no)
+
+        context['vitals'] = vitals
+        context['VitalSignsform'] = VitalSignsForm()
+        return context
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class UpdatePatientView(UpdateView):
+    model = PatientData
+    template_name = 'ehr/record/patient/update-profile.html'
+    form_class = PatientForm
+    success_url = reverse_lazy('patient_folder')
+
+    def get_success_url(self):
+        file_number = self.object.file_no
+        messages.success(
+            self.request, 'Patient Information Updated Successfully'
+        )
+        return reverse_lazy('patient_folder', kwargs={'file_no': file_number})
+
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error updating patient information')
+        return self.render_to_response(self.get_context_data(form=form))
+    
 
 class RecordDashboardView(RecordRequiredMixin, ListView):
     model = PatientHandover
@@ -296,32 +325,32 @@ class AssignClinicView(RecordRequiredMixin, UpdateView):
         return redirect('record_dash')
 
 
-class HandleVisitView(RecordRequiredMixin, CreateView):
-    model = Visit
-    form_class = VisitForm
-    template_name = 'ehr/record/handle_visit.html'
+# class HandleVisitView(RecordRequiredMixin, CreateView):
+#     model = Visit
+#     form_class = VisitForm
+#     template_name = 'ehr/record/handle_visit.html'
 
-    def form_valid(self, form):
-        visit = form.save(commit=False)
-        patient = visit.patient
-        clinic = visit.clinic
+#     def form_valid(self, form):
+#         visit = form.save(commit=False)
+#         patient = visit.patient
+#         clinic = visit.clinic
 
-        handover = PatientHandover.objects.create(
-            patient=patient,
-            clinic=clinic,
-            status='waiting_for_payment'
-        )
+#         handover = PatientHandover.objects.create(
+#             patient=patient,
+#             clinic=clinic,
+#             status='waiting_for_payment'
+#         )
 
-        messages.success(self.request, 'Patient handed over for payment.')
-        return redirect('record_dashboard')
+#         messages.success(self.request, 'Patient handed over for payment.')
+#         return redirect('record_dashboard')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['is_new_visit'] = True
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['is_new_visit'] = True
+#         return context
 
 # Views for Payment Clerk
-class PaymentView(RevenueRequiredMixin, FormView):
+class PaypointView(RevenueRequiredMixin, FormView):
     template_name = 'ehr/revenue/paypoint.html'
     form_class = PaypointForm
 
@@ -349,7 +378,7 @@ class PaymentView(RevenueRequiredMixin, FormView):
         return redirect('paypoint_dash')
 
 
-class RevenueDashboardView(RevenueRequiredMixin, ListView):
+class PaypointDashboardView(RevenueRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'ehr/revenue/paypoint_dash.html'
     context_object_name = 'handovers'
@@ -374,6 +403,69 @@ class NursingDeskView(LoginRequiredMixin, ListView):
         return context
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class VitalSignCreateView(CreateView):
+    model = VitalSigns
+    form_class = VitalSignsForm
+    template_name = 'staff/qual.html'
+
+    def form_valid(self, form):
+        if self.request.user.is_superuser:
+            # If the current user is a superuser, use the username from the URL
+            username_from_url = self.kwargs.get('username')
+            user = get_object_or_404(User, username=username_from_url)
+            form.instance.user = user
+        else:
+            # If the current user is not a superuser, use the current user
+            form.instance.user = self.request.user
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        messages.success(self.request, 'Vital Signs Added Successfully')
+        return reverse_lazy('patient_folder', kwargs={'username': self.kwargs['username']})
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class VitalsUpdateView(UpdateView):
+    model = VitalSigns
+    form_class = VitalSignsForm
+    template_name = 'staff/qual-update.html'
+
+    def get_success_url(self):
+        file_number = self.object.file_no
+        messages.success(
+            self.request, 'Patient Information Updated Successfully'
+        )
+        return reverse_lazy('patient_folder', kwargs={'file_no': file_number})
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error Updating VitalSigns')
+        return super().form_invalid(form)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class VitalsDeleteView(DeleteView):
+    model = VitalSigns
+    template_name = 'staff/qual-delete-confirm.html'
+
+    def get_success_url(self):
+        file_number = self.object.file_no
+        messages.success(
+            self.request, 'Patient Information Updated Successfully'
+        )
+        return reverse_lazy('patient_folder', kwargs={'file_no': file_number})
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        if response.status_code == 302:
+            messages.success(
+                self.request, 'VitalSigns deleted successfully')
+        else:
+            messages.error(self.request, 'Error deleting VitalSigns')
+        return response
+
+
 class ConsultationRoomView(DoctorRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'ehr/doctor/doctors_list.html'
@@ -385,3 +477,4 @@ class ConsultationRoomView(DoctorRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+    

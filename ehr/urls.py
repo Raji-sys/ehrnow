@@ -28,14 +28,15 @@ urlpatterns = [
     path('get-started/audit', AuditView.as_view(), name='audit'),
  
     # Receptionist URLs
-    path('create-patient/', views.CreatePatientView.as_view(), name='new_patient'),
+    path('record/create-patient/', PatientVisitView.as_view(), name='new_patient'),
+    path('record/patient/<str:file_no>/visit', PatientVisitView.as_view(), name='follow_up'),
+
     path('record-dashboard/', views.RecordDashboardView.as_view(), name='record_dash'),
-    path('handle-visit/<int:pk>/', views.HandleVisitView.as_view(), name='handle_visit'),
     path('assign-clinic/<int:pk>/', views.AssignClinicView.as_view(), name='assign_clinic'),
 
     # Payment Clerk URLs
-    path('paypoint/<int:handover_id>/', views.PaypointView.as_view(), name='paypoint'),
-    path('paypoint-clerk-dashboard/', views.PaypointDashboardView.as_view(), name='paypoint_dash'),
+    path('revenue/paypoint/<int:handover_id>/', views.PaypointView.as_view(), name='paypoint'),
+    path('revenue/paypoint-dash/', views.PaypointDashboardView.as_view(), name='paypoint_dash'),
 
     # Doctor URLs
 
@@ -55,9 +56,10 @@ urlpatterns = [
     # path('notice/', NoticeView.as_view(), name='notice'),
 
 
-    # path('profile/<str:username>/',ProfileDetailView.as_view(), name='profile_details'),
+    path('ehr/record/patient/<str:file_no>/',PatientFolderView.as_view(), name='patient_folder'),
+    # path('ehr/record/visit/<str:file_no>/',HandleVisitView.as_view(), name='handle_visit'),
+    path('ehr/record/patient/<str:file_no>/update',UpdatePatientView.as_view(), name='update_patient'),
     # path('update-user/<int:pk>/', UpdateUserView.as_view(), name='update_user'),
-    # path('update-profile/<int:pk>/',UpdateProfileView.as_view(), name='update_profile'),
 
     # path('', include('django.contrib.auth.urls')),
 ]

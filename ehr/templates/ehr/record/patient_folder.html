@@ -1,8 +1,24 @@
 {%extends "base.html" %}
 
-{% block title %}profile{% endblock%}
+{% block title %}patient folder details{% endblock%}
 
 {% block content %}
+
+<h1>Patient Folder</h1>
+<p>Name: {{ object.first_name }} {{ object.last_name }}</p>
+<p>File Number: {{ object.file_no }}</p>
+
+<a href="{% url 'update_patient' file_no=object.file_no %}">Update Patient</a>
+
+<h2>Vital Signs</h2>
+<ul>
+{% for vital in vitals %}
+    <li>Body Temperature: {{ vital.body_temperature }}</li>
+    <li>Pulse Rate: {{ vital.pulse_rate }}</li>
+{% endfor %}
+</ul>
+<!-- Add any additional patient data or vital signs display -->
+
 <div class="text-black text-center p-2 rounded-xl mt-2 bg-white shadow-2xl shadow-black w-fit mx-auto">
   <span class="text-md font-bold">{{profile.user.get_full_name|default_if_none:''|upper}} 
     <!-- <a href="{%url 'update_user' profile.user.pk %}">update user</a> -->

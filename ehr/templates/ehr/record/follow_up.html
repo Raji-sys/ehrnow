@@ -3,9 +3,10 @@
 {%block title%}handle visit{%endblock%}
 {%block content %}
 
+<h1>{% if is_new_visit %}New Visit{% else %}New Patient{% endif %}</h1>
 <form method="post">
     {% csrf_token %}
-    {{form.as_ul}}
-    <button type="submit">submit</button>
+    {{ form.as_p }}
+    <button type="submit">Save</button>
 </form>
 {%endblock%}
