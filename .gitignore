@@ -1,9 +1,9 @@
-/include
-/share
-/bin
-/lib
-/lib64
-/pyvenv.cfg
+include/
+share/
+bin/
+lib/
+lib64/
+pyvenv.cfg/
 share/
 *.cfg
 *.pyc
