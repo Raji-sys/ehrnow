@@ -1,16 +1,16 @@
 from django.urls import path, include
 from .views import *
-from . import views
+from django.urls import path
+
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
  
-    # path('register/', UserRegistrationView.as_view(), name='register'),
     path('login/', CustomLoginView.as_view(), name='login'),
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
- 
+    path('register/', UserRegistrationView.as_view(), name='register'),
     path('get-started/', GetStartedView.as_view(), name='get_started'),
- 
+    path('',include('django.contrib.auth.urls')),
+    
     path('get-started/medical-record', MedicalRecordView.as_view(), name='medical_record'),
     path('get-started/revenue', RevenueView.as_view(), name='revenue'),
     path('get-started/nursing', NursingView.as_view(), name='nursing'),
@@ -31,12 +31,12 @@ urlpatterns = [
     path('record/create-patient/', PatientVisitView.as_view(), name='new_patient'),
     path('record/patient/<str:file_no>/visit', PatientVisitView.as_view(), name='follow_up'),
 
-    path('record-dashboard/', views.RecordDashboardView.as_view(), name='record_dash'),
-    path('assign-clinic/<int:pk>/', views.AssignClinicView.as_view(), name='assign_clinic'),
+    # path('record-dashboard/', views.RecordDashboardView.as_view(), name='record_dash'),
+    # path('assign-clinic/<int:pk>/', views.AssignClinicView.as_view(), name='assign_clinic'),
 
-    # Payment Clerk URLs
-    path('revenue/paypoint/<int:handover_id>/', views.PaypointView.as_view(), name='paypoint'),
-    path('revenue/paypoint-dash/', views.PaypointDashboardView.as_view(), name='paypoint_dash'),
+    # # Payment Clerk URLs
+    # path('revenue/paypoint/<int:handover_id>/', views.PaypointView.as_view(), name='paypoint'),
+    # path('revenue/paypoint-dash/', views.PaypointDashboardView.as_view(), name='paypoint_dash'),
 
     # Doctor URLs
 
@@ -56,9 +56,9 @@ urlpatterns = [
     # path('notice/', NoticeView.as_view(), name='notice'),
 
 
-    path('ehr/record/patient/<str:file_no>/',PatientFolderView.as_view(), name='patient_folder'),
-    # path('ehr/record/visit/<str:file_no>/',HandleVisitView.as_view(), name='handle_visit'),
-    path('ehr/record/patient/<str:file_no>/update',UpdatePatientView.as_view(), name='update_patient'),
+    # path('ehr/record/patient/<str:file_no>/',PatientFolderView.as_view(), name='patient_folder'),
+    # # path('ehr/record/visit/<str:file_no>/',HandleVisitView.as_view(), name='handle_visit'),
+    # path('ehr/record/patient/<str:file_no>/update',UpdatePatientView.as_view(), name='update_patient'),
     # path('update-user/<int:pk>/', UpdateUserView.as_view(), name='update_user'),
 
     # path('', include('django.contrib.auth.urls')),

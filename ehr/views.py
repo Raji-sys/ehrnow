@@ -57,49 +57,35 @@ class CustomLoginView(LoginView):
             # return reverse_lazy('profile_folder', args=[self.request.user.username])
 
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class CustomLogoutView(LogoutView):
-    template_name = 'login.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        response = super().dispatch(request, *args, **kwargs)
-        messages.success(request, 'logout successful')
-        return response
-
-
 def reg_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
         redirect_to = '/'
     return user_passes_test(lambda u: not u.is_authenticated or u.is_superuser, login_url=redirect_to)(view_function)
 
 
-# @method_decorator(reg_anonymous_required, name='dispatch')
-# class UserRegistrationView(CreateView):
-#     form_class = CustomUserCreationForm
-#     template_name = 'registration/register.html'
-#     success_url = ""
+@method_decorator(reg_anonymous_required, name='dispatch')
+class UserRegistrationView(CreateView):
+    form_class = CustomUserCreationForm
+    template_name = 'registration/register.html'
 
-#     def form_valid(self, form):
-#         if form.is_valid():
-#             response = super().form_valid(form)
-#             user = User.objects.get(username=form.cleaned_data['username'])
-#             profile_instance = Profile(user=user)
-#             profile_instance.save()
-#             # govapp_instance = GovernmentAppointment(user=user)
-#             # govapp_instance.save()
-#             messages.success(
-#                 self.request, f"Registration for: {user.get_full_name()} was successful")
-#             return response
-#         else:
-#             print("Form errors:", form.errors)
-#             return self.form_invalid(form)
+    def form_valid(self, form):
+        if form.is_valid():
+            response = super().form_valid(form)
+            user = User.objects.get(username=form.cleaned_data['username'])
+            profile_instance = Profile(user=user)
+            profile_instance.save()
+            messages.success(
+                self.request, f"Registration for: {user.get_full_name()} was successful")
+            return response
+        else:
+            print("Form errors:", form.errors)
+            return self.form_invalid(form)
 
-#     def get_success_url(self):
-#         if self.request.user.is_superuser:
-#             pass
-#             # return reverse_lazy('patient')
-#         else:
-#             return reverse_lazy('index')
+    def get_success_url(self):
+        if self.request.user.is_superuser:
+            pass
+        else:
+            return reverse_lazy('login')
 
 
 # @method_decorator(login_required(login_url='login'), name='dispatch')
