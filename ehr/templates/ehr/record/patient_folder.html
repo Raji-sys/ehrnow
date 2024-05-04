@@ -2,8 +2,8 @@
 {% block title %}PATIENT FOLDER{% endblock%}
 
 {% block content %}
-<div class="mt-2 p-4">
-  <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-2">
+<div class="p-2">
+  <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-1">
       {% for message in messages %}
       <div class="">
         <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
@@ -18,13 +18,15 @@
   <div class="text-center rounded-xl p-4 md:p-10 bg-gray-50">
 <!-- start -->
 <!-- top  -->
-<div class="flex justify-center space-x-4">
-      <div>{{ patient.full_name|default_if_none:''}}</div>
-      <div>{{ patient.phone|default_if_none:'' }}</div>
-      <div>{{ patient.gender|default_if_none:'' }}</div>
-      <div>{{ patient.dob|default_if_none:'' }}</div>
+<div class="flex justify-center gap-4 m-4">
+      <div class="text-xs text-gray-700">file no:<span class="text-sm text-green-700 ">{{ patient.file_no|default_if_none:''|upper}}</span></div>
+      <div class="text-xs text-gray-700">name:<span class="text-sm text-green-700 ">{{ patient.full_name|default_if_none:''|upper}}</span></div>
+      <div class="text-xs text-gray-700">phone no:<span class="text-sm text-green-700 ">{{ patient.phone|default_if_none:''|upper }}</span></div>
+      <div class="text-xs text-gray-700">gender:<span class="text-sm text-green-700 ">{{ patient.gender|default_if_none:''|upper }}</span></div>
+      <div class="text-xs text-gray-700">age:<span class="text-sm text-green-700 ">{{ patient.age|default_if_none:''|upper }}</span></div>
     </div>
-    <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+    <ul class="text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+
       <li><a href="#" class="rounded-lg ">VISITS</a></li>
       <li><a href="#" class="rounded-lg ">PAYMENT</a></li>
       <li><a href="#" class="rounded-lg ">VITAL SIGNS</a></li>
@@ -53,11 +55,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -76,11 +78,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -99,11 +101,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -122,11 +124,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -145,11 +147,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -168,11 +170,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -191,11 +193,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -214,11 +216,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -237,11 +239,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -260,11 +262,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -283,11 +285,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>
@@ -306,11 +308,11 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              <!-- {% for in  %} -->
+              
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
               </tr>
-              <!-- {% endfor %} -->
+
             </tbody>
           </table>
         </div>

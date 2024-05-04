@@ -69,28 +69,6 @@ class Profile(models.Model):
             return f"{self.full_name()}"
 
 
-class Clinic(models.Model):
-    clinics=(
-        ('A & E','A & E'),
-        ('SOPD','SOPD'),
-        ('SPINE SOPD','SPINE SOPD'),
-        ('GOPD','GOPD'),
-        ('NHIS','NHIS'),
-        ('DENTAL','DENTAL'),
-        ('O & G','O & G'),
-        ('UROLOGY','UROGOLY'),
-        ('DERMATOLOGY','DERMATOLOGY'),
-        ('PAEDIATRY','PAEDIATRY'))
-    name = models.CharField(choices=clinics, null=True, blank=True, max_length=200)
-
-    def get_absolute_url(self):
-        return reverse('clinic_details', args=[self.name])
-
-    def __str__(self):
-        if self.name:
-            return f"{self.name}"
-        
-
 class PatientData(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
@@ -126,7 +104,9 @@ class PatientData(models.Model):
     # nok_photo = models.ImageField('first next of kin photo', null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
-
+    class Meta:
+        verbose_name_plural = 'patients data'
+    
     def save(self, *args, **kwargs):
         if not self.file_no:
             last_instance = self.__class__.objects.order_by('file_no').last()
@@ -142,15 +122,15 @@ class PatientData(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('file_details', args=[self.file_no])
+        return reverse('patient_details', args=[self.file_no])
 
     def full_name(self):
-        return f"{self.title} {self.first_name()} {self.last_name} - {self.other_name}"
+        return f"{self.title} {self.first_name} {self.last_name} {self.other_name}"
 
     def __str__(self):
-        if self.file_no:
-            return f"{self.full_name()}"
-
+        return self.full_name()
+    
+        
     def age(self):
         today = date.today()
         if self.dob:
@@ -165,15 +145,41 @@ class PatientData(models.Model):
             return today.month == self.dob.month and today.day == self.dob.day
         return False
 
+class Clinic(models.Model):
+    clinics=(('A & E','A & E'),('SOPD','SOPD'),('SPINE SOPD','SPINE SOPD'),('GOPD','GOPD'),('NHIS','NHIS'),('DENTAL','DENTAL'),
+        ('O & G','O & G'),('UROLOGY','UROGOLY'),('DERMATOLOGY','DERMATOLOGY'),('PAEDIATRY','PAEDIATRY'))
+    name = models.CharField(choices=clinics, null=True, blank=True, max_length=200, default='A & E')
+
+    def get_absolute_url(self):
+        return reverse('clinic_details', args=[self.name])
+
+    def __str__(self):
+        if self.name:
+            return f"{self.name}"
+
+
+class ServiceType(models.Model):
+    name = models.CharField('TYPE OF SERVICE',max_length=200)
+    def __str__(self):
+        return self.name
+    class Meta:
+        verbose_name_plural = 'hospital services'
+
+class Services(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    type=models.ForeignKey(ServiceType,null=True, on_delete=models.CASCADE)
+    name=models.CharField(max_length=100, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+
+    def get_absolute_url(self):
+        return reverse('pay_details', args=[self.user])
 
 class Paypoint(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    # status=models.BooleanField(default=False)
     service=models.CharField(max_length=100, null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'),('paid', 'Paid'),], default='pending')
-    # created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -213,7 +219,7 @@ class Appointment(models.Model):
 
 class VitalSigns(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vatal_signs')
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vital_signs')
     body_temperature=models.CharField(max_length=10, null=True, blank=True)
     pulse_rate=models.CharField(max_length=10, null=True, blank=True)
     respiration_rate=models.CharField(max_length=10, null=True, blank=True)

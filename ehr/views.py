@@ -275,7 +275,7 @@ class AuditView(TemplateView):
 # Mixins
 class RecordRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.groups.filter(name='Record').exists()
+        return self.request.user.groups.filter(name='record').exists()
 
 class RevenueRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
@@ -305,7 +305,7 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
     
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientFolderView(DetailView):
-    template_name = 'ehr/patient/patient_folder.html'
+    template_name = 'ehr/record/patient_folder.html'
     model = PatientData
  
     def get_object(self, queryset=None):
@@ -317,10 +317,11 @@ class PatientFolderView(DetailView):
         return obj
    
     def get_context_data(self, **kwargs):
-        context=super().get_context_data(**kwargs)
-        patient=self.get_object()
-        context['vitals']=patient.vital_signs.all().order_by('-created')
-        context['clinical_notes']=patient.clinical_notes.all().order_by('-created')
+        context = super().get_context_data(**kwargs)
+        patient = self.get_object()
+        context['patient'] = patient
+        context['vitals'] = patient.vital_signs.all().order_by('-updated')
+        context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
         return context
     
 
@@ -332,7 +333,7 @@ class UpdatePatientView(UpdateView):
 
     def get_success_url(self):
         messages.success(self.request, 'Patient Information Updated Successfully')
-        return self.get_absolute_url()
+        return self.object.get_absolute_url()
 
     def form_valid(self, form):
         if form.is_valid():
@@ -353,15 +354,14 @@ class PatientListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        patients = super().get_queryset().order_by('-created')
+        patients = super().get_queryset().order_by('-updated')
         patient_filter = PatientFilter(self.request.GET, queryset=patients)
         return patient_filter.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         total_patient = self.get_queryset().count()
-        context['patientFilter'] = PatientFilter(
-            self.request.GET, queryset=self.get_queryset())
+        context['patientFilter'] = PatientFilter(self.request.GET, queryset=self.get_queryset())
         context['total_patient'] = total_patient
         return context
     
@@ -389,7 +389,7 @@ class RecordDashboardView(RecordRequiredMixin, ListView):
     context_object_name = 'handovers'
 
     def get_queryset(self):
-        return PatientHandover.objects.filter(status__in=['waiting_for_clinic_assignment', 'waiting_for_vital_signs'])
+        return PatientHandover.objects.filter(status__in=['waiting_for_payment'])
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -406,7 +406,6 @@ class AssignClinicView(RecordRequiredMixin, UpdateView):
         handover.save()
         messages.success(self.request, 'Patient assigned to the clinic successfully.')
         return redirect('record_dash')
-
 
 
 # Views for Payment Clerk
@@ -537,4 +536,3 @@ class ConsultationRoomView(DoctorRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
-    

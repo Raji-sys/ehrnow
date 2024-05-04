@@ -36,8 +36,8 @@ urlpatterns = [
  
     # Receptionist URLs
     path('record/create-patient/', PatientCreateView.as_view(), name='new_patient'),
-    path('record/patientlist/', PatientListView.as_view(), name='patientlist'),
-    path('record/patient/<str:file_no>/',PatientFolderView.as_view(), name='patient_folder'),
+    path('record/patient-list/', PatientListView.as_view(), name='patient_list'),
+    path('record/patient/<str:file_no>/',PatientFolderView.as_view(), name='patient_details'),
     path('record/patient/update-patient/<int:pk>/',UpdatePatientView.as_view(), name='update_patient'),
     path('record/patient/follow-up/<str:file_no>/', HandleVisitView.as_view(), name='follow_up'),
 

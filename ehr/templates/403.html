@@ -1,17 +1,21 @@
 {% extends "base.html" %}
-{% block title %}ACCESS DENIED {% endblock %}
+{% block title %}ACCESS DENIED{% endblock %}
 {% load static %}
 {% block content %}
-    <div class="">
-        <i class=""></i>
-    <p class="">
+  <div class="flex justify-center rounded-2xl">
+    <div class="mt-32 shadow-2xl mx-auto bg-white p-10 rounded-xl text-center">
+        <i class="fa-solid fa-lock fa-10x text-rose-800"></i>
+    <p class=" text-rose-800 font-bold text-2xl uppercase text-center">
       ACCESS DENIED! 
     </p>
-    <p class="">
-       <span class="">
+    <p class="text-green-700 text-2xl">Oops</p>
+    <p class="text-md font-semibold mt-6 border-t-2 border-zinc-700">
+
+       <span class="text-cyan-800 font-bold text-xl uppercase">
            {{request.user}},
        </span> 
-        YOU DO NOT HAVE PERMISSION TO VIEW THIS PAGE
+        YOU DO NOT HAVE PERMISSION TO ACCESS THIS PAGE
     </p>
+  </div>
   </div>
 {% endblock %}
