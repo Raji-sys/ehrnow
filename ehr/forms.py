@@ -95,7 +95,7 @@ class VitalSignsForm(forms.ModelForm):
 class ClinicalNoteForm(forms.ModelForm):
     class Meta:
         model = ClinicalNote
-        fields = ['notes', 'diagnosis', 'phatology','radiology','prescription']
+        fields = ['note', 'diagnosis', 'phatology','radiology','prescription']
 
     def __init__(self, *args, **kwargs):
         super(VitalSignsForm, self).__init__(*args, **kwargs)

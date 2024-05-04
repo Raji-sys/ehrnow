@@ -145,11 +145,11 @@ class PatientData(models.Model):
         return reverse('file_details', args=[self.file_no])
 
     def full_name(self):
-        return f"{self.title} {self.user.get_full_name()} {self.other_name} - {self.file_no}"
+        return f"{self.title} {self.first_name()} {self.last_name} - {self.other_name}"
 
     def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
+        if self.file_no:
+            return f"{self.full_name()}"
 
     def age(self):
         today = date.today()
@@ -245,7 +245,7 @@ class ClinicalNote(models.Model):
     """
     diagnosis = models.CharField(max_length=300, null=True, blank=True)
     prescription = models.CharField(max_length=300, null=True, blank=True)
-    Phatology = models.CharField(max_length=300, null=True, blank=True)
+    phatology = models.CharField(max_length=300, null=True, blank=True)
     radiology = models.CharField(max_length=300, null=True, blank=True)
     """
     a remainder for later

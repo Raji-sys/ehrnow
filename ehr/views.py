@@ -142,7 +142,7 @@ class UpdateUserView(UpdateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class UpdateProfileView(UpdateView):
     model = Profile
-    template_name = 'update-profile.html'
+    template_name = 'update_profile.html'
     form_class = ProfileForm
 
     def get_success_url(self):
@@ -287,7 +287,7 @@ class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 
 # Views for Record officer
-class PatientVisitView(RecordRequiredMixin, CreateView):
+class PatientCreateView(RecordRequiredMixin, CreateView):
     model = PatientData
     form_class = PatientForm
     template_name = 'ehr/record/new_patient.html'
@@ -327,16 +327,12 @@ class PatientFolderView(DetailView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class UpdatePatientView(UpdateView):
     model = PatientData
-    template_name = 'ehr/record/patient/update-profile.html'
+    template_name = 'ehr/record/update_patient.html'
     form_class = PatientForm
-    success_url = reverse_lazy('patient_folder')
 
     def get_success_url(self):
-        file_number = self.object.file_no
-        messages.success(
-            self.request, 'Patient Information Updated Successfully'
-        )
-        return reverse_lazy('patient_folder', kwargs={'file_no': file_number})
+        messages.success(self.request, 'Patient Information Updated Successfully')
+        return self.get_absolute_url()
 
     def form_valid(self, form):
         if form.is_valid():
@@ -352,7 +348,7 @@ class UpdatePatientView(UpdateView):
 
 class PatientListView(ListView):
     model=PatientData
-    template_name='patient/patient_list.html'
+    template_name='ehr/record/patient_list.html'
     context_object_name='patients'
     paginate_by = 10
 
