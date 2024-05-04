@@ -51,7 +51,20 @@ class ProfileForm(forms.ModelForm):
 class PatientForm(forms.ModelForm):
     class Meta:
         model = PatientData
-        fields = ['last_name','first_name','other_name']
+        # fields = ['last_name','first_name','other_name']
+        exclude = ['file_no','user','updated']
+        widgets = {
+            'zone': forms.Select(attrs={'id': 'id_zone'}),
+            'state': forms.Select(attrs={'id': 'id_state'}),
+            'lga': forms.Select(attrs={'id': 'id_lga'}),
+            'dob': forms.DateInput(attrs={'type': 'date'})
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super(PatientForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class VisitForm(forms.ModelForm):
@@ -65,18 +78,28 @@ class PaypointForm(forms.ModelForm):
         model = Paypoint
         fields = '__all__'
 
+
 class VitalSignsForm(forms.ModelForm):
     class Meta:
         model = VitalSigns
         fields = ['body_temperature', 'pulse_rate', 'weight']
-
-        # widgets = {
-        #     'date_obtained': forms.DateInput(attrs={'type': 'date'}),
-        # }
 
     def __init__(self, *args, **kwargs):
         super(VitalSignsForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'rounded shadow-lg hover:border-green-400 focus:border-green-800'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
+
+class ClinicalNoteForm(forms.ModelForm):
+    class Meta:
+        model = ClinicalNote
+        fields = ['notes', 'diagnosis', 'phatology','radiology','prescription']
+
+    def __init__(self, *args, **kwargs):
+        super(VitalSignsForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})

@@ -19,10 +19,10 @@
     <p>{{form.errors}}</p>
 </div>
     {% endif %}
-        <div class="max-w-6xl mx-auto rounded-xl p-4 shadow-stone-700 shadow-lg bg-blue-50">
+        <div class="max-w-6xl mx-auto rounded-xl p-4  shadow-lg bg-blue-50">
     <div class="flex justify-between m-1">
       <div class="">
-          <span class="shadow-lg shadow-stone-900 gap-4 bg-blue-900 text-white uppercase max-sm:text-lg text-sm border-b-2 border-blue-900 py-2 px-4 rounded-xl mx-2 w-fit">total staff
+          <span class="shadow-md  gap-4 bg-blue-900 text-white uppercase max-sm:text-lg text-sm border-b-2 border-blue-900 py-4 px-4 rounded-md mx-2 w-fit">total staff
               <span class=" shadow-white text-sm p-1 rounded-full bg-white text-blue-900">{{total_profiles}}</span>
                   {% if request.GET.urlencode %}
                   <span>
@@ -39,10 +39,10 @@
               <label for="{{field.id_for_label}}" class="inline">{{ field.label_tag }}</label>
               <input type="field.field.widget.input_type" name="{{field.name}}"
               class="text-center text-sm focus:outline-none w-fit text-blue-950 p-2
-              rounded shadow-lg shadow-stone-900 border-blue-900 border"
+              rounded shadow-lg  border-blue-900 border"
               {%if field.value%} value="{{field.value}}"{%endif%}> 
               {% endfor %}
-              <button type="submit" class="shadow-lg shadow-stone-900 w-fit p-3 focus:opacity-10 uppercase border-indigo-500 focus:border-blue-600 bg-blue-900 text-white rounded hover:border-blue-700 ">
+              <button type="submit" class="shadow-lg  w-fit p-3 focus:opacity-10 uppercase border-indigo-500 focus:border-blue-600 bg-blue-900 text-white rounded hover:border-blue-700 ">
                   <i class="fa-solid fa-search fa-xl "></i>
               </button>
           </div>
@@ -73,22 +73,16 @@
               <td class="px-6 py-4 whitespace-nowrap">
                   {{forloop.counter}}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{ p.full_name|default_if_none:'' }}
+              <td class="whitespace-nowrap">
+               <a href="{{p.get_absolute_url}}">
+                 {{ p.full_name|default_if_none:'' }}
+               </a>
               </td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="whitespace-nowrap">
               {{ p.phone|default_if_none:'' }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="whitespace-nowrap">
               {{ p.department|default_if_none:'' }}
-            </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-              <span class="space-x-4">
-                  <a href="{{p.get_absolute_url}}" class="text-blue-500 hover:text-blue-600"><i class="fa-solid fa-folder-open fa-2xl text-blue-800"></i></a>
-              </span>
-            </td>
-            <td>
-              
             </td>
           </tr>
           {% empty %}

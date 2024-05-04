@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from .models import *
 from .forms import *
 from .filters import *
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 from io import BytesIO
 from django.template.loader import get_template
@@ -290,17 +291,7 @@ class PatientVisitView(RecordRequiredMixin, CreateView):
     model = PatientData
     form_class = PatientForm
     template_name = 'ehr/record/new_patient.html'
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        file_no = self.request.GET.get('file_no')
-        if file_no:
-            try:
-                patient = PatientData.objects.get(file_no=file_no)
-                kwargs['instance'] = patient
-            except PatientData.DoesNotExist:
-                pass
-        return kwargs
+    success_url=reverse_lazy("record_dash")
 
     def form_valid(self, form):
         patient = form.save()
@@ -308,47 +299,28 @@ class PatientVisitView(RecordRequiredMixin, CreateView):
         visit.save()
         handover = PatientHandover(patient=patient, status='waiting_for_payment')
         handover.save()
+        messages.success(self.request,'Patient created successfully')
+        return super().form_valid(form)
 
-        if 'file_no' in self.request.GET:
-            messages.success(self.request, 'Patient visit created successfully. Please hand over to the paypoint.')
-        else:
-            messages.success(self.request, 'New patient created successfully. Please hand over to the paypoint.')
-
-        return redirect('record_dash')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        file_no = self.request.GET.get('file_no')
-        if file_no:
-            try:
-                patient = PatientData.objects.get(file_no=file_no)
-                context['is_new_visit'] = True
-            except PatientData.DoesNotExist:
-                context['is_new_visit'] = False
-        else:
-            context['is_new_visit'] = False
-        return context
-
+    
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientFolderView(DetailView):
     template_name = 'ehr/patient/patient_folder.html'
     model = PatientData
-
+ 
     def get_object(self, queryset=None):
-        if self.request.user.is_superuser or self.request.user.is_staff:
-            file_number = self.kwargs.get('file_no')
-            return get_object_or_404(PatientData, file_no=file_number)
-        else:
-            return None
-
+        obj = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        user = self.request.user
+        allowed_groups = ['nurse', 'doctor', 'record', 'pathologist', 'pharmacist']
+        if not any(group in user.groups.values_list('name', flat=True) for group in allowed_groups):
+            raise PermissionDenied()
+        return obj
+   
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        patient = context['object']
-
-        vitals = VitalSigns.objects.filter(patient=patient.file_no)
-
-        context['vitals'] = vitals
-        context['VitalSignsform'] = VitalSignsForm()
+        context=super().get_context_data(**kwargs)
+        patient=self.get_object()
+        context['vitals']=patient.vital_signs.all().order_by('-created')
+        context['clinical_notes']=patient.clinical_notes.all().order_by('-created')
         return context
     
 
@@ -378,6 +350,43 @@ class UpdatePatientView(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
     
 
+class PatientListView(ListView):
+    model=PatientData
+    template_name='patient/patient_list.html'
+    context_object_name='patients'
+    paginate_by = 10
+
+    def get_queryset(self):
+        patients = super().get_queryset().order_by('-created')
+        patient_filter = PatientFilter(self.request.GET, queryset=patients)
+        return patient_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_patient = self.get_queryset().count()
+        context['patientFilter'] = PatientFilter(
+            self.request.GET, queryset=self.get_queryset())
+        context['total_patient'] = total_patient
+        return context
+    
+
+class HandleVisitView(RecordRequiredMixin, CreateView):
+    model = Visit
+    form_class = VisitForm
+    template_name = 'ehr/record/handle_visit.html'
+
+    def form_valid(self, form):
+        visit = form.save(commit=False)
+        patient = visit.patient
+        clinic = visit.clinic
+        handover = PatientHandover(patient=patient, clinic=clinic,status='waiting_for_payment')
+        handover.save()
+
+        messages.success(self.request, 'Patient handed over for payment.')
+        return redirect('record_dashboard')
+
+
+
 class RecordDashboardView(RecordRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'ehr/record/record_dash.html'
@@ -403,29 +412,6 @@ class AssignClinicView(RecordRequiredMixin, UpdateView):
         return redirect('record_dash')
 
 
-# class HandleVisitView(RecordRequiredMixin, CreateView):
-#     model = Visit
-#     form_class = VisitForm
-#     template_name = 'ehr/record/handle_visit.html'
-
-#     def form_valid(self, form):
-#         visit = form.save(commit=False)
-#         patient = visit.patient
-#         clinic = visit.clinic
-
-#         handover = PatientHandover.objects.create(
-#             patient=patient,
-#             clinic=clinic,
-#             status='waiting_for_payment'
-#         )
-
-#         messages.success(self.request, 'Patient handed over for payment.')
-#         return redirect('record_dashboard')
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['is_new_visit'] = True
-#         return context
 
 # Views for Payment Clerk
 class PaypointView(RevenueRequiredMixin, FormView):
