@@ -1,0 +1,113 @@
+{%extends "base.html" %}
+{% block title %}profile{% endblock%}
+
+{% block content %}
+<div class="text-black text-center p-2 rounded-xl mt-2 bg-white shadow-2xl shadow-black w-fit mx-auto">
+  <span class="text-md font-bold">{{profile.user.get_full_name|default_if_none:''|upper}} 
+    <a href="{%url 'update_user' profile.user.pk %}">update user</a>
+  </span>
+    {%if not profile.department %}
+    <a href="{%url 'doc' profile.user.pk %}" class="text-cyan-900 text-lg font-semibold">start documentation</a>
+    {%endif%}
+</div>
+
+     <div class="flex justify-center text-md text-blue-500">
+        {% for message in messages %}
+      <div class="mt-4">
+        {%if message %}
+           <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
+            <a href class="uk-alert-close font-bold" uk-close></a>
+            <p class="text-green-700 font-semibold">{{ message }}</p>
+            </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+            </div>
+      <ul class="uk-flex-center mt-8 text-sm text-white rounded-xl" uk-tab>
+
+      <li>
+        <a class="p-2 shadow-lg shadow-black justify-center bg-teal-700 m-2 text-sm rounded-xl" href="#">
+      <i class="fa-solid fa-circle-info fa-2xl text-white"></i>&nbsp;<span class="text-white">PERSONAL INFO</span></a>
+      </li>
+
+      <li><a class="p-2 shadow-lg shadow-black justify-center bg-orange-600 m-2 text-sm rounded-xl text-white" href="#">
+      <i class="fa-solid fa-file-contract fa-2xl text-white"></i>&nbsp;<span class="text-white">GOVT APPT</span></a>
+       </li>
+
+
+    </ul>
+
+  
+  <ul class="uk-switcher uk-margin-medium-top">
+    <!-- bio data start -->
+    <li class="">
+  <div class="text-gray-800 max-sm:p-2 p-1 rounded-xl mx-auto">
+    <table class="table-auto mt-0 justify-center max-sm:flex flex p-2">
+      <h1 class="text-teal-800 text-2xl text-center p-2 mt-2">PERSONAL INFORMATION</h1>
+<tbody class="shadow-2xl shadow-black text-center text-gray-800 rounded-lg max-sm:p-10 p-4 border-t border-cyan-800 overflow-x-auto mx-0 uppercase bg-white">
+  <tr class="text-sm bg-teal-800 text-white">
+  <th scope="col" class="border-2 border-cyan-800 p-2">FILE NUMBER</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">SEX</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">DATE OF BIRTH</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">PHONE NUMBER</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">MARITAL STATUS</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">STATE OF ORIGIN</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">LGA</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">SENATORIAL DISTRICT</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">RELIGION</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">RESIDENTIAL ADDRESS</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">PERMANENT HOME ADDRESS</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">GEO-POLITICAL ZONE</th>
+  <th scope="col" class="border-2 border-cyan-800 p-2 ">UPDATE</th>  
+</tr>
+<tr class="text-sm text-gray-800">
+<td scope="col" class="border-2 border-cyan-800 p-2">{{profile.file_no|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.gender|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.dob|date:'d-M-Y'|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.phone|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.marital_status|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.state|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.lga|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.sen_dist|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.religion|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.res_add|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.per_res_addr|default_if_none:''|upper}}</td>
+<td class="border-2 p-2 border-cyan-800 text-center">{{profile.zone|default_if_none:''|upper}}</td>
+<td class="border-r-2 border-cyan-800 border-b-2 flex flex-row justify-center p-7 gap-2"> 
+  <a class="justify-center text-cyan-900 " href ="{% url 'update_profile' profile.pk %}"><i class="fa-solid fa-square-pen fa-2xl"></i></a>
+  <a class="justify-center text-blue-800 " href="{%url 'update_user' profile.user.pk %}"><i class="fa-solid fa-user-circle fa-2xl"></i></a>
+</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    </li>
+<!-- bio data end -->
+
+<!-- government appointment start -->
+    <li class="">
+        <div  class="text-gray-800 max-sm:p-2 p-1 rounded-xl">
+        <table class="table-auto mt-0 justify-center max-sm:flex flex p-2">
+      <h1 class="text-teal-800 text-2xl text-center p-2 mt-2">GOVERNMENT APPOINTMENT</h1>
+<tbody class="shadow-2xl shadow-black text-centertext-gray-800 rounded-lg max-sm:p-10 p-4 border-t border-orange-800 overflow-x-auto mx-0 uppercase bg-white">
+  <tr class="text-sm bg-orange-600 text-white">
+    <th scope="col" class="border-2 border-orange-800 p-2">department</th>
+    <th scope="col" class="border-2 border-orange-800 p-2 ">current post</th>
+    <th scope="col" class="border-2 border-orange-800 p-2">update</th>
+</tr>
+<tr class="text-sm">
+<td class="border-2 border-orange-800 p-2 text-center">{{govapp.department|default_if_none:''}}</td>
+<td class="border-2 border-orange-800 p-2 text-center">{{govapp.cpost|default_if_none:''}}</td>
+<td class="border-r-2 border-orange-800 border-b-2 flex flex-row justify-center gap-2 p-2"> 
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+    </li>
+<!-- government appointment start -->
+
+
+  </ul>
+  </div>
+{% endblock %}

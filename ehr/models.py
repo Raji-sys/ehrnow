@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.utils import timezone
 from datetime import datetime
+from django.core.exceptions import ImproperlyConfigured
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
@@ -42,14 +44,17 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('profile_details', args=[self.user])
-
+        if self.user.username:
+            return reverse('profile_details', args=[self.user.username])
+        else:
+            raise ImproperlyConfigured("User must have a non-empty username")
+    
     def full_name(self):
-        return f"{self.title} {self.user.get_full_name()} {self.middle_name}"
+        return f"{self.user.get_full_name()}"
 
     def __str__(self):
         if self.user:
-            return f"{self.full_name}"
+            return f"{self.full_name()}"
 
 
 class Clinic(models.Model):

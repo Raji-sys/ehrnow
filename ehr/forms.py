@@ -12,6 +12,42 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ['username', 'first_name',
                   'last_name', 'password1', 'password2']
         
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name']
+
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
+
+class ProfileForm(forms.ModelForm):
+    def clean_dob(self):
+        dob = self.cleaned_data.get('dob')
+        if self.instance.dob and dob != self.instance.dob:
+            raise forms.ValidationError('this action is forbidden, {} is the default'.format(
+                self.instance.dob.strftime("%m-%d-%Y")))
+        return dob
+
+    class Meta:
+        model = Profile
+        fields = '__all__'
+        widgets = {
+            'dob': forms.DateInput(attrs={'type': 'date'})
+        }
+        exclude = ['user', 'created', 'updated']
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
 class PatientForm(forms.ModelForm):
     class Meta:
         model = PatientData

@@ -5,7 +5,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
 from .models import *
 from .forms import *
@@ -82,35 +82,123 @@ class UserRegistrationView(CreateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        if self.request.user.is_superuser:
-            pass
+        return reverse_lazy('get_started')
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class DocumentationView(UpdateView):
+    model = User
+    template_name = 'doc.html'
+    form_class = UserForm
+    success_url = reverse_lazy('get_started')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profileform'] = ProfileForm(instance=self.object.profile)
+        return context
+
+    def form_valid(self, form):
+        userform = UserForm(self.request.POST, instance=self.object)
+        profileform = ProfileForm(
+            self.request.POST, instance=self.object.profile)
+
+        if userform.is_valid() and profileform.is_valid():
+            userform.save()
+            profileform.save()
+            messages.success(
+                self.request, f'Documentation successful!{self.request.user.last_name}')
+            return HttpResponseRedirect(self.get_success_url())
         else:
-            return reverse_lazy('login')
+            messages.error(
+                self.request, 'Please correct the errors to proceed')
+            return self.form_invalid(form)
+        
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class UpdateUserView(UpdateView):
+    model = User
+    template_name = 'update_user.html'
+    form_class = UserForm
+
+    def get_success_url(self):
+        messages.success(
+            self.request, 'Staff Information Updated Successfully')
+        return self.object.profile.get_absolute_url()
+
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'error updating staff information')
+        return self.render_to_response(self.get_context_data(form=form))
 
 
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class UpdateUserView(UpdateView):
-#     model = User
-#     template_name = 'patient/update-user.html'
-#     form_class = UserForm
-#     success_url = reverse_lazy('profile_folder')
 
-#     def get_success_url(self):
-#         messages.success(
-#             self.request, 'patient Information Updated Successfully')
-#         return reverse_lazy('profile_folder', kwargs={'username': self.object.username})
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class UpdateProfileView(UpdateView):
+    model = Profile
+    template_name = 'update-profile.html'
+    form_class = ProfileForm
 
-#     def form_valid(self, form):
-#         if form.is_valid():
-#             form.save()
-#             return super().form_valid(form)
-#         else:
-#             return self.form_invalid(form)
+    def get_success_url(self):
+        messages.success(self.request, 'Staff Information Updated Successfully')
+        return self.object.profile.get_absolute_url()
+    
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
 
-#     def form_invalid(self, form):
-#         messages.error(self.request, 'error updating patient information')
-#         return self.render_to_response(self.get_context_data(form=form))
+    def form_invalid(self, form):
+        messages.error(self.request, 'error updating staff information')
+        return self.render_to_response(self.get_context_data(form=form))
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ProfileDetailView(DetailView):
+    template_name = 'profile_details.html'
+    model = Profile
+
+    def get_object(self, queryset=None):
+        if self.request.user.is_superuser:
+            username_from_url = self.kwargs.get('username')
+            user = get_object_or_404(User, username=username_from_url)
+        else:
+            user = self.request.user
+        return get_object_or_404(Profile, user=user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = context['object']
+
+        return context
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class StaffListView(ListView):
+    model = Profile
+    template_name = "stafflist.html"
+    context_object_name = 'profiles'
+    paginate_by = 10
+
+    def get_queryset(self):
+        profiles = super().get_queryset().order_by('-user_id')
+        staff_filter = StaffFilter(self.request.GET, queryset=profiles)
+        return staff_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_profiles = self.get_queryset().count()
+        context['staffFilter'] = StaffFilter(self.request.GET, queryset=self.get_queryset())
+        context['total_profiles'] = total_profiles
+        return context
+    
 class IndexView(TemplateView):
     template_name = "index.html"
 
@@ -118,6 +206,10 @@ class IndexView(TemplateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class GetStartedView(TemplateView):
     template_name = "get_started.html"
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class StaffDashboardView(TemplateView):
+    template_name = "staff.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

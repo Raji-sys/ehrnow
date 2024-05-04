@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}STAFF DASHBOARD{% endblock %}
+
+{% block content %}
+<section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-2">
+  {% for message in messages %}
+  <div class="">
+    <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
+      <a href class="uk-alert-close font-bold" uk-close></a>
+      <p class="text-green-700 font-semibold">{{ message }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+<div class=" py-10">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-black shadow-lg  ">
+    <div class="p-8 md:p-4 text-center grid grid-cols-2 gap-6">
+      <div>
+        <a href="{% url 'register' %}" class="block">
+          <div class=" hover:bg-white hover:text-gray-600 text-white bg-emerald-500  rounded-lg shadow-lg p-8 border-2 border-white transition duration-300">
+            <div class=" font-semibold uppercase text-sm md:text-base">REGISTER NEW STAFF</div>
+          </div>
+        </a>
+      </div>
+      <div>
+        <a href="{% url 'stafflist' %}" class="block">
+          <div class="bg-blue-500 hover:bg-white text-white hover:text-gray-600 rounded-lg shadow-lg p-8 border-2 border-white transition duration-300">
+            <div class="font-semibold uppercase text-sm md:text-base">staff list</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+{% endblock %}

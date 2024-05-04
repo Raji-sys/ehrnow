@@ -3,14 +3,15 @@
 {% block title %}LOGGED OUT{% endblock %}
 
 {% block content %}
-<div class="bgd uk-background-cover uk-background-fixed uk-height-viewport uk-panel uk-flex uk-flex-center uk-flex-middle">
-  <style>
-      .bgd{background-image: url('{% static "images/4.jpg" %}');}
-  </style>
+<div class="uk-background-cover uk-background-fixed uk-height-viewport uk-panel uk-flex uk-flex-center uk-flex-middle">
     <div class="shadow-md mx-auto bg-white p-20 rounded-xl text-center shadow-cyan-800">
-    <p class=" text-cyan-800 font-bold text-lg uppercase text-center">
-      logout successfully
-    </p>
+
+    <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
+      <a href class="uk-alert-close font-bold" uk-close></a>
+      <p class=" text-cyan-800 font-bold text-lg uppercase text-center">
+        logout successfully
+      </p> 
+         </div>
     <a href="{% url "login" %}" class="">
       <div class="text-sm p-4 bg-cyan-900 rounded-xl shadow-2xl focus:opacity-10 uppercase text-white">login</div>
   </a>

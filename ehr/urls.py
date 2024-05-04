@@ -10,6 +10,13 @@ urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('get-started/', GetStartedView.as_view(), name='get_started'),
     path('',include('django.contrib.auth.urls')),
+
+    path('documentation/<int:pk>/', DocumentationView.as_view(), name='doc'),
+    path('staff/', StaffDashboardView.as_view(), name='staff'),
+    path('stafflist/', StaffListView.as_view(), name='stafflist'),
+    path('profile/<str:username>/',ProfileDetailView.as_view(), name='profile_details'),
+    path('update-user/<int:pk>/', UpdateUserView.as_view(), name='update_user'),
+    path('update-profile/<int:pk>/',UpdateProfileView.as_view(), name='update_profile'),
     
     path('get-started/medical-record', MedicalRecordView.as_view(), name='medical_record'),
     path('get-started/revenue', RevenueView.as_view(), name='revenue'),

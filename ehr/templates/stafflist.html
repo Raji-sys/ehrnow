@@ -1,0 +1,128 @@
+{% extends 'base.html'%}
+{% load static %}
+{%block title%}STAFF LIST{%endblock%}
+{%block content %}
+
+<section class="text-center border-blue-700 p-4 m-2">
+    {% for message in messages %}
+  <div class="mt-2">
+       <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
+        <a href class="uk-alert-close font-bold" uk-close></a>
+        <p class="text-blue-700 font-semibold">{{ message }}</p>
+        </div>
+  </div>
+  {% endfor %}
+</section>
+{% if form.errors %}
+<div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
+    <a href class="uk-alert-close font-bold" uk-close></a>
+    <p>{{form.errors}}</p>
+</div>
+    {% endif %}
+        <div class="max-w-6xl mx-auto rounded-xl p-4 shadow-stone-700 shadow-lg bg-blue-50">
+    <div class="flex justify-between m-1">
+      <div class="">
+          <span class="shadow-lg shadow-stone-900 gap-4 bg-blue-900 text-white uppercase max-sm:text-lg text-sm border-b-2 border-blue-900 py-2 px-4 rounded-xl mx-2 w-fit">total staff
+              <span class=" shadow-white text-sm p-1 rounded-full bg-white text-blue-900">{{total_profiles}}</span>
+                  {% if request.GET.urlencode %}
+                  <span>
+                      <a href="?" class=" p-2 focus:opacity-10  focus:border-blue-600 bg-orange-500text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
+                          <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
+                      </span>
+                      {%endif%}
+                  </span>
+              </div>
+    <div class="text-blue-900">
+      <form method="get" class="text-xs">
+          <div class="text-center">
+              {% for field in staffFilter.form %}
+              <label for="{{field.id_for_label}}" class="inline">{{ field.label_tag }}</label>
+              <input type="field.field.widget.input_type" name="{{field.name}}"
+              class="text-center text-sm focus:outline-none w-fit text-blue-950 p-2
+              rounded shadow-lg shadow-stone-900 border-blue-900 border"
+              {%if field.value%} value="{{field.value}}"{%endif%}> 
+              {% endfor %}
+              <button type="submit" class="shadow-lg shadow-stone-900 w-fit p-3 focus:opacity-10 uppercase border-indigo-500 focus:border-blue-600 bg-blue-900 text-white rounded hover:border-blue-700 ">
+                  <i class="fa-solid fa-search fa-xl "></i>
+              </button>
+          </div>
+      </form>
+  </div>
+  </div>
+    <div class="overflow-x-auto px-4 py-6 md:px-10 m-4">
+      <table class="min-w-full divide-y divide-stone-300">
+        <thead class="bg-blue-50 ">
+          <tr class="text-left uppercase tracking-wider">
+              <th class="">
+                  S/N
+              </th>
+            <th class="">
+              Name
+            </th>
+            <th class="">
+              Phone
+            </th>
+            <th class="">
+              Department
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-stone-300">
+          {% for p in profiles %}
+          <tr class="uppercase text-blue-500 bg-blue-100 hover:bg-blue-200 transition-colors duration-300">
+              <td class="px-6 py-4 whitespace-nowrap">
+                  {{forloop.counter}}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ p.full_name|default_if_none:'' }}
+              </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {{ p.phone|default_if_none:'' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {{ p.department|default_if_none:'' }}
+            </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+              <span class="space-x-4">
+                  <a href="{{p.get_absolute_url}}" class="text-blue-500 hover:text-blue-600"><i class="fa-solid fa-folder-open fa-2xl text-blue-800"></i></a>
+              </span>
+            </td>
+            <td>
+              
+            </td>
+          </tr>
+          {% empty %}
+          <tr class="bg-white text-center">
+            <td colspan="4" class="px-6 py-4 text-center text-blue-500">
+              Not found
+            </td>
+          </tr>
+
+          {% endfor %}
+          <tr class="flex justify-center text-center p-1">
+            <td class="flex justify-center items-center">        
+       <div class="text-center flex justify-center items-center">
+            <span class=" items-center">
+                  {% if page_obj.has_previous %}
+                <a href="?page=1" class="p-2 px-2 rounded-lg bg-blue-900 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-lg"></i></a>
+                <a href="?page={{page_obj.previous_page_number}}" class="p-2 px-2 rounded-lg bg-blue-900 text-white"><i class="fa-solid fa-angle-left fa-lg"></i></a>
+                {% endif %}
+            </span>
+                <span class="text-sm text-indigo-700 m-2">
+                    {{page_obj.number}} of {{page_obj.paginator.num_pages}}
+                </span>
+                <span class="flex item-center">
+                    {% if page_obj.has_next %}
+                    <a href="?page={{page_obj.next_page_number}}" class="p-2 px-2 rounded-lg bg-blue-900 text-white mr-2"><i class="fa-solid fa-angle-right fa-lg"></i></a>
+                    <a href="?page={{page_obj.paginator.num_pages}}" class="p-2 px-2 rounded-lg bg-blue-900 text-white"><i class="fa-solid fa-angle-double-right fa-lg"></i></a>
+                    {% endif %}
+                </span>
+            </div>
+        </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
