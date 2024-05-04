@@ -27,7 +27,17 @@
 
 <body class="bgd h-screen">
   <style>
-      .bgd{background-image: url('{% static "images/4.jpg" %}');}
+	a{
+		text-decoration: none;
+	}
+	a:hover{
+		text-decoration: none;
+	}
+      .bgd{
+		background-image: url('{% static "images/4.jpg" %}');
+		background-repeat: no-repeat;
+		background-size: cover;
+	}
   </style>
 	<header class="bg-emerald-500 p-4 shadow-md border-b-2 border-gray-900 mx-20">
 		<nav class="flex flex-row flex-wrap justify-between">

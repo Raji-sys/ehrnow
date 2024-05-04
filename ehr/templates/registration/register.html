@@ -2,10 +2,7 @@
 {% load static %}
 {% block title %}Create an account{% endblock %}
 {% block content %} 
-<div class="bgd uk-background-cover uk-background-fixed uk-height-viewport uk-panel uk-flex uk-flex-center uk-flex-middle">
-  <style>
-      .bgd{background-image: url('{% static "images/4.jpg" %}');}
-  </style>
+<div class="">
     <div class="uk-overlay rounded-3xl bg-white uk-position-center">
       <section class="text-center border-cyan-700 p-2 m-2">
         {% for message in messages %}
@@ -41,7 +38,7 @@
         <div class="flex justify-center">
           <label for="email">email</label>
         </div>
-        <div class="flex justify-center mb-2">
+        <div class="flex justify-center mb-4">
           <input
             id="email"
             class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
@@ -52,7 +49,7 @@
         <div class="flex justify-center">
           <label for="lname">surname</label>
         </div>
-        <div class="flex justify-center mb-2">
+        <div class="flex justify-center mb-4">
           <input
             class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="text"
@@ -63,7 +60,7 @@
         <div class="flex justify-center">
           <label for="fname">firstname</label>
         </div>
-        <div class="flex justify-center mb-2">
+        <div class="flex justify-center mb-4">
           <input
             class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="text"
@@ -74,7 +71,7 @@
         <div class="flex justify-center">
           <label for="password">password </label>
         </div>
-        <div class="flex justify-center mb-2">
+        <div class="flex justify-center mb-4">
           <input
             class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="password"
@@ -85,7 +82,7 @@
         <div class="flex justify-center">
           <label for="conpassword">confirm password </label>
         </div>
-        <div class="flex justify-center mb-2">
+        <div class="flex justify-center mb-4">
           <input
             class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="password"
@@ -93,7 +90,7 @@
             id="conpassword"
           />
         </div>
-        <div class="flex justify-center mb-2">
+        <div class="flex justify-center mb-4">
           <input
             class="ocus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
             bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl"
