@@ -146,10 +146,12 @@ class PatientData(models.Model):
         return False
 
 class Clinic(models.Model):
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     clinics=(('A & E','A & E'),('SOPD','SOPD'),('SPINE SOPD','SPINE SOPD'),('GOPD','GOPD'),('NHIS','NHIS'),('DENTAL','DENTAL'),
         ('O & G','O & G'),('UROLOGY','UROGOLY'),('DERMATOLOGY','DERMATOLOGY'),('PAEDIATRY','PAEDIATRY'))
     name = models.CharField(choices=clinics, null=True, blank=True, max_length=200, default='A & E')
-
+    team=models.CharField(max_length=200,null=True,blank=True)
+ 
     def get_absolute_url(self):
         return reverse('clinic_details', args=[self.name])
 

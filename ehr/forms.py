@@ -76,7 +76,8 @@ class VisitForm(forms.ModelForm):
 class PaypointForm(forms.ModelForm):
     class Meta:
         model = Paypoint
-        fields = ['service','status']
+        # fields = ['service','status']
+        fields = ['status']
 
 
 class VitalSignsForm(forms.ModelForm):

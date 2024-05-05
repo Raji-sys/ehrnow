@@ -291,6 +291,19 @@ class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         return self.request.user.groups.filter(name='doctor').exists()
 
 
+class AssignClinicView(RecordRequiredMixin, UpdateView):
+    model = PatientHandover
+    fields = ['clinic']
+    template_name = 'ehr/record/assign_clinic.html'
+
+    def form_valid(self, form):
+        handover = form.save(commit=False)
+        handover.status = 'waiting_for_consultation'
+        handover.save()
+        messages.success(self.request, 'Patient assigned to the clinic successfully.')
+        return redirect('record_dash')
+
+
 # Views for Record officer
 class PatientCreateView(RecordRequiredMixin, CreateView):
     model = PatientData
@@ -302,6 +315,8 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
         patient = form.save()
         visit = Visit(patient=patient)
         visit.save()
+        clinic = Clinic.objects.create(patient=patient, name='A & E')
+        clinic.save()
         handover = PatientHandover(patient=patient, status='waiting_for_payment')
         handover.save()
         messages.success(self.request,'Patient created successfully')
@@ -409,18 +424,6 @@ class RecordDashboardView(RecordRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         return context
 
-class AssignClinicView(RecordRequiredMixin, UpdateView):
-    model = PatientHandover
-    fields = ['clinic']
-    template_name = 'ehr/record/assign_clinic.html'
-
-    def form_valid(self, form):
-        handover = form.save(commit=False)
-        handover.status = 'waiting_for_consultation'
-        handover.save()
-        messages.success(self.request, 'Patient assigned to the clinic successfully.')
-        return redirect('record_dash')
-
 
 # Views for Payment Clerk
 class PaypointView(RevenueRequiredMixin, FormView):
@@ -439,15 +442,16 @@ class PaypointView(RevenueRequiredMixin, FormView):
         handover_id = self.kwargs.get('handover_id')
         handover = get_object_or_404(PatientHandover, id=handover_id)
         patient = handover.patient
+        
+        new_registration_service = Services.objects.get(name='new registration')
+        # Process payment
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status='paid',
+            service=new_registration_service
+        )
 
-    # Get or create the 'new registration' service
-        service_type, _ = ServiceType.objects.get_or_create(name='new registration')
-        new_registration_service, _ = Services.objects.get_or_create(type=service_type,name='new registration',)
-
-    # Process payment
-        payment = Paypoint.objects.create(patient=patient,status='paid',service=new_registration_service)
-
-    # Update the PatientHandover status to 'waiting_for_vital_signs'
+        # Update the PatientHandover status to 'waiting_for_vital_signs'
         handover.status = 'waiting_for_vital_signs'
         handover.save()
 
