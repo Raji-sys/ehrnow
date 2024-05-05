@@ -162,23 +162,24 @@ class ServiceType(models.Model):
     name = models.CharField('TYPE OF SERVICE',max_length=200)
     def __str__(self):
         return self.name
-    class Meta:
-        verbose_name_plural = 'hospital services'
 
 class Services(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     type=models.ForeignKey(ServiceType,null=True, on_delete=models.CASCADE)
     name=models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'hospital services'
 
     def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
+        return reverse('service_details', args=[self.type])
 
 class Paypoint(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    service=models.CharField(max_length=100, null=True, blank=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+    service=models.ForeignKey(Services,null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'),('paid', 'Paid'),], default='pending')
     updated = models.DateTimeField(auto_now=True)
 
@@ -218,7 +219,6 @@ class Appointment(models.Model):
 
 
 class VitalSigns(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vital_signs')
     body_temperature=models.CharField(max_length=10, null=True, blank=True)
     pulse_rate=models.CharField(max_length=10, null=True, blank=True)
@@ -231,14 +231,7 @@ class VitalSigns(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
-
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
+        return reverse('vitals_details', args=[self.user])
 
 
 class ClinicalNote(models.Model):

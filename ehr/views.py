@@ -224,6 +224,11 @@ class RevenueView(TemplateView):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+class RevenueRecordView(TemplateView):
+    template_name = "ehr/revenue/record_revenue.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class NursingView(TemplateView):
     template_name = "ehr/dashboard/nursing.html"
 
@@ -279,11 +284,11 @@ class RecordRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 class RevenueRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.groups.filter(name='Revenue').exists()
+        return self.request.user.groups.filter(name='revenue').exists()
 
 class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.groups.filter(name='Doctor').exists()
+        return self.request.user.groups.filter(name='doctor').exists()
 
 
 # Views for Record officer
@@ -382,6 +387,15 @@ class HandleVisitView(RecordRequiredMixin, CreateView):
         return redirect('record_dashboard')
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PatientMovementView(ListView):
+    model = PatientHandover
+    template_name = "ehr/record/patient_moves.html"
+
+    def get_queryset(self):
+        status_values = ('waiting_for_payment', 'waiting_for_vital_signs', 'waiting_for_clinic_assignment', 'waiting_for_consultation')
+        return PatientHandover.objects.filter(status__in=status_values)
+
 
 class RecordDashboardView(RecordRequiredMixin, ListView):
     model = PatientHandover
@@ -402,7 +416,7 @@ class AssignClinicView(RecordRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         handover = form.save(commit=False)
-        handover.status = 'waiting_for_vital_signs'
+        handover.status = 'waiting_for_consultation'
         handover.save()
         messages.success(self.request, 'Patient assigned to the clinic successfully.')
         return redirect('record_dash')
@@ -426,10 +440,14 @@ class PaypointView(RevenueRequiredMixin, FormView):
         handover = get_object_or_404(PatientHandover, id=handover_id)
         patient = handover.patient
 
-        # Process payment
-        payment = Paypoint.objects.create(patient=patient, status='paid')
+    # Get or create the 'new registration' service
+        service_type, _ = ServiceType.objects.get_or_create(name='new registration')
+        new_registration_service, _ = Services.objects.get_or_create(type=service_type,name='new registration',)
 
-        # Update the PatientHandover status to 'waiting_for_vital_signs'
+    # Process payment
+        payment = Paypoint.objects.create(patient=patient,status='paid',service=new_registration_service)
+
+    # Update the PatientHandover status to 'waiting_for_vital_signs'
         handover.status = 'waiting_for_vital_signs'
         handover.save()
 
@@ -449,6 +467,7 @@ class PaypointDashboardView(RevenueRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         return context
 
+
 class NursingDeskView(LoginRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'ehr/nurse/nursing_desk.html'
@@ -466,24 +485,36 @@ class NursingDeskView(LoginRequiredMixin, ListView):
 class VitalSignCreateView(CreateView):
     model = VitalSigns
     form_class = VitalSignsForm
-    template_name = 'staff/qual.html'
+    template_name = 'ehr/nurse/vital_signs.html'
+
 
     def form_valid(self, form):
-        if self.request.user.is_superuser:
-            # If the current user is a superuser, use the username from the URL
-            username_from_url = self.kwargs.get('username')
-            user = get_object_or_404(User, username=username_from_url)
-            form.instance.user = user
-        else:
-            # If the current user is not a superuser, use the current user
-            form.instance.user = self.request.user
+        form.instance.user = self.request.user
+        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        self.object = form.save()
+
+        # Update the related PatientHandover object
+        patient_handover = PatientHandover.objects.filter(patient=form.instance.patient).first()
+        if patient_handover:
+            patient_handover.handover_status = 'waiting_for_consultation'
+            patient_handover.status = 'waiting_for_consultation'  # Update the status field
+            patient_handover.save()
 
         return super().form_valid(form)
 
-    def get_success_url(self):
-        messages.success(self.request, 'Vital Signs Added Successfully')
-        return reverse_lazy('patient_folder', kwargs={'username': self.kwargs['username']})
+    def test_func(self):
+        allowed_groups = ['nurse', 'doctor', 'record', 'pathologist', 'pharmacist']
+        return any(group in self.request.user.groups.values_list('name', flat=True) for group in allowed_groups)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        return context
+
+    def get_success_url(self):
+        messages.success(self.request, 'Vitals taken, Patient handed over for consultation.')
+        return reverse_lazy('nursing_station')
+    
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class VitalsUpdateView(UpdateView):
@@ -502,27 +533,6 @@ class VitalsUpdateView(UpdateView):
         messages.error(self.request, 'Error Updating VitalSigns')
         return super().form_invalid(form)
 
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class VitalsDeleteView(DeleteView):
-    model = VitalSigns
-    template_name = 'staff/qual-delete-confirm.html'
-
-    def get_success_url(self):
-        file_number = self.object.file_no
-        messages.success(
-            self.request, 'Patient Information Updated Successfully'
-        )
-        return reverse_lazy('patient_folder', kwargs={'file_no': file_number})
-
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
-        if response.status_code == 302:
-            messages.success(
-                self.request, 'VitalSigns deleted successfully')
-        else:
-            messages.error(self.request, 'Error deleting VitalSigns')
-        return response
 
 
 class ConsultationRoomView(DoctorRequiredMixin, ListView):

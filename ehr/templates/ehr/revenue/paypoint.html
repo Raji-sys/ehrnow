@@ -1,13 +1,44 @@
 {% extends 'base.html'%}
 {% load static %}
-{%block title%}assign clinic{%endblock%}
+{%block title%}NEW REGISTRATION PAYMENT{%endblock%}
+{%block page_title%}<div class="flex justify-center enom">Payment Details</div>{%endblock%}
 {%block content %}
-<h1>Payment Details</h1>
-<p>Handover Id: {{handover.id}}</p>
-<p>Patient: {{patient.name}}</p>
-<form method="post">
+<div class="">
+    <div class="uk-overlay rounded-3xl bg-white uk-position-center">
+        <p>Patient: {{patient}}</p>    
+        <section class="text-center border-cyan-700 p-4 m-2">
+            {% for message in messages %}
+          <div class="mt-2">
+               <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
+                <a href class="uk-alert-close font-bold" uk-close></a>
+                <p class="text-green-700 font-semibold">{{ message }}</p>
+                </div>
+          </div>
+              {% endfor %}
+        </section>
+        {% if form.errors %}
+        <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
+            <a href class="uk-alert-close font-bold" uk-close></a>
+            <p>{{form.errors}}</p>
+        </div>
+            {% endif %}
+  <form method="post" enctype="multipart/form-data" >
     {% csrf_token %}
-    {{form.as_ul}}
-    <button type="submit">submit</button>
-</form>
+    <div class="mb-2 uppercase text-cyan-900 px-10">
+      {% for field in form %}
+      <div class="flex justify-center">
+       <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
+       </div>
+       <div class="flex justify-center mb-6">
+       {{ field }}
+      </div>
+      {%endfor%}
+    </div>
+    <div class="gap-4 flex justify-center align-middle">
+      <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+  bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+    </div>
+    </form>
+    </div>
+    </div>
 {%endblock%}

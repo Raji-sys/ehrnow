@@ -41,18 +41,18 @@ urlpatterns = [
     path('record/patient/update-patient/<int:pk>/',UpdatePatientView.as_view(), name='update_patient'),
     path('record/patient/follow-up/<str:file_no>/', HandleVisitView.as_view(), name='follow_up'),
 
-    path('record-dashboard/', RecordDashboardView.as_view(), name='record_dash'),
-    # path('assign-clinic/<int:pk>/', views.AssignClinicView.as_view(), name='assign_clinic'),
+    path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
+    path('medical-record/patient-movement/record-dashboard/', RecordDashboardView.as_view(), name='record_dash'),
+    path('assign-clinic/<int:pk>/',AssignClinicView.as_view(), name='assign_clinic'),
 
     # # Payment Clerk URLs
-    # path('revenue/paypoint/<int:handover_id>/', views.PaypointView.as_view(), name='paypoint'),
-    # path('revenue/paypoint-dash/', views.PaypointDashboardView.as_view(), name='paypoint_dash'),
+    path('revenue/paypoint-dash/record/', RevenueRecordView.as_view(), name='record_revenue'),
+    path('revenue/paypoint/<int:handover_id>/', PaypointView.as_view(), name='paypoint'),
+    path('revenue/paypoint-dash/', PaypointDashboardView.as_view(), name='paypoint_dash'),
 
-    # Doctor URLs
-
-    # Other URLs for NursingDesk, ConsultationRoom, etc
-
-    # path('patients/', views.PatientListView.as_view(), name='patient'),
+    #Nursing
+    path('nursing/nursing-station/', NursingDeskView.as_view(), name='nursing_station'),
+    path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
 
 
     # path('report/', views.report, name='report'),

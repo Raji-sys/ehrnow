@@ -1,11 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}NURSING{%endblock%}
-
+{%block page_title%}<div class="enom flex justify-center">NURSING STATION</div>{%endblock%}
 {%block content %}
-<div class="uk-container mt-10 p-3 ">
-    <div>
-        <h1 class="enom md:text-6xl text-center bg-gradient-to-r from-green-600 via-stone-500 to-indigo-600 text-transparent bg-clip-text font-semibold">NURSING</h1>
-    </div>
+<div class="md:mt-20 mt-4 p-2 md:mx-20 ">
+            <div class="p-4 text-center mx-20 flex justify-center">
+                <a href="{%url 'nursing_station' %}">
+                  <div class=" hover:bg-white hover:text-gray-600 text-white bg-emerald-500  rounded-lg shadow-lg p-8 border-2 border-white transition duration-300">
+                    <div class=" font-semibold uppercase text-sm md:text-base">NURSING STATION WAIT LIST</div>
+                  </div>
+                </a>
+              
+</div>
 </div>
 {%endblock%}

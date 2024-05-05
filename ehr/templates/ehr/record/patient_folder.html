@@ -91,21 +91,43 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="{%url 'vital_signs' patient.file_no%}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">S/N</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">body temperature</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">pulse rate</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">respiration rate</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">blood pressure</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">blood oxygen</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">blood glucose</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">height</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">weight</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              
+              {%for v in vitals %}
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.body_temperature }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.pulse_rate }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.respiration_rate }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.blood_pressure }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.blood_oxygen }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.blood_glucose }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.weight }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.height }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.updated }}</td>
               </tr>
-
+              {%empty%}
+              <div class="p-4">
+                  <p>No vital signs found for this patient yet.</p>
+              </div>
+         {%endfor%}
             </tbody>
           </table>
         </div>

@@ -2,6 +2,12 @@
 {% load static %}
 {%block title%}DASHBOARD{%endblock%}
 
+{%block page_title%}
+<div class="flex justify-end items-end gap-10">
+    <a href="{%url 'staff' %}" class="text-xs md:text-sm font-semibold text-green-800"><i class="fa-solid fa-user-group fa-2x"></i>STAFF</a>
+    <a href="{%url 'staff' %}" class="text-xs md:text-sm font-semibold text-green-800"><i class="fa-solid fa-list-check fa-2x"></i>SERVICE PRICES</a>
+</div> 
+{%endblock%}
 {%block content %}
 <div class="uk-container mt-2 md:mt-2 p-2">
     <section class="text-center border-cyan-700 p-4 m-2">
@@ -14,13 +20,6 @@
       </div>
       {% endfor %}
     </section>
-    <div class="flex justify-center items-center mx-auto mb-10 ">
-        <a href="{%url 'staff' %}" class="text-xs md:text-sm font-semibold text-green-800">
-            <div class="bg-white rounded-2xl shadow-md p-2 md:py-4 md:px-20 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white ">
-                <i class="fa-solid fa-user-group fa-2x"></i><br>
-                STAFF</div>
-        </a>
-    </div> 
     <div class="grid grid-cols-2 md:grid-cols-3 gap-6 uppercase text-center rounded-xl p-4 md:p-10  shadow-md shadow-emerald-700 bg-white">
         <div>
             <a href="{%url 'medical_record' %}" class="text-xs md:text-sm font-semibold text-slate-600">

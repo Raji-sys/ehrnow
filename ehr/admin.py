@@ -26,3 +26,22 @@ class PaypointAdmin(admin.ModelAdmin):
     list_display = ('patient', 'service', 'status')
     search_fields = ('status',)
     list_filter = ('status',)
+
+
+@admin.register(ServiceType)
+class ServicesTypeAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+
+
+@admin.register(Services)
+class ServicesAdmin(admin.ModelAdmin):
+    list_display = ('type', 'name', 'price')
+    search_fields = ('type','name')
+    list_filter = ('type','name')
+
+
+@admin.register(VitalSigns)
+class VitalSignAdmin(admin.ModelAdmin):
+    list_display = ('patient',)
