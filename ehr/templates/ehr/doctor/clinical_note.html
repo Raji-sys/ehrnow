@@ -3,7 +3,7 @@
 {%block page_title%}<div class="enom flex justify-center">CLINICAL NOTE</div>{%endblock%}
 {% block content %}
 <div class="">
-  <div class="uk-overlay rounded-3xl bg-white uk-position-center">
+  <div class="mt-16 uk-overlay rounded-3xl bg-white uk-position-center">
       <section class="text-center border-cyan-700 p-4 m-2">
           {% for message in messages %}
         <div class="mt-2">
@@ -22,7 +22,7 @@
           {% endif %}
 <form method="post" enctype="multipart/form-data" >
   {% csrf_token %}
-  <div class="mb-2 uppercase text-cyan-900 px-10">
+  <div class="mb-2 uppercase text-cyan-900 px-6">
     {% for field in form %}
     <div class="flex justify-center">
      <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>

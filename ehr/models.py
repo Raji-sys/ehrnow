@@ -248,7 +248,7 @@ class VitalSigns(models.Model):
 class ClinicalNote(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='clinical_notes')
-    note=models.TextField(max_length=500000,null=True, blank=True)
+    note=models.TextField(null=True, blank=True)
 
     """
     this need the to be choice 
