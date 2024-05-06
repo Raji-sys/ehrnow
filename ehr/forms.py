@@ -2,9 +2,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django import forms
 from .models import *
-from ckeditor.fields import RichTextFormField
-
-
+from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
+from django_summernote.fields import SummernoteTextFormField
 
 class CustomUserCreationForm(UserCreationForm):
     middle_name = forms.CharField(max_length=30, required=False)
@@ -111,11 +110,15 @@ class VitalSignsForm(forms.ModelForm):
 
 
 class ClinicalNoteForm(forms.ModelForm):
-    note = RichTextFormField()
+    # for form.Form only 
+    note=forms.CharField(widget=SummernoteWidget())
+    # note=SummernoteTextFormField() 
     class Meta:
         model = ClinicalNote
         fields = ['note', 'handover_status']
-
+        widgets={
+            'note':SummernoteWidget(),
+        }
     handover_status = forms.ChoiceField(choices=[
         ('seen_by_doctor', 'Seen by Doctor'),
         ('awaiting_review', 'Awaiting Review')

@@ -1,6 +1,9 @@
 from django import forms
 from .models import *
 from django.contrib import admin
+from django_summernote.admin import SummernoteModelAdmin
+from django.utils.safestring import mark_safe
+
 
 admin.site.site_header="cPANEL"
 admin.site.index_title="EHR NOW"
@@ -45,3 +48,15 @@ class ServicesAdmin(admin.ModelAdmin):
 @admin.register(VitalSigns)
 class VitalSignAdmin(admin.ModelAdmin):
     list_display = ('patient',)
+
+
+@admin.register(ClinicalNote)
+class ClinicNoteAdmin(SummernoteModelAdmin):
+    summernote_fields=('note',)
+    list_display = ('patient','user','rendered_note',)
+    search_fields = ('patient',)
+    list_filter = ('patient',)
+
+    def rendered_note(self, obj):
+        return mark_safe(obj.note)
+    rendered_note.short_description = 'Note'

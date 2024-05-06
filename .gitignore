@@ -11,3 +11,5 @@ share/
 *.pyd
 __pycache__
 db.sqlite3
+static/
+theme/static/

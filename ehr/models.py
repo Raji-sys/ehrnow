@@ -9,8 +9,7 @@ from django.utils.translation import gettext as _
 from django.utils import timezone
 from datetime import datetime
 from django.core.exceptions import ImproperlyConfigured
-from ckeditor.fields import RichTextField
-
+from django.utils.safestring import mark_safe
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -249,7 +248,8 @@ class VitalSigns(models.Model):
 class ClinicalNote(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='clinical_notes')
-    note = RichTextField(null=True, blank=True)
+    note=models.TextField(max_length=500000,null=True, blank=True)
+
     """
     this need the to be choice 
     """
@@ -265,13 +265,8 @@ class ClinicalNote(models.Model):
     def get_absolute_url(self):
         return reverse('clincal_note_details', args=[self.user])
 
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.user.profile.middle_name}"
-
     def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
-
+        return f"notes for: {self.patient.file_no}"
 
 class Phatology(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
