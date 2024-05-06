@@ -507,7 +507,7 @@ class VitalSignCreateView(CreateView):
         return super().form_valid(form)
 
     def test_func(self):
-        allowed_groups = ['nurse', 'doctor', 'record', 'pathologist', 'pharmacist']
+        allowed_groups = ['nurse']
         return any(group in self.request.user.groups.values_list('name', flat=True) for group in allowed_groups)
 
     def get_context_data(self, **kwargs):
@@ -539,7 +539,7 @@ class VitalsUpdateView(UpdateView):
 
 
 
-class ConsultationRoomView(DoctorRequiredMixin, ListView):
+class ConsultationWaitRoomView(DoctorRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'ehr/doctor/doctors_list.html'
     context_object_name = 'handovers'
@@ -550,3 +550,38 @@ class ConsultationRoomView(DoctorRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
+    model = ClinicalNote
+    form_class = ClinicalNoteForm
+    template_name = 'ehr/doctor/clinical_note.html'
+
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        self.object = form.save()
+
+        # Update the related PatientHandover object
+        patient_handover = PatientHandover.objects.filter(patient=form.instance.patient).first()
+        if patient_handover:
+            patient_handover.handover_status = 'seen_by_doctor'
+            patient_handover.status = 'seen_by_doctor'  # Update the status field
+            patient_handover.save()
+
+        return super().form_valid(form)
+
+    def test_func(self):
+        allowed_groups = ['doctor']
+        return any(group in self.request.user.groups.values_list('name', flat=True) for group in allowed_groups)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        return context
+
+    def get_success_url(self):
+        messages.success(self.request, 'PATIENT SEEN.')
+        return reverse_lazy('clinic')

@@ -72,12 +72,26 @@ class VisitForm(forms.ModelForm):
         model = Visit
         fields = ['clinic']
 
+    def __init__(self, *args, **kwargs):
+        super(VisitForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
 
 class PaypointForm(forms.ModelForm):
     class Meta:
         model = Paypoint
         # fields = ['service','status']
         fields = ['status']
+   
+    def __init__(self, *args, **kwargs):
+        super(PaypointForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class VitalSignsForm(forms.ModelForm):

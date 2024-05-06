@@ -146,6 +146,7 @@ class PatientData(models.Model):
         return False
 
 class Clinic(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     clinics=(('A & E','A & E'),('SOPD','SOPD'),('SPINE SOPD','SPINE SOPD'),('GOPD','GOPD'),('NHIS','NHIS'),('DENTAL','DENTAL'),
         ('O & G','O & G'),('UROLOGY','UROGOLY'),('DERMATOLOGY','DERMATOLOGY'),('PAEDIATRY','PAEDIATRY'))
@@ -161,11 +162,13 @@ class Clinic(models.Model):
 
 
 class ServiceType(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     name = models.CharField('TYPE OF SERVICE',max_length=200)
     def __str__(self):
         return self.name
 
 class Services(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     type=models.ForeignKey(ServiceType,null=True, on_delete=models.CASCADE)
     name=models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
@@ -179,7 +182,7 @@ class Services(models.Model):
         return reverse('service_details', args=[self.type])
 
 class Paypoint(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     service=models.ForeignKey(Services,null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'),('paid', 'Paid'),], default='pending')
@@ -190,7 +193,7 @@ class Paypoint(models.Model):
 
 
 class Visit(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
     clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
@@ -198,6 +201,7 @@ class Visit(models.Model):
 
 
 class PatientHandover(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handovers')
     status = models.CharField(max_length=30, choices=[
@@ -205,12 +209,15 @@ class PatientHandover(models.Model):
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
         ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
         ('waiting_for_consultation', 'Waiting for Consultation'),
+        ('seen_by_doctor', 'seen_by_doctor'),
+        ('awaiting_review', 'awaiting_review'),
     ])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     
 class Appointment(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='appointments')
     appointment_date = models.DateTimeField()
@@ -221,6 +228,7 @@ class Appointment(models.Model):
 
 
 class VitalSigns(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vital_signs')
     body_temperature=models.CharField(max_length=10, null=True, blank=True)
     pulse_rate=models.CharField(max_length=10, null=True, blank=True)
@@ -237,7 +245,7 @@ class VitalSigns(models.Model):
 
 
 class ClinicalNote(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='clinical_notes')
     note=models.TextField(null=True, blank=True)
 
@@ -265,7 +273,7 @@ class ClinicalNote(models.Model):
 
 
 class Phatology(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
@@ -282,7 +290,7 @@ class Phatology(models.Model):
 
 
 class Radiology(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
@@ -299,7 +307,7 @@ class Radiology(models.Model):
 
 
 class Pharmacy(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
@@ -316,7 +324,7 @@ class Pharmacy(models.Model):
 
     
 class Physio(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
@@ -333,7 +341,7 @@ class Physio(models.Model):
 
 
 class Ward(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
@@ -350,7 +358,7 @@ class Ward(models.Model):
 
 
 class Theatre(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
@@ -367,7 +375,7 @@ class Theatre(models.Model):
 
 
 class ICU(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
@@ -384,7 +392,7 @@ class ICU(models.Model):
 
 
 class NHIS(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('transaction date', auto_now_add=True)
@@ -402,7 +410,7 @@ class NHIS(models.Model):
 
 
 class PandO(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
@@ -419,7 +427,7 @@ class PandO(models.Model):
 
 
 class Audit(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
 

@@ -54,6 +54,8 @@ urlpatterns = [
     path('nursing/nursing-station/', NursingDeskView.as_view(), name='nursing_station'),
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
 
+    #consultation
+    path('linic/waiting-for-consultation/',ConsultationWaitRoomView.as_view(),name="waiting_for_consultation")
 
     # path('report/', views.report, name='report'),
 
