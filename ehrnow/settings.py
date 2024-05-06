@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django_fastdev',
     'import_export',
     'fontawesomefree',
+    'django_ckeditor_5',
 ]
 
 MIDDLEWARE = [
@@ -124,7 +125,7 @@ LOGIN_URL="/login/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-
+CKEDITOR_UPLOAD_PATH = "uploads/"
 STATIC_URL = 'static/'
 STATIC_ROOT=os.path.join(BASE_DIR,'static/')
 

@@ -2,6 +2,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django import forms
 from .models import *
+from ckeditor.fields import RichTextFormField
+
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -109,6 +111,7 @@ class VitalSignsForm(forms.ModelForm):
 
 
 class ClinicalNoteForm(forms.ModelForm):
+    note = RichTextFormField()
     class Meta:
         model = ClinicalNote
         fields = ['note', 'handover_status']

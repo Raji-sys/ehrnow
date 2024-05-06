@@ -9,6 +9,8 @@ from django.utils.translation import gettext as _
 from django.utils import timezone
 from datetime import datetime
 from django.core.exceptions import ImproperlyConfigured
+from ckeditor.fields import RichTextField
+
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -247,8 +249,7 @@ class VitalSigns(models.Model):
 class ClinicalNote(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='clinical_notes')
-    note=models.TextField(null=True, blank=True)
-
+    note = RichTextField(null=True, blank=True)
     """
     this need the to be choice 
     """
