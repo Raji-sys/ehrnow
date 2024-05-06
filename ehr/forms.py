@@ -107,13 +107,19 @@ class VitalSignsForm(forms.ModelForm):
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
+
 class ClinicalNoteForm(forms.ModelForm):
     class Meta:
         model = ClinicalNote
-        fields = ['note', 'diagnosis', 'phatology','radiology','prescription']
+        fields = ['note', 'handover_status']
+
+    handover_status = forms.ChoiceField(choices=[
+        ('seen_by_doctor', 'Seen by Doctor'),
+        ('awaiting_review', 'Awaiting Review')
+    ])
 
     def __init__(self, *args, **kwargs):
-        super(VitalSignsForm, self).__init__(*args, **kwargs)
+        super(ClinicalNoteForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(

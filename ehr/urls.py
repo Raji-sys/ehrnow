@@ -55,7 +55,10 @@ urlpatterns = [
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
 
     #consultation
-    path('linic/waiting-for-consultation/',ConsultationWaitRoomView.as_view(),name="waiting_for_consultation")
+    path('clinic/waiting-for-consultation/',ConsultationWaitRoomView.as_view(),name="waiting_for_consultation"),
+    path('waiting-consultation/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
+    path('clinic/consultation-finished/',ConsultationFinishView.as_view(),name="consultation_finished"),
+    path('clinic/awaiting-review/',AwaitingReviewView.as_view(),name="waiting_for_review"),
 
     # path('report/', views.report, name='report'),
 

@@ -1,6 +1,6 @@
 {%extends "base.html" %}
 {% block title %}PATIENT FOLDER{% endblock%}
-
+{%block page_title%}<div class="enom flex justify-center">{{patient.full_name}} FOLDER</div>{%endblock%}
 {% block content %}
 <div class="p-2">
   <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-1">
@@ -44,7 +44,7 @@
       <!-- break -->
       <div class=""> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="" class="text-sm text-blue-500 hover:text-blue-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -135,20 +135,29 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="{%url 'clinical_note' patient.file_no%}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">S/N</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">DOCTOR</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">NOTE</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              
+              {%for c in clinial_notes %}
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ c.user }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ c.note }}</td>
               </tr>
+              {%empty%}
+              <div class="p-4">
+                  <p>No clinical notes found for this patient yet.</p>
+              </div>
+         {%endfor%}
 
             </tbody>
           </table>

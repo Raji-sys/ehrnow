@@ -567,10 +567,8 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
         # Update the related PatientHandover object
         patient_handover = PatientHandover.objects.filter(patient=form.instance.patient).first()
         if patient_handover:
-            patient_handover.handover_status = 'seen_by_doctor'
-            patient_handover.status = 'seen_by_doctor'  # Update the status field
+            patient_handover.status = form.cleaned_data['handover_status']
             patient_handover.save()
-
         return super().form_valid(form)
 
     def test_func(self):
@@ -585,3 +583,28 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
     def get_success_url(self):
         messages.success(self.request, 'PATIENT SEEN.')
         return reverse_lazy('clinic')
+
+
+class ConsultationFinishView(ListView):
+    model = PatientHandover
+    template_name = 'ehr/doctor/patient_seen.html'
+    context_object_name = 'handovers'
+
+    def get_queryset(self):
+        return PatientHandover.objects.filter(status='seen_by_doctor') 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+class AwaitingReviewView(ListView):
+    model = PatientHandover
+    template_name = 'ehr/doctor/review_patient.html'
+    context_object_name = 'handovers'
+
+    def get_queryset(self):
+        return PatientHandover.objects.filter(status='awaiting_review') 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
