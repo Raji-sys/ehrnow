@@ -39,11 +39,16 @@ urlpatterns = [
     path('record/patient-list/', PatientListView.as_view(), name='patient_list'),
     path('record/patient/<str:file_no>/',PatientFolderView.as_view(), name='patient_details'),
     path('record/patient/update-patient/<int:pk>/',UpdatePatientView.as_view(), name='update_patient'),
-    path('record/patient/follow-up/<str:file_no>/', HandleVisitView.as_view(), name='follow_up'),
-
+    path('record/patient/follow-up/<int:pk>/', FollowUpVisitCreateView.as_view(), name='follow_up'),
     path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
+    path('follow-up-patients-waiting-payment/', FollowUpPayListView.as_view(), name='follow_up_pay_dash'),
+    # path('follow-up-patients/', FollowUpPatientsListView.as_view(), name='follow_up_patients'),
     path('medical-record/patient-movement/record-dashboard/', RecordDashboardView.as_view(), name='record_dash'),
     path('assign-clinic/<int:pk>/',AssignClinicView.as_view(), name='assign_clinic'),
+    path('clinic/<str:clinic_name>/patients/', PatientsByClinicListView.as_view(), name='clinic_patients'),
+    path('clinic/<str:clinic_name>/follow-up-patients/', FollowUpPatientsByClinicListView.as_view(), name='clinic_follow_up_patients'),
+    # path('clinic/spine/', SpineClinicPatientsListView.as_view(), name='spine_clinic_patients'),
+    # path('clinic/sopd/', SOPDClinicPatientsListView.as_view(), name='sopd_clinic_patients'),
 
     # # Payment Clerk URLs
     path('revenue/paypoint-dash/record/', RevenueRecordView.as_view(), name='record_revenue'),

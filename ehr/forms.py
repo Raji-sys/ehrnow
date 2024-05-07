@@ -50,9 +50,10 @@ class ProfileForm(forms.ModelForm):
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 class PatientForm(forms.ModelForm):
+    clinic = forms.ModelChoiceField(queryset=Clinic.objects.all())
+
     class Meta:
         model = PatientData
-        # fields = ['last_name','first_name','other_name']
         exclude = ['file_no','user','updated']
         widgets = {
             'zone': forms.Select(attrs={'id': 'id_zone'}),
@@ -69,10 +70,11 @@ class PatientForm(forms.ModelForm):
 
 
 class VisitForm(forms.ModelForm):
+    clinic = forms.ModelChoiceField(queryset=Clinic.objects.all())
     class Meta:
-        model = Visit
+        model = FollowUpVisit
         fields = ['clinic']
-
+    
     def __init__(self, *args, **kwargs):
         super(VisitForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():

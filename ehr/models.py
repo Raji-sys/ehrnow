@@ -69,9 +69,35 @@ class Profile(models.Model):
         if self.user:
             return f"{self.full_name()}"
 
+class Clinic(models.Model):
+    clinics=(('A & E','A & E'),('SOPD','SOPD'),('SPINE SOPD','SPINE SOPD'),('GOPD','GOPD'),('NHIS','NHIS'),('DENTAL','DENTAL'),
+        ('O & G','O & G'),('UROLOGY','UROGOLY'),('DERMATOLOGY','DERMATOLOGY'),('PAEDIATRY','PAEDIATRY'))
+    name = models.CharField(choices=clinics, null=True, blank=True, max_length=200, default='A & E')
+    team=models.CharField(max_length=200,null=True,blank=True)
+ 
+    def get_absolute_url(self):
+        return reverse('clinic_details', args=[self.name])
 
+    def __str__(self):
+        if self.name:
+            return f"{self.name}"
+
+class Team(models.Model):
+    teams=(('green','reen'),('purple','purple'),('white','white'),('blue','blue'),('pink','pink'),('plastic','plastic'),
+        ('club foot','club foot'),)
+    name = models.CharField(choices=teams, null=True, blank=True, max_length=200)
+    team=models.CharField(max_length=200,null=True,blank=True)
+ 
+    def get_absolute_url(self):
+        return reverse('clinic_details', args=[self.name])
+
+    def __str__(self):
+        if self.name:
+            return f"{self.name}"
+        
 class PatientData(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='patients')
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     title = models.CharField(max_length=300, null=True, blank=True)
     first_name = models.CharField(max_length=300, blank=True, null=True)
@@ -146,21 +172,6 @@ class PatientData(models.Model):
             return today.month == self.dob.month and today.day == self.dob.day
         return False
 
-class Clinic(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    clinics=(('A & E','A & E'),('SOPD','SOPD'),('SPINE SOPD','SPINE SOPD'),('GOPD','GOPD'),('NHIS','NHIS'),('DENTAL','DENTAL'),
-        ('O & G','O & G'),('UROLOGY','UROGOLY'),('DERMATOLOGY','DERMATOLOGY'),('PAEDIATRY','PAEDIATRY'))
-    name = models.CharField(choices=clinics, null=True, blank=True, max_length=200, default='A & E')
-    team=models.CharField(max_length=200,null=True,blank=True)
- 
-    def get_absolute_url(self):
-        return reverse('clinic_details', args=[self.name])
-
-    def __str__(self):
-        if self.name:
-            return f"{self.name}"
-
 
 class ServiceType(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -193,10 +204,11 @@ class Paypoint(models.Model):
         return reverse('pay_details', args=[self.user])
 
 
-class Visit(models.Model):
+class FollowUpVisit(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
-    clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
+    team = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='teams')
+    clinic=models.ForeignKey(Clinic, null=True, blank=True,on_delete=models.CASCADE, related_name='clinics')
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
 
@@ -205,6 +217,7 @@ class PatientHandover(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handovers')
+    team = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='teams')
     status = models.CharField(max_length=30, choices=[
         ('waiting_for_payment', 'Waiting for Payment'),
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Patients at {{ clinic_name }} Clinic</h1>
+  <ul>
+    {% for patient in patients %}
+      <li>{{ patient.name }} ({{ patient.id }})</li>
+    {% empty %}
+      <li>No patients found for {{ clinic_name }} Clinic.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

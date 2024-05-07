@@ -17,7 +17,7 @@ class PatientAdmin(admin.ModelAdmin):
     list_filter = ('gender',)
 
 
-@admin.register(Visit)
+@admin.register(FollowUpVisit)
 class VisitAdmin(admin.ModelAdmin):
     list_display = ('patient', 'clinic', 'payment')
     search_fields = ('patient',)
@@ -44,6 +44,10 @@ class ServicesAdmin(admin.ModelAdmin):
     search_fields = ('type','name')
     list_filter = ('type','name')
 
+
+@admin.register(Clinic)
+class ClinicAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 @admin.register(VitalSigns)
 class VitalSignAdmin(admin.ModelAdmin):

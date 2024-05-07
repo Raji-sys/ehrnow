@@ -1,3 +1,4 @@
+from multiprocessing import context
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.views.generic.base import TemplateView
@@ -313,13 +314,12 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
 
     def form_valid(self, form):
         patient = form.save()
-        visit = Visit(patient=patient)
-        visit.save()
-        clinic = Clinic.objects.create(patient=patient, name='A & E')
-        clinic.save()
-        handover = PatientHandover(patient=patient, status='waiting_for_payment')
-        handover.save()
-        messages.success(self.request,'Patient created successfully')
+
+        # Create a new PatientHandover instance with the selected clinic
+        clinic = form.cleaned_data['clinic']
+        handover = PatientHandover.objects.create(patient=patient, clinic=clinic, status='waiting_for_payment')
+
+        messages.success(self.request, 'Patient created successfully')
         return super().form_valid(form)
 
     
@@ -386,21 +386,98 @@ class PatientListView(ListView):
         return context
     
 
-class HandleVisitView(RecordRequiredMixin, CreateView):
-    model = Visit
+class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
+    model = FollowUpVisit
     form_class = VisitForm
-    template_name = 'ehr/record/handle_visit.html'
+    template_name = 'ehr/record/follow_up.html'
+    success_url = reverse_lazy("record_dash")
+
+    def get_object(self, queryset=None):
+        patient_id = self.kwargs.get('pk')
+        return PatientData.objects.get(id=patient_id)
 
     def form_valid(self, form):
+        patient = self.get_object()
         visit = form.save(commit=False)
-        patient = visit.patient
-        clinic = visit.clinic
-        handover = PatientHandover(patient=patient, clinic=clinic,status='waiting_for_payment')
-        handover.save()
+        visit.patient = patient
+        visit.save()
 
-        messages.success(self.request, 'Patient handed over for payment.')
-        return redirect('record_dashboard')
+        # Update or create the PatientHandover instance with the selected clinic and set the status to 'waiting_for_payment'
+        clinic = form.cleaned_data['clinic']
+        team = form.cleaned_data['team']
+        handover, created = PatientHandover.objects.update_or_create(
+            patient=patient,
+            defaults={
+                'clinic': clinic,
+                'team':team,
+                'status': 'waiting_for_payment'
+            }
+        )
 
+        messages.success(self.request, 'Follow-up visit created successfully')
+        return redirect(self.success_url)
+
+
+# class FollowUpPatientsListView(ListView):
+#     model = PatientData
+#     template_name = 'ehr/record/follow_up_patients.html'
+#     context_object_name = 'follow_up_patients'
+
+#     def get_queryset(self):
+#         return PatientData.objects.filter(followupvisit__isnull=False).distinct()
+    
+
+class FollowUpPayListView(ListView):
+    model = PatientData
+    template_name = 'ehr/revenue/follow_up_pay_dash.html'
+    context_object_name = 'handovers'
+
+    def get_queryset(self):
+        return PatientData.objects.filter(
+            followupvisit__isnull=False,
+            handovers__status='waiting_for_payment'
+        ).distinct()
+    
+class ClinicListView(ListView):
+    model = PatientData
+    template_name = 'ehr/record/clinic_list.html'
+    context_object_name = 'patients'
+
+    def get_queryset(self):
+        clinic_name = self.kwargs.get('clinic_name')
+        clinic = Clinic.objects.get(name=clinic_name)
+        return self.filter_queryset(clinic)
+
+    def filter_queryset(self, clinic):
+        raise NotImplementedError("Subclasses should implement this method.")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clinic_name'] = self.kwargs.get('clinic_name')
+        return context
+
+
+class PatientsByClinicListView(ClinicListView):
+    def filter_queryset(self, clinic):
+        return PatientData.objects.filter(handovers__clinic=clinic)
+
+# class SpineClinicPatientsListView(ClinicListView):
+    # template_name = 'ehr/record/spine_clinic_patients.html'
+#     def filter_queryset(self, clinic):
+#         return PatientData.objects.filter(clinic=clinic)
+
+# class SOPDClinicPatientsListView(ClinicListView):
+    # template_name = 'ehr/record/sopd_clinic_patients.html'
+#     def filter_queryset(self, clinic):
+#         return PatientData.objects.filter(clinic=clinic)
+    
+class FollowUpPatientsByClinicListView(ClinicListView):
+    def filter_queryset(self, clinic):
+        return PatientData.objects.filter(
+            followupvisit__isnull=False,
+            handovers__clinic=clinic
+        ).distinct()
+    
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientMovementView(ListView):
@@ -536,7 +613,6 @@ class VitalsUpdateView(UpdateView):
     def form_invalid(self, form):
         messages.error(self.request, 'Error Updating VitalSigns')
         return super().form_invalid(form)
-
 
 
 class ConsultationWaitRoomView(DoctorRequiredMixin, ListView):
