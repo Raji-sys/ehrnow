@@ -22,7 +22,7 @@ urlpatterns = [
     path('get-started/revenue', RevenueView.as_view(), name='revenue'),
     path('get-started/nursing', NursingView.as_view(), name='nursing'),
  
-    path('get-started/clinic', ClinicView.as_view(), name='clinic'),
+    path('get-started/clinic-dashboard/', ClinicDashView.as_view(), name='clinic_dash'),
     path('get-started/radiology', RadiologyView.as_view(), name='radiology'),
     path('get-started/phatology', PhatologyView.as_view(), name='phatology'),
  
@@ -41,6 +41,12 @@ urlpatterns = [
     path('record/patient/update-patient/<int:pk>/',UpdatePatientView.as_view(), name='update_patient'),
     path('record/patient/follow-up/<int:pk>/', FollowUpVisitCreateView.as_view(), name='follow_up'),
     path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
+ 
+    path('record/clinic', ClinicView.as_view(), name='clinic'),
+     path('ae/', AEClinicView.as_view(), name='ae_clinic'),
+    path('gopd/', GOPDClinicView.as_view(), name='gopd_clinic'),
+    path('sopd/', SOPDClinicView.as_view(), name='sopd_clinic'),
+    path('room/<int:room_id>/', RoomView.as_view(), name='room_detail'),
     path('follow-up-patients-waiting-payment/', FollowUpPayListView.as_view(), name='follow_up_pay_dash'),
     # path('follow-up-patients/', FollowUpPatientsListView.as_view(), name='follow_up_patients'),
     path('medical-record/patient-movement/record-dashboard/', RecordDashboardView.as_view(), name='record_dash'),

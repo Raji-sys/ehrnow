@@ -2215,17 +2215,16 @@ select {
     display: grid;
   }
 
-  .md\:w-fit {
-    width: -moz-fit-content;
-    width: fit-content;
-  }
-
   .md\:max-w-7xl {
     max-width: 80rem;
   }
 
   .md\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .md\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .md\:grid-cols-6 {
@@ -2244,6 +2243,14 @@ select {
     padding: 3.5rem;
   }
 
+  .md\:p-2 {
+    padding: 0.5rem;
+  }
+
+  .md\:p-20 {
+    padding: 5rem;
+  }
+
   .md\:p-4 {
     padding: 1rem;
   }
@@ -2256,34 +2263,9 @@ select {
     padding: 2rem;
   }
 
-  .md\:p-20 {
-    padding: 5rem;
-  }
-
-  .md\:p-24 {
-    padding: 6rem;
-  }
-
-  .md\:p-28 {
-    padding: 7rem;
-  }
-
-  .md\:p-16 {
-    padding: 4rem;
-  }
-
-  .md\:p-2 {
-    padding: 0.5rem;
-  }
-
   .md\:px-10 {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
-  }
-
-  .md\:px-16 {
-    padding-left: 4rem;
-    padding-right: 4rem;
   }
 
   .md\:text-6xl {

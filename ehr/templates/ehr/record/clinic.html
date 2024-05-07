@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}CLINIC{%endblock%}
-{%block page_title%}<div class="enom flex justify-center">CONSULTATION ROOM LIST</div>{%endblock%}
-{%block content %}
+{%block page_title%}<div class="enom flex justify-center">{{ clinic_name }} CONSULTATION ROOM LIST</div>{%endblock%}
+{% block content %}
+
+<!-- Default clinic content -->
 <section class="text-center border-cyan-700 p-4 m-2">
         {% for message in messages %}
         <div class="mt-2">
@@ -14,13 +16,19 @@
         {% endfor %}
     </section>
     <div class="flex justify-center m-10">
+        <h2>Rooms</h2>
+    <ul>
+        {% for room in rooms %}
+            <li><a href="{% url 'room_detail' room.id %}">{{ room.name }}</a></li>
+        {% endfor %}
+    </ul>
     <div class=" grid grid-cols-3 gap-6 uppercase text-center rounded-xl p-8 md:p-14 bg-gray-50">
         <div>
             <a href="{% url 'waiting_for_consultation' %}">
         <div class="hover:bg-slate-600 hover:text-white bg-white text-slate-800 rounded-2xl shadow-2xl p-2 md:p-6 border-2 border-white-400 transition duration-300">
           <div class="font-semibold text-xs md:text-sm">WAITING FOR CONSULTATION</div>
         </div>
-      </a>
+      </a> 
     </div>
     <div>
       <a href="{%url 'consultation_finished' %}">

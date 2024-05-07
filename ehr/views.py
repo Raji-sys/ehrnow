@@ -235,9 +235,15 @@ class NursingView(TemplateView):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class ClinicView(TemplateView):
-    template_name = "ehr/dashboard/clinic.html"
+class ClinicDashView(TemplateView):
+    template_name = "ehr/dashboard/clinics_dash.html"
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ClinicView(TemplateView):
+    template_name = "ehr/record/clinic.html"
+
+class ClinicBaseView(TemplateView):
+    template_name = "ehr/record/clinic.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class RadiologyView(TemplateView):
@@ -292,6 +298,37 @@ class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         return self.request.user.groups.filter(name='doctor').exists()
 
 
+class RoomView(TemplateView):
+    template_name = 'ehr/record/room.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        room_id = kwargs.get('room_id')
+        room = Room.objects.get(id=room_id)
+        context['room'] = room
+        return context
+    
+class AEClinicView(ClinicBaseView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clinic_name'] = 'A & E'
+        context['rooms'] = Room.objects.filter(clinic__name='A & E')
+        return context
+
+class GOPDClinicView(ClinicBaseView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clinic_name'] = 'GOPD'
+        context['rooms'] = Room.objects.filter(clinic__name='GOPD')
+        return context
+
+class SOPDClinicView(ClinicBaseView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clinic_name'] = 'SOPD'
+        context['rooms'] = Room.objects.filter(clinic__name='SOPD')
+        return context
+    
 class AssignClinicView(RecordRequiredMixin, UpdateView):
     model = PatientHandover
     fields = ['clinic']

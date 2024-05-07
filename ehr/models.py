@@ -73,8 +73,7 @@ class Clinic(models.Model):
     clinics=(('A & E','A & E'),('SOPD','SOPD'),('SPINE SOPD','SPINE SOPD'),('GOPD','GOPD'),('NHIS','NHIS'),('DENTAL','DENTAL'),
         ('O & G','O & G'),('UROLOGY','UROGOLY'),('DERMATOLOGY','DERMATOLOGY'),('PAEDIATRY','PAEDIATRY'))
     name = models.CharField(choices=clinics, null=True, blank=True, max_length=200, default='A & E')
-    team=models.CharField(max_length=200,null=True,blank=True)
- 
+    
     def get_absolute_url(self):
         return reverse('clinic_details', args=[self.name])
 
@@ -83,18 +82,25 @@ class Clinic(models.Model):
             return f"{self.name}"
 
 class Team(models.Model):
-    teams=(('green','reen'),('purple','purple'),('white','white'),('blue','blue'),('pink','pink'),('plastic','plastic'),
+    teams=(('green','green'),('purple','purple'),('white','white'),('blue','blue'),('pink','pink'),('plastic','plastic'),
         ('club foot','club foot'),)
     name = models.CharField(choices=teams, null=True, blank=True, max_length=200)
-    team=models.CharField(max_length=200,null=True,blank=True)
- 
+    clinic = models.ForeignKey('Clinic', on_delete=models.CASCADE, related_name='clinic_teams', null=True, blank=True)
+    
     def get_absolute_url(self):
-        return reverse('clinic_details', args=[self.name])
+        return reverse('team_details', args=[self.name])
 
     def __str__(self):
         if self.name:
             return f"{self.name}"
         
+class Room(models.Model):
+    name = models.CharField(max_length=100)
+    clinic = models.ForeignKey('Clinic', on_delete=models.CASCADE, related_name='rooms',null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+    
 class PatientData(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='patients')
@@ -207,8 +213,8 @@ class Paypoint(models.Model):
 class FollowUpVisit(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
-    team = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='teams')
-    clinic=models.ForeignKey(Clinic, null=True, blank=True,on_delete=models.CASCADE, related_name='clinics')
+    team = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='team_assigned')
+    clinic=models.ForeignKey(Team, null=True, blank=True,on_delete=models.CASCADE, related_name='clinics')
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
 
@@ -217,7 +223,8 @@ class PatientHandover(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handovers')
-    team = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='teams')
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True, related_name='rooms')
+    team = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handover_team')
     status = models.CharField(max_length=30, choices=[
         ('waiting_for_payment', 'Waiting for Payment'),
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
@@ -234,6 +241,7 @@ class Appointment(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='appointments')
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='teams')
     appointment_date = models.DateTimeField()
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

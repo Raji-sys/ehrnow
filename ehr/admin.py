@@ -49,6 +49,19 @@ class ServicesAdmin(admin.ModelAdmin):
 class ClinicAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
+
+@admin.register(Room)
+class RoomAdmin(admin.ModelAdmin):
+    list_display = ('clinic','name')
+    search_fields = ('clinic','name')
+    list_filter = ('clinic','name')
+
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin):
+    list_display = ('name','clinic')
+    search_fields = ('name','clinic')
+    list_filter = ('name','clinic')
+
 @admin.register(VitalSigns)
 class VitalSignAdmin(admin.ModelAdmin):
     list_display = ('patient',)
