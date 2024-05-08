@@ -16,12 +16,25 @@
         {% endfor %}
     </section>
     <div class="flex justify-center m-10">
-        <h2>Rooms</h2>
-    <ul>
-        {% for room in rooms %}
-            <li><a href="{% url 'room_detail' room.id %}">{{ room.name }}</a></li>
-        {% endfor %}
-    </ul>
+        <h1>{{ clinic_name }}</h1>
+        <h2>Waitroom Dashboard</h2>
+        <ul>
+            {% for room in rooms %}
+                <li>
+                    <h3>{{ room.name }}</h3>
+                    <ul>
+                        {% for patient in room.patients.all %}
+                            <li>{{ patient.name }}</li>
+                        {% empty %}
+                            <li>No patients waiting</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% empty %}
+                <li>No rooms available</li>
+            {% endfor %}
+        </ul>
+
     <div class=" grid grid-cols-3 gap-6 uppercase text-center rounded-xl p-8 md:p-14 bg-gray-50">
         <div>
             <a href="{% url 'waiting_for_consultation' %}">

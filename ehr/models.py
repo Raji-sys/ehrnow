@@ -94,12 +94,6 @@ class Team(models.Model):
         if self.name:
             return f"{self.name}"
         
-class Room(models.Model):
-    name = models.CharField(max_length=100)
-    clinic = models.ForeignKey('Clinic', on_delete=models.CASCADE, related_name='rooms',null=True, blank=True)
-
-    def __str__(self):
-        return self.name
     
 class PatientData(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
@@ -177,6 +171,19 @@ class PatientData(models.Model):
         if self.dob:
             return today.month == self.dob.month and today.day == self.dob.day
         return False
+
+class Room(models.Model):
+    name = models.CharField(max_length=100)
+    clinic = models.ForeignKey('Clinic', on_delete=models.CASCADE, related_name='rooms',null=True, blank=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE,related_name='rooms')
+
+    def __str__(self):
+        return self.name
+
+class WaitingRoom(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE)
+    waiting_since = models.DateTimeField(auto_now_add=True)
 
 
 class ServiceType(models.Model):
