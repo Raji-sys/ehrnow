@@ -1,15 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from datetime import timedelta, date
+from datetime import date
 from django.db import models
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.utils import timezone
-from datetime import datetime
-from django.core.exceptions import ImproperlyConfigured
-from django.utils.safestring import mark_safe
+
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -23,28 +19,30 @@ class SerialNumberField(models.CharField):
         del kwargs["unique"]
         return name, path, args, kwargs
     
+class Department(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=200)
+    
+    def get_absolute_url(self):
+        return reverse('department_details', args=[self.name])
+
+    def __str__(self):
+        if self.name:
+            return f"{self.name}"
+
+class Unit(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=200)
+
+    def __str__(self):
+        return self.name
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     middle_name = models.CharField(max_length=300, blank=True, null=True)
     title = models.CharField(max_length=300, null=True, blank=True)
-    dep = (
-        ('INFORMATION TECH', 'INFORMATION TECH'),
-        ('INTERNAL AUDIT', 'INTERNAL AUDIT'),
-        ('REVENUE', 'REVENUE'),
-        ('HMS', 'HMS'),
-        ('DOCTORS', 'DOCTORS'),
-        ('NURSES', 'NURSES'),
-        ('PATHOLOGY', 'PATHOLOGY'),
-        ('PHARMACY', 'PHARMACY'),
-        ('PHYSIOTHERAPHY', 'PHYSIOTHERAPHY'),
-        ('PROSTHETIC AND ORTHOTICS', 'PROSTHETIC AND ORTHOTICS'),
-        ('RADIOLOGY', 'RADIOLOGY'),
-    )
-    department = models.CharField(choices=dep, blank=True, max_length=300, null=True)
-    email = models.EmailField(blank=True, null=True,max_length=100, unique=True)
+    department = models.ForeignKey(Department, blank=True, max_length=300, null=True, on_delete=models.CASCADE)
+    unit = models.ForeignKey(Unit, blank=True, max_length=300, null=True, on_delete=models.CASCADE)
     phone = models.PositiveIntegerField(null=True, blank=True, unique=True)
-    # photo = models.ImageField(null=True, blank=True)
+    photo = models.ImageField(null=True, blank=True)
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True, blank=True)
     dob = models.DateField('date of birth', null=True, blank=True)
@@ -57,10 +55,7 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        if self.user.username:
-            return reverse('profile_details', args=[self.user.username])
-        else:
-            raise ImproperlyConfigured("User must have a non-empty username")
+        return reverse('profile_details', args=[self.user.username])
     
     def full_name(self):
         return f"{self.user.get_full_name()}"
@@ -69,23 +64,19 @@ class Profile(models.Model):
         if self.user:
             return f"{self.full_name()}"
 
+
 class Clinic(models.Model):
-    clinics=(('A & E','A & E'),('SOPD','SOPD'),('SPINE SOPD','SPINE SOPD'),('GOPD','GOPD'),('NHIS','NHIS'),('DENTAL','DENTAL'),
-        ('O & G','O & G'),('UROLOGY','UROGOLY'),('DERMATOLOGY','DERMATOLOGY'),('PAEDIATRY','PAEDIATRY'))
-    name = models.CharField(choices=clinics, null=True, blank=True, max_length=200, default='A & E')
+    name = models.CharField(null=True, blank=True, max_length=200)
     
     def get_absolute_url(self):
-        return reverse('clinic_details', args=[self.name])
+        return reverse('clinic_details', args=[self.pk])
 
     def __str__(self):
         if self.name:
             return f"{self.name}"
 
 class Team(models.Model):
-    teams=(('green','green'),('purple','purple'),('white','white'),('blue','blue'),('pink','pink'),('plastic','plastic'),
-        ('club foot','club foot'),)
-    name = models.CharField(choices=teams, null=True, blank=True, max_length=200)
-    clinic = models.ForeignKey('Clinic', on_delete=models.CASCADE, related_name='clinic_teams', null=True, blank=True)
+    name = models.CharField(null=True, blank=True, max_length=200)
     
     def get_absolute_url(self):
         return reverse('team_details', args=[self.name])
@@ -96,15 +87,13 @@ class Team(models.Model):
         
     
 class PatientData(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='patients')
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     title = models.CharField(max_length=300, null=True, blank=True)
-    first_name = models.CharField(max_length=300, blank=True, null=True)
     last_name = models.CharField(max_length=300, blank=True, null=True)
+    first_name = models.CharField(max_length=300, blank=True, null=True)
     other_name = models.CharField(max_length=300, blank=True, null=True)
     phone = models.PositiveIntegerField(null=True, blank=True, unique=True)
-    # photo = models.ImageField(null=True, blank=True)
+    photo = models.ImageField(null=True, blank=True)
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True, blank=True)
     dob = models.DateField('date of birth', null=True, blank=True)
@@ -129,6 +118,7 @@ class PatientData(models.Model):
            ('GRANDSON','GRANDSON'),('GRANDDAUGHTER','GRANDAUGHTER'),('COUSIN','COUSIN'),('OTHER','OTHER'))
     nok_rel = models.CharField('relationship with next of kin',choices=rel, max_length=300, null=True, blank=True)
     # nok_photo = models.ImageField('first next of kin photo', null=True, blank=True)
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='patients')
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -166,34 +156,33 @@ class PatientData(models.Model):
                 age -= 1
             return age
 
-    def is_birthday(self):
-        today = date.today()
-        if self.dob:
-            return today.month == self.dob.month and today.day == self.dob.day
-        return False
+    # def is_birthday(self):
+    #     today = date.today()
+    #     if self.dob:
+    #         return today.month == self.dob.month and today.day == self.dob.day
+    #     return False
 
 class Room(models.Model):
-    name = models.CharField(max_length=100)
-    clinic = models.ForeignKey('Clinic', on_delete=models.CASCADE, related_name='rooms',null=True, blank=True)
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE,related_name='rooms')
+    clinic = models.ForeignKey('Clinic', on_delete=models.CASCADE, related_name='clinic_rooms',null=True, blank=True)
+    name = models.CharField(null=True, blank=True, max_length=100)
+    waiting_since = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+
+    class Meta:
+        verbose_name_plural = 'virtual room'
+    
+    def get_absolute_url(self):
+        return reverse('room_details', args=[self.pk])
 
     def __str__(self):
         return self.name
 
-class WaitingRoom(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE)
-    waiting_since = models.DateTimeField(auto_now_add=True)
-
 
 class ServiceType(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    name = models.CharField('TYPE OF SERVICE',max_length=200)
+    name = models.CharField('TYPE OF SERVICE',max_length=200,null=True)
     def __str__(self):
         return self.name
 
 class Services(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     type=models.ForeignKey(ServiceType,null=True, on_delete=models.CASCADE)
     name=models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
@@ -207,9 +196,10 @@ class Services(models.Model):
         return reverse('service_details', args=[self.type])
 
 class Paypoint(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     service=models.ForeignKey(Services,null=True, on_delete=models.CASCADE)
+    receipt_no=models.CharField('Receipt Number',null=True,blank=True,max_length=100)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'),('paid', 'Paid'),], default='pending')
     updated = models.DateTimeField(auto_now=True)
 
@@ -218,20 +208,18 @@ class Paypoint(models.Model):
 
 
 class FollowUpVisit(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
-    team = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='team_assigned')
-    clinic=models.ForeignKey(Team, null=True, blank=True,on_delete=models.CASCADE, related_name='clinics')
+    clinic=models.ForeignKey(Clinic, null=True, blank=True,on_delete=models.CASCADE, related_name='clinics')
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='team_assigned')
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
 
 
 class PatientHandover(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handovers')
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True, related_name='rooms')
-    team = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handover_team')
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='handover_team')
     status = models.CharField(max_length=30, choices=[
         ('waiting_for_payment', 'Waiting for Payment'),
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
@@ -245,12 +233,10 @@ class PatientHandover(models.Model):
 
     
 class Appointment(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='appointments')
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='teams')
     appointment_date = models.DateTimeField()
-    reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -259,6 +245,7 @@ class Appointment(models.Model):
 class VitalSigns(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vital_signs')
+    room=models.ForeignKey(Room,null=True, on_delete=models.CASCADE,related_name='clinic_room')
     body_temperature=models.CharField(max_length=10, null=True, blank=True)
     pulse_rate=models.CharField(max_length=10, null=True, blank=True)
     respiration_rate=models.CharField(max_length=10, null=True, blank=True)
@@ -296,171 +283,172 @@ class ClinicalNote(models.Model):
     def __str__(self):
         return f"notes for: {self.patient.file_no}"
 
-class Phatology(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
+# class Phatology(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
 
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+#     def get_absolute_url(self):
+#         return reverse('lab_details', args=[self.user])
 
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
 
-
-class Radiology(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
-
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
-
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
 
 
-class Pharmacy(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
+# class Radiology(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
 
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
 
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
+
+
+# class Pharmacy(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
+
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
+
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
 
     
-class Physio(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
+# class Physio(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
 
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
 
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
-
-
-class Ward(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
-
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
-
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
 
 
-class Theatre(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
+# class Ward(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
 
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
 
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
-
-
-class ICU(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
-
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
-
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
 
 
-class NHIS(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('transaction date', auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+# class Theatre(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
 
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
 
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
-
-
-class PandO(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
-
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
-
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
 
 
-class Audit(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
+# class ICU(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
 
-    def full_name(self):
-        return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
 
-    def __str__(self):
-        if self.user:
-            return f"{self.full_name}"
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
+
+
+# class NHIS(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     created = models.DateTimeField('transaction date', auto_now_add=True)
+#     updated = models.DateTimeField(auto_now=True)
+
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
+
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
+
+
+# class PandO(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
+
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
+
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
+
+
+# class Audit(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
+
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
+
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"

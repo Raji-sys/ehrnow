@@ -65,6 +65,9 @@
             <th class="">
               Department
             </th>
+            <th class="">
+              Unit
+            </th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-stone-300">
@@ -83,6 +86,9 @@
             </td>
             <td class="whitespace-nowrap">
               {{ p.department|default_if_none:'' }}
+            </td>
+            <td class="whitespace-nowrap">
+              {{ p.unit|default_if_none:'' }}
             </td>
           </tr>
           {% empty %}

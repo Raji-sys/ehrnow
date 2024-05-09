@@ -41,16 +41,11 @@ urlpatterns = [
     path('record/patient/<str:file_no>/', PatientFolderView.as_view(), name='patient_details'),
     path('record/patient/update-patient/<int:pk>/', UpdatePatientView.as_view(), name='update_patient'),
     path('record/patient/follow-up/<int:pk>/', FollowUpVisitCreateView.as_view(), name='follow_up'),
-    path('record/clinic', ClinicView.as_view(), name='clinic'),
-    path('ae/', AEClinicView.as_view(), name='ae_clinic'),
-    path('gopd/', GOPDClinicView.as_view(), name='gopd_clinic'),
-    path('sopd/', SOPDClinicView.as_view(), name='sopd_clinic'),
-    path('room/<int:room_id>/', RoomView.as_view(), name='room_detail'),
+
     # path('follow-up-patients-waiting-payment/', FollowUpPayListView.as_view(), name='follow_up_pay_dash'),
     path('medical-record/patient-movement/record-dashboard/', RecordDashboardView.as_view(), name='record_dash'),
-    path('assign-clinic/<int:pk>/', AssignClinicView.as_view(), name='assign_clinic'),
-    path('clinic/<str:clinic_name>/patients/', PatientsByClinicListView.as_view(), name='clinic_patients'),
-    path('clinic/<str:clinic_name>/follow-up-patients/', FollowUpPatientsByClinicListView.as_view(), name='clinic_follow_up_patients'),
+
+
 
     # Payment Clerk URLs
     path('revenue/paypoint-dash/record/', RevenueRecordView.as_view(), name='record_revenue'),
@@ -62,50 +57,18 @@ urlpatterns = [
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
 
     # Consultation
+    path('clinics/', ClinicListView.as_view(), name='clinic_list'),
+    path('clinic/<int:pk>/', ClinicDetailView.as_view(), name='clinic_details'),
+    path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room_details'),
+
     path('clinic/waiting-for-consultation/', ConsultationWaitRoomView.as_view(), name="waiting_for_consultation"),
     path('waiting-consultation/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
     path('clinic/consultation-finished/', ConsultationFinishView.as_view(), name="consultation_finished"),
     path('clinic/awaiting-review/', AwaitingReviewView.as_view(), name="waiting_for_review"),
+ 
 
-    # New URLs
-    path('patient-seen/<int:handover_id>/', PatientSeenByDoctorView.as_view(), name='patient_seen'),
-    path('patient-awaiting-review/<int:handover_id>/', PatientAwaitingReviewView.as_view(), name='patient_awaiting_review'),
     path('patients-awaiting-review/', PatientAwaitingReviewListView.as_view(), name='patients_awaiting_review'),
-    # # Receptionist URLs
-    # path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
- 
-    # path('record/create-patient/', PatientCreateView.as_view(), name='new_patient'),
-    # path('record/patient-list/', PatientListView.as_view(), name='patient_list'),
-    # path('record/patient/<str:file_no>/',PatientFolderView.as_view(), name='patient_details'),
-    # path('record/patient/update-patient/<int:pk>/',UpdatePatientView.as_view(), name='update_patient'),
-    # path('record/patient/follow-up/<int:pk>/', FollowUpVisitCreateView.as_view(), name='follow_up'),
- 
-    # path('record/clinic', ClinicView.as_view(), name='clinic'),
-    #  path('ae/', AEClinicView.as_view(), name='ae_clinic'),
-    # path('gopd/', GOPDClinicView.as_view(), name='gopd_clinic'),
-    # path('sopd/', SOPDClinicView.as_view(), name='sopd_clinic'),
-    # path('room/<int:room_id>/', RoomView.as_view(), name='room_detail'),
-    # path('follow-up-patients-waiting-payment/', FollowUpPayListView.as_view(), name='follow_up_pay_dash'),
-    # path('medical-record/patient-movement/record-dashboard/', RecordDashboardView.as_view(), name='record_dash'),
-    # path('assign-clinic/<int:pk>/',AssignClinicView.as_view(), name='assign_clinic'),
-    # path('clinic/<str:clinic_name>/patients/', PatientsByClinicListView.as_view(), name='clinic_patients'),
-    # path('clinic/<str:clinic_name>/follow-up-patients/', FollowUpPatientsByClinicListView.as_view(), name='clinic_follow_up_patients'),
- 
-    # # # Payment Clerk URLs
-    # path('revenue/paypoint-dash/record/', RevenueRecordView.as_view(), name='record_revenue'),
-    # path('revenue/paypoint/<int:handover_id>/', PaypointView.as_view(), name='paypoint'),
-    # path('revenue/paypoint-dash/', PaypointDashboardView.as_view(), name='paypoint_dash'),
-
-    # #Nursing
-    # path('nursing/nursing-station/', NursingDeskView.as_view(), name='nursing_station'),
-    # path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
-
-    # #consultation
-    # path('clinic/waiting-for-consultation/',ConsultationWaitRoomView.as_view(),name="waiting_for_consultation"),
-    # path('waiting-consultation/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
-    # path('clinic/consultation-finished/',ConsultationFinishView.as_view(),name="consultation_finished"),
-    # path('clinic/awaiting-review/',AwaitingReviewView.as_view(),name="waiting_for_review"),
-
+    
     # path('report/', views.report, name='report'),
 
     # path('gen_report/', GenReportView.as_view(), name='gen_report'),

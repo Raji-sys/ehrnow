@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{clinic.name}}
+{%for r in rooms %}
+<h1><a href="{{r.get_absolute_url}}">{{r.name}}</a></h1>
+
+{%endfor%}
+{% endblock %}

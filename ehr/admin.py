@@ -10,6 +10,12 @@ admin.site.index_title="EHR NOW"
 admin.site.site_title="EHR NOW"
 
 
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user','full_name','department','unit','phone')
+    search_fields = ('unit',)
+    list_filter = ('unit',)
+
 @admin.register(PatientData)
 class PatientAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'gender', 'dob', 'phone',)
@@ -52,19 +58,23 @@ class ClinicAdmin(admin.ModelAdmin):
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('clinic','name')
+    list_display = ('clinic','name',)
     search_fields = ('clinic','name')
     list_filter = ('clinic','name')
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name','clinic')
-    search_fields = ('name','clinic')
-    list_filter = ('name','clinic')
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
 
-@admin.register(VitalSigns)
-class VitalSignAdmin(admin.ModelAdmin):
-    list_display = ('patient',)
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(Unit)
+class UnitAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 
 @admin.register(ClinicalNote)

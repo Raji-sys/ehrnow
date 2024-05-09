@@ -3,8 +3,7 @@
 {% block content %}
   <ul>
     {% for c in clinics %}
-      <li>{{ c.name }} </li>
-      <li>{{ c.get_absolute_url }} </li>
+      <li><a href="{{c.get_absolute_url}}">{{ c.name }}</a></li>
     {% empty %}
       <li>No clinics found for</li>
     {% endfor %}

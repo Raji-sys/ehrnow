@@ -71,9 +71,11 @@ class PatientForm(forms.ModelForm):
 
 class VisitForm(forms.ModelForm):
     clinic = forms.ModelChoiceField(queryset=Clinic.objects.all())
+    team = forms.ModelChoiceField(queryset=Team.objects.all())
+
     class Meta:
         model = FollowUpVisit
-        fields = ['clinic']
+        fields = ['clinic','team']
     
     def __init__(self, *args, **kwargs):
         super(VisitForm, self).__init__(*args, **kwargs)
@@ -86,8 +88,7 @@ class VisitForm(forms.ModelForm):
 class PaypointForm(forms.ModelForm):
     class Meta:
         model = Paypoint
-        # fields = ['service','status']
-        fields = ['status']
+        fields = ['receipt_no','status']
    
     def __init__(self, *args, **kwargs):
         super(PaypointForm, self).__init__(*args, **kwargs)
@@ -100,7 +101,7 @@ class PaypointForm(forms.ModelForm):
 class VitalSignsForm(forms.ModelForm):
     class Meta:
         model = VitalSigns
-        fields = ['body_temperature', 'pulse_rate', 'weight']
+        fields = ['body_temperature', 'pulse_rate', 'weight','room']
 
     def __init__(self, *args, **kwargs):
         super(VitalSignsForm, self).__init__(*args, **kwargs)
