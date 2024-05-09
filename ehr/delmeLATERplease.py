@@ -196,3 +196,76 @@ class PatientSeenByDoctorView(DoctorRequiredMixin, UpdateView):
         handover.save()
         messages.success(self.request, 'Patient seen by doctor.')
         return redirect(self.success_url)
+
+
+
+# <!-- ehr/nurse/nursing_desk.html -->
+# {% extends 'base.html' %}
+
+# {% block content %}
+#   <h2>Patient Handovers</h2>
+
+#   <form>
+#     <label for="clinic">Filter by Clinic:</label>
+#     <select id="clinic" name="clinic">
+#       <option value="">All Clinics</option>
+#       {% for clinic in clinics %}
+#         <option value="{{ clinic.pk }}">{{ clinic.name }}</option>
+#       {% endfor %}
+#     </select>
+
+#     <label for="room">Filter by Room:</label>
+#     <select id="room" name="room">
+#       <option value="">All Rooms</option>
+#       {% for room in rooms %}
+#         <option value="{{ room.pk }}">{{ room.name }}</option>
+#       {% endfor %}
+#     </select>
+
+#     <label for="status">Filter by Status:</label>
+#     <select id="status" name="status">
+#       <option value="">All Statuses</option>
+#       <option value="waiting_for_vital_signs">Waiting for Vital Signs</option>
+#       <option value="waiting_for_consultation">Waiting for Consultation</option>
+#       <option value="awaiting_review">Awaiting Review</option>
+#       <!-- Add more options for other statuses -->
+#     </select>
+
+#     <button type="submit">Filter</button>
+#   </form>
+
+#   {% if handovers %}
+#     <table>
+#       <thead>
+#         <tr>
+#           <th>Patient</th>
+#           <th>Clinic</th>
+#           <th>Room</th>
+#           <th>Status</th>
+#           <th>Actions</th>
+#         </tr>
+#       </thead>
+#       <tbody>
+#         {% for handover in handovers %}
+#           <tr>
+#             <td>{{ handover.patient }}</td>
+#             <td>{{ handover.clinic.name }}</td>
+#             <td>{{ handover.room.name }}</td>
+#             <td>{{ handover.status }}</td>
+#             <td>
+#               {% if handover.status == 'waiting_for_vital_signs' %}
+#                 <a href="{% url 'vital_signs' handover.patient.file_no %}">Take Vital Signs</a>
+#               {% elif handover.status == 'waiting_for_consultation' %}
+#                 <a href="{% url 'consultation' handover.patient.file_no %}">Start Consultation</a>
+#               {% elif handover.status == 'awaiting_review' %}
+#                 <a href="{% url 'review' handover.patient.file_no %}">Review Patient</a>
+#               {% endif %}
+#             </td>
+#           </tr>
+#         {% endfor %}
+#       </tbody>
+#     </table>
+#   {% else %}
+#     <p>No patients found.</p>
+#   {% endif %}
+# {% endblock %}

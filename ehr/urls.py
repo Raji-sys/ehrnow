@@ -22,7 +22,7 @@ urlpatterns = [
     path('get-started/revenue', RevenueView.as_view(), name='revenue'),
     path('get-started/nursing', NursingView.as_view(), name='nursing'),
  
-    path('get-started/clinic-dashboard/', ClinicDashView.as_view(), name='clinic_dash'),
+    path('get-started/clinic-dashboard/', ClinicDashView.as_view(), name='clinic_list'),
     path('get-started/radiology', RadiologyView.as_view(), name='radiology'),
     path('get-started/phatology', PhatologyView.as_view(), name='phatology'),
  
@@ -50,6 +50,7 @@ urlpatterns = [
     # Payment Clerk URLs
     path('revenue/paypoint-dash/record/', RevenueRecordView.as_view(), name='record_revenue'),
     path('revenue/paypoint/<int:handover_id>/', PaypointView.as_view(), name='paypoint'),
+    path('revenue/paypoint-follow-up/<int:handover_id>/', PaypointFollowUpView.as_view(), name='paypoint_follow_up'),
     path('revenue/paypoint-dash/', PaypointDashboardView.as_view(), name='paypoint_dash'),
 
     # Nursing

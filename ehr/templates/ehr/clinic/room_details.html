@@ -1,5 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{room.name}}</h1>
+  <h2>Room: {{ room.name }}</h2>
+
+  {% if handovers %}
+    <table>
+      <thead>
+        <tr>
+          <th>Patient</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for handover in handovers %}
+          <tr>
+            <td>{{ handover.patient }}</td>
+            <td>{{ handover.status }}</td>
+            <td>
+              {% if handover.status == 'waiting_for_consultation' %}
+                <a href="{% url 'consultation' handover.patient.file_no %}">Start Consultation</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No patients assigned to this room.</p>
+  {% endif %}
 {% endblock %}

@@ -88,7 +88,7 @@ class Team(models.Model):
     
 class PatientData(models.Model):
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
-    title = models.CharField(max_length=300, null=True, blank=True)
+    title = models.CharField(max_length=7, null=True, blank=True)
     last_name = models.CharField(max_length=300, blank=True, null=True)
     first_name = models.CharField(max_length=300, blank=True, null=True)
     other_name = models.CharField(max_length=300, blank=True, null=True)
@@ -187,7 +187,7 @@ class Services(models.Model):
     name=models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     def __str__(self):
-        return self.name
+        return f"{self.name}---{self.price}"
 
     class Meta:
         verbose_name_plural = 'hospital services'
@@ -206,6 +206,8 @@ class Paypoint(models.Model):
     def get_absolute_url(self):
         return reverse('pay_details', args=[self.user])
 
+    def get_service_info(self):
+        return f"{self.service.name} - {self.service.price}"
 
 class FollowUpVisit(models.Model):
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
@@ -216,11 +218,31 @@ class FollowUpVisit(models.Model):
 
 
 class PatientHandover(models.Model):
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+        ('SPINE SOPD', 'SPINE SOPD'),
+        ('GOPD', 'GOPD')
+    ]
+
+    ROOM_CHOICES = [
+        ('ROOM 1', 'ROOM 1'),
+        ('ROOM 2', 'ROOM 2'),
+        ('ROOM 3', 'ROOM 3')
+    ]
+
+    TEAM_CHOICES = [
+        ('WHITE', 'WHITE'),
+        ('GREEN', 'GREEN'),
+        ('BLUE', 'BLUE'),
+        ('YELLOW', 'YELLOW')
+    ]
+
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='handovers')
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True, related_name='rooms')
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='handover_team')
-    status = models.CharField(max_length=30, choices=[
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
+    room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
+    team = models.CharField(max_length=30, null=True, choices=TEAM_CHOICES)
+    status = models.CharField(max_length=30, null=True, choices=[
         ('waiting_for_payment', 'Waiting for Payment'),
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
         ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
@@ -228,9 +250,11 @@ class PatientHandover(models.Model):
         ('seen_by_doctor', 'seen_by_doctor'),
         ('awaiting_review', 'awaiting_review'),
     ])
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    class Meta:
+        unique_together = ('patient', 'clinic', 'room')
     
 class Appointment(models.Model):
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
@@ -245,7 +269,6 @@ class Appointment(models.Model):
 class VitalSigns(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vital_signs')
-    room=models.ForeignKey(Room,null=True, on_delete=models.CASCADE,related_name='clinic_room')
     body_temperature=models.CharField(max_length=10, null=True, blank=True)
     pulse_rate=models.CharField(max_length=10, null=True, blank=True)
     respiration_rate=models.CharField(max_length=10, null=True, blank=True)
