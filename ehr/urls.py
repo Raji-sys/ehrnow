@@ -53,22 +53,34 @@ urlpatterns = [
     path('revenue/paypoint-follow-up/<int:handover_id>/', PaypointFollowUpView.as_view(), name='paypoint_follow_up'),
     path('revenue/paypoint-dash/', PaypointDashboardView.as_view(), name='paypoint_dash'),
 
-    # Nursing
-    path('nursing/nursing-station/', NursingDeskView.as_view(), name='nursing_station'),
+    #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
 
+    # AE
+    path('nursing/nursing-station/', AENursingDeskView.as_view(), name='nursing_station_ae'),
+
     # Consultation
-    path('clinics/', ClinicListView.as_view(), name='clinic_list'),
-    path('clinic/<int:pk>/', ClinicDetailView.as_view(), name='clinic_details'),
+    path('clinics/', AEClinicListView.as_view(), name='ae_clinic'),
+    path('clinic/ae/', AEClinicDetailView.as_view(), name='ae_details'),
     path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room_details'),
 
-    path('clinic/waiting-for-consultation/', ConsultationWaitRoomView.as_view(), name="waiting_for_consultation"),
-    path('waiting-consultation/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
-    path('clinic/consultation-finished/', ConsultationFinishView.as_view(), name="consultation_finished"),
-    path('clinic/awaiting-review/', AwaitingReviewView.as_view(), name="waiting_for_review"),
- 
+    path('clinic/ae/waiting-for-consultation/', AEConsultationWaitRoomView.as_view(), name="waiting_for_consultation_ae"),
+    path('waiting-consultation/ae/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical'),
+    path('clinic/ae/consultation-finished/', AEConsultationFinishView.as_view(), name="consultation_finished_ae"),
+    path('clinic/ae/awaiting-review/', AEAwaitingReviewView.as_view(), name="waiting_for_review_ae"),
+   
+    #SOPD
+    path('nursing/nursing-station-sopd/', SOPDNursingDeskView.as_view(), name='nursing_station_sopd'),
 
-    path('patients-awaiting-review/', PatientAwaitingReviewListView.as_view(), name='patients_awaiting_review'),
+    # Consultation
+    path('clinics/', SOPDClinicListView.as_view(), name='sopd_clinic'),
+    path('clinic/sopd/', SOPDClinicDetailView.as_view(), name='sopd_details'),
+    path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room_details'),
+
+    path('clinic/sopd/waiting-for-consultation/', SOPDConsultationWaitRoomView.as_view(), name="waiting_for_consultation_sopd"),
+    path('waiting-consultation/sopd/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
+    path('clinic/consultation-finished/', SOPDConsultationFinishView.as_view(), name="consultation_finished_sopd"),
+    path('clinic/awaiting-review/', SOPDAwaitingReviewView.as_view(), name="waiting_for_review_sopd"),
     
     # path('report/', views.report, name='report'),
 

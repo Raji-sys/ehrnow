@@ -65,11 +65,21 @@ class Profile(models.Model):
             return f"{self.full_name()}"
 
 
-class Clinic(models.Model):
+class AEClinic(models.Model):
     name = models.CharField(null=True, blank=True, max_length=200)
     
     def get_absolute_url(self):
-        return reverse('clinic_details', args=[self.pk])
+        return reverse('ae_details', args=[self.pk])
+
+    def __str__(self):
+        if self.name:
+            return f"{self.name}"
+
+class SOPDClinic(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=200)
+    
+    def get_absolute_url(self):
+        return reverse('sopd_details', args=[self.pk])
 
     def __str__(self):
         if self.name:
@@ -117,8 +127,14 @@ class PatientData(models.Model):
            ('UNCLE','UNCLE'),('AUNT','AUNT'),('NEPHEW','NEPHEW'),('NIECE','NIECE'),('GRANDFATHER','GRANDFATHER'),('GRANDMOTHER','GRANDMOTHTER'),
            ('GRANDSON','GRANDSON'),('GRANDDAUGHTER','GRANDAUGHTER'),('COUSIN','COUSIN'),('OTHER','OTHER'))
     nok_rel = models.CharField('relationship with next of kin',choices=rel, max_length=300, null=True, blank=True)
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+        ('SPINE SOPD', 'SPINE SOPD'),
+        ('GOPD', 'GOPD')
+    ]
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     # nok_photo = models.ImageField('first next of kin photo', null=True, blank=True)
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True, blank=True, related_name='patients')
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -163,7 +179,13 @@ class PatientData(models.Model):
     #     return False
 
 class Room(models.Model):
-    clinic = models.ForeignKey('Clinic', on_delete=models.CASCADE, related_name='clinic_rooms',null=True, blank=True)
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+        ('SPINE SOPD', 'SPINE SOPD'),
+        ('GOPD', 'GOPD')
+    ]
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     name = models.CharField(null=True, blank=True, max_length=100)
     waiting_since = models.DateTimeField(auto_now_add=True,null=True,blank=True)
 
@@ -210,8 +232,15 @@ class Paypoint(models.Model):
         return f"{self.service.name} - {self.service.price}"
 
 class FollowUpVisit(models.Model):
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+        ('SPINE SOPD', 'SPINE SOPD'),
+        ('GOPD', 'GOPD')
+    ]
+
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
-    clinic=models.ForeignKey(Clinic, null=True, blank=True,on_delete=models.CASCADE, related_name='clinics')
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='team_assigned')
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
@@ -257,8 +286,15 @@ class PatientHandover(models.Model):
         unique_together = ('patient', 'clinic', 'room')
     
 class Appointment(models.Model):
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+        ('SPINE SOPD', 'SPINE SOPD'),
+        ('GOPD', 'GOPD')
+    ]
+
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='appointments')
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='teams')
     appointment_date = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)

@@ -269,3 +269,120 @@ class PatientSeenByDoctorView(DoctorRequiredMixin, UpdateView):
 #     <p>No patients found.</p>
 #   {% endif %}
 # {% endblock %}
+
+
+# {% extends 'base.html' %}
+# {% load static %}
+
+# {% block title %}WAITING FOR CONSULTATION{% endblock %}
+
+# {% block page_title %}<div class="enom flex justify-center">WAITING FOR CONSULTATION</div>{% endblock %}
+
+# {% block content %}
+
+# <div class="mt-5 p-4">
+#     <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-2">
+#         {% for message in messages %}
+#         <div class="">
+#             <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
+#                 <a href class="uk-alert-close font-bold" uk-close></a>
+#                 <p class="text-green-700 font-semibold">{{ message }}</p>
+#             </div>
+#         </div>
+#         {% endfor %}
+#     </section>
+
+#     <div class="max-w-6xl mx-auto rounded-xl p-4 shadow-black shadow-2xl bg-emerald-50">
+#         <div class="overflow-x-auto">
+#             {% for clinic, room_groups in grouped_patients.items %}
+#             <h2 class="text-lg font-bold mb-4">Clinic: {{ clinic }}</h2>
+#             {% for room, patients in room_groups.items %}
+#             <h3 class="text-md font-semibold mb-2">Room: {{ room }}</h3>
+#             <table class="min-w-full divide-y divide-emerald-500">
+#                 <thead class="bg-emerald-100">
+#                     <tr>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">S/N</th>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">FILE NUMBER</th>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PATIENT NAME</th>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PHONE NUMBER</th>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PROCESS</th>
+#                     </tr>
+#                 </thead>
+#                 <tbody class="bg-white divide-y divide-emerald-200">
+#                     {% for patient in patients %}
+#                     <tr class="bg-emerald-50 hover:bg-emerald-200 transition-colors duration-300">
+#                         <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+#                         <td class="px-6 py-4 whitespace-nowrap">{{ patient.file_no|default_if_none:'' }}</td>
+#                         <td class="px-6 py-4 whitespace-nowrap">{{ patient.full_name|default_if_none:'' }}</td>
+#                         <td class="px-6 py-4 whitespace-nowrap">{{ patient.phone|default_if_none:'' }}</td>
+#                         <td class="px-6 py-4 whitespace-nowrap">
+#                             <a href="{{ patient.get_absolute_url }}">process</a>
+#                         </td>
+#                     </tr>
+#                     {% endfor %}
+#                 </tbody>
+#             </table>
+#             {% endfor %}
+#             {% endfor %}
+#         </div>
+#     </div>
+# </div>
+
+# {% endblock %}
+
+# {% extends 'base.html' %}
+# {% load static %}
+
+# {% block title %}NURSING DESK{% endblock %}
+
+# {% block page_title %}<div class="enom flex justify-center">NURSING DESK</div>{% endblock %}
+
+# {% block content %}
+# <div class="mt-5 p-4">
+#     <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-2">
+#         {% for message in messages %}
+#         <div class="">
+#             <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
+#                 <a href class="uk-alert-close font-bold" uk-close></a>
+#                 <p class="text-green-700 font-semibold">{{ message }}</p>
+#             </div>
+#         </div>
+#         {% endfor %}
+#     </section>
+
+#     <div class="max-w-6xl mx-auto rounded-xl p-4 shadow-black shadow-2xl bg-emerald-50">
+#         <div class="overflow-x-auto">
+#             {% for clinic, room_groups in grouped_patients.items %}
+#             <h2 class="text-lg font-bold mb-4">Clinic: {{ clinic }}</h2>
+#             {% for room, patients in room_groups.items %}
+#             <h3 class="text-md font-semibold mb-2">Room: {{ room }}</h3>
+#             <table class="min-w-full divide-y divide-emerald-500">
+#                 <thead class="bg-emerald-100">
+#                     <tr>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">S/N</th>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">FILE NUMBER</th>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PATIENT NAME</th>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PHONE NUMBER</th>
+#                         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PROCESS</th>
+#                     </tr>
+#                 </thead>
+#                 <tbody class="bg-white divide-y divide-emerald-200">
+#                     {% for patient in patients %}
+#                     <tr class="bg-emerald-50 hover:bg-emerald-200 transition-colors duration-300">
+#                         <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+#                         <td class="px-6 py-4 whitespace-nowrap">{{ patient.file_no|default_if_none:'' }}</td>
+#                         <td class="px-6 py-4 whitespace-nowrap">{{ patient.full_name|default_if_none:'' }}</td>
+#                         <td class="px-6 py-4 whitespace-nowrap">{{ patient.phone|default_if_none:'' }}</td>
+#                         <td class="px-6 py-4 whitespace-nowrap">
+#                             <a href="{{ patient.get_absolute_url }}">process</a>
+#                         </td>
+#                     </tr>
+#                     {% endfor %}
+#                 </tbody>
+#             </table>
+#             {% endfor %}
+#             {% endfor %}
+#         </div>
+#     </div>
+# </div>
+# {% endblock %}

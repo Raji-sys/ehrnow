@@ -16,15 +16,17 @@
       {% endfor %}
     </section>
     <div class="grid grid-cols-2 md:grid-cols-5 gap-6 uppercase text-center rounded-xl p-4 md:p-10  shadow-md shadow-emerald-700 bg-white">
-        {% for c in clinics %}
         <div>
-            <a href="{{c.get_absolute_url}}" class="text-xs md:text-sm font-semibold text-slate-600">
+            <a href="{%url 'ae_details' %}" class="text-xs md:text-sm font-semibold text-slate-600">
                 <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    {{c.name}}</div>
+                    ACCIDENT AND EMERGENCY</div>
                 </a>
             </div>
-            {% empty %}
-            <h1 class="text-center">No clinics found for</h1>
-        {% endfor %}
+        <div>
+            <a href="{%url 'sopd_details' %}" class="text-xs md:text-sm font-semibold text-slate-600">
+                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    SOPD</div>
+                </a>
+            </div>
     </div>
 {%endblock%}

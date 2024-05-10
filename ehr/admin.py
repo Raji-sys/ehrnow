@@ -51,7 +51,11 @@ class ServicesAdmin(admin.ModelAdmin):
     list_filter = ('type','name')
 
 
-@admin.register(Clinic)
+@admin.register(SOPDClinic)
+class ClinicAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(AEClinic)
 class ClinicAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
