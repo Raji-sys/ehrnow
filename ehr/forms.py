@@ -2,8 +2,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django import forms
 from .models import *
-from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
-from django_summernote.fields import SummernoteTextFormField
 
 class CustomUserCreationForm(UserCreationForm):
     middle_name = forms.CharField(max_length=30, required=False)
@@ -134,22 +132,30 @@ class AppointmentForm(forms.ModelForm):
 
 
 class ClinicalNoteForm(forms.ModelForm):
-    # for form.Form only 
-    note=forms.CharField(widget=SummernoteWidget())
-    # note=SummernoteTextFormField() 
     class Meta:
         model = ClinicalNote
-        fields = ['note', 'handover_status']
-        widgets={
-            'note':SummernoteWidget(),
-        }
+        fields = ('note', 'handover_status',)
+
     handover_status = forms.ChoiceField(choices=[
-        ('seen_by_doctor', 'Seen by Doctor'),
+        ('seen', 'Seen'),
         ('awaiting_review', 'Awaiting Review')
     ])
 
     def __init__(self, *args, **kwargs):
         super(ClinicalNoteForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
+
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Services
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(ServiceForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(

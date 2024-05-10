@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django_fastdev',
     'import_export',
     'fontawesomefree',
-    'django_summernote',
+    'django_quill',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +139,26 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+QUILL_CONFIGS = {
+    'default': {
+        'theme': 'snow',
+        'modules': {
+            'syntax': True,
+            'toolbar': [
+                [
+                    {'font': []},
+                    {'header': []},
+                    {'align': []},
+                    'bold', 'italic', 'underline', 'strike', 'blockquote',
+                    {'color': []},
+                    {'background': []},
+                    {'script': 'sub'},
+                    {'script': 'super'}, 
+                ],
+                ['code-block', 'link'],
+                ['clean'],
+            ]
+        }
+    }
+}

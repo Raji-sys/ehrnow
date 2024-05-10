@@ -151,7 +151,7 @@
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ c.user }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ c.note|safe }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ c.note.html|safe }}</td>
               </tr>
             <a href="{% url 'new_appointment' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">appointment</a>
               {%empty%}

@@ -5,7 +5,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils import timezone
-
+from django_quill.fields import QuillField
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -208,6 +208,8 @@ class Services(models.Model):
     type=models.ForeignKey(ServiceType,null=True, on_delete=models.CASCADE)
     name=models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return f"{self.name}---{self.price}"
 
@@ -266,7 +268,7 @@ class PatientHandover(models.Model):
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
         ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
         ('waiting_for_consultation', 'Waiting for Consultation'),
-        ('seen_by_doctor', 'seen_by_doctor'),
+        ('seen', 'seen'),
         ('awaiting_review', 'awaiting_review'),
     ])
 
@@ -324,7 +326,7 @@ class VitalSigns(models.Model):
 class ClinicalNote(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='clinical_notes')
-    note=models.TextField(null=True, blank=True)
+    note=QuillField(null=True, blank=True)
 
     """
     this need the to be choice 
@@ -343,7 +345,6 @@ class ClinicalNote(models.Model):
 
     def __str__(self):
         return f"notes for: {self.patient.file_no}"
-
 
 # class Phatology(models.Model):
 #     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)

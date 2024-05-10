@@ -25,3 +25,13 @@ class AppointmentFilter(django_filters.FilterSet):
     class Meta:
         model = Appointment
         fields = ['patient','date','clinic','team']
+
+
+class ServiceFilter(django_filters.FilterSet):
+    type=django_filters.CharFilter(label='CATEGORY', field_name="type",lookup_expr='iexact')
+    name=django_filters.CharFilter(label='SERVICE',field_name="name",lookup_expr='iexact')                                                                                                     
+    updated = django_filters.DateFilter(label="date", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+
+    class Meta:
+        model = Appointment
+        fields = ['type','name','updated']
