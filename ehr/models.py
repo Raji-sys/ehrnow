@@ -241,7 +241,6 @@ class FollowUpVisit(models.Model):
 
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
     clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='team_assigned')
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
 
@@ -259,18 +258,9 @@ class PatientHandover(models.Model):
         ('ROOM 2', 'ROOM 2'),
         ('ROOM 3', 'ROOM 3')
     ]
-
-    TEAM_CHOICES = [
-        ('WHITE', 'WHITE'),
-        ('GREEN', 'GREEN'),
-        ('BLUE', 'BLUE'),
-        ('YELLOW', 'YELLOW')
-    ]
-
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
     clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
-    team = models.CharField(max_length=30, null=True, choices=TEAM_CHOICES)
     status = models.CharField(max_length=30, null=True, choices=[
         ('waiting_for_payment', 'Waiting for Payment'),
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
@@ -292,11 +282,17 @@ class Appointment(models.Model):
         ('SPINE SOPD', 'SPINE SOPD'),
         ('GOPD', 'GOPD')
     ]
+    TEAM_CHOICES = [
+        ('WHITE', 'WHITE'),
+        ('GREEN', 'GREEN'),
+        ('BLUE', 'BLUE'),
+        ('YELLOW', 'YELLOW')
+    ]
 
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
     clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, related_name='teams')
-    appointment_date = models.DateTimeField()
+    team = models.CharField(max_length=30, null=True, choices=TEAM_CHOICES)
+    date = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

@@ -71,11 +71,10 @@ class PatientForm(forms.ModelForm):
 
 class VisitForm(forms.ModelForm):
     clinic = forms.ChoiceField(choices=PatientHandover.CLINIC_CHOICES, required=False)
-    team = forms.ChoiceField(choices=PatientHandover.TEAM_CHOICES, required=False)
 
     class Meta:
         model = FollowUpVisit
-        fields = ['clinic','team']
+        fields = ['clinic']
     
     def __init__(self, *args, **kwargs):
         super(VisitForm, self).__init__(*args, **kwargs)
@@ -104,15 +103,35 @@ class VitalSignsForm(forms.ModelForm):
         fields = [
             'body_temperature', 'pulse_rate', 'respiration_rate',
             'blood_pressure', 'blood_oxygen', 'blood_glucose',
-            'weight', 'height', 'clinic', 'room', 'team'
+            'weight', 'height','handover_room',
         ]
-
+    handover_room = forms.ChoiceField(choices=[
+        ('ROOM 1', 'ROOM 1'),
+        ('ROOM 2', 'ROOM 2')
+    ])
     def __init__(self, *args, **kwargs):
         super(VitalSignsForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
+
+
+class AppointmentForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        exclude=['patient','created','updated']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(AppointmentForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
 
 class ClinicalNoteForm(forms.ModelForm):
     # for form.Form only 

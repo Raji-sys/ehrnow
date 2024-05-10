@@ -24,9 +24,9 @@
 <form method="post" enctype="multipart/form-data" >
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
-<div>
-  {% for field in form %}
-  <div class="grid grid-cols-3 p-2 gap-4">
+    <div class="grid grid-cols-3 p-2 gap-4">
+    {% for field in form %}
+    <div>
     <div class="flex justify-center">
       <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
     </div>

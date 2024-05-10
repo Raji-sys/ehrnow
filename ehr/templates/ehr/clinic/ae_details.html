@@ -39,15 +39,20 @@
 
     <div class="md:col-span-1 bg-white rounded-xl shadow-black shadow-2xl m-2">
         <div class="grid grid-cols-1 gap-6 uppercase text-center rounded-xl p-8 md:p-14 bg-gray-50">
-            {%for r in rooms %}
             <div>
-                <a href="{{r.get_absolute_url}}" >
+                <a href="{%url 'ae_room_1' %}" >
                     <div class="hover:bg-slate-600 hover:text-white bg-white text-slate-800 rounded-2xl shadow-2xl p-2 md:p-6 border-2 border-white-400 transition duration-300">
-                        <div class="font-semibold text-xs md:text-sm">{{r.name}}</div>
+                        <div class="font-semibold text-xs md:text-sm">ROOM 1</div>
                     </div>
                 </a>
             </div>
-            {%endfor%}
+            <div>
+                <a href="{%url 'ae_room_2' %}" >
+                    <div class="hover:bg-slate-600 hover:text-white bg-white text-slate-800 rounded-2xl shadow-2xl p-2 md:p-6 border-2 border-white-400 transition duration-300">
+                        <div class="font-semibold text-xs md:text-sm">ROOM 2</div>
+                    </div>
+                </a>
+            </div>
           
     </div>
 </div>

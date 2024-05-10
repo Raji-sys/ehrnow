@@ -217,6 +217,10 @@ class StaffDashboardView(TemplateView):
 class MedicalRecordView(TemplateView):
     template_name = "ehr/dashboard/medical_record.html"
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AppointmentView(TemplateView):
+    template_name = "ehr/record/appointment.html"
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class RevenueView(TemplateView):
@@ -388,8 +392,8 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
     success_url = reverse_lazy("medical_record")
 
     def get_object(self, queryset=None):
-        patient_id = self.kwargs.get('pk')
-        return PatientData.objects.get(id=patient_id)
+        file_no = self.kwargs.get('file_no')
+        return PatientData.objects.get(file_no=file_no)
 
     def form_valid(self, form):
         patient = self.get_object()
@@ -398,8 +402,7 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
         visit.save()
 
         clinic = form.cleaned_data['clinic']
-        team = form.cleaned_data['team']
-        PatientHandover.objects.update_or_create(patient=patient,clinic=clinic,team=team,status='waiting_for_payment')
+        PatientHandover.objects.update_or_create(patient=patient,clinic=clinic,status='waiting_for_payment')
 
         messages.success(self.request, 'Follow-up visit created successfully')
         return redirect(self.success_url)
@@ -573,7 +576,6 @@ class SOPDNursingDeskView(LoginRequiredMixin, ListView):
         return context
 
 
-
 class VitalSignCreateView(CreateView):
     model = VitalSigns
     form_class = VitalSignsForm
@@ -592,8 +594,9 @@ class VitalSignCreateView(CreateView):
         patient_handover = PatientHandover.objects.filter(patient=patient_data).first()
         if patient_handover:
             patient_handover.status = 'waiting_for_consultation'
+            patient_handover.room = form.cleaned_data['handover_room']
             patient_handover.save()
-
+    
         # Call parent form_valid method
         return super().form_valid(form)
 
@@ -610,7 +613,7 @@ class VitalSignCreateView(CreateView):
     def get_success_url(self):
         # Redirect to nursing station page after successful form submission
         messages.success(self.request, 'Vitals taken, Patient handed over for consultation.')
-        return reverse_lazy('nursing_station')    
+        return self.object.patient.get_absolute_url()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -637,6 +640,34 @@ class AEConsultationWaitRoomView(DoctorRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = PatientHandover.objects.filter(status='waiting_for_consultation',clinic="A & E")
+        return queryset
+   
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+class AERoom1View(DoctorRequiredMixin, ListView):
+    model = PatientHandover
+    template_name = 'ehr/clinic/ae_room1.html'
+    context_object_name = 'handovers'
+
+
+    def get_queryset(self):
+        queryset = PatientHandover.objects.filter(status='waiting_for_consultation',clinic="A & E",room='ROOM 1')
+        return queryset
+   
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+class AERoom2View(DoctorRequiredMixin, ListView):
+    model = PatientHandover
+    template_name = 'ehr/clinic/ae_room2.html'
+    context_object_name = 'handovers'
+
+
+    def get_queryset(self):
+        queryset = PatientHandover.objects.filter(status='waiting_for_consultation',clinic="A & E",room='ROOM 2')
         return queryset
    
     def get_context_data(self, **kwargs):
@@ -689,8 +720,7 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
 
     def get_success_url(self):
         messages.success(self.request, 'PATIENT SEEN.')
-        return reverse_lazy('clinic')
-
+        return self.object.patient.get_absolute_url()
 
 class AEConsultationFinishView(ListView):
     model = PatientHandover
@@ -738,4 +768,55 @@ class SOPDAwaitingReviewView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        return context
+    
+class AppointmentCreateView(RecordRequiredMixin, CreateView):
+        model = Appointment
+        form_class = AppointmentForm
+        template_name = 'ehr/record/new_appointment.html'
+        success_url = reverse_lazy("medical_record")
+        
+        def form_valid(self, form):
+            form.instance.user = self.request.user
+            form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+            self.object = form.save()
+
+            messages.success(self.request, 'Appointment created successfully')
+            return super().form_valid(form)
+
+
+class AppointmentUpdateView(UpdateView):
+    model = Appointment
+    template_name = 'ehr/record/update_appt.html'
+    form_class = PatientForm
+    success_url = reverse_lazy("medical_record")
+
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Appointment Updated Successfully')
+        if form.is_valid():
+            form.save()
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error updating appointment information')
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class AppointmentListView(ListView):
+    model=Appointment
+    template_name='ehr/record/appointment_list.html'
+    context_object_name='appointments'
+    paginate_by = 10
+
+    def get_queryset(self):
+        appointment = super().get_queryset().order_by('-updated_at')
+        appointment_filter = AppointmentFilter(self.request.GET, queryset=appointment)
+        return appointment_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['appointmentFilter'] = AppointmentFilter(self.request.GET, queryset=self.get_queryset())
         return context

@@ -26,7 +26,7 @@
       <div class="text-md text-gray-700">age:<span class="text-lg text-green-700 ">{{ patient.age|default_if_none:''|upper }}</span></div>
     </div>
     <div>
-      <a href="{%url 'follow_up' patient.file_no%}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+      <a href="{%url 'follow_up' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
     </div>
     <ul class="text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 border-b-2 mb-16" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
       <li><a href="#" class="rounded-lg m-4">BIODATA</a></li>
@@ -67,7 +67,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="{% url 'new_appointment' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">

@@ -15,3 +15,9 @@ class PatientFilter(django_filters.FilterSet):
     class Meta:
         model = PatientData
         fields = ['file_no']
+
+class AppointmentFilter(django_filters.FilterSet):
+
+    class Meta:
+        model = Appointment
+        fields = ['patient__file_no','date','clinic','team']
