@@ -99,10 +99,6 @@ class PaypointForm(forms.ModelForm):
 
 
 class VitalSignsForm(forms.ModelForm):
-    clinic = forms.ChoiceField(choices=PatientHandover.CLINIC_CHOICES, required=False)
-    room = forms.ChoiceField(choices=PatientHandover.ROOM_CHOICES, required=False)
-    team = forms.ChoiceField(choices=PatientHandover.TEAM_CHOICES, required=False)
-
     class Meta:
         model = VitalSigns
         fields = [

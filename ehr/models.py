@@ -303,7 +303,13 @@ class Appointment(models.Model):
 
 
 class VitalSigns(models.Model):
+    ROOM_CHOICES = [
+        ('ROOM 1', 'ROOM 1'),
+        ('ROOM 2', 'ROOM 2'),
+        ('ROOM 3', 'ROOM 3')
+    ]
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vital_signs')
     body_temperature=models.CharField(max_length=10, null=True, blank=True)
     pulse_rate=models.CharField(max_length=10, null=True, blank=True)
