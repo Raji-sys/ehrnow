@@ -17,7 +17,11 @@ class PatientFilter(django_filters.FilterSet):
         fields = ['file_no']
 
 class AppointmentFilter(django_filters.FilterSet):
+    date = django_filters.DateFilter(label="date", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    patient=django_filters.CharFilter(label='file no.', field_name="patient__file_no",lookup_expr='exact')
+    clinic=django_filters.CharFilter(label='clinic',field_name="clinic",lookup_expr='iexact')                                                                                                     
+    team=django_filters.CharFilter(label='team',field_name="team",lookup_expr='iexact')                                                                                                     
 
     class Meta:
         model = Appointment
-        fields = ['patient__file_no','date','clinic','team']
+        fields = ['patient','date','clinic','team']

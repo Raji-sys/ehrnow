@@ -217,10 +217,6 @@ class StaffDashboardView(TemplateView):
 class MedicalRecordView(TemplateView):
     template_name = "ehr/dashboard/medical_record.html"
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class AppointmentView(TemplateView):
-    template_name = "ehr/record/appointment.html"
-
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class RevenueView(TemplateView):
@@ -774,21 +770,22 @@ class AppointmentCreateView(RecordRequiredMixin, CreateView):
         model = Appointment
         form_class = AppointmentForm
         template_name = 'ehr/record/new_appointment.html'
-        success_url = reverse_lazy("medical_record")
-        
+
         def form_valid(self, form):
             form.instance.user = self.request.user
             form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
             self.object = form.save()
-
-            messages.success(self.request, 'Appointment created successfully')
             return super().form_valid(form)
+        
+        def get_success_url(self):
+            messages.success(self.request, 'APPOINTMENT ADDED')
+            return self.object.patient.get_absolute_url()
 
 
 class AppointmentUpdateView(UpdateView):
     model = Appointment
     template_name = 'ehr/record/update_appt.html'
-    form_class = PatientForm
+    form_class = AppointmentForm
     success_url = reverse_lazy("medical_record")
 
     
@@ -807,7 +804,7 @@ class AppointmentUpdateView(UpdateView):
 
 class AppointmentListView(ListView):
     model=Appointment
-    template_name='ehr/record/appointment_list.html'
+    template_name='ehr/record/appointment.html'
     context_object_name='appointments'
     paginate_by = 10
 
