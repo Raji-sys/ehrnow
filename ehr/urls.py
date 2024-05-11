@@ -35,7 +35,7 @@ urlpatterns = [
     path('get-started/audit', AuditView.as_view(), name='audit'),
 
     # Receptionist URLs
-    path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
+    # path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
     path('record/create-patient/', PatientCreateView.as_view(), name='new_patient'),
     path('record/patient-list/', PatientListView.as_view(), name='patient_list'),
     path('record/patient/update-patient/<int:pk>/', UpdatePatientView.as_view(), name='update_patient'),
@@ -45,15 +45,19 @@ urlpatterns = [
     path('record/patient/<str:file_no>/', PatientFolderView.as_view(), name='patient_details'),
     path('record/patient/follow-up/<str:file_no>/', FollowUpVisitCreateView.as_view(), name='follow_up'),
 
-    path('medical-record/patient-movement/record-dashboard/', RecordDashboardView.as_view(), name='record_dash'),
+    # path('medical-record/patient-movement/record-dashboard/', RecordDashboardView.as_view(), name='record_dash'),
 
 
 
     # Payment Clerk URLs
     path('revenue/paypoint-dash/record/', RevenueRecordView.as_view(), name='record_revenue'),
     path('revenue/paypoint/<int:handover_id>/', PaypointView.as_view(), name='paypoint'),
-    path('revenue/paypoint-follow-up/<int:handover_id>/', PaypointFollowUpView.as_view(), name='paypoint_follow_up'),
     path('revenue/paypoint-dash/', PaypointDashboardView.as_view(), name='paypoint_dash'),
+
+    path('revenue/follow-up/<int:handover_id>/', PaypointFollowUpView.as_view(), name='paypoint_follow_up'),
+    path('revenue/follow-up/', PaypointFollowUpDashboardView.as_view(), name='follow_up_pay_dash'),
+    
+
     path('get-started/service-dash', ServiceView.as_view(), name='service_dash'),
     path('revenue/add-service/', ServiceCreateView.as_view(), name='add_service'),
     path('revenue/service-list/', ServiceListView.as_view(), name='service_list'),
@@ -70,9 +74,9 @@ urlpatterns = [
     path('nursing/nursing-station/', AENursingDeskView.as_view(), name='nursing_station_ae'),
 
     # Consultation
-    path('ae_clinics/', AEClinicListView.as_view(), name='ae_clinic'),
+    # path('ae_clinics/', AEClinicListView.as_view(), name='ae_clinic'),
     path('clinic/ae/', AEClinicDetailView.as_view(), name='ae_details'),
-    path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room_details'),
+    # path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room_details'),
 
     path('clinic/ae/waiting-for-consultation/', AEConsultationWaitRoomView.as_view(), name="waiting_for_consultation_ae"),
     path('clinic/ae/waiting-for-consultation/room-1/', AERoom1View.as_view(), name="ae_room_1"),
@@ -85,9 +89,9 @@ urlpatterns = [
     path('nursing/nursing-station-sopd/', SOPDNursingDeskView.as_view(), name='nursing_station_sopd'),
 
     # Consultation
-    path('sopd_clinics/', SOPDClinicListView.as_view(), name='sopd_clinic'),
+    # path('sopd_clinics/', SOPDClinicListView.as_view(), name='sopd_clinic'),
     path('clinic/sopd/', SOPDClinicDetailView.as_view(), name='sopd_details'),
-    path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room_details'),
+    # path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room_details'),
 
     path('clinic/sopd/waiting-for-consultation/', SOPDConsultationWaitRoomView.as_view(), name="waiting_for_consultation_sopd"),
     path('waiting-consultation/sopd/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
@@ -103,6 +107,4 @@ urlpatterns = [
 
     # path('stats/', StatsView.as_view(), name='stats'),
     # path('notice/', NoticeView.as_view(), name='notice'),
-
-
 ]

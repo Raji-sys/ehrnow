@@ -1,7 +1,7 @@
 {% extends 'base.html'%}
 {% load static %}
-{%block title%}REVENUE DASHBOARD{%endblock%}
-{%block page_title%}<div class="enom flex justify-center">FOLLOW UP PATIENT DASHBOARD</div>{%endblock%}
+{%block title%}WAITING FOR CONSULTATION{%endblock%}
+{%block page_title%}<div class="enom flex justify-center">WAITING FOR CONSULTATION(SOPD ROOM 2)</div>{%endblock%}
 {%block content %}
 <div class="mt-5 p-4">
   <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-2">
@@ -28,6 +28,12 @@
           PHONE NUMBER
         </th>
         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+          CLINIC
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+          ROOM
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
           PROCESS
         </th>
       </tr>
@@ -48,7 +54,13 @@
           {{ h.patient.phone|default_if_none:'' }}
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
-          <a href="{%url 'paypoint_follow_up' h.id %}">follow payment</a>
+          {{ h.clinic|default_if_none:'' }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          {{ h.room|default_if_none:'' }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <a href="{{h.patient.get_absolute_url}}">process</a>
         </td>        
       </tr>
       {% endfor %}
@@ -56,5 +68,6 @@
   </table>
 </div>
 </div>
+
 </div>
 {% endblock %}

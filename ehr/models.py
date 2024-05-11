@@ -242,7 +242,7 @@ class FollowUpVisit(models.Model):
         ('GOPD', 'GOPD')
     ]
 
-    patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE,related_name='follow_up')
     clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
@@ -270,7 +270,7 @@ class PatientHandover(models.Model):
         ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
         ('waiting_for_consultation', 'Waiting for Consultation'),
         ('seen', 'seen'),
-        ('awaiting_review', 'awaiting_review'),
+        ('awaiting_review', 'awaitingreview'),
     ])
 
     created_at = models.DateTimeField(auto_now_add=True)

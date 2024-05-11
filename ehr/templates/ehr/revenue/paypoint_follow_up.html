@@ -1,10 +1,11 @@
 {% extends 'base.html'%}
 {% load static %}
-{%block title%}NEW REGISTRATION PAYMENT{%endblock%}
-{%block page_title%}<div class="flex justify-center enom">Payment Details</div>{%endblock%}
+{%block title%}FOLLOW UP PAYMENT{%endblock%}
+{%block page_title%}<div class="flex justify-center enom">FOLLOW UP PAYMENT</div>{%endblock%}
 {%block content %}
 <div class="">
     <div class="uk-overlay rounded-3xl bg-white uk-position-center">
+      <h3 class="flex justify-center text-green-700">Payment Details</h3>
         <p>Patient: {{patient}}</p>    
         <p>Service: {{service_name}}</p>    
         <p>Price: {{service_price}}</p>    

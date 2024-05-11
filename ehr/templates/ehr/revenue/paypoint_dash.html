@@ -48,11 +48,7 @@
           {{ h.patient.phone|default_if_none:'' }}
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
-          {%if h.patient.appointments.team %}
-          <a href="{%url 'paypoint_follow_up' h.patient.id %}">follow up</a>
-          {%else%}
-          <a href="{%url 'paypoint' h.patient.id %}">new</a>
-          {%endif%}
+          <a href="{%url 'paypoint' h.patient.id %}">new payment</a>
         </td>        
       </tr>
       {% endfor %}

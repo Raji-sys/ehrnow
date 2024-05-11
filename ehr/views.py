@@ -413,9 +413,31 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
         return redirect(self.success_url)
 
 
-class RecordDashboardView(RecordRequiredMixin, ListView):
+# class RecordDashboardView(RecordRequiredMixin, ListView):
+#     model = PatientHandover
+#     template_name = 'ehr/record/record_dash.html'
+#     context_object_name = 'handovers'
+
+#     def get_queryset(self):
+#         return PatientHandover.objects.filter(status__in=['waiting_for_payment'])
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         return context
+
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class PatientMovementView(ListView):
+#     model = PatientHandover
+#     template_name = "ehr/record/patient_moves.html"
+
+#     def get_queryset(self):
+#         status_values = ('waiting_for_payment', 'waiting_for_vital_signs', 'waiting_for_clinic_assignment', 'waiting_for_consultation')
+#         return PatientHandover.objects.filter(status__in=status_values)
+
+
+class PaypointDashboardView(RevenueRequiredMixin, ListView):
     model = PatientHandover
-    template_name = 'ehr/record/record_dash.html'
+    template_name = 'ehr/revenue/paypoint_dash.html'
     context_object_name = 'handovers'
 
     def get_queryset(self):
@@ -425,32 +447,21 @@ class RecordDashboardView(RecordRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         return context
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class PatientMovementView(ListView):
+class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
     model = PatientHandover
-    template_name = "ehr/record/patient_moves.html"
-
-    def get_queryset(self):
-        status_values = ('waiting_for_payment', 'waiting_for_vital_signs', 'waiting_for_clinic_assignment', 'waiting_for_consultation')
-        return PatientHandover.objects.filter(status__in=status_values)
-
-
-class PaypointDashboardView(RevenueRequiredMixin, ListView):
-    model = PatientHandover
-    template_name = 'ehr/revenue/paypoint_dash.html'
+    template_name = 'ehr/revenue/follow_up_pay_dash.html'
     context_object_name = 'handovers'
 
     def get_queryset(self):
-        return PatientHandover.objects.filter(status='waiting_for_payment')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
+        return PatientHandover.objects.filter(
+            status__in=['waiting_for_payment'],
+            # clinic='Follow Up'  # Or any other clinic for follow-up visits
+        )
 
 class PaypointView(RevenueRequiredMixin, FormView):
     template_name = 'ehr/revenue/paypoint.html'
     form_class = PaypointForm
+    success_url = reverse_lazy("revenue")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -469,20 +480,17 @@ class PaypointView(RevenueRequiredMixin, FormView):
         handover = get_object_or_404(PatientHandover, id=handover_id)
         patient = handover.patient
         new_registration_service = Services.objects.get(name='new registration')
-        payment = Paypoint.objects.create(
-            patient=patient,
-            status='paid',
-            service=new_registration_service
-        )
+        payment = Paypoint.objects.create(patient=patient,status='paid',service=new_registration_service)
         handover.status = 'waiting_for_vital_signs'
         handover.save()
         messages.success(self.request, 'Payment successful. Patient handed over for vital signs.')
-        return redirect('revenue')
+        return super().form_valid(form)
 
 
 class PaypointFollowUpView(RevenueRequiredMixin, FormView):
     template_name = 'ehr/revenue/paypoint_follow_up.html'
     form_class = PaypointForm
+    success_url = reverse_lazy("revenue")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -500,86 +508,41 @@ class PaypointFollowUpView(RevenueRequiredMixin, FormView):
         handover_id = self.kwargs.get('handover_id')
         handover = get_object_or_404(PatientHandover, id=handover_id)
         patient = handover.patient
-        follow_up = Services.objects.get(name='follow up')
+
+        follow_up_service = Services.objects.get(name='follow up')
         payment = Paypoint.objects.create(
             patient=patient,
             status='paid',
-            service=follow_up
+            service=follow_up_service
         )
+
         handover.status = 'waiting_for_vital_signs'
         handover.save()
-        messages.success(self.request, 'Payment successful. Patient handed over for vital signs.')
-        return redirect('revenue')
+
+        messages.success(self.request, 'Payment successful. Patient handed over for follow-up consultation.')
+        return super().form_valid(form)
 
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class AEClinicListView(ListView):
-    model = AEClinic
-    template_name = "ehr/clinic/ae_list.html"
-    context_object_name = 'clinics'
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class AEClinicListView(ListView):
+#     model = AEClinic
+#     template_name = "ehr/clinic/ae_list.html"
+#     context_object_name = 'clinics'
   
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class AEClinicDetailView(TemplateView):
     template_name = 'ehr/clinic/ae_details.html'
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class SOPDClinicListView(ListView):
-    model = SOPDClinic
-    template_name = "ehr/clinic/sopd_list.html"
-    context_object_name = 'clinics'
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class SOPDClinicListView(ListView):
+#     model = SOPDClinic
+#     template_name = "ehr/clinic/sopd_list.html"
+#     context_object_name = 'clinics'
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class SOPDClinicDetailView(TemplateView):
     template_name = 'ehr/clinic/sopd_details.html'
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class RoomDetailView(DetailView):
-    template_name = 'ehr/clinic/room_details.html'
-    model = Room
-    context_object_name='handovers'
-
-    def get_queryset(self):
-        cl_room=self.request.GET.get('room')
-        queryset = PatientHandover.objects.filter(room=cl_room)
-        return queryset
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-
-class AENursingDeskView(LoginRequiredMixin, ListView):
-    model = PatientHandover
-    template_name = 'ehr/nurse/ae_nursing_desk.html'
-    context_object_name = 'handovers'
-
-    def get_queryset(self):
-        queryset = PatientHandover.objects.filter(
-            status='waiting_for_vital_signs',
-            clinic="A & E"
-        )
-        return queryset
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-
-class SOPDNursingDeskView(LoginRequiredMixin, ListView):
-    model = PatientHandover
-    template_name = 'ehr/nurse/sopd_nursing_desk.html'
-    context_object_name = 'handovers'
-
-    def get_queryset(self):
-        queryset = PatientHandover.objects.filter(
-            status='waiting_for_vital_signs',
-            clinic="SOPD"
-        )
-        return queryset
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
 
 
 class VitalSignCreateView(CreateView):
@@ -644,12 +607,28 @@ class ClinicListView(DoctorRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(
-            status=self.status_filter,
-            clinic=self.clinic_filter,
-            room=self.room_filter
-        )
-    
+        filters = {
+            'status': self.status_filter,
+            'clinic': self.clinic_filter,
+        }
+        if self.room_filter is not None:
+            filters['room'] = self.room_filter
+        return queryset.filter(**filters)
+
+
+class AENursingDeskView(LoginRequiredMixin, ListView):
+    template_name = 'ehr/nurse/ae_nursing_desk.html'
+    status_filter = 'waiting_for_vital_signs'
+    clinic_filter = "A & E"
+    room_filter = None
+
+
+class SOPDNursingDeskView(ClinicListView):
+    template_name = 'ehr/nurse/sopd_nursing_desk.html'
+    status_filter = 'waiting_for_vital_signs'
+    clinic_filter = "SOPD"
+    room_filter = None
+
 class AEConsultationWaitRoomView(ClinicListView):
     template_name = 'ehr/clinic/ae_list.html'
     status_filter = 'waiting_for_consultation'
@@ -676,7 +655,20 @@ class SOPDConsultationWaitRoomView(ClinicListView):
     clinic_filter = "SOPD"
     room_filter = None
 
-    
+class AERoom1View(ClinicListView):
+    template_name = 'ehr/clinic/sopd_room1.html'
+    status_filter = 'waiting_for_consultation'
+    clinic_filter = "SOPD"
+    room_filter = 'ROOM 1'
+
+
+class AERoom2View(ClinicListView):
+    template_name = 'ehr/clinic/sopd_room2.html'
+    status_filter = 'waiting_for_consultation'
+    clinic_filter = "SOPD"
+    room_filter = 'ROOM 2'
+
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
     model = ClinicalNote
