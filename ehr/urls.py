@@ -58,6 +58,10 @@ urlpatterns = [
     path('revenue/add-service/', ServiceCreateView.as_view(), name='add_service'),
     path('revenue/service-list/', ServiceListView.as_view(), name='service_list'),
     path('revenue/update-service/<int:pk>/', ServiceUpdateView.as_view(), name='update_service'),
+    path('get-started/revenue/transactions/', TransactionView.as_view(), name='transaction_dash'),
+    path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
+    path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
+    path('revenue/update-payment/<int:pk>/', ServiceUpdateView.as_view(), name='update_pay'),
 
     #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),

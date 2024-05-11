@@ -293,6 +293,11 @@ class ServiceView(TemplateView):
     template_name = "ehr/dashboard/service.html"
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class TransactionView(TemplateView):
+    template_name = "ehr/dashboard/transaction.html"
+
+
 # Mixins
 class RecordRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
@@ -822,7 +827,7 @@ class ServiceListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        type = super().get_queryset().order_by('type')
+        type = super().get_queryset().order_by('-type')
         service_filter = ServiceFilter(self.request.GET, queryset=type)
         return service_filter.qs
 
@@ -831,4 +836,53 @@ class ServiceListView(ListView):
         total_services = self.get_queryset().count()
         context['serviceFilter'] = ServiceFilter(self.request.GET, queryset=self.get_queryset())
         context['total_services'] = total_services
+        return context
+
+
+class PayCreateView(RevenueRequiredMixin, CreateView):
+        model = Paypoint
+        form_class = PayForm
+        template_name = 'ehr/revenue/new_pay.html'
+        success_url = reverse_lazy("pay_list")
+
+        def form_valid(self, form):
+            messages.success(self.request, 'PAYMENT ADDED')
+            return super().form_valid(form)
+
+ 
+class PayUpdateView(UpdateView):
+    model = Paypoint
+    template_name = 'ehr/revenue/update_pay.html'
+    form_class = PayForm
+    success_url = reverse_lazy("pay_list")
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Payment Updated Successfully')
+        if form.is_valid():
+            form.save()
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error updating appointment information')
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class PayListView(ListView):
+    model=Paypoint
+    template_name='ehr/revenue/pay_list.html'
+    context_object_name='pays'
+    paginate_by = 5
+
+    def get_queryset(self):
+        updated = super().get_queryset().order_by('-updated')
+        pay_filter = PayFilter(self.request.GET, queryset=updated)
+        return pay_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pay_total = self.get_queryset().count()
+        context['payFilter'] = PayFilter(self.request.GET, queryset=self.get_queryset())
+        context['pay_total'] = pay_total
         return context

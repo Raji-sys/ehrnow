@@ -220,15 +220,16 @@ class Services(models.Model):
         return reverse('service_details', args=[self.type])
 
 class Paypoint(models.Model):
-    # user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     service=models.ForeignKey(Services,null=True, on_delete=models.CASCADE)
     receipt_no=models.CharField('Receipt Number',null=True,blank=True,max_length=100)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'),('paid', 'Paid'),], default='pending')
     updated = models.DateTimeField(auto_now=True)
+    created = models.DateField(auto_now=True)
 
     def get_absolute_url(self):
-        return reverse('pay_details', args=[self.user])
+        return reverse('pay_details', args=[self.service])
 
     def get_service_info(self):
         return f"{self.service.name} - {self.service.price}"
