@@ -679,8 +679,8 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
         form.instance.user = self.request.user
         form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         self.object = form.save()
-
-        patient_handovers = PatientHandover.objects.filter(patient=form.instance.patient)
+        clinic_name = self.request.GET.get('clinic')
+        patient_handovers = PatientHandover.objects.filter(patient=form.instance.patient,clinic=clinic_name)
         for patient_handover in patient_handovers:
             patient_handover.status = form.cleaned_data['handover_status']
             patient_handover.save()
@@ -702,28 +702,28 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
 
 
 class AEConsultationFinishView(ClinicListView):
-    template_name = 'ehr/doctor/patient_seen.html'
+    template_name = 'ehr/doctor/ae_patient_seen.html'
     status_filter = 'seen'
     clinic_filter = 'A & E'
     room_filter = None
 
 
 class AEAwaitingReviewView(ClinicListView):
-    template_name = 'ehr/doctor/review_patient.html'
-    status_filter = 'awaiting_review'
+    template_name = 'ehr/doctor/ae_review_patient.html'
+    status_filter = 'review'
     clinic_filter = 'A & E'
     room_filter = None
 
 
 class SOPDConsultationFinishView(ClinicListView):
-    template_name = 'ehr/doctor/patient_seen.html'
+    template_name = 'ehr/doctor/sopd_patient_seen.html'
     status_filter = 'seen'
     clinic_filter = 'SOPD'
     room_filter = None
 
 class SOPDAwaitingReviewView(ClinicListView):
-    template_name = 'ehr/doctor/review_patient.html'
-    status_filter = 'awaiting_review'
+    template_name = 'ehr/doctor/sopd_review_patient.html'
+    status_filter = 'review'
     clinic_filter = 'SOPD'
     room_filter = None
     

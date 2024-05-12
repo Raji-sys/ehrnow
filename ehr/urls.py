@@ -82,8 +82,8 @@ urlpatterns = [
     path('clinic/ae/waiting-for-consultation/room-1/', AERoom1View.as_view(), name="ae_room_1"),
     path('clinic/ae/waiting-for-consultation/room-2/', AERoom2View.as_view(), name="ae_room_2"),
     path('waiting-consultation/ae/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
-    path('clinic/ae/consultation-finished/', AEConsultationFinishView.as_view(), name="consultation_finished_ae"),
-    path('clinic/ae/awaiting-review/', AEAwaitingReviewView.as_view(), name="waiting_for_review_ae"),
+    path('clinic/ae/ae-consultation-finished/', AEConsultationFinishView.as_view(), name="consultation_finished_ae"),
+    path('clinic/ae/ae-awaiting-review/', AEAwaitingReviewView.as_view(), name="waiting_for_review_ae"),
    
     #SOPD
     path('nursing/nursing-station-sopd/', SOPDNursingDeskView.as_view(), name='nursing_station_sopd'),
@@ -97,8 +97,8 @@ urlpatterns = [
     path('clinic/sopd/waiting-for-consultation/room-1/', SOPDRoom1View.as_view(), name="sopd_room_1"),
     path('clinic/sopd/waiting-for-consultation/room-2/', SOPDRoom2View.as_view(), name="sopd_room_2"),
     path('waiting-consultation/sopd/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
-    path('clinic/consultation-finished/', SOPDConsultationFinishView.as_view(), name="consultation_finished_sopd"),
-    path('clinic/awaiting-review/', SOPDAwaitingReviewView.as_view(), name="waiting_for_review_sopd"),
+    path('clinic/sopd/sopd-consultation-finished/', SOPDConsultationFinishView.as_view(), name="consultation_finished_sopd"),
+    path('clinic/sopd/sopd-awaiting-review/', SOPDAwaitingReviewView.as_view(), name="waiting_for_review_sopd"),
     
     # path('report/', views.report, name='report'),
 

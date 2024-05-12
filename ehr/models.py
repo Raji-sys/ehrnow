@@ -277,7 +277,7 @@ class PatientHandover(models.Model):
         ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
         ('waiting_for_consultation', 'Waiting for Consultation'),
         ('seen', 'seen'),
-        ('awaiting_review', 'awaitingreview'),
+        ('review', 'review'),
     ])
 
     created_at = models.DateTimeField(auto_now_add=True)
