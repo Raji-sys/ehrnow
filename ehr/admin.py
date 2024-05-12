@@ -50,15 +50,6 @@ class ServicesAdmin(admin.ModelAdmin):
     list_filter = ('type','name')
 
 
-@admin.register(SOPDClinic)
-class ClinicAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-
-@admin.register(AEClinic)
-class ClinicAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-
-
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('clinic','name',)
@@ -83,5 +74,17 @@ class UnitAdmin(admin.ModelAdmin):
 @admin.register(ClinicalNote)
 class ClinicNoteAdmin(admin.ModelAdmin):
     list_display = ('patient','user','note',)
+    search_fields = ('patient',)
+    list_filter = ('patient',)
+
+@admin.register(PatientHandover)
+class HandoverAdmin(admin.ModelAdmin):
+    list_display = ('patient','status','clinic','room')
+    search_fields = ('patient',)
+    list_filter = ('patient',)
+
+@admin.register(VitalSigns)
+class VitalSignAdmin(admin.ModelAdmin):
+    list_display = ('patient',)
     search_fields = ('patient',)
     list_filter = ('patient',)

@@ -23,7 +23,7 @@ from django.db.models import Count
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib import messages
 from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView
-from django.db.models import Prefetch
+from django.db.models import F
 User = get_user_model()
 
 
@@ -298,6 +298,16 @@ class TransactionView(TemplateView):
     template_name = "ehr/dashboard/transaction.html"
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AEClinicDetailView(TemplateView):
+    template_name = 'ehr/clinic/ae_details.html'
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class SOPDClinicDetailView(TemplateView):
+    template_name = 'ehr/clinic/sopd_details.html'
+
+
 # Mixins
 class RecordRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
@@ -407,7 +417,13 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
         visit.save()
 
         clinic = form.cleaned_data['clinic']
-        PatientHandover.objects.update_or_create(patient=patient,clinic=clinic,status='waiting_for_payment')
+
+        # Check if a PatientHandover object exists for the patient and clinic
+        patient_handover, _ = PatientHandover.objects.get_or_create(
+            patient=patient,
+            clinic=clinic,
+            defaults={'status': 'waiting_for_payment'}
+        )
 
         messages.success(self.request, 'Follow-up visit created successfully')
         return redirect(self.success_url)
@@ -447,158 +463,141 @@ class PaypointDashboardView(RevenueRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         return context
 
+
 class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'ehr/revenue/follow_up_pay_dash.html'
     context_object_name = 'handovers'
 
     def get_queryset(self):
+        # Get all follow-up visits waiting for payment
+        follow_up_visits = FollowUpVisit.objects.filter(patient__handovers__status='waiting_for_payment')
+
+        # Get distinct clinic choices from these follow-up visits
+        clinic_choices = follow_up_visits.values_list('clinic', flat=True).distinct()
+
+        # Filter PatientHandover objects based on clinics with follow-up visits waiting for payment
         return PatientHandover.objects.filter(
-            status__in=['waiting_for_payment'],
-            # clinic='Follow Up'  # Or any other clinic for follow-up visits
+            status='waiting_for_payment',  # Only include handovers waiting for payment
+            clinic__in=clinic_choices
         )
 
-class PaypointView(RevenueRequiredMixin, FormView):
+    
+# class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
+#     model = PatientHandover
+#     template_name = 'ehr/revenue/follow_up_pay_dash.html'
+#     context_object_name = 'handovers'
+
+#     def get_queryset(self):
+#         return PatientHandover.objects.filter(status__in=['waiting_for_payment'])
+
+class PaypointView(RevenueRequiredMixin, CreateView):
     template_name = 'ehr/revenue/paypoint.html'
     form_class = PaypointForm
     success_url = reverse_lazy("revenue")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        handover_id = self.kwargs.get('handover_id')
-        handover = get_object_or_404(PatientHandover, id=handover_id)
-        context['patient'] = handover.patient
-        context['handover'] = handover
-        service_name= 'new registration'
-        service=Services.objects.get(name=service_name)
-        context['service_name']=service.name
-        context['service_price']=service.price
+        file_no = self.kwargs.get('file_no')
+        patient = get_object_or_404(PatientData, file_no=file_no)
+        handover = patient.handovers.filter(clinic='A & E', status='waiting_for_payment').first()
+
+        if handover:
+            context['patient'] = patient
+            context['handover'] = handover
+            service_name = 'new registration'
+            service = Services.objects.get(name=service_name)
+            context['service_name'] = service.name
+            context['service_price'] = service.price
+        else:
+            # Handle the case where no handover object is found
+            pass
+
         return context
 
     def form_valid(self, form):
-        handover_id = self.kwargs.get('handover_id')
-        handover = get_object_or_404(PatientHandover, id=handover_id)
-        patient = handover.patient
-        new_registration_service = Services.objects.get(name='new registration')
-        payment = Paypoint.objects.create(patient=patient,status='paid',service=new_registration_service)
-        handover.status = 'waiting_for_vital_signs'
-        handover.save()
-        messages.success(self.request, 'Payment successful. Patient handed over for vital signs.')
+        file_no = self.kwargs.get('file_no')
+        patient = get_object_or_404(PatientData, file_no=file_no)
+        handover = patient.handovers.filter(clinic='A & E', status='waiting_for_payment').first()
+
+        if handover:
+            new_registration_service = Services.objects.get(name='new registration')
+            payment = Paypoint.objects.create(patient=patient, status='paid', service=new_registration_service)
+            
+            # Update handover status to 'waiting_for_vital_signs'
+            handover.status = 'waiting_for_vital_signs'
+            handover.save()
+            messages.success(self.request, 'Payment successful. Patient handed over for vital signs.')
+        
         return super().form_valid(form)
 
 
-class PaypointFollowUpView(RevenueRequiredMixin, FormView):
+class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
     template_name = 'ehr/revenue/paypoint_follow_up.html'
     form_class = PaypointForm
     success_url = reverse_lazy("revenue")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        handover_id = self.kwargs.get('handover_id')
-        handover = get_object_or_404(PatientHandover, id=handover_id)
-        context['patient'] = handover.patient
-        context['handover'] = handover
-        service_name= 'follow up'
-        service=Services.objects.get(name=service_name)
-        context['service_name']=service.name
-        context['service_price']=service.price
+        file_no = self.kwargs.get('file_no')
+        context['patient'] = get_object_or_404(PatientData, file_no=file_no)
+        service_name = 'follow up'
+        service = Services.objects.get(name=service_name)
+        context['service_name'] = service.name
+        context['service_price'] = service.price
+
         return context
 
     def form_valid(self, form):
-        handover_id = self.kwargs.get('handover_id')
-        handover = get_object_or_404(PatientHandover, id=handover_id)
-        patient = handover.patient
-
+        file_no = self.kwargs.get('file_no')
+        patient = get_object_or_404(PatientData, file_no=file_no)
         follow_up_service = Services.objects.get(name='follow up')
-        payment = Paypoint.objects.create(
-            patient=patient,
-            status='paid',
-            service=follow_up_service
-        )
-
-        handover.status = 'waiting_for_vital_signs'
-        handover.save()
-
-        messages.success(self.request, 'Payment successful. Patient handed over for follow-up consultation.')
+        payment = Paypoint.objects.create(patient=patient, status='paid', service=follow_up_service)
+        
+        # Update handover status to 'waiting_for_vital_signs'
+        patient_handover = patient.handovers.filter(status='waiting_for_payment').first()
+        if patient_handover:
+            patient_handover.status = 'waiting_for_vital_signs'
+            patient_handover.save()
+            messages.success(self.request, 'Payment successful. Patient handed over for vitals.')
+        
         return super().form_valid(form)
 
 
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class AEClinicListView(ListView):
-#     model = AEClinic
-#     template_name = "ehr/clinic/ae_list.html"
-#     context_object_name = 'clinics'
-  
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class AEClinicDetailView(TemplateView):
-    template_name = 'ehr/clinic/ae_details.html'
-
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class SOPDClinicListView(ListView):
-#     model = SOPDClinic
-#     template_name = "ehr/clinic/sopd_list.html"
-#     context_object_name = 'clinics'
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class SOPDClinicDetailView(TemplateView):
-    template_name = 'ehr/clinic/sopd_details.html'
-
-
-class VitalSignCreateView(CreateView):
+class VitalSignCreateView(NurseRequiredMixin,CreateView):
     model = VitalSigns
     form_class = VitalSignsForm
     template_name = 'ehr/nurse/vital_signs.html'
+    success_url = reverse_lazy('nursing')
 
     def form_valid(self, form):
-        # Assign the current user to the instance
         form.instance.user = self.request.user
-        # Retrieve the patient data using file_no from URL kwargs
         patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient_data
-        # Save the form instance
         self.object = form.save()
 
-        # Update patient handover status if exists
-        patient_handover = PatientHandover.objects.filter(patient=patient_data).first()
-        if patient_handover:
+        # Update handover status to 'waiting_for_consultation'
+        patient_handovers = PatientHandover.objects.filter(patient=patient_data)
+        for patient_handover in patient_handovers:
             patient_handover.status = 'waiting_for_consultation'
+            patient_handover.clinic = patient_handover.clinic
             patient_handover.room = form.cleaned_data['handover_room']
             patient_handover.save()
-    
-        # Call parent form_valid method
-        return super().form_valid(form)
 
-    def test_func(self):
-        # Check if user is in nurse group
-        return self.request.user.groups.filter(name='nurse').exists()
+        # If there are no existing handovers, create a new one
+        if not patient_handovers.exists():
+            PatientHandover.objects.create(patient=patient_data, status='waiting_for_consultation')
+
+
+
+        messages.success(self.request, 'Vitals taken, Patient handed over for consultation')
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Retrieve patient data using file_no from URL kwargs
         context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
         return context
 
-    def get_success_url(self):
-        # Redirect to nursing station page after successful form submission
-        messages.success(self.request, 'Vitals taken, Patient handed over for consultation.')
-        return self.object.patient.get_absolute_url()
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class VitalsUpdateView(UpdateView):
-    model = VitalSigns
-    form_class = VitalSignsForm
-    template_name = 'staff/qual-update.html'
-
-    def get_success_url(self):
-        file_number = self.object.file_no
-        messages.success(self.request, 'Patient Information Updated Successfully')
-        return reverse_lazy('patient_folder', kwargs={'file_no': file_number})
-    
-    def form_invalid(self, form):
-        messages.error(self.request, 'Error Updating VitalSigns')
-        return super().form_invalid(form)
     
 ###BASECLINIC###
 class ClinicListView(DoctorRequiredMixin, ListView):
@@ -616,7 +615,7 @@ class ClinicListView(DoctorRequiredMixin, ListView):
         return queryset.filter(**filters)
 
 
-class AENursingDeskView(LoginRequiredMixin, ListView):
+class AENursingDeskView(ClinicListView):
     template_name = 'ehr/nurse/ae_nursing_desk.html'
     status_filter = 'waiting_for_vital_signs'
     clinic_filter = "A & E"
@@ -655,14 +654,14 @@ class SOPDConsultationWaitRoomView(ClinicListView):
     clinic_filter = "SOPD"
     room_filter = None
 
-class AERoom1View(ClinicListView):
+class SOPDRoom1View(ClinicListView):
     template_name = 'ehr/clinic/sopd_room1.html'
     status_filter = 'waiting_for_consultation'
     clinic_filter = "SOPD"
     room_filter = 'ROOM 1'
 
 
-class AERoom2View(ClinicListView):
+class SOPDRoom2View(ClinicListView):
     template_name = 'ehr/clinic/sopd_room2.html'
     status_filter = 'waiting_for_consultation'
     clinic_filter = "SOPD"
@@ -681,11 +680,11 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
         form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         self.object = form.save()
 
-        # Update the related PatientHandover object
-        patient_handover = PatientHandover.objects.filter(patient=form.instance.patient).first()
-        if patient_handover:
+        patient_handovers = PatientHandover.objects.filter(patient=form.instance.patient)
+        for patient_handover in patient_handovers:
             patient_handover.status = form.cleaned_data['handover_status']
             patient_handover.save()
+        
         return super().form_valid(form)
 
     def test_func(self):
@@ -718,7 +717,7 @@ class AEAwaitingReviewView(ClinicListView):
 
 class SOPDConsultationFinishView(ClinicListView):
     template_name = 'ehr/doctor/patient_seen.html'
-    status_filter = 'seen_by_doctor'
+    status_filter = 'seen'
     clinic_filter = 'SOPD'
     room_filter = None
 

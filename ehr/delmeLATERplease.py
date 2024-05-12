@@ -85,3 +85,70 @@ class SOPDAwaitingReviewView(ClinicListView):
     status_filter = 'awaiting_review'
     clinic_filter = 'SOPD'
     room_filter = None
+
+
+
+
+class PaypointView(RevenueRequiredMixin, FormView):
+    template_name = 'ehr/revenue/paypoint.html'
+    form_class = PaypointForm
+    success_url = reverse_lazy("revenue")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        handover_id = self.kwargs.get('handover_id')
+        handover = get_object_or_404(PatientHandover, id=handover_id)
+        context['patient'] = handover.patient
+        context['handover'] = handover
+        service_name= 'new registration'
+        service=Services.objects.get(name=service_name)
+        context['service_name']=service.name
+        context['service_price']=service.price
+        return context
+
+    def form_valid(self, form):
+        handover_id = self.kwargs.get('handover_id')
+        handover = get_object_or_404(PatientHandover, id=handover_id)
+        patient = handover.patient
+        new_registration_service = Services.objects.get(name='new registration')
+        payment = Paypoint.objects.create(patient=patient,status='paid',service=new_registration_service)
+        handover.status = 'waiting_for_vital_signs'
+        handover.save()
+        messages.success(self.request, 'Payment successful. Patient handed over for vital signs.')
+        return super().form_valid(form)
+
+
+class PaypointFollowUpView(RevenueRequiredMixin, FormView):
+    template_name = 'ehr/revenue/paypoint_follow_up.html'
+    form_class = PaypointForm
+    success_url = reverse_lazy("revenue")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        handover_id = self.kwargs.get('handover_id')
+        handover = get_object_or_404(PatientHandover, id=handover_id)
+        context['patient'] = handover.patient
+        context['handover'] = handover
+        service_name= 'follow up'
+        service=Services.objects.get(name=service_name)
+        context['service_name']=service.name
+        context['service_price']=service.price
+        return context
+
+    def form_valid(self, form):
+        handover_id = self.kwargs.get('handover_id')
+        handover = get_object_or_404(PatientHandover, id=handover_id)
+        patient = handover.patient
+
+        follow_up_service = Services.objects.get(name='follow up')
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status='paid',
+            service=follow_up_service
+        )
+
+        handover.status = 'waiting_for_vital_signs'
+        handover.save()
+
+        messages.success(self.request, 'Payment successful. Patient handed over for follow-up consultation.')
+        return super().form_valid(form)

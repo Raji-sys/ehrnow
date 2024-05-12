@@ -65,25 +65,25 @@ class Profile(models.Model):
             return f"{self.full_name()}"
 
 
-class AEClinic(models.Model):
-    name = models.CharField(null=True, blank=True, max_length=200)
+# class AEClinic(models.Model):
+#     name = models.CharField(null=True, blank=True, max_length=200)
     
-    def get_absolute_url(self):
-        return reverse('ae_details', args=[self.pk])
+#     def get_absolute_url(self):
+#         return reverse('ae_details', args=[self.pk])
 
-    def __str__(self):
-        if self.name:
-            return f"{self.name}"
+#     def __str__(self):
+#         if self.name:
+#             return f"{self.name}"
 
-class SOPDClinic(models.Model):
-    name = models.CharField(null=True, blank=True, max_length=200)
+# class SOPDClinic(models.Model):
+#     name = models.CharField(null=True, blank=True, max_length=200)
     
-    def get_absolute_url(self):
-        return reverse('sopd_details', args=[self.pk])
+#     def get_absolute_url(self):
+#         return reverse('sopd_details', args=[self.pk])
 
-    def __str__(self):
-        if self.name:
-            return f"{self.name}"
+#     def __str__(self):
+#         if self.name:
+#             return f"{self.name}"
 
 class Team(models.Model):
     name = models.CharField(null=True, blank=True, max_length=200)
@@ -185,8 +185,14 @@ class Room(models.Model):
         ('SPINE SOPD', 'SPINE SOPD'),
         ('GOPD', 'GOPD')
     ]
+    ROOM_CHOICES = [
+        ('ROOM 1', 'ROOM 1'),
+        ('ROOM 2', 'ROOM 2'),
+        ('ROOM 3', 'ROOM 3')
+    ]
+    # patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='rooms')
+    name = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
     clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
-    name = models.CharField(null=True, blank=True, max_length=100)
     waiting_since = models.DateTimeField(auto_now_add=True,null=True,blank=True)
 
     class Meta:
@@ -233,6 +239,7 @@ class Paypoint(models.Model):
 
     def get_service_info(self):
         return f"{self.service.name} - {self.service.price}"
+    
 
 class FollowUpVisit(models.Model):
     CLINIC_CHOICES = [
@@ -275,8 +282,8 @@ class PatientHandover(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        unique_together = ('patient', 'clinic', 'room')
+    # class Meta:
+    #     unique_together = ('patient', 'clinic', 'room')
     
 class Appointment(models.Model):
     CLINIC_CHOICES = [
@@ -307,9 +314,16 @@ class VitalSigns(models.Model):
         ('ROOM 2', 'ROOM 2'),
         ('ROOM 3', 'ROOM 3')
     ]
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+        ('SPINE SOPD', 'SPINE SOPD'),
+        ('GOPD', 'GOPD')
+    ]
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vital_signs')
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     body_temperature=models.CharField(max_length=10, null=True, blank=True)
     pulse_rate=models.CharField(max_length=10, null=True, blank=True)
     respiration_rate=models.CharField(max_length=10, null=True, blank=True)

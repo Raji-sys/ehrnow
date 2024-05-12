@@ -115,6 +115,26 @@ class VitalSignsForm(forms.ModelForm):
             })
 
 
+class FollowUpVitalSignsForm(forms.ModelForm):
+    class Meta:
+        model = VitalSigns
+        fields = [
+            'body_temperature', 'pulse_rate', 'respiration_rate',
+            'blood_pressure', 'blood_oxygen', 'blood_glucose',
+            'weight', 'height','handover_room',
+        ]
+    handover_room = forms.ChoiceField(choices=[
+        ('ROOM 1', 'ROOM 1'),
+        ('ROOM 2', 'ROOM 2')
+    ])
+    def __init__(self, *args, **kwargs):
+        super(FollowUpVitalSignsForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+
 class AppointmentForm(forms.ModelForm):
     class Meta:
         model = Appointment
