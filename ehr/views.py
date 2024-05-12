@@ -219,6 +219,9 @@ class StaffDashboardView(TemplateView):
 class MedicalRecordView(TemplateView):
     template_name = "ehr/dashboard/medical_record.html"
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PatientMovementView(TemplateView):
+    template_name = "ehr/record/patient_moves.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class RevenueView(TemplateView):
@@ -310,6 +313,7 @@ class SOPDClinicDetailView(TemplateView):
     template_name = 'ehr/clinic/sopd_details.html'
 
 
+
 # Mixins
 class RecordRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
@@ -379,7 +383,27 @@ class PatientListView(ListView):
         context['patientFilter'] = PatientFilter(self.request.GET, queryset=self.get_queryset())
         context['total_patient'] = total_patient
         return context
+
+
+class PatientReportView(ListView):
+    model=PatientData
+    template_name='ehr/report/patient_report.html'
+    context_object_name='patients'
+    paginate_by = 10
+
+    def get_queryset(self):
+        patients = super().get_queryset().order_by('-updated')
+        patient_report_filter = PatientReportFilter(self.request.GET, queryset=patients)
+        return patient_report_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_patient = self.get_queryset().count()
+        context['patientReportFilter'] = PatientReportFilter(self.request.GET, queryset=self.get_queryset())
+        context['total_patient'] = total_patient
+        return context
     
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientFolderView(DetailView):
     template_name = 'ehr/record/patient_folder.html'
@@ -435,28 +459,6 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
 
         messages.success(self.request, 'Follow-up visit created successfully')
         return redirect(self.success_url)
-
-
-# class RecordDashboardView(RecordRequiredMixin, ListView):
-#     model = PatientHandover
-#     template_name = 'ehr/record/record_dash.html'
-#     context_object_name = 'handovers'
-
-#     def get_queryset(self):
-#         return PatientHandover.objects.filter(status__in=['waiting_for_payment'])
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         return context
-
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class PatientMovementView(ListView):
-#     model = PatientHandover
-#     template_name = "ehr/record/patient_moves.html"
-
-#     def get_queryset(self):
-#         status_values = ('waiting_for_payment', 'waiting_for_vital_signs', 'waiting_for_clinic_assignment', 'waiting_for_consultation')
-#         return PatientHandover.objects.filter(status__in=status_values)
 
 
 class PaypointDashboardView(RevenueRequiredMixin, ListView):

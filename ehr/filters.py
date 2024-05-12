@@ -16,6 +16,26 @@ class PatientFilter(django_filters.FilterSet):
         model = PatientData
         fields = ['file_no']
 
+
+class PatientReportFilter(django_filters.FilterSet):
+    file_no = django_filters.CharFilter(label='FILE NUMBER', field_name='file_no')
+    dob_start = django_filters.DateFilter(label="DOB R1", field_name="dob", lookup_expr='lte',widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    dob_end = django_filters.DateFilter(label="DOB R2", field_name="dob", lookup_expr='gte',widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    gender = django_filters.CharFilter(label="GENDER", field_name="gender", lookup_expr='iexact')
+    marital_status = django_filters.CharFilter(label="MARITAL STATUS", field_name="marital_status", lookup_expr='iexact')
+    religion = django_filters.CharFilter(label="RELIGION", field_name="religion", lookup_expr='iexact')
+    occupation = django_filters.CharFilter(label="OCCUPATION", field_name="occupation", lookup_expr='iexact')
+    nationality = django_filters.CharFilter(label="NATIONALITY", field_name="nationality", lookup_expr='iexact')
+    zone = django_filters.CharFilter(label="ZONE", field_name="zone", lookup_expr='iexact')
+    state = django_filters.CharFilter(label="STATE", field_name="state", lookup_expr='iexact')
+    lga = django_filters.CharFilter(label="LGA", field_name="lga", lookup_expr='iexact')
+    address = django_filters.CharFilter(label="ADDRESS", field_name="address", lookup_expr='icontains')
+
+    class Meta:
+        model = PatientData
+        fields = ['file_no','gender','marital_status','religion','occupation','nationality','zone','state','lga','address']
+
+
 class AppointmentFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(label="date", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     patient=django_filters.CharFilter(label='file no.', field_name="patient__file_no",lookup_expr='exact')
