@@ -524,15 +524,8 @@ class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
         )
 
     
-# class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
-#     model = PatientHandover
-#     template_name = 'ehr/revenue/follow_up_pay_dash.html'
-#     context_object_name = 'handovers'
-
-#     def get_queryset(self):
-#         return PatientHandover.objects.filter(status__in=['waiting_for_payment'])
-
 class PaypointView(RevenueRequiredMixin, CreateView):
+    model=Paypoint
     template_name = 'ehr/revenue/paypoint.html'
     form_class = PaypointForm
     success_url = reverse_lazy("revenue")
@@ -574,6 +567,7 @@ class PaypointView(RevenueRequiredMixin, CreateView):
 
 
 class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
+    model=Paypoint
     template_name = 'ehr/revenue/paypoint_follow_up.html'
     form_class = PaypointForm
     success_url = reverse_lazy("revenue")
