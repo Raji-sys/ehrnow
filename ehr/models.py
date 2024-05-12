@@ -198,7 +198,7 @@ class Services(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.name}---{self.price}"
+        return f"{self.name}-{self.price}"
 
     class Meta:
         verbose_name_plural = 'hospital services'

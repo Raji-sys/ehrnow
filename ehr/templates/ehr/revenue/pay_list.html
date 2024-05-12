@@ -135,7 +135,12 @@
             {% endfor %}
           </tbody>
         </table>
-        <h2>Total Worth: {{ total_worth }}</h2>
+        <div class="mt-2">
+          <span class="uppercase text-lg font-semibold">
+        Total Worth: <span class="text-green-700 uppercase text-xl font-bold">
+          &#x20A6;{{ total_worth|floatformat:2 }}
+        </span>
+      </span>
       </div>
     </div>
   </div>
