@@ -23,10 +23,10 @@ from django.db.models import Count
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib import messages
 from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView
-from django.db.models import F
 from pathology.models import *
 from pathology.views import *
 User = get_user_model()
+from django.db.models import Sum
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -878,10 +878,14 @@ class PayListView(ListView):
         updated = super().get_queryset().order_by('-updated')
         pay_filter = PayFilter(self.request.GET, queryset=updated)
         return pay_filter.qs
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pay_total = self.get_queryset().count()
+        total_worth = self.get_queryset().values('service__price').annotate(total=Sum('service__price')).aggregate(total_worth=Sum('total'))['total_worth']
         context['payFilter'] = PayFilter(self.request.GET, queryset=self.get_queryset())
         context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
         return context
+    
+    
