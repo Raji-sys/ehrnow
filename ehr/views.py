@@ -405,6 +405,37 @@ class PatientReportView(ListView):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+class PatientStatsView(TemplateView):
+    template_name = 'ehr/record/stats.html'
+
+    def get_context_data(self, **kwargs):
+        context=super().get_context_data(**kwargs)
+        pc = PatientData.objects.all().count()
+        gender_counts = PatientData.objects.values('gender').annotate(pc=Count('id'))
+        geo_counts = PatientData.objects.values('zone').annotate(pc=Count('id'))
+        state_counts = PatientData.objects.values('state').annotate(pc=Count('id'))
+        lga_counts = PatientData.objects.values('lga').annotate(pc=Count('id'))
+        religion_counts = PatientData.objects.values('religion').annotate(pc=Count('id'))
+        marital_status_counts = PatientData.objects.values('marital_status').annotate(pc=Count('id'))
+        nationality_counts = PatientData.objects.values('nationality').annotate(pc=Count('id'))
+        occupation_counts = PatientData.objects.values('occupation').annotate(pc=Count('id'))
+        role_in_occupation_counts = PatientData.objects.values('role_in_occupation').annotate(pc=Count('id'))
+        address_counts = PatientData.objects.values('address').annotate(pc=Count('id'))
+        context['pc'] = pc
+        context['gender_counts'] = gender_counts
+        context['geo_counts'] = geo_counts
+        context['state_counts'] = state_counts
+        context['lga_counts'] = lga_counts
+        context['religion_counts'] = religion_counts
+        context['marital_status_counts'] = marital_status_counts
+        context['nationality_counts'] = nationality_counts
+        context['occupation_counts'] = occupation_counts
+        context['role_in_occupation_counts'] = role_in_occupation_counts
+        context['address_counts'] = address_counts
+        return context
+    
+    
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientFolderView(DetailView):
     template_name = 'ehr/record/patient_folder.html'
     model = PatientData
