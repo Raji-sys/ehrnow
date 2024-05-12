@@ -399,6 +399,12 @@ class PatientFolderView(DetailView):
         context['patient'] = patient
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
+        context['hematology_results']=patient.hematology_result.all().order_by('-created')
+        context['chempath_results']=patient.chemical_pathology_results.all().order_by('-created')
+        context['micro_results']=patient.microbiology_results.all().order_by('-created')
+        context['serology_results']=patient.serology_results.all().order_by('-created')
+        context['general_results']=patient.general_results.all().order_by('-created')
+
         return context
 
 # 2. FollowUpVisitCreateView
