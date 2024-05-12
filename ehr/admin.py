@@ -1,12 +1,10 @@
-from django import forms
 from .models import *
 from django.contrib import admin
-from django.utils.safestring import mark_safe
 
 
-admin.site.site_header="cPANEL"
-admin.site.index_title="EHR NOW"
-admin.site.site_title="EHR NOW"
+# admin.site.site_header="EHR NOW CONTROL PANEL"
+# admin.site.index_title="EHR NOW"
+# admin.site.site_title="EHR NOW"
 
 
 @admin.register(Profile)

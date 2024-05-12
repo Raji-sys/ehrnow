@@ -3,10 +3,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+admin.site.site_header = "ROOT CONTROL CENTER"
+admin.site.index_title = "EHR NOW"
+admin.site.site_title = "CONTROL CENTER"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('pathology/', include('pathology.urls',namespace='pathology')),
     path('',include('ehr.urls')),
-    path('pathology/', include('pathology.urls')),
     path('__reload__/', include('django_browser_reload.urls')),
 ]
 if settings.DEBUG:

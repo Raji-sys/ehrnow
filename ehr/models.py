@@ -6,8 +6,6 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils import timezone
 from django_quill.fields import QuillField
-from pathology.models import *
-
 
 
 class SerialNumberField(models.CharField):
@@ -67,26 +65,6 @@ class Profile(models.Model):
         if self.user:
             return f"{self.full_name()}"
 
-
-# class AEClinic(models.Model):
-#     name = models.CharField(null=True, blank=True, max_length=200)
-    
-#     def get_absolute_url(self):
-#         return reverse('ae_details', args=[self.pk])
-
-#     def __str__(self):
-#         if self.name:
-#             return f"{self.name}"
-
-# class SOPDClinic(models.Model):
-#     name = models.CharField(null=True, blank=True, max_length=200)
-    
-#     def get_absolute_url(self):
-#         return reverse('sopd_details', args=[self.pk])
-
-#     def __str__(self):
-#         if self.name:
-#             return f"{self.name}"
 
 class Team(models.Model):
     name = models.CharField(null=True, blank=True, max_length=200)
@@ -336,6 +314,9 @@ class VitalSigns(models.Model):
     weight=models.CharField(max_length=10, null=True, blank=True)
     height=models.CharField(max_length=10, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'vital signs'
 
     def get_absolute_url(self):
         return reverse('vitals_details', args=[self.user])
