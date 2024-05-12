@@ -6,6 +6,9 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils import timezone
 from django_quill.fields import QuillField
+from pathology.models import *
+
+
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"

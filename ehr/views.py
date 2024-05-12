@@ -24,6 +24,8 @@ from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib import messages
 from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView
 from django.db.models import F
+from pathology.models import *
+from pathology.views import *
 User = get_user_model()
 
 

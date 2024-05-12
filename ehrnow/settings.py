@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'import_export',
     'fontawesomefree',
     'django_quill',
+    'pathology',
 ]
 
 MIDDLEWARE = [
