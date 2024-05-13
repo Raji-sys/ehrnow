@@ -19,6 +19,7 @@ class SerialNumberField(models.CharField):
 
 class HematologyTest(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     reference_range = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
@@ -54,7 +55,7 @@ class HematologyResult(models.Model):
 
     def __str__(self):
         if self.patient:
-            return f"{self.patient.surname} - {self.test} - {self.result}"
+            return f"{self.patient.full_name()} - {self.test} - {self.result}"
         
 
 class ChempathTestName(models.Model):

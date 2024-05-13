@@ -1,0 +1,7 @@
+{% extends 'ehr/revenue/paypoint_list_base.html' %}
+
+{% block content %}
+  {% with 'Consultation' as department %}
+    {{ block.super }}
+  {% endwith %}
+{% endblock %}

@@ -27,6 +27,7 @@ from pathology.models import *
 from pathology.views import *
 User = get_user_model()
 from django.db.models import Sum
+from django.contrib.contenttypes.models import ContentType
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -879,7 +880,7 @@ class PayCreateView(RevenueRequiredMixin, CreateView):
 class PayUpdateView(UpdateView):
     model = Paypoint
     template_name = 'ehr/revenue/update_pay.html'
-    form_class = PayForm
+    form_class = PayUpdateForm
     success_url = reverse_lazy("pay_list")
 
     def form_valid(self, form):
@@ -902,17 +903,77 @@ class PayListView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        updated = super().get_queryset().order_by('-updated')
+        updated = super().get_queryset().filter(status='paid').order_by('-updated')
         pay_filter = PayFilter(self.request.GET, queryset=updated)
         return pay_filter.qs
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pay_total = self.get_queryset().count()
-        total_worth = self.get_queryset().values('service__price').annotate(total=Sum('service__price')).aggregate(total_worth=Sum('total'))['total_worth']
+        service_price_total = self.get_queryset().values('service__price').annotate(total=Sum('service__price')).aggregate(total_worth=Sum('total'))['total_worth'] or 0
+        price_total = self.get_queryset().aggregate(total_worth=Sum('price'))['total_worth'] or 0
+        total_worth = service_price_total + price_total
+
         context['payFilter'] = PayFilter(self.request.GET, queryset=self.get_queryset())
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
-        return context
+        return context    
     
+class HematologyPayListView(ListView):
+    model = Paypoint
+    template_name = 'ehr/revenue/hema_pay_list.html'
+    context_object_name = 'hematology_pays'
+    paginate_by = 5
+
+    def get_queryset(self):
+        hematology_tests = HematologyTest.objects.values_list('name', flat=True)
+        return Paypoint.objects.filter(item__in=hematology_tests).order_by('-updated')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pay_total = self.get_queryset().count()
+        service_price_total = self.get_queryset().values('service__price').annotate(total=Sum('service__price')).aggregate(total_worth=Sum('total'))['total_worth'] or 0
+        price_total = self.get_queryset().aggregate(total_worth=Sum('price'))['total_worth'] or 0
+        total_worth = service_price_total + price_total
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        return context    
+# class PendingPayListView(LoginRequiredMixin, ListView):
+#     model = Paypoint
+#     template_name = 'ehr/revenue/pending_pay_list.html'
+
+#     def get_queryset(self):
+#         file_no = self.kwargs.get('file_no')
+#         patient = get_object_or_404(PatientData, file_no=file_no)
+#         return Paypoint.objects.filter(patient=patient, status='pending')
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         file_no = self.kwargs.get('file_no')
+#         patient = get_object_or_404(PatientData, file_no=file_no)
+#         context['patient'] = patient
+#         return context
     
+
+
+# class PendingPayBaseListView(LoginRequiredMixin, TemplateView):
+#     template_name = 'ehr/revenue/paypoint_list_base.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         service_type = self.kwargs.get('service_type')
+#         service_type_obj = ServiceType.objects.filter(name=service_type).first()
+
+#         if service_type_obj:
+#             payment_list = Paypoint.objects.filter(status='pending', service__type=service_type_obj)
+#             context['payment_list'] = payment_list
+#             context['department'] = service_type
+#         else:
+#             context['payment_list'] = []
+
+#         return context
+
+#     def render_to_response(self, context, **response_kwargs):
+#         service_type = self.kwargs.get('service_type')
+#         template_name = f"{service_type.lower()}_paypoint_list.html"
+#         return render(self.request, template_name, context)

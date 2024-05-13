@@ -10,7 +10,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from .models import *
-from ehr.models import PatientData
+from ehr.models import PatientData, Paypoint
 from .forms import *
 from .filters import *
 from django.contrib.auth import get_user_model
@@ -106,6 +106,7 @@ class HematologyTestCreateView(LoginRequiredMixin, CreateView):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
         form.instance.collected_by = self.request.user
+        payment = Paypoint.objects.create(patient=patient, status='pending', item=form.instance.test, price=form.instance.test.price)
         messages.success(self.request, 'Hematology result -created successfully')
         return super().form_valid(form)
     
