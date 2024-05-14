@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 from django.utils import timezone
 from django_quill.fields import QuillField
 from pathology.models import HematologyResult
+from django.core.exceptions import ValidationError
 
 
 class SerialNumberField(models.CharField):
@@ -327,17 +328,6 @@ class ClinicalNote(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='clinical_notes')
     note=QuillField(null=True, blank=True)
-
-    """
-    this need the to be choice 
-    """
-    diagnosis = models.CharField(max_length=300, null=True, blank=True)
-    prescription = models.CharField(max_length=300, null=True, blank=True)
-    phatology = models.CharField(max_length=300, null=True, blank=True)
-    radiology = models.CharField(max_length=300, null=True, blank=True)
-    """
-    a remainder for later
-    """
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -346,41 +336,21 @@ class ClinicalNote(models.Model):
     def __str__(self):
         return f"notes for: {self.patient.file_no}"
 
-# class Phatology(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     updated = models.DateTimeField(auto_now=True)
 
-#     def get_absolute_url(self):
-#         return reverse('lab_details', args=[self.user])
+class Prescription(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    drugs=models.TextField(blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True)
 
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+    def get_absolute_url(self):
+        return reverse('prescription_details', args=[self.patient.file_no])
 
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
+    def __str__(self):
+        return f"{self.patient}-{self.drugs}-{self.user}"
 
 
 # class Radiology(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
-
-
-# class Pharmacy(models.Model):
 #     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 #     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
 #     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)

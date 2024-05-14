@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}ISSUANCE RECORD REPORT{% endblock %}
+
+{% block content %}
+<!-- <div class="flex justify-start items-start mt-14 relative"> -->
+    <!-- start of first grid  -->
+    <div class="grid sm:block sm:fixed sm:top-20 sm:right-1 bottom-2 overflow-y-auto mt-2">
+        <!-- Add your styling for the fixed div here -->
+        <div class="sm:flex sm:flex-col justify-center items-center rounded-b-2xl shadow-2xl bg-amber-500 p-2 text-white">
+            {% if request.GET.urlencode%}
+    <div class="flex justify-center gap-1">
+    <a class="text-xl bg-white focus:opacity-10 focus:border-zinc-600  
+    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center" href="{% url 'record_pdf' %}?{{request.GET.urlencode}}">
+    <i class="fa-solid fa-file-pdf fa-lg text-amber-500"></i></a>
+    <a href="?" class="text-xl text-white focus:opacity-10  focus:border-blue-600 bg-white 
+    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-lg text-amber-600"></i></a>
+    </div>
+    {%endif%}
+            <form method="get" class="text-xs ">
+                {% for field in recordfilter.form %}
+                {{field.errors}}
+                {% endfor %}
+                    <div class="p-4 grid sm:grid-cols-1 grid-cols-2 sm:justify-center sm:items-center sm:gap-2 text-center">
+                    {% for field in recordfilter.form %}
+                        <div class="flex flex-col flex-wrap gap-1">
+                        <label class="form-label">{{ field.label_tag }}</label>
+                        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"placeholder="{{field.name}}"
+                            class="text-xs text-zinc-700 focus:outline-none border border-blue-300 p-1 rounded shadow-lg hover:shadow-xl">
+                        <span class="form-error">{{ field.errors }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="flex justify-center align-middle ">
+                <button type="submit" class="focus:opacity-10 uppercase focus:border-amber-600
+            bg-white text-amber-500 px-4 py-2 rounded shadow-lg hover:shadow-xl">
+            <i class="fa-solid fa-search fa-lg"></i></button>                     
+        </div>
+            </form>
+        </div>
+    </div>
+    <!-- end of first grid -->
+
+    {% if request.GET.urlencode %}
+<div class="mx-auto max-w-screen-xl">
+   <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
+        <tbody class="bg-white border-1 shadow-2xl rrounded-2xl max-sm:p-4 p-2 overflow-x-auto border-amber-600">
+            <tr class="text-xs bg-amber-500 text-white">
+                <th scope="col" class="border-2 border-white p-3">S/N</th>
+                <th scope="col" class="border-2 border-white p-3">DATE ISSUED</th>
+                <th scope="col" class="border-2 border-white p-3">DRUG</th>
+                <th scope="col" class="border-2 border-white p-3">CATEGORY</th>
+                <th scope="col" class="border-2 border-white p-3">BRAND</th>
+                <th scope="col" class="border-2 border-white p-3">SUPPLIER</th>
+                <th scope="col" class="border-2 border-white p-3">UNIT ISSUED TO</th>
+                <th scope="col" class="border-2 border-white p-3">ISSUED BY</th>
+                <th scope="col" class="border-2 border-white p-3">PACK PRICE</th>
+                <th scope="col" class="border-2 border-white p-3">QUANITITY</th>
+                <th scope="col" class="border-2 border-white p-3">BALANCE</th>
+                <th scope="col" class="border-2 border-white p-3">REMARK</th>
+            </tr>
+            {% for r in recordfilter.qs %}
+        <tr class="uppercase text-xs {% cycle 'bg-white hover:bg-amber-200' 'bg-amber-100 hover:bg-amber-200' %} border-b border-amber-700">
+            <td class="border-1 border-amber-700 p-1 text-center">
+                {{forloop.counter}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.updated_at|default_if_none:''}}
+            </td>    
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.drug|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.drug.category|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.drug.brand_name|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.drug.supplier|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.unit_issued_to|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-1 text-center">
+            {{r.issued_by|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.drug.pack_price|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.quantity|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.balance|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.remarks|default_if_none:''}}
+            </td>
+
+            </tr>
+            {% empty %}
+
+            {%endfor%}
+                <tr class="text-xl uppercase border-b border-amber-700">
+                    <td colspan="9" class="text-right border-1 border-amber-700 p-3 text-green-700 font-semibold">
+                      issued: {{ total_appearance }} times - quantity: {{ total_quantity }} - worth: &#x20A6;{{ total_price }}
+                    </td>
+                  </tr>
+        <tr class="">
+            <td class="p-3 text-center">        
+           <div class="pagination flex justify-between my-4 ">
+            <span class="flex items-center">
+                {% if po.has_previous %}
+                <a href="?page=1" class="p-2 px-4 rounded-lg bg-amber-500 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-lg"></i></a>
+                <a href="?page={{po.has_previous_page_number}}" class="p-2 px-4 rounded-lg bg-amber-500 text-white"><i class="fa-solid fa-angle-left fa-lg"></i></a>
+                {% endif %}
+            </span>
+                <span class="text-sm text-gray-700 m-2 font-semibold">
+                    Page {{po.number}} of {{po.paginator.num_pages}}
+                </span>
+                <span class="flex item-center">
+                    {% if po.has_next %}
+                    <a href="?page=1{{po.next_page_number}}" class="p-2 px-4 rounded-lg bg-amber-500 text-white mr-2"><i class="fa-solid fa-angle-right fa-lg"></i></a>
+                    <a href="?page={{po.paginator.num_pages}}" class="p-2 px-4 rounded-lg bg-amber-500 text-white"><i class="fa-solid fa-angle-double-right fa-lg"></i></a>
+                    {% endif %}
+                </span>
+            </div>
+
+        </td>
+        </tr>
+</tbody>
+</table>
+</div>
+
+{% endif %}
+
+  <!-- end of second grid  -->
+  {% endblock %}

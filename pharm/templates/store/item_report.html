@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}DRUG REPORT PAGE{% endblock %}
+
+{% block content %}
+<!-- start of first grid  -->
+<div class="grid sm:block sm:fixed sm:top-20 sm:right-1 bottom-2 overflow-y-auto mt-2">
+    <!-- Add your styling for the fixed div here -->
+    <div class="sm:flex sm:flex-col justify-center items-center rounded-b-2xl shadow-2xl bg-cyan-900 p-2 text-white">
+        {% if request.GET.urlencode%}
+<div class="flex justify-center gap-1">
+<a class="text-xl text-white focus:opacity-10 focus:border-cyan-600 bg-cyan-600 
+px-4 py-1 rounded shadow-lg hover:shadow-xl text-center" href="{% url 'drug_pdf' %}?{{request.GET.urlencode}}">
+<i class="fa-solid fa-file-pdf fa-lg"></i></a>
+<a href="?" class="text-xl text-white focus:opacity-10  focus:border-blue-600 bg-white 
+px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-lg text-cyan-700"></i></a>
+</div>
+{%endif%}
+        <form method="get" class="text-xs">
+            {% for field in drugfilter.form %}
+            {{field.errors}}
+            {% endfor %}
+            <div class="p-4 grid sm:grid-cols-1 grid-cols-2 sm:justify-center sm:items-center sm:gap-2 text-center">
+                {% for field in drugfilter.form %}
+                <div class="flex flex-col flex-wrap gap-1">
+                    <label class="form-label">{{ field.label_tag }}</label>
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"
+                    class="text-xs text-cyan-700 focus:outline-none border border-blue-300 p-1 rounded shadow-lg hover:shadow-xl" placeholder="{{field.name}}">
+                    <span class="form-error">{{ field.errors }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="flex justify-center align-middle ">
+            <button type="submit" class="focus:opacity-10 uppercase focus:border-cyan-600
+        bg-white text-cyan-800 px-4 py-2 rounded shadow-lg hover:shadow-xl mb-4">
+        <i class="fa-solid fa-search fa-lg"></i></button>                     
+    </div>
+        </form>
+    </div>
+</div>
+<!-- end of first grid -->
+    {% if request.GET.urlencode %}
+<div class="mx-auto max-w-screen-xl">
+   <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
+        <tbody class="bg-white border-1 shadow-md rounded-2xl max-sm:p-4 p-2 overflow-x-auto border-cyan-700 shadow-cyan-900">
+            <tr class="text-xs bg-cyan-800 text-white">
+                <th scope="col" class="border-2 border-white p-3">S/N</th>
+                <th scope="col" class="border-2 border-white p-3">DATE ADDED/UPDATED</th>
+                <th scope="col" class="border-2 border-white p-3">NAME</th>
+                <th scope="col" class="border-2 border-white p-3">GENERIC NAME</th>
+                <th scope="col" class="border-2 border-white p-3">BRAND NAME</th>
+                <th scope="col" class="border-2 border-white p-3">CLASS</th>
+                <th scope="col" class="border-2 border-white p-3">SUPPLIER</th>
+                <th scope="col" class="border-2 border-white p-3">DOSAGE FORM</th>
+                <th scope="col" class="border-2 border-white p-3">PACK SIZE</th>
+                <th scope="col" class="border-2 border-white p-3">PACK PRICE</th>
+                <th scope="col" class="border-2 border-white p-3">COST PRICE</th>
+                <th scope="col" class="border-2 border-white p-3">TOTAL DRUGS</th>
+                <th scope="col" class="border-2 border-white p-3">BALANCE</th>
+                <th scope="col" class="border-2 border-white p-3">TOTAL VALUE</th>
+                <th scope="col" class="border-2 border-white p-3">EXPIRY DATE</th>
+                <th scope="col" class="border-2 border-white p-3">ADDED BY</th>
+            </tr>
+            {% for i in drugfilter.qs %}
+            <tr class="text-xs {% cycle 'bg-white hover:bg-cyan-200' 'bg-cyan-100 hover:bg-cyan-200' %} border-b border-cyan-700 uppercase">
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{forloop.counter}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.updated_at|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.name|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.generic_name|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.brand_name|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-1 text-center">
+                {{i.category|default_if_none:''}} 
+                </td>
+                <td class="border-1 border-cyan-700 p-1 text-center">
+                {{i.supplier|default_if_none:''}} 
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.dosage_form|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.pack_size|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.pack_price|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.cost_price|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                    {{i.total_purchased_quantity|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                    {{i.current_balance}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.total_value|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.expiration_date|default_if_none:''}}
+                </td>
+                <td class="border-1 border-cyan-700 p-3 text-center">
+                {{i.added_by}}
+                </td>
+                </tr>
+            {% empty %}
+
+            {%endfor%} 
+        <tr class="">
+            <td class="p-3 text-center">        
+       <div class="pagination flex justify-between my-4 ">
+            <span class="flex items-center">
+                {% if po.has_previous %}
+                <a href="?page=1" class="p-2 px-4 rounded-lg bg-cyan-500 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-lg"></i></a>
+                <a href="?page={{po.has_previous_page_number}}" class="p-2 px-4 rounded-lg bg-cyan-500 text-white"><i class="fa-solid fa-angle-left fa-lg"></i></a>
+                {% endif %}
+            </span>
+                <span class="text-sm text-gray-700 m-2 font-semibold">
+                    Page {{po.number}} of {{po.paginator.num_pages}}
+                </span>
+                <span class="flex item-center">
+                    {% if po.has_next %}
+                    <a href="?page=1{{po.next_page_number}}" class="p-2 px-4 rounded-lg bg-cyan-500 text-white mr-2"><i class="fa-solid fa-angle-right fa-lg"></i></a>
+                    <a href="?page={{po.paginator.num_pages}}" class="p-2 px-4 rounded-lg bg-cyan-500 text-white"><i class="fa-solid fa-angle-double-right fa-lg"></i></a>
+                    {% endif %}
+                </span>
+            </div>
+        </td>
+        </tr>
+</tbody>
+</table>
+</div>
+{% endif %}
+
+  <!-- end of second grid  -->
+{% endblock %}

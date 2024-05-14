@@ -61,9 +61,6 @@ urlpatterns = [
     path('revenue/service-list/', ServiceListView.as_view(), name='service_list'),
     path('revenue/update-service/<int:pk>/', ServiceUpdateView.as_view(), name='update_service'),
 
-    # path('revenue/<str:service_type>/', PendingPayBaseListView.as_view(), name='pending_pay_base'),
-    # path('revenue/pending-pay-list/', PendingPayListView.as_view(), name='pending_pay_list'),
-
     path('get-started/revenue/transactions/', TransactionView.as_view(), name='transaction_dash'),
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
     path('revenue/hema-list/', HematologyPayListView.as_view(), name='hema_pay_list'),
@@ -75,10 +72,8 @@ urlpatterns = [
 
     # AE
     path('nursing/nursing-station-ae/', AENursingDeskView.as_view(), name='nursing_station_ae'),
-
     # Consultation
     path('clinic/ae/', AEClinicDetailView.as_view(), name='ae_details'),
-
     path('clinic/ae/waiting-for-consultation/', AEConsultationWaitRoomView.as_view(), name="waiting_for_consultation_ae"),
     path('clinic/ae/waiting-for-consultation/room-1/', AERoom1View.as_view(), name="ae_room_1"),
     path('clinic/ae/waiting-for-consultation/room-2/', AERoom2View.as_view(), name="ae_room_2"),
@@ -88,24 +83,19 @@ urlpatterns = [
    
     #SOPD
     path('nursing/nursing-station-sopd/', SOPDNursingDeskView.as_view(), name='nursing_station_sopd'),
-
     # Consultation
     path('clinic/sopd/', SOPDClinicDetailView.as_view(), name='sopd_details'),
-
     path('clinic/sopd/waiting-for-consultation/', SOPDConsultationWaitRoomView.as_view(), name="waiting_for_consultation_sopd"),
     path('clinic/sopd/waiting-for-consultation/room-1/', SOPDRoom1View.as_view(), name="sopd_room_1"),
     path('clinic/sopd/waiting-for-consultation/room-2/', SOPDRoom2View.as_view(), name="sopd_room_2"),
     path('waiting-consultation/sopd/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
     path('clinic/sopd/sopd-consultation-finished/', SOPDConsultationFinishView.as_view(), name="consultation_finished_sopd"),
     path('clinic/sopd/sopd-awaiting-review/', SOPDAwaitingReviewView.as_view(), name="waiting_for_review_sopd"),
-    
-    # path('report/', views.report, name='report'),
 
-    # path('gen_report/', GenReportView.as_view(), name='gen_report'),
-    # path('gen_pdf/', views.Gen_pdf, name='gen_pdf'),
-    # path('gen_csvFile/', views.Gen_csv, name='gen_csv'),
+    #Prescription
+    path('clinic/add-prescription/<str:file_no>/', PrescriptionCreateView.as_view(), name='add_prescription'),
+    path('clinic/prescriptions/', PrescriptionListView.as_view(), name='prescriptions'),
+    path('clinic/update-prescription/<int:pk>/', PrescriptionUpdateView.as_view(), name='update_prescription'),
 
 
-    # path('stats/', StatsView.as_view(), name='stats'),
-    # path('notice/', NoticeView.as_view(), name='notice'),
 ]

@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block title %} PURCHASED {% endblock %}
+
+{% block content %}
+<h1 class="text-center text-gray-700 font-medium text-xl align-middle items-center mt-14">store item</h1>
+ 
+
+<div class="p-1 max-sm:p-1 text-sm rounded-lg text-center">    
+    <table class="table-auto max-sm:flex flex rounded-lg items-center justify-center">
+        <tbody class="bg-white border-2 shadow-2xl rounded max-sm:p-4 p-2 overflow-x-auto border-amber-700">
+            <div class="flex justify-center items-center gap-3">
+                <form method="get">
+                    <div class="flex justify-center m-2">
+              <input placeholder="search item" class="text-center text-xs focus:outline-none border border-blue-300 p-3 rounded-xl shadow-lg hover:shadow-xl" type="text" name="name"/>
+            </div>
+          {%if form.name.value %}
+          <div class="flex justify-center p-2">
+              <a href="?" class="text-xs focus:opacity-10 uppercase focus:border-cyan-600
+         bg-gradient-to-r from-cyan-700 via-cyan-500 to-cyan-700 text-white p-1 rounded shadow-lg hover:shadow-xl ">refresh</a>
+          </div>
+          {% endif %}  
+      </form>
+            </div>
+            <tr class="text-sm bg-amber-500 text-white">
+                <th scope="col" class="border-2 border-white p-4">ITEM</th>
+                <th scope="col" class="border-2 border-white p-2">QUANTITY</th>
+                <th scope="col" class="border-2 border-white p-4">DATE PURCHASED</th>
+                <!-- <th scope="col" class="border-2 border-white p-4">ADDED BY</th>
+                <th scope="col" class="border-2 border-white p-4">UNIT</th>
+                <th scope="col" class="border-2 border-white p-4">COST</th>
+                <th scope="col" class="border-2 border-white p-4">EXPIRY DATE</th>
+                <th scope="col" class="border-2 border-white p-4">TOTAL ITEMS</th>
+                <th scope="col" class="border-2 border-white p-4">BALANCE</th> -->
+                <th scope="col" class="border-2 border-white p-4">ACTION</th>
+            </tr>
+            {% for p in purchases %}
+        <tr class="text-xs {% cycle 'bg-white hover:bg-amber-200' 'bg-amber-100 hover:bg-amber-200' %}">
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{p.inventory|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{p.quantity|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{p.date_purchased}}
+            </td>
+            <!-- <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.added_by|default_if_none:''}}
+            </td> -->
+            <!-- <td class="border-2 border-amber-700 p-1 text-center">
+            {{i.unit}} 
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.cost|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.expiration_date|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.total_items|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.balance}}
+            </td> -->
+             <td class="p-1 border-2 border-amber-700"> 
+          <a href="" class="">
+            <i class="text-sky-600 fa-solid fa-pen fa-xl"></i>
+          </a>
+          <a href="" class="">
+            <i class="text-red-600 fa-solid fa-trash fa-xl"></i>
+          </a>
+            </td>
+            </tr>
+            {%endfor%} 
+        <tr>
+            <td class="p-4 text-center">        
+        <div class="pagination flex justify-center text-cyan-800">
+            <span class="step-links">
+            </span>
+    </div>
+        </td>
+        </tr>
+</tbody>
+</table>
+</div>
+
+<div class="p-1 max-sm:p-1 text-sm rounded-lg text-center">    
+    <table class="table-auto max-sm:flex flex rounded-lg items-center justify-center">
+        <tbody class="bg-white border-2 shadow-2xl rounded max-sm:p-4 p-2 overflow-x-auto border-amber-700">
+            <div class="flex justify-center items-center gap-3">
+                <form method="get">
+                    <div class="flex justify-center m-2">
+              <input placeholder="search item" class="text-center text-xs focus:outline-none border border-blue-300 p-3 rounded-xl shadow-lg hover:shadow-xl" type="text" name="name"/>
+            </div>
+          {%if form.name.value %}
+          <div class="flex justify-center p-2">
+              <a href="?" class="text-xs focus:opacity-10 uppercase focus:border-cyan-600
+         bg-gradient-to-r from-cyan-700 via-cyan-500 to-cyan-700 text-white p-1 rounded shadow-lg hover:shadow-xl ">refresh</a>
+          </div>
+          {% endif %}  
+      </form>
+            </div>
+            <tr class="text-sm bg-amber-500 text-white">
+                <th scope="col" class="border-2 border-white p-4">ITEM</th>
+                <th scope="col" class="border-2 border-white p-2">QUANTITY</th>
+                <th scope="col" class="border-2 border-white p-4">DEPARTMENT</th>
+                <th scope="col" class="border-2 border-white p-4">DATE ISSUED</th>
+                <!-- <th scope="col" class="border-2 border-white p-4">UNIT</th>
+                <th scope="col" class="border-2 border-white p-4">COST</th>
+                <th scope="col" class="border-2 border-white p-4">EXPIRY DATE</th>
+                <th scope="col" class="border-2 border-white p-4">TOTAL ITEMS</th>
+                <th scope="col" class="border-2 border-white p-4">BALANCE</th>  -->
+                <th scope="col" class="border-2 border-white p-4">ACTION</th>
+            </tr>
+            {% for i in issuances %}
+        <tr class="text-xs {% cycle 'bg-white hover:bg-amber-200' 'bg-amber-100 hover:bg-amber-200' %}">
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.inventory|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.quantity|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.dept}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.date_issued|default_if_none:''}}
+            </td>
+            <!-- <td class="border-2 border-amber-700 p-1 text-center">
+            {{i.unit}} 
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.cost|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.expiration_date|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.total_items|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.balance}}
+            </td> -->
+             <td class="p-1 border-2 border-amber-700"> 
+          <a href="" class="">
+            <i class="text-sky-600 fa-solid fa-pen fa-xl"></i>
+          </a>
+          <a href="" class="">
+            <i class="text-red-600 fa-solid fa-trash fa-xl"></i>
+          </a>
+            </td>
+            </tr>
+            {%endfor%} 
+        <tr>
+            <td class="p-4 text-center">        
+        <div class="pagination flex justify-center text-cyan-800">
+            <span class="step-links">
+            </span>
+    </div>
+        </td>
+        </tr>
+</tbody>
+</table>
+</div>
+
+
+<div class="p-1 max-sm:p-1 text-sm rounded-lg text-center">    
+    <table class="table-auto max-sm:flex flex rounded-lg items-center justify-center">
+        <tbody class="bg-white border-2 shadow-2xl rounded max-sm:p-4 p-2 overflow-x-auto border-amber-700">
+            <div class="flex justify-center items-center gap-3">
+                <form method="get">
+                    <div class="flex justify-center m-2">
+              <input placeholder="search item" class="text-center text-xs focus:outline-none border border-blue-300 p-3 rounded-xl shadow-lg hover:shadow-xl" type="text" name="name"/>
+            </div>
+          {%if form.name.value %}
+          <div class="flex justify-center p-2">
+              <a href="?" class="text-xs focus:opacity-10 uppercase focus:border-cyan-600
+         bg-gradient-to-r from-cyan-700 via-cyan-500 to-cyan-700 text-white p-1 rounded shadow-lg hover:shadow-xl ">refresh</a>
+          </div>
+          {% endif %}  
+      </form>
+            </div>
+            <tr class="text-sm bg-amber-500 text-white">
+                <th scope="col" class="border-2 border-white p-4">
+                    ITEM</th>
+                <th scope="col" class="border-2 border-white p-4">TOTAL PURCHASED</th>
+                <th scope="col" class="border-2 border-white p-2">BALANCE</th>
+                <!-- <th scope="col" class="border-2 border-white p-4">ADDED BY</th>
+                <th scope="col" class="border-2 border-white p-4">UNIT</th>
+                <th scope="col" class="border-2 border-white p-4">COST</th>
+                <th scope="col" class="border-2 border-white p-4">EXPIRY DATE</th>
+                <th scope="col" class="border-2 border-white p-4">TOTAL ITEMS</th>
+                <th scope="col" class="border-2 border-white p-4">BALANCE</th> -->
+                <th scope="col" class="border-2 border-white p-4">ACTION</th>
+            </tr>
+            {% for i in inventories %}
+        <tr class="text-xs {% cycle 'bg-white hover:bg-amber-200' 'bg-amber-100 hover:bg-amber-200' %}">
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.item_name|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.total_purchased|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.balance}}
+            </td>
+            <!-- <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.added_by|default_if_none:''}}
+            </td> -->
+            <!-- <td class="border-2 border-amber-700 p-1 text-center">
+            {{i.unit}} 
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.cost|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.expiration_date|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.total_items|default_if_none:''}}
+            </td>
+            <td class="border-2 border-amber-700 p-4 text-center">
+            {{i.balance}}
+            </td> -->
+             <td class="p-1 border-2 border-amber-700"> 
+          <a href="" class="">
+            <i class="text-sky-600 fa-solid fa-pen fa-xl"></i>
+          </a>
+          <a href="" class="">
+            <i class="text-red-600 fa-solid fa-trash fa-xl"></i>
+          </a>
+            </td>
+            </tr>
+            {%endfor%} 
+        <tr>
+            <td class="p-4 text-center">        
+        <div class="pagination flex justify-center text-cyan-800">
+            <span class="step-links">
+            </span>
+    </div>
+        </td>
+        </tr>
+</tbody>
+</table>
+</div>
+{% endblock %}

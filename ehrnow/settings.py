@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'fontawesomefree',
     'django_quill',
     'pathology',
+    'pharm'
 ]
 
 MIDDLEWARE = [

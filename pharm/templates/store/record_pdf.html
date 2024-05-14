@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOHD PHARMACY REPORT</title>
+    <style>
+
+/* Table styles */
+table {
+    width: auto;
+    margin-top: 0px; /* Adjust the top margin as needed */
+    border-collapse: collapse;
+}
+
+
+th, td {
+    border: 0.5px solid #060501; /* Adjust the color as needed */
+    padding: 6px; /* Adjust the padding as needed */
+    word-wrap: break-word; /* Allow text to wrap */
+    overflow: hidden; /* Add this line to prevent overflow */
+    text-overflow: ellipsis; /* Add this line to display ellipsis (...) for truncated text */
+    white-space: normal; /* Allow text wrap */
+}
+
+/* Table header cell styles */
+th {
+    background: #cfa005; 
+    color: #fff; 
+}
+.table-auto {
+    width: auto;
+    table-layout: auto;
+}
+
+.max-sm\:flex {
+    display: flex;
+    max-width: 100%;
+}
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+/* Table body styles */
+.bg-white {
+    background-color: #fff;
+}
+
+.border-2 {
+    border: 1px solid #010603; /* Adjust the color as needed */
+}
+
+.max-sm\:p-2,
+.p-2 {
+    padding: 0.05rem;
+}
+
+.border-cyan-900 {
+    border: 1px solid #565d59; /* Adjust the color as needed */
+}
+
+.text-xs {
+    font-size: 1rem;
+}
+
+.border-b-2 {
+    border-bottom: 1px solid #fff; /* Adjust the color as needed */
+    color: #000; /* Text color for header */
+}
+
+.border-t-2 {
+    border-top: 1px solid #fff; /* Adjust the color as needed */
+    color: #000; /* Text color for header */
+}
+
+.p-3 {
+    padding: 0.2rem;
+}
+
+/* Table data row styles */
+.text-gray-600 {
+    color: #1c1e21; /* Adjust the color as needed */
+}
+
+/* Table data cell styles */
+.text-center {
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+}
+
+.center img {
+    display: block;
+    margin: 0 auto;
+    size: 1rem;
+}
+        th, td {
+             word-wrap: break-word;
+        }
+        img {
+            display: block;
+            margin: 0 auto;
+        }
+        .result {
+            text-align: center;
+        }
+
+        /* Resize the image */
+        .logo-image {
+            width: 150px; /* Adjust the width as needed */
+            display: block;
+            margin: 0 auto;
+        }
+        .queryset-data {
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <img class="center logo-image" src="{% static "images/logo.jpg" %}" alt="">
+    <h1 class="queryset-data"><b>NOHD PHARMACY INVENTORY REPORT</b></h1>
+    <div class="result">
+      {{ result|upper }}
+    </div>
+    <hr>
+     <!-- Display queryset data -->
+     <div class="queryset-data">
+        <b>FILTERED BY:&nbsp;</b>{% for key in keys %}{{ key|upper }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        <b style="color: green; font-weight: bold; text-transform: uppercase; font-size: large;">ISSUED: {{ total_appearance }} &nbsp;&nbsp;&nbsp; QUANTITY: {{ total_quantity }} &nbsp;&nbsp;&nbsp;WORTH: N{{ total_price }}</b>
+    </div>
+  <table class="table-auto max-sm:flex items-center justify-center">
+        <tbody class="bg-white border-2 max-sm:p-2 p-2 overflow-x-auto border-cyan-900 text-xs">
+            <tr class="bg-gradient-to-r from-cyan-700 via-cyan-500 to-cyan-700 text-white">
+                <th scope="col" class="border-2 border-white p-3">S/N</th>
+                <th scope="col" class="border-2 border-white p-3">DATE ISSUED</th>
+                <th scope="col" class="border-2 border-white p-3">DRUG</th>
+                <!-- <th scope="col" class="border-2 border-white p-3">CLASS</th> -->
+                <th scope="col" class="border-2 border-white p-3">BRAND</th>
+                <th scope="col" class="border-2 border-white p-3">SUPPLIER</th>
+                <th scope="col" class="border-2 border-white p-3">UNIT ISSUED TO</th>
+                <th scope="col" class="border-2 border-white p-3">ISSUED BY</th>
+                <th scope="col" class="border-2 border-white p-3">QUANITITY ISSUED</th>
+                <th scope="col" class="border-2 border-white p-3">BALANCE</th>
+                <!-- <th scope="col" class="border-2 border-white p-3">REMARK</th> -->
+            </tr>
+              {% for r in f %}        
+        <tr class="{% cycle 'bg-white hover:bg-cyan-200' 'bg-cyan-100 hover:bg-cyan-200' %} text-gray-600">
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{forloop.counter}}
+            </td>    
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.date_issued|default_if_none:''|upper}}
+            </td>    
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.drug|default_if_none:''|upper}}
+            </td>
+            <!-- <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.drug.category|default_if_none:''|upper}}
+            </td> -->
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.drug.brand_name|default_if_none:''|upper}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.drug.supplier|default_if_none:''|upper}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.unit_issued_to|default_if_none:''|upper}}
+            </td>
+            <td class="border-1 border-amber-700 p-1 text-center">
+            {{r.issued_by|default_if_none:''|upper}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.quantity|default_if_none:''|upper}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.balance|default_if_none:''|upper}}
+            </td>
+            <!-- <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.remarks|default_if_none:''|upper}}
+            </td> -->
+          </tr>
+          {%endfor%}
+        </tbody>
+</table>
+
+</body>
+</html>

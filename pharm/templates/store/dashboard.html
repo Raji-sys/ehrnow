@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-center text-gray-700 font-medium text-3xl align-middle mb-2 p-2 items-center mt-32">nohd store</h1>
+{%if request.user.is_superuser %}
+<div class="grid grid-cols-4 p-2 bg-white uppercase text-white text-center gap-2 mx-56 rounded-xl">
+    <a href="{% url "list" %}" class="">
+        <div class="mx-4 p-10 bg-zinc-600 rounded-xl shadow-2xl hover:text-cyan-500 hover:bg-white focus:opacity-10">items</div>
+    </a>
+    <a href="{% url "record" %}" class="">
+        <div class="mx-4 p-10 bg-amber-600 rounded-xl shadow-2xl hover:text-cyan-500 hover:bg-white focus:opacity-10">record</div>
+    </a>
+    <a href="{% url "report" %}" class="">
+        <div class="mx-4 p-10 bg-blue-600 rounded-xl shadow-2xl hover:text-cyan-500 hover:bg-white focus:opacity-10">report</div>
+    </a>
+    <a href="{% url "worth" %}" class="">
+        <div class="mx-4 p-10 bg-cyan-600 rounded-xl shadow-2xl hover:text-cyan-500 hover:bg-white focus:opacity-10">value</div>
+    </a>
+</div>
+{%else%}
+<div class="grid grid-cols-3 p-2 bg-white uppercase text-white text-center gap-2 mx-56 rounded-xl">
+    <a href="{% url "list" %}" class="">
+        <div class="mx-4 p-10 bg-zinc-600 rounded-xl shadow-2xl hover:text-cyan-500 hover:bg-white focus:opacity-10">items</div>
+    </a>
+    <a href="{% url "record" %}" class="">
+        <div class="mx-4 p-10 bg-amber-600 rounded-xl shadow-2xl hover:text-cyan-500 hover:bg-white focus:opacity-10">record</div>
+    </a>
+    <a href="{% url "report" %}" class="">
+        <div class="mx-4 p-10 bg-blue-600 rounded-xl shadow-2xl hover:text-cyan-500 hover:bg-white focus:opacity-10">report</div>
+    </a>
+</div>
+{% endif %}
+{% endblock %}

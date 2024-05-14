@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}LOGGED OUT{% endblock %}
+
+{% block content %}
+  <div class="flex justify-center">
+    <div class="mt-32 shadow-md mx-auto bg-white p-20 rounded-xl text-center shadow-cyan-800">
+    <p class=" text-amber-600 font-bold text-lg uppercase text-center">
+      logout successfully
+    </p>
+    <a href="{% url "signin" %}" class="">
+      <div class="text-sm p-4 bg-cyan-900 rounded-xl shadow-2xl focus:opacity-10 uppercase">login</div>
+  </a>
+  </div>
+  </div>
+{% endblock %}

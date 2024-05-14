@@ -1,0 +1,127 @@
+
+{% extends 'base.html' %}
+{% block title %}ITEMS LIST{% endblock %}
+{% block content %}
+  <div class="flex justify-center mt-2 p-1">
+    <div class="font-semibold uppercase text-xs shadow-md shadow-cyan-900 sm:max-w-2xl md:mx-auto md:p-8 overflow-hidden rounded-2xl bg-cyan-50 mt-8 p-4 gap-6">
+      <section class="text-center border-b-2 border-cyan-800 p-2 m-2">
+        <p class="text-lg font-bold pt-2 text-cyan-800">add a new drug to the store</p>
+                  {% if form.non_field_errors %}
+          <div class="text-red-600 text-lg">
+            {{ form.non_field_errors.0 }}
+          </div>
+        {% endif %}
+      </section>
+      <form action="" method="POST" enctype="multipart/form-data" class="">
+        {% csrf_token %}
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+          <div>
+            <span>DRUG NAME</span>
+            {{ form.name }}
+            {% if form.name.errors %}
+            <div class="text-red-600 ">
+              {{ form.name.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            <span>GENERIC NAME</span>
+            {{ form.generic_name }}
+            {% if form.generic_name.errors %}
+            <div class="text-red-600">
+              {{ form.generic_name.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            <span>BRAND NAME</span>
+            {{ form.brand_name }}
+            {% if form.brand_name.errors %}
+            <div class="text-red-600">
+              {{ form.brand_name.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            <span>CATEGORY</span>
+            {{ form.category }}
+            {% if form.category.errors %}
+            <div class="text-red-600">
+              {{ form.category.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            <span>SUPPLIER</span>
+            {{ form.supplier }}
+            {% if form.supplier.errors %}
+            <div class="text-red-600">
+              {{ form.supplier.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            <span>DOSAGE FORM</span>
+            {{ form.dosage_form }}
+            {% if form.dosage_form.errors %}
+            <div class="text-red-600">
+              {{ form.dosage_form.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            <span>PACK SIZE</span>
+          {{ form.pack_size }}
+          {% if form.pack_size.errors %}
+            <div class="text-red-600">
+              {{ form.pack_size.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            <span>PACK PRICE</span>
+            {{ form.pack_price }}
+            {% if form.pack_price.errors %}
+            <div class="text-red-600">
+              {{ form.pack_price.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            <span>COST PRICE</span>
+            {{ form.cost_price }}
+            {% if form.cost_price.errors %}
+            <div class="text-red-600">
+              {{ form.cost_price.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+
+          <div>
+            <span>QUANTITY</span>
+            {{ form.total_purchased_quantity }}
+            {% if form.total_purchased_quantity.errors %}
+            <div class="text-red-600">
+              {{ form.total_purchased_quantity.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+
+          <div>
+            <span>EXPRIRY DATE</span>
+            {{ form.expiration_date }}
+            {% if form.expiration_date.errors %}
+            <div class="text-red-600">
+              {{ form.expiration_date.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="flex justify-center align-middle mt-2 ">
+            <input type="submit" value="add item" class="focus:opacity-10 uppercase focus:border-cyan-900 hover:bg-white hover:text-cyan-800 hover:border-2 hover:border-cyan-600
+            bg-cyan-800 text-white py-4 md:px-20 px-10 rounded shadow-lg hover:shadow-xl">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

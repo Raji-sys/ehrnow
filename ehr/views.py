@@ -840,7 +840,7 @@ class ServiceUpdateView(UpdateView):
             return self.form_invalid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Error updating appointment information')
+        messages.error(self.request, 'Error updating service information')
         return self.render_to_response(self.get_context_data(form=form))
 
 
@@ -888,7 +888,7 @@ class PayUpdateView(UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Error updating appointment information')
+        messages.error(self.request, 'Error updating payment information')
         return self.render_to_response(self.get_context_data(form=form))
 
 
@@ -937,3 +937,56 @@ class HematologyPayListView(ListView):
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         return context  
+
+class PrescriptionCreateView(CreateView):
+    model=Prescription
+    template_name='ehr/pharm/prescription.html'
+    form_class=PrescriptionForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        self.object = form.save()
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        messages.success(self.request, 'PRESCRIPTION ADDED')
+        return self.object.patient.get_absolute_url()
+    
+ 
+class PrescriptionUpdateView(UpdateView):
+    model = Prescription
+    template_name = 'ehr/pharm/update_prescription.html'
+    form_class = PrescriptionForm
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Prescription Updated Successfully')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error updating prescription information')
+        return self.render_to_response(self.get_context_data(form=form))
+    
+    def get_success_url(self):
+        messages.success(self.request, 'PRESCRIPTION ADDED')
+        return self.object.patient.get_absolute_url()
+
+
+class PrescriptionListView(ListView):
+    model=Prescription
+    template_name='ehr/pharm/prescription_list.html'
+    context_object_name='prescriptions'
+    paginate_by = 10
+
+    def get_queryset(self):
+        updated = super().get_queryset().order_by('-updated')
+        prescription_filter = PrescriptionFilter(self.request.GET, queryset=updated)
+        return prescription_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_prescriptions = self.get_queryset().count()
+        context['prescriptionFilter'] = PrescriptionFilter(self.request.GET, queryset=self.get_queryset())
+        context['total_precriptions'] = total_prescriptions
+        return context

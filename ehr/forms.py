@@ -185,7 +185,7 @@ class ServiceForm(forms.ModelForm):
 class PayForm(forms.ModelForm):
     class Meta:
         model = Paypoint
-        fields = ['patient','service','receipt_no','status']
+        fields = ['service','receipt_no','status']
 
     def __init__(self, *args, **kwargs):
         super(PayForm, self).__init__(*args, **kwargs)
@@ -197,10 +197,23 @@ class PayForm(forms.ModelForm):
 class PayUpdateForm(forms.ModelForm):
     class Meta:
         model = Paypoint
-        fields = ['patient','receipt_no','status']
+        fields = ['receipt_no','status']
 
     def __init__(self, *args, **kwargs):
         super(PayUpdateForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            
+
+class PrescriptionForm(forms.ModelForm):
+    class Meta:
+        model = Prescription
+        fields = ['patient','drugs']
+
+    def __init__(self, *args, **kwargs):
+        super(PrescriptionForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
