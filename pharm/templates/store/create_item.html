@@ -2,8 +2,8 @@
 {% extends 'base.html' %}
 {% block title %}ITEMS LIST{% endblock %}
 {% block content %}
-  <div class="flex justify-center mt-2 p-1">
-    <div class="font-semibold uppercase text-xs shadow-md shadow-cyan-900 sm:max-w-2xl md:mx-auto md:p-8 overflow-hidden rounded-2xl bg-cyan-50 mt-8 p-4 gap-6">
+  <div class="flex justify-center mt-4 p-1">
+    <div class="font-semibold uppercase text-xs shadow-md shadow-cyan-900 md:max-w-6xl md:mx-auto md:p-8 overflow-hidden rounded-2xl bg-white mt-8 p-4 gap-6">
       <section class="text-center border-b-2 border-cyan-800 p-2 m-2">
         <p class="text-lg font-bold pt-2 text-cyan-800">add a new drug to the store</p>
                   {% if form.non_field_errors %}
@@ -16,7 +16,7 @@
         {% csrf_token %}
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
           <div>
-            <span>DRUG NAME</span>
+            <div>DRUG NAME</div>
             {{ form.name }}
             {% if form.name.errors %}
             <div class="text-red-600 ">
@@ -25,7 +25,7 @@
             {% endif %}
           </div>
           <div>
-            <span>GENERIC NAME</span>
+            <div>GENERIC NAME</div>
             {{ form.generic_name }}
             {% if form.generic_name.errors %}
             <div class="text-red-600">
@@ -34,7 +34,7 @@
             {% endif %}
           </div>
           <div>
-            <span>BRAND NAME</span>
+            <div>BRAND NAME</div>
             {{ form.brand_name }}
             {% if form.brand_name.errors %}
             <div class="text-red-600">
@@ -43,7 +43,7 @@
             {% endif %}
           </div>
           <div>
-            <span>CATEGORY</span>
+            <div>CATEGORY</div>
             {{ form.category }}
             {% if form.category.errors %}
             <div class="text-red-600">
@@ -52,7 +52,7 @@
             {% endif %}
           </div>
           <div>
-            <span>SUPPLIER</span>
+            <div>SUPPLIER</div>
             {{ form.supplier }}
             {% if form.supplier.errors %}
             <div class="text-red-600">
@@ -61,7 +61,7 @@
             {% endif %}
           </div>
           <div>
-            <span>DOSAGE FORM</span>
+            <div>DOSAGE FORM</div>
             {{ form.dosage_form }}
             {% if form.dosage_form.errors %}
             <div class="text-red-600">
@@ -70,7 +70,7 @@
             {% endif %}
           </div>
           <div>
-            <span>PACK SIZE</span>
+            <div>PACK SIZE</div>
           {{ form.pack_size }}
           {% if form.pack_size.errors %}
             <div class="text-red-600">
@@ -79,7 +79,7 @@
             {% endif %}
           </div>
           <div>
-            <span>PACK PRICE</span>
+            <div>PACK PRICE</div>
             {{ form.pack_price }}
             {% if form.pack_price.errors %}
             <div class="text-red-600">
@@ -88,7 +88,7 @@
             {% endif %}
           </div>
           <div>
-            <span>COST PRICE</span>
+            <div>COST PRICE</div>
             {{ form.cost_price }}
             {% if form.cost_price.errors %}
             <div class="text-red-600">
@@ -98,7 +98,7 @@
           </div>
 
           <div>
-            <span>QUANTITY</span>
+            <div>QUANTITY</div>
             {{ form.total_purchased_quantity }}
             {% if form.total_purchased_quantity.errors %}
             <div class="text-red-600">
@@ -108,7 +108,7 @@
           </div>
 
           <div>
-            <span>EXPRIRY DATE</span>
+            <div>EXPRIRY DATE</div>
             {{ form.expiration_date }}
             {% if form.expiration_date.errors %}
             <div class="text-red-600">

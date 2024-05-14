@@ -12,7 +12,7 @@ class DrugForm(forms.ModelForm):
         super(DrugForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.required=True    
-            field.widget.attrs.update({'class':'text-center text-xs md:text-sm focus:outline-none border border-blue-300 p-2 sm:p-3 rounded shadow-lg hover:shadow-xl p-2'})
+            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class RecordForm(forms.ModelForm):
@@ -25,7 +25,7 @@ class RecordForm(forms.ModelForm):
         self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})  # Add onchange event
         for field in self.fields.values():
             field.required=True    
-            field.widget.attrs.update({'class':'text-center text-sm focus:outline-none border border-blue-300 p-3 rounded shadow-lg hover:shadow-xl'})
+            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
     def clean(self):

@@ -12,10 +12,9 @@ urlpatterns=[
     path('record/', views.records, name='record'),
     path('get_drugs_by_category/<int:category_id>/', views.get_drugs_by_category, name='get_drugs_by_category'),
     path('list/', views.drugs_list, name='list'),
-    path('report/', views.reports, name='report'),
-    path('drug_report/', views.drug_report, name='drug_report'),
     path('record_report/', views.record_report, name='record_report'),
     path('worth/', views.worth, name='worth'),
+    path('drug_report/', views.drug_report, name='drug_report'),
 
     path('drug_pdf/', views.drug_pdf, name='drug_pdf'),
 

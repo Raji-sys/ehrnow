@@ -3,45 +3,49 @@
 {% block title %}DRUG REPORT PAGE{% endblock %}
 
 {% block content %}
+
 <!-- start of first grid  -->
-<div class="grid sm:block sm:fixed sm:top-20 sm:right-1 bottom-2 overflow-y-auto mt-2">
-    <!-- Add your styling for the fixed div here -->
-    <div class="sm:flex sm:flex-col justify-center items-center rounded-b-2xl shadow-2xl bg-cyan-900 p-2 text-white">
-        {% if request.GET.urlencode%}
-<div class="flex justify-center gap-1">
-<a class="text-xl text-white focus:opacity-10 focus:border-cyan-600 bg-cyan-600 
-px-4 py-1 rounded shadow-lg hover:shadow-xl text-center" href="{% url 'drug_pdf' %}?{{request.GET.urlencode}}">
-<i class="fa-solid fa-file-pdf fa-lg"></i></a>
-<a href="?" class="text-xl text-white focus:opacity-10  focus:border-blue-600 bg-white 
-px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-lg text-cyan-700"></i></a>
-</div>
-{%endif%}
-        <form method="get" class="text-xs">
+<div class="m-1 mx-20 rounded-xl p-2 shadow-black shadow-2xl bg-cyan-50">
+                {% if request.GET.urlencode %}
+                <div class="flex justify-center gap-1">
+                    <a class="text-xl text-white focus:opacity-10 focus:border-cyan-600 bg-cyan-600 
+                    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center" href="{% url 'pharm:drug_pdf' %}?{{request.GET.urlencode}}">
+                    <i class="fa-solid fa-file-pdf fa-lg"></i></a>
+                    <a href="?" class="text-xl text-white focus:opacity-10  focus:border-blue-600 bg-white 
+                    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-lg text-cyan-700"></i></a>
+                    </div>
+                {%endif%}
+  <div class="text-cyan-900">
+    <form method="get" class="text-xs">
+        {% for field in drugfilter.form %}
+        {{field.errors}}
+        {% endfor %}
+        <div class="text-center flex flex-row flex-wrap gap-1 justify-center">
             {% for field in drugfilter.form %}
-            {{field.errors}}
+            <div class="flex justify-center items-start flex-col">
+            <label for="{{field.id_for_label}}" class="inline">{{ field.label_tag }}</label>
+            <input type="field.field.widget.input_type" name="{{field.name}}"
+            class="text-center text-sm focus:outline-none w-fit text-cyan-950 p-2
+            rounded shadow-md shadow-cyan-900 border-cyan-900 border"
+            {%if field.value%} value="{{field.value}}"{%endif%}> 
+        </div>
             {% endfor %}
-            <div class="p-4 grid sm:grid-cols-1 grid-cols-2 sm:justify-center sm:items-center sm:gap-2 text-center">
-                {% for field in drugfilter.form %}
-                <div class="flex flex-col flex-wrap gap-1">
-                    <label class="form-label">{{ field.label_tag }}</label>
-                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"
-                    class="text-xs text-cyan-700 focus:outline-none border border-blue-300 p-1 rounded shadow-lg hover:shadow-xl" placeholder="{{field.name}}">
-                    <span class="form-error">{{ field.errors }}</span>
+            <div class="mt-4 flex justify-center align-middle ">
+                <button type="submit" class="shadow-md shadow-cyan-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-cyan-900 text-white rounded hover:border-cyan-700 ">
+                  <i class="fa-solid fa-search fa-xl "></i>
+              </button>
                 </div>
-                {% endfor %}
-            </div>
-            <div class="flex justify-center align-middle ">
-            <button type="submit" class="focus:opacity-10 uppercase focus:border-cyan-600
-        bg-white text-cyan-800 px-4 py-2 rounded shadow-lg hover:shadow-xl mb-4">
-        <i class="fa-solid fa-search fa-lg"></i></button>                     
+              </div>
+
     </div>
-        </form>
-    </div>
+    </form>
 </div>
+</div>
+
 <!-- end of first grid -->
     {% if request.GET.urlencode %}
-<div class="mx-auto max-w-screen-xl">
-   <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
+<div class="overflow-x-auto px-4 md:px-10 m-4">
+   <table class="table-auto min-w-full max-sm:flex flex rounded-2xl items-center justify-center">
         <tbody class="bg-white border-1 shadow-md rounded-2xl max-sm:p-4 p-2 overflow-x-auto border-cyan-700 shadow-cyan-900">
             <tr class="text-xs bg-cyan-800 text-white">
                 <th scope="col" class="border-2 border-white p-3">S/N</th>

@@ -1,33 +1,20 @@
 {% extends "base.html" %}
 {%load static %}
-{% block title %}Home{% endblock %}
-
+{% block title %}PHARMACY INVENTORY{% endblock %}
+{%block page_title%}<div class="enom flex justify-center">pharmacy store inventory</div>{%endblock%}
 {% block content %}
-<div class="mt-16 text-center md:mb-4 mx-4 rounded-xl">
-    <div class="p-4 md:p-14 md:gap-1 grid grid-cols-1 md:grid-cols-3 bg-white uppercase text-white text-center md:mx-auto shadow-lg shadow-black rounded-2xl w-fit mb-6">
-        <div class="flex justify-center">
-            <img src="{%static "images/logo.jpg" %}" alt="" class="md:object-cover object-contain">
-        </div>
-        <div class="md:mt-10 md:col-span-2">
-        <h1 class="text-center text-cyan-600 font-semibold text-3xl align-middle items-center p-2 uppercase">nohd pharmacy store</h1>
-        <h3 class=" text-center text-gray-700 font-medium text-xl align-middle items-center p-2 uppercase">inventory management system</h3>
-    <div>
-<div class="grid grid-cols-2 md:flex md:flex-row border-t-2 border-zinc-700 mt-2 p-4 mx-auto justify-center items-center gap-4 md:gap-6">
-    <a href="{% url "list" %}" class="">
-        <div class="text-sm p-2 bg-cyan-900 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-zinc-600 focus:opacity-10">drugs</div>
+    
+<div class="max-w-4xl mt-10 mx-auto rounded-xl p-4 shadow-black shadow-2xl bg-cyan-50">
+<div class=" grid grid-cols-2 md:flex md:flex-row  mt-2 p-10 mx-20 justify-center items-center gap-4 md:gap-10 uppercase">
+    <a href="{% url 'pharm:list' %}" class="">
+        <div class="text-sm text-white px-16 py-8 bg-cyan-900 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-zinc-600 focus:opacity-10">drugs</div>
     </a>
-    <a href="{% url "record" %}" class="">
-        <div class="text-sm p-2 bg-amber-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-amber-600 focus:opacity-10">record</div>
+    <a href="{% url 'pharm:record' %}" class="">
+        <div class="text-sm text-white px-16 py-8 bg-amber-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-amber-600 focus:opacity-10">record</div>
     </a>
-    <a href="{% url "report" %}" class="">
-        <div class="text-sm p-2 bg-blue-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-blue-600 focus:opacity-10">report</div>
-    </a>
-    <a href="{% url "worth" %}" class="">
-        <div class="text-sm p-2 bg-green-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-cyan-600 focus:opacity-10">worth</div>
+    <a href="{% url 'pharm:worth' %}" class="">
+        <div class="text-sm text-white px-16 py-8 bg-green-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-green-600 focus:opacity-10">worth</div>
     </a>
 </div>
     </div>
-    </div>
-</div>
-</div>  
 {% endblock %}

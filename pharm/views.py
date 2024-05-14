@@ -64,11 +64,6 @@ def records(request):
 
 
 @login_required
-def reports(request):
-    return render(request, 'store/report.html')
-
-
-@login_required
 def drug_report(request):
     drugfilter=DrugFilter(request.GET, queryset=Drug.objects.all().order_by('-name'))    
     pgtn=drugfilter.qs
@@ -78,7 +73,6 @@ def drug_report(request):
 
     context = {'drugfilter': drugfilter,'po':po}
     return render(request, 'store/item_report.html', context)
-
 
 def record_report(request):
     recordfilter = RecordFilter(request.GET, queryset=Record.objects.all().order_by('-updated_at'))

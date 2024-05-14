@@ -71,7 +71,7 @@ class PayFilter(django_filters.FilterSet):
 
 
 class PrescriptionFilter(django_filters.FilterSet):
-    user=django_filters.CharFilter(label='PHARMACIST', field_name="user__username",lookup_expr='iexact')
+    user=django_filters.CharFilter(label='DOCTOR', field_name="user__username",lookup_expr='iexact')
     patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
     drugs=django_filters.CharFilter(label='DRUG',field_name="drugs",lookup_expr='iexact')                                                                                                     
     updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
