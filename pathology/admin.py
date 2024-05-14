@@ -41,10 +41,6 @@ class SerologyTestResultAdmin(admin.ModelAdmin):
     list_display = ('result_code', 'test', 'patient', 'result', 'comments')
     list_filter = ('test', 'patient')
 
-    def display_parameters(self, obj):
-            return ", ".join([f"{p.result.test} {p.name}: {p.value}" for p in obj.parameters.all()])
-
-    display_parameters.short_description = "Parameters"
 
 @admin.register(SerologyTestName)
 class SerologyTestNameAdmin(admin.ModelAdmin):

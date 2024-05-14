@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {%load static %}
+{%block page_title%}<div class="enom flex justify-center">HEMATOLOGY RESULT LIST</div>{%endblock%}
 {% block content %}
 <div class="mt-5 p-4">
-  <div class="max-w-6xl mx-auto rounded-xl p-4 shadow-black shadow-2xl bg-gray-50">
+  <div class="mx-20 rounded-xl p-4 shadow-black shadow-2xl bg-gray-50">
   <div class="overflow-x-auto">
   <table class="min-w-full divide-y divide-gray-500">
     <thead class="bg-gray-100">
@@ -28,7 +29,7 @@
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
       {% for result in hematology_results %}
-      <tr class="bg-gray-50 hover:bg-gray-200 transition-colors duration-300">
+      <tr class="bg-gray-50 hover:bg-gray-200 transition-colors duration-300 uppercase">
         <td class="px-6 py-4 whitespace-nowrap">
           {{forloop.counter}}
       </td>
@@ -44,7 +45,7 @@
           </a>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
-          <span class="text-sm">{{ result.result|default_if_none:'' }}</span>
+          <span class="text-sm">{{ result.result.html|safe }}</span>
           <span class="text-xs">{{ result.unit|default_if_none:'' }}</span>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">

@@ -204,7 +204,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ h.test|default_if_none:''}}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ h.collected|default_if_none:'' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="text-sm">{{ h.result|default_if_none:'' }}</span>
+                          <span class="text-sm">{{ h.result.html|safe }}</span>
                           <span class="text-xs">{{ h.unit|default_if_none:'' }}</span>
                           <span class="text-sm">
                             {% for parameter in h.hema_parameters.all %}

@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils import timezone
 from django_quill.fields import QuillField
+from pathology.models import HematologyResult
 
 
 class SerialNumberField(models.CharField):
@@ -208,8 +209,9 @@ class Services(models.Model):
 
 class Paypoint(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="payment")
     service=models.ForeignKey(Services,null=True, on_delete=models.CASCADE)
+    hematology_result = models.ForeignKey(HematologyResult, null=True, on_delete=models.CASCADE, related_name="hema_payments")
     item=models.CharField('Receipt Number',null=True,blank=True,max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     receipt_no=models.CharField('Receipt Number',null=True,blank=True,max_length=100)
@@ -219,10 +221,7 @@ class Paypoint(models.Model):
 
     def get_absolute_url(self):
         return reverse('pay_details', args=[self.service])
-
-    def get_service_info(self):
-        return f"{self.service.name} - {self.service.price}"
-    
+   
 
 class FollowUpVisit(models.Model):
     CLINIC_CHOICES = [

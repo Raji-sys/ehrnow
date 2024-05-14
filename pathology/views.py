@@ -27,6 +27,9 @@ from django.db.models import Count
 from django.views.generic import FormView
 from django.forms import inlineformset_factory
 from django.urls import reverse
+from django.db.models import Prefetch
+from django.db.models.functions import Cast
+from django.db.models import CharField
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -83,8 +86,7 @@ class HematologyListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(result__isnull=False)
- 
+        queryset = queryset.filter(result__isnull=False, hema_payments__status='paid')
         return queryset
 
 class HematologyRequestListView(ListView):
@@ -92,10 +94,29 @@ class HematologyRequestListView(ListView):
     template_name='hema/hematology_request.html'
     context_object_name='hematology_request'
 
+
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(result__isnull=True)
+        queryset = queryset.annotate(
+            result_str=Cast('result', CharField())
+        )
+        queryset = queryset.filter(result_str__isnull=True)
+        queryset = queryset.prefetch_related(
+            Prefetch('hema_payments', queryset=Paypoint.objects.select_related('service', 'patient'))
+        )
         return queryset
+    
+# class HematologyRequestListView(ListView):
+#     model=HematologyResult
+#     template_name='hema/hematology_request.html'
+#     context_object_name='hematology_request'
+
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         queryset = queryset.prefetch_related('hema_payments')  # Prefetch related Paypoint objects
+     
+#         # queryset = queryset.filter(result__isnull=True)
+#         return queryset    
 
 class HematologyTestCreateView(LoginRequiredMixin, CreateView):
     model = HematologyResult
@@ -106,8 +127,17 @@ class HematologyTestCreateView(LoginRequiredMixin, CreateView):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
         form.instance.collected_by = self.request.user
-        payment = Paypoint.objects.create(patient=patient, status='pending', item=form.instance.test, price=form.instance.test.price)
-        messages.success(self.request, 'Hematology result -created successfully')
+    
+        hematology_result = form.save()
+
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status='pending',
+            hematology_result=hematology_result,
+            item=hematology_result.test,
+            price=hematology_result.test.price,
+        )
+        messages.success(self.request, 'Hematology test created successfully')
         return super().form_valid(form)
     
     def get_success_url(self):
@@ -117,6 +147,7 @@ class HematologyResultCreateView(LoginRequiredMixin, UpdateView):
     model = HematologyResult
     form_class = HematologyResultForm
     template_name = 'hema/hematology_result.html'
+    success_url=reverse_lazy('pathology:hematology_request')
 
     def get_object(self, queryset=None):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
@@ -124,11 +155,11 @@ class HematologyResultCreateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.updated_by = self.request.user
+        hematology_result = form.save(commit=False)
+        hematology_result.result = form.cleaned_data['result']
+        hematology_result.save()
         messages.success(self.request, 'Hematology result updated successfully')
         return super().form_valid(form)
-
-    def get_success_url(self):
-        return self.object.patient.get_absolute_url()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

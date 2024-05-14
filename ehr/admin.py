@@ -29,9 +29,9 @@ class VisitAdmin(admin.ModelAdmin):
 
 @admin.register(Paypoint)
 class PaypointAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'get_service_info', 'status')
-    search_fields = ('status',)
-    list_filter = ('status',)
+    list_display = ('patient', 'item','status')
+    search_fields = ('status','item')
+    list_filter = ('status','item')
 
 
 @admin.register(ServiceType)
