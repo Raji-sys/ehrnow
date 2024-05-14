@@ -1,6 +1,6 @@
 from multiprocessing import context
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
-from django.views.generic.edit import UpdateView, CreateView, DeleteView
+# from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic.base import TemplateView
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -35,7 +35,30 @@ def log_anonymous_required(view_function, redirect_to=None):
         redirect_to = '/'
     return user_passes_test(lambda u: not u.is_authenticated, login_url=redirect_to)(view_function)
 
+# Mixins
+class RecordRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='record').exists()
 
+class RevenueRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='revenue').exists()
+
+class NurseRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='nurse').exists()
+
+class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='doctor').exists()
+
+class PathologyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='pathologist').exists()
+
+class PharmacyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='pharmacist').exists()
 # @login_required
 # def fetch_resources(uri, rel):
 #     """
@@ -312,25 +335,6 @@ class AEClinicDetailView(TemplateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class SOPDClinicDetailView(TemplateView):
     template_name = 'ehr/clinic/sopd_details.html'
-
-
-
-# Mixins
-class RecordRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.groups.filter(name='record').exists()
-
-class RevenueRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.groups.filter(name='revenue').exists()
-
-class NurseRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.groups.filter(name='nurse').exists()
-
-class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.groups.filter(name='doctor').exists()
 
 
 #1 Patient create
@@ -988,7 +992,5 @@ class PrescriptionListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_prescriptions = self.get_queryset().count()
         context['prescriptionFilter'] = PrescriptionFilter(self.request.GET, queryset=self.get_queryset())
-        context['total_precriptions'] = total_prescriptions
         return context

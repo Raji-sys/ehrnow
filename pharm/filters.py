@@ -1,6 +1,6 @@
 from tabnanny import verbose
 import django_filters
-from .models import Drug, Record
+from .models import Dispensary, Drug, Record
 from django import forms
 
 
@@ -40,3 +40,16 @@ class RecordFilter(django_filters.FilterSet):
     class Meta:
         model = Record
         exclude= ['date_issued','balance','siv','srv','invoice_no','updated_at','remark','quantity']
+
+
+class DispenseFilter(django_filters.FilterSet):
+    patient_no=django_filters.NumberFilter(label='pn', field_name="patient__file_no",lookup_expr='exact')
+    dispense_date1 = django_filters.DateFilter(label="DISPENSE DATE R1",field_name='dispensed_date',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    dipsense_date2 = django_filters.DateFilter(label="DISPENSE DATE R2",field_name='dispensed_date',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
+    category = django_filters.CharFilter(label="CLASS",field_name='drug__category__name', lookup_expr='iexact')
+    drug = django_filters.CharFilter(label="DRUG",field_name='drug__name', lookup_expr='iexact')
+    dispensed_by = django_filters.CharFilter(label="DISPENSED BY",field_name='dispensed_by__username', lookup_expr='iexact')
+
+    class Meta:
+        model = Dispensary
+        fields= ['patient','drug','category','dispensed_date','dispensed_by']
