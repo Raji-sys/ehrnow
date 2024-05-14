@@ -81,8 +81,16 @@ class HandoverAdmin(admin.ModelAdmin):
     search_fields = ('patient',)
     list_filter = ('patient',)
 
+
 @admin.register(VitalSigns)
 class VitalSignAdmin(admin.ModelAdmin):
     list_display = ('patient',)
     search_fields = ('patient',)
     list_filter = ('patient',)
+
+
+@admin.register(Prescription)
+class PrescriptionAdmin(admin.ModelAdmin):
+    list_display = ('patient','drugs')
+    search_fields = ('patient','drugs')
+    list_filter = ('patient','drugs')

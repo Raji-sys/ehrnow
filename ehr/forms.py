@@ -210,7 +210,7 @@ class PayUpdateForm(forms.ModelForm):
 class PrescriptionForm(forms.ModelForm):
     class Meta:
         model = Prescription
-        fields = ['patient','drugs']
+        fields = ['drugs']
 
     def __init__(self, *args, **kwargs):
         super(PrescriptionForm, self).__init__(*args, **kwargs)

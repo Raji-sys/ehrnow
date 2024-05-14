@@ -339,7 +339,7 @@ class ClinicalNote(models.Model):
 
 class Prescription(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='prescribed_drugs')
     drugs=models.TextField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
 

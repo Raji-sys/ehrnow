@@ -1,6 +1,6 @@
 {% extends 'base.html'%}
 {% load static %}
-{%block title%}NEW APPOINTMENT{%endblock%}
+{%block title%}PRESCRIPTION{%endblock%}
 {%block content %}
 <div class="">
     <div class="uk-overlay rounded-3xl bg-white uk-position-center mt-4">
@@ -11,7 +11,7 @@
                 <a href class="uk-alert-close font-bold" uk-close></a>
                 <p class="text-green-700 font-semibold uppercase">{{ message }}</p>
                 </div>
-          </div>
+          </div> 
           {% endfor %}
         </section>
         {% if form.errors %}
@@ -23,7 +23,7 @@
   <form method="post" enctype="multipart/form-data" class="text-xs">
     {% csrf_token %}
     <div class="mb-2 uppercase text-cyan-900 px-10">
-        <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">NEW APPOINTMENT</p>
+        <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">PRESCRIPTION FORM</p>
         <div class="grid grid-cols-3 p-2 gap-4">
       {% for field in form %}
         <div>
@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="gap-4 flex justify-center align-middle">
-      <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+      <input type="submit" value="prescribe" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
   bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
     </div>
     </form>

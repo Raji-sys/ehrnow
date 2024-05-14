@@ -94,7 +94,7 @@ urlpatterns = [
 
     #Prescription
     path('clinic/add-prescription/<str:file_no>/', PrescriptionCreateView.as_view(), name='add_prescription'),
-    path('clinic/prescriptions/', PrescriptionListView.as_view(), name='prescriptions'),
+    path('clinic/prescriptions/', PrescriptionListView.as_view(), name='prescription_list'),
     path('clinic/update-prescription/<int:pk>/', PrescriptionUpdateView.as_view(), name='update_prescription'),
 
 

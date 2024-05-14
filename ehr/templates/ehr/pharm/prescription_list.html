@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}APPOINTMENT DIRECTORY{%endblock%}
-<div class="flex justify-center items-end enom">APPOINTMENT DIRECTORY</div>
+{%block title%}PRESCRIPTION DIRECTORY{%endblock%}
+<div class="flex justify-center items-end enom">PRESCRIPTION DIRECTORY</div>
 {%block content %}
 <div class="mt-2 p-4">
     <section class="text-center border-cyan-700 p-4 m-2">
@@ -9,7 +9,7 @@
         <div class="">
           <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
             <a href class="uk-alert-close font-bold" uk-close></a>
-            <p class="text-green-700 font-semibold">{{ message }}</p>
+            <p class="text-green-700 font-semibold">{{ message }}</p> 
           </div>
         </div>
         {% endfor %}
@@ -26,11 +26,11 @@
                 </div>
       <div class="text-cyan-900">
         <form method="get" class="text-xs text-center">
-          {% for field in appointmentFilter.form %}
+          {% for field in prescriptionFilter.form %}
           {{field.errors}}
           {% endfor %}
             <div class="text-center ">
-                {% for field in appointmentFilter.form %}
+                {% for field in prescriptionFilter.form %}
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
                 <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
                 {%if field.value%} value="{{field.value}}"{%endif%}
@@ -50,13 +50,16 @@
           <thead class="bg-emerald-50">
             <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
-                    S/N
+                    #
                 </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 FILE NUMBER
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 NAME
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+                PRESCRIPTION
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 CLINIC
@@ -73,31 +76,34 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-emerald-200">
-            {% for a in appointments %}
+            {% for p in prescriptions %}
             <tr class="bg-emerald-100 hover:bg-emerald-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  {{ a.patient.file_no }}
+                  {{ p.patient.file_no|default_if_none:'' }}
                 </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <a href="{{a.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-                {{ a.patient.full_name }}
+                <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+                {{ p.patient.full_name|default_if_none:'' }}
                 </a>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ a.clinic }}
+                {{ p.drugs|default_if_none:'' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ a.team }}
+                {{ p.patient.clinic|default_if_none:'' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ a.date }}
+                {{ p.patient.team|default_if_none:'' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ p.updated|default_if_none:'' }}
               </td>
             <td class="px-6 py-4 whitespace-nowrap">
                 <span class="space-x-4">
-                    <a href="{% url 'update_appointment' a.pk %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib "></i></a>
+                    <a href="{% url 'update_prescription' p.pk %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib "></i></a>
                     
                 </span>
               </td>

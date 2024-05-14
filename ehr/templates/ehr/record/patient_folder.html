@@ -418,21 +418,27 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="{%url 'add_prescription' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">prescribe drugs</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr>
-                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Prescribed Drugs</th>
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Prescribed</th>
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Updated</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              
+              {% for p in prescribed_drugs %}
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ p.drugs|default_if_none:''}}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ p.updated}}</td>
+                <td class="px-6 py-4 whitespace-nowrap"><a href="{%url 'update_prescription' p.pk%}">update prescription</a></td>
               </tr>
-
+              {%endfor%}
             </tbody>
           </table>
         </div>

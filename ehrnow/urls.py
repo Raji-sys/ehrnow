@@ -10,6 +10,7 @@ admin.site.site_title = "CONTROL CENTER"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('pathology/', include('pathology.urls',namespace='pathology')),
+    path('pharm/', include('pharm.urls',namespace='pharm')),
     path('',include('ehr.urls')),
     path('__reload__/', include('django_browser_reload.urls')),
 ]

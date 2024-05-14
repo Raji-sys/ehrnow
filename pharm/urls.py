@@ -2,13 +2,12 @@ from django.urls import path,include
 from . import views 
 from .views import *
 
+app_name='pharm'
 
 urlpatterns=[
-    path('',views.index, name='index'),
-    path('login/',CustomLoginView.as_view(), name='signin'),
+    path('',views.index, name='pharm_inventory'),
     path('create_drug/', views.create_drug, name='create_drug'),
     path('create_record/', views.create_record, name='create_record'),
-    path('',include('django.contrib.auth.urls')),
 
     path('record/', views.records, name='record'),
     path('get_drugs_by_category/<int:category_id>/', views.get_drugs_by_category, name='get_drugs_by_category'),

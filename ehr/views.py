@@ -455,6 +455,7 @@ class PatientFolderView(DetailView):
         context['patient'] = patient
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
+        context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
         context['hematology_results']=patient.hematology_result.all().order_by('-created')
         context['chempath_results']=patient.chemical_pathology_results.all().order_by('-created')
         context['micro_results']=patient.microbiology_results.all().order_by('-created')
@@ -937,6 +938,7 @@ class HematologyPayListView(ListView):
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         return context  
+
 
 class PrescriptionCreateView(CreateView):
     model=Prescription
