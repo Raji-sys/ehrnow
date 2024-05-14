@@ -100,33 +100,31 @@ class Record(models.Model):
         verbose_name_plural = 'drugs issued record'
 
 class Dispensary(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="drug_dispense")
-    drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="drug_dispense")
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    patient = models.ForeignKey(PatientData,null=True, blank=True, on_delete=models.CASCADE,related_name='drug_payments')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug_catgory")
+    drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug")
+    payment = models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(PatientData,null=True, blank=True, on_delete=models.CASCADE,related_name='drug_dispensed')
     quantity = models.PositiveIntegerField('QTY TO DISPENSE',null=True, blank=True)
     balance = models.PositiveIntegerField('CURRENT BALANCE',null=True, blank=True)
-    dispense_date = models.DateField('DISPENSE DATE',auto_now_add=True)
-    issued_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='drug_dispense')
+    dispensed_date = models.DateField('DISPENSE DATE',auto_now_add=True)
+    dispensed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='dispensed_by')
     remark = models.CharField('REMARKS',max_length=100, choices=Unit.choices, null=True, blank=True)
-    updated_at = models.DateTimeField('DATE UPDATED',auto_now=True)
 
     def save(self, *args, **kwargs):
         if self.balance is None:
             self.balance = self.drug.current_balance
+        quantity_to_dispense = min(self.quantity, self.balance)
 
-        quantity_to_issue = min(self.quantity, self.balance)
+        if quantity_to_dispense <= 0:
+            raise ValidationError(_("Not allowed."), code='not enough quantity')
 
-        if quantity_to_issue <= 0:
-            raise ValidationError(_("Not allowed."), code='invalid_quantity')
-
-        self.quantity = quantity_to_issue
-        self.balance -= quantity_to_issue
+        self.quantity = quantity_to_dispense
+        self.balance -= quantity_to_dispense
         super().save(*args, **kwargs)
         self.drug.save()
 
     def __str__(self):
-        return self.drug.name
+        return f"{self.patient}--{self.drug.name}--{self.dispensed_date}"
 
     class Meta:
         verbose_name_plural = 'dispensary record'
