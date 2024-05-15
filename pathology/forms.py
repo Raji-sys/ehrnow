@@ -10,12 +10,19 @@ class HematologyTestForm(forms.ModelForm):
     class Meta:
         model = HematologyResult
         fields = ['test']
+    def __init__(self, *args, **kwargs):
+        super(HematologyTestForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
 
 
 class HematologyResultForm(forms.ModelForm):
     class Meta:
         model = HematologyResult
-        fields = ['test', 'result']
+        fields = ['test', 'result','cleared']
 
 
 class ChempathTestForm(forms.ModelForm):

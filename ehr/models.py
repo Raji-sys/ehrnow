@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils import timezone
 from django_quill.fields import QuillField
-from pathology.models import HematologyResult
+# from pathology.models import HematologyResult
 from django.core.exceptions import ValidationError
 
 
@@ -212,12 +212,9 @@ class Services(models.Model):
 class Paypoint(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="payment")
-    service=models.ForeignKey(Services,null=True, on_delete=models.CASCADE)
-    hematology_result = models.ForeignKey(HematologyResult, null=True, on_delete=models.CASCADE, related_name="hema_payments")
-    item=models.CharField('Receipt Number',null=True,blank=True,max_length=100)
+    service = models.CharField(max_length=100, null=True, blank=True)  # Changed to CharField
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
-    receipt_no=models.CharField('Receipt Number',null=True,blank=True,max_length=100)
-    status = models.CharField(max_length=20, choices=[('pending', 'Pending'),('paid', 'Paid'),], default='pending')
+    status=models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateField(auto_now=True)
 

@@ -4,6 +4,9 @@ from django.db import models
 from django.utils.translation import gettext as _
 from django.apps import apps
 from django_quill.fields import QuillField
+from ehr.models import PatientData, Paypoint
+
+
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -27,9 +30,11 @@ class HematologyTest(models.Model):
         return f"{self.name}"
 
 class HematologyResult(models.Model):
-    patient = models.ForeignKey('ehr.PatientData', on_delete=models.CASCADE, related_name='hematology_result', null=True, blank=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='hematology_result', null=True, blank=True)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='hematology_result_payment')
     result_code = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     test = models.ForeignKey(HematologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="results")
+    cleared=models.BooleanField(default=False)
     result = QuillField(null=True, blank=True)
     comments=QuillField(null=True, blank=True)
     natured_of_specimen = models.CharField(max_length=1-0, null=True, blank=True)
@@ -40,8 +45,6 @@ class HematologyResult(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
  
-    def get_patient_model(self):
-        return apps.get_model('ehr', 'PatientData')
     
     def save(self, *args, **kwargs):
         if not self.result_code:
@@ -71,7 +74,7 @@ class ChempathTestName(models.Model):
     
 
 class ChemicalPathologyResult(models.Model):
-    patient = models.ForeignKey('ehr.PatientData', on_delete=models.CASCADE, related_name='chemical_pathology_results',null=True, blank=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='chemical_pathology_results',null=True, blank=True)
     result_code = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     test = models.ForeignKey(ChempathTestName, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="results")
     result = models.FloatField(null=True, blank=True)
@@ -84,8 +87,6 @@ class ChemicalPathologyResult(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def get_patient_model(self):
-        return apps.get_model('ehr', 'PatientData')
     
     def save(self, *args, **kwargs):
         if not self.result_code:
@@ -113,7 +114,7 @@ class MicrobiologyTest(models.Model):
         return self.name
 
 class MicrobiologyResult(models.Model):
-    patient = models.ForeignKey('ehr.PatientData', on_delete=models.CASCADE, related_name='microbiology_results',null=True, blank=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='microbiology_results',null=True, blank=True)
     result_code = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     test = models.ForeignKey(MicrobiologyTest, on_delete=models.CASCADE, null=True, blank=True)
     result = models.FloatField(null=True, blank=True)
@@ -127,8 +128,6 @@ class MicrobiologyResult(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
-    def get_patient_model(self):
-        return apps.get_model('ehr', 'PatientData')
     def save(self, *args, **kwargs):
         if not self.result_code:
             last_instance = self.__class__.objects.order_by('result_code').last()
@@ -159,7 +158,7 @@ class SerologyTestName(models.Model):
         return f"{self.name}, {self.reference_range}"
 
 class SerologyResult(models.Model):
-    patient = models.ForeignKey('ehr.PatientData', on_delete=models.CASCADE, related_name='serology_results', null=True, blank=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='serology_results', null=True, blank=True)
     result_code = SerialNumberField(max_length=20, unique=True, editable=False, default="")
     test = models.ForeignKey(SerologyTestName, on_delete=models.CASCADE, null=True, blank=True, related_name='results')
     result = models.FloatField(null=True, blank=True)
@@ -173,8 +172,6 @@ class SerologyResult(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
  
-    def get_patient_model(self):
-        return apps.get_model('ehr', 'PatientData')
 
     def save(self, *args, **kwargs):
         if not self.result_code:
@@ -206,7 +203,7 @@ class SerologyResult(models.Model):
 
 class GeneralTestResult(models.Model):
     name = models.CharField(max_length=100, null=True)
-    patient = models.ForeignKey('ehr.PatientData', on_delete=models.CASCADE, related_name='general_results', null=True, blank=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='general_results', null=True, blank=True)
     result_code = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     result = models.FloatField(null=True, blank=True)
     unit = models.CharField(max_length=50, null=True, blank=True)
@@ -219,8 +216,6 @@ class GeneralTestResult(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
  
-    def get_patient_model(self):
-        return apps.get_model('ehr', 'PatientData')
  
     def __str__(self):
         if self.patient:

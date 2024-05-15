@@ -78,6 +78,15 @@ class GeneralView(TemplateView):
 class ReportView(TemplateView):
     template_name = "report.html"
 
+class HematologyRequestListView(ListView):
+    model=HematologyResult
+    template_name='hema/hematology_request.html'
+    context_object_name='hematology_request'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(cleared=False)
+        return queryset
+
     
 class HematologyListView(ListView):
     model=HematologyResult
@@ -86,36 +95,9 @@ class HematologyListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(result__isnull=False, hema_payments__status='paid')
+        queryset = queryset.filter(result__isnull=False,payment__status=True)
         return queryset
-
-# class HematologyRequestListView(ListView):
-#     model=HematologyResult
-#     template_name='hema/hematology_request.html'
-#     context_object_name='hematology_request'
-
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         queryset = queryset.annotate(
-#             result_str=Cast('result', CharField())
-#         )
-#         queryset = queryset.filter(result_str__isnull=True)
-#         queryset = queryset.prefetch_related(
-#             Prefetch('hema_payments', queryset=Paypoint.objects.select_related('service', 'patient'))
-#         )
-#         return queryset
     
-class HematologyRequestListView(ListView):
-    model=HematologyResult
-    template_name='hema/hematology_request.html'
-    context_object_name='hematology_request'
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.prefetch_related('hema_payments')  # Prefetch related Paypoint objects
-     
-        # queryset = queryset.filter(result__isnull=True)
-        return queryset    
 
 class HematologyTestCreateView(LoginRequiredMixin, CreateView):
     model = HematologyResult
@@ -126,16 +108,16 @@ class HematologyTestCreateView(LoginRequiredMixin, CreateView):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
         form.instance.collected_by = self.request.user
-    
-        hematology_result = form.save()
 
+        hematology_result = form.save(commit=False)
         payment = Paypoint.objects.create(
             patient=patient,
-            status='pending',
-            hematology_result=hematology_result,
-            item=hematology_result.test,
+            status=False,
+            service=hematology_result.test, 
             price=hematology_result.test.price,
         )
+        hematology_result.payment = payment  # Link payment to the hematology result
+        hematology_result.save()  # Save the hematology result with the payment
         messages.success(self.request, 'Hematology test created successfully')
         return super().form_valid(form)
     
