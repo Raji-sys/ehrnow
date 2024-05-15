@@ -89,23 +89,6 @@ class HematologyListView(ListView):
         queryset = queryset.filter(result__isnull=False, hema_payments__status='paid')
         return queryset
 
-class HematologyRequestListView(ListView):
-    model=HematologyResult
-    template_name='hema/hematology_request.html'
-    context_object_name='hematology_request'
-
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.annotate(
-            result_str=Cast('result', CharField())
-        )
-        queryset = queryset.filter(result_str__isnull=True)
-        queryset = queryset.prefetch_related(
-            Prefetch('hema_payments', queryset=Paypoint.objects.select_related('service', 'patient'))
-        )
-        return queryset
-    
 # class HematologyRequestListView(ListView):
 #     model=HematologyResult
 #     template_name='hema/hematology_request.html'
@@ -113,10 +96,26 @@ class HematologyRequestListView(ListView):
 
 #     def get_queryset(self):
 #         queryset = super().get_queryset()
-#         queryset = queryset.prefetch_related('hema_payments')  # Prefetch related Paypoint objects
+#         queryset = queryset.annotate(
+#             result_str=Cast('result', CharField())
+#         )
+#         queryset = queryset.filter(result_str__isnull=True)
+#         queryset = queryset.prefetch_related(
+#             Prefetch('hema_payments', queryset=Paypoint.objects.select_related('service', 'patient'))
+#         )
+#         return queryset
+    
+class HematologyRequestListView(ListView):
+    model=HematologyResult
+    template_name='hema/hematology_request.html'
+    context_object_name='hematology_request'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.prefetch_related('hema_payments')  # Prefetch related Paypoint objects
      
-#         # queryset = queryset.filter(result__isnull=True)
-#         return queryset    
+        # queryset = queryset.filter(result__isnull=True)
+        return queryset    
 
 class HematologyTestCreateView(LoginRequiredMixin, CreateView):
     model = HematologyResult
@@ -142,6 +141,7 @@ class HematologyTestCreateView(LoginRequiredMixin, CreateView):
     
     def get_success_url(self):
         return self.object.patient.get_absolute_url()
+
 
 class HematologyResultCreateView(LoginRequiredMixin, UpdateView):
     model = HematologyResult
@@ -174,7 +174,6 @@ class HemaReportView(ListView):
 
         hema_filter = HemaFilter(self.request.GET, queryset=queryset)
         patient = hema_filter.qs.order_by('-created')
-
         return patient
 
     def get_context_data(self, **kwargs):

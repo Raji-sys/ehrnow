@@ -2,11 +2,10 @@
 {% load static %}
 {%block title%}HANDLE PATIENT VISIT{%endblock%}
 {%block content %}
-<div class="">
-    <div class="uk-overlay rounded-3xl bg-white uk-position-center mt-4">
+    <div class="p-2 rounded-3xl bg-white uk-position-center mt-14">
         <section class="text-center border-cyan-700 p-4 m-2">
             {% for message in messages %}
-          <div class="mt-2">
+          <div class="mt-1">
                <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
                 <a href class="uk-alert-close font-bold" uk-close></a>
                 <p class="text-green-700 font-semibold">{{ message }}</p>
@@ -23,7 +22,7 @@
   <form method="post" enctype="multipart/form-data" class="text-xs">
     {% csrf_token %}
     <div class="mb-2 uppercase text-cyan-900 px-10">
-        <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">{% if is_new_visit %}New Visit{% else %}New Patient{% endif %}</p>
+        <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">New Patient Registration</p>
         <div class="grid grid-cols-3 p-2 gap-4">
       {% for field in form %}
         <div>
@@ -35,14 +34,13 @@
             </div>
             </div>
             {%endfor%}
-        </div>
-    </div>
-    <div class="gap-4 flex justify-center align-middle">
-      <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-  bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+          </div>
+          <div class="gap-3 flex justify-center align-middle">
+            <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+            bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+          </div>
     </div>
     </form>
-    </div>
     </div>
     <script>
       // Get the select elements

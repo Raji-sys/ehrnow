@@ -71,9 +71,9 @@ class UnitAdmin(admin.ModelAdmin):
 
 @admin.register(ClinicalNote)
 class ClinicNoteAdmin(admin.ModelAdmin):
-    list_display = ('patient','user','note',)
-    search_fields = ('patient',)
-    list_filter = ('patient',)
+    list_display = ('patient','user','note','diagnosis','needs_review','appointment')
+    search_fields = ('patient','diagnosis','needs_review','appointment')
+    list_filter = ('patient','diagnosis','needs_review','appointment')
 
 @admin.register(PatientHandover)
 class HandoverAdmin(admin.ModelAdmin):

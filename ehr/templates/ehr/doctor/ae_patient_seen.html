@@ -56,16 +56,5 @@
   </table>
 </div>
 </div>
-<!-- <ul>
-    {% for h in handovers %}
-        {% if h.status == 'waiting_for_consultation' %}
-            <li>
-                Patient Number: {{ h.patient.file_no }}, 
-                <a href="{% url 'patient_details' h.patient.id %}">{{ h.patient.name }}</a>
-            </li>
-        {% endif %}
-    {% endfor %}
-</ul -->
-
 </div>
 {% endblock %}

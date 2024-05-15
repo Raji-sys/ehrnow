@@ -81,7 +81,8 @@ class Team(models.Model):
     
 class PatientData(models.Model):
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
-    title = models.CharField(max_length=7, null=True, blank=True)
+    titles = (('Mr.','Mr.'),('Mrs.','Mrs.'),('Miss','Miss'),('Alhaji','Alhaji'),('Mallam','Mallam'),('Chief','Chief'),('Prof.','Prof.'),('Dr.','Dr.'),('Engr.','Engr.'),('Ach.','Ach.'))
+    title = models.CharField(choices=titles, max_length=10, null=True, blank=True)
     last_name = models.CharField(max_length=300, blank=True, null=True)
     first_name = models.CharField(max_length=300, blank=True, null=True)
     other_name = models.CharField(max_length=300, blank=True, null=True)
@@ -259,8 +260,8 @@ class PatientHandover(models.Model):
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
         ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
         ('waiting_for_consultation', 'Waiting for Consultation'),
-        ('seen', 'seen'),
-        ('review', 'review'),
+        ('complete','complete'),
+        ('await_review','await review'),
     ])
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -328,6 +329,9 @@ class ClinicalNote(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='clinical_notes')
     note=QuillField(null=True, blank=True)
+    diagnosis=models.CharField(max_length=200,null=True,blank=True)
+    needs_review = models.BooleanField(default=False)    
+    appointment=models.CharField(max_length=200,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):

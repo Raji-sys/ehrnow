@@ -154,12 +154,7 @@ class AppointmentForm(forms.ModelForm):
 class ClinicalNoteForm(forms.ModelForm):
     class Meta:
         model = ClinicalNote
-        fields = ('note', 'handover_status',)
-
-    handover_status = forms.ChoiceField(choices=[
-        ('seen', 'Seen'),
-        ('awaiting_review', 'Awaiting Review')
-    ])
+        fields = ('note', 'diagnosis','needs_review','appointment',)
 
     def __init__(self, *args, **kwargs):
         super(ClinicalNoteForm, self).__init__(*args, **kwargs)

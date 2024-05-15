@@ -712,18 +712,31 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
     form_class = ClinicalNoteForm
     template_name = 'ehr/doctor/clinical_note.html'
 
-
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
         self.object = form.save()
-        clinic_name = self.request.GET.get('clinic')
-        patient_handovers = PatientHandover.objects.filter(patient=form.instance.patient,clinic=clinic_name)
+
+        # Update handover status based on the needs_review value
+        patient_handovers = PatientHandover.objects.filter(patient=patient_data)
         for patient_handover in patient_handovers:
-            patient_handover.status = form.cleaned_data['handover_status']
+            if form.instance.needs_review:
+                patient_handover.status = 'await review'
+            else:
+                patient_handover.status = 'complete'
+            patient_handover.clinic = patient_handover.clinic
             patient_handover.save()
-        
+
+        # If there are no existing handovers, create a new one
+        if not patient_handovers.exists():
+            PatientHandover.objects.create(
+                patient=patient_data,
+                status='await review' if form.instance.needs_review else 'complete'
+            )
+
         return super().form_valid(form)
+
 
     def test_func(self):
         allowed_groups = ['doctor']
@@ -741,14 +754,14 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
 
 class AEConsultationFinishView(ClinicListView):
     template_name = 'ehr/doctor/ae_patient_seen.html'
-    status_filter = 'seen'
+    status_filter = 'complete'
     clinic_filter = 'A & E'
     room_filter = None
 
 
 class AEAwaitingReviewView(ClinicListView):
     template_name = 'ehr/doctor/ae_review_patient.html'
-    status_filter = 'review'
+    status_filter = 'await review'
     clinic_filter = 'A & E'
     room_filter = None
 
