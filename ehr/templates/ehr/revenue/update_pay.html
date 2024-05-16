@@ -19,9 +19,10 @@
           <p>{{form.errors}}</p> 
       </div>
           {% endif %}
+      <p class="text-green-800 uppercase">{{ patient }}</p>
 <form method="post" enctype="multipart/form-data" >
   {% csrf_token %}
-  <div class="mb-2 uppercase text-cyan-900 px-10">
+  <div class="mb-2 uppercase text-cyan-900 px-10 text-center">
     <div class="grid grid-cols-3 p-2 gap-4">
       {% for field in form %}
         <div>
@@ -35,7 +36,7 @@
             {%endfor%}
         </div>
   <div class="flex justify-center align-middle gap-4">
-    <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+    <input type="submit" value="pay" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
 bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
     <a href="{%url 'pay_list' %}" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
     bg-rose-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">cancel</a>

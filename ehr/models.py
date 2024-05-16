@@ -209,6 +209,7 @@ class Services(models.Model):
     def get_absolute_url(self):
         return reverse('service_details', args=[self.type])
 
+
 class Paypoint(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="payment")
@@ -234,6 +235,23 @@ class FollowUpVisit(models.Model):
     clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
+
+
+class MedicalRecord(models.Model):
+    services=(('new registration','new registration'),('follow up','follow up'),('card replacement','card replacement'))
+    name = models.CharField(choices=services,max_length=100, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='medical_record_payment',blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name_plural = 'medical record'
+
+    def get_absolute_url(self):
+        return reverse('service_details', args=[self.type])
 
 
 class PatientHandover(models.Model):

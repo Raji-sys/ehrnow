@@ -94,3 +94,7 @@ class PrescriptionAdmin(admin.ModelAdmin):
     list_display = ('patient','drugs')
     search_fields = ('patient','drugs')
     list_filter = ('patient','drugs')
+
+@admin.register(MedicalRecord)
+class MedicalRecordAdmin(admin.ModelAdmin):
+    list_display = ('name','price')

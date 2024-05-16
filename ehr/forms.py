@@ -167,7 +167,7 @@ class ServiceForm(forms.ModelForm):
 class PayForm(forms.ModelForm):
     class Meta:
         model = Paypoint
-        fields = ['service','status']
+        fields = ['status']
 
     def __init__(self, *args, **kwargs):
         super(PayForm, self).__init__(*args, **kwargs)

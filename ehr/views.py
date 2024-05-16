@@ -545,10 +545,8 @@ class PaypointView(RevenueRequiredMixin, CreateView):
         if handover:
             context['patient'] = patient
             context['handover'] = handover
-            service_name = 'new registration'
-            service = Services.objects.get(name=service_name)
-            context['service_name'] = service.name
-            context['service_price'] = service.price
+            service = MedicalRecord.objects.get(name='new registration')
+            context['service'] = service
         else:
             # Handle the case where no handover object is found
             pass
@@ -559,17 +557,20 @@ class PaypointView(RevenueRequiredMixin, CreateView):
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
         handover = patient.handovers.filter(clinic='A & E', status='waiting_for_payment').first()
-
         if handover:
-            new_registration_service = Services.objects.get(name='new registration')
-            payment = Paypoint.objects.create(patient=patient, status=True, service=new_registration_service)
-            
+            payment = form.save(commit=False)
+            payment.patient = patient
+            payment.status = True
+            service = MedicalRecord.objects.get(name='new registration')
+            payment.service = service.name
+            payment.price = service.price
+            payment.save()
+
             # Update handover status to 'waiting_for_vital_signs'
             handover.status = 'waiting_for_vital_signs'
             handover.save()
             messages.success(self.request, 'Payment successful. Patient handed over for vital signs.')
-        
-        return super().form_valid(form)
+        return super().form_valid(form) 
 
 
 class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
@@ -592,8 +593,7 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
     def form_valid(self, form):
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
-        follow_up_service = Services.objects.get(name='follow up')
-        payment = Paypoint.objects.create(patient=patient, status=True, service=follow_up_service)
+        payment = Paypoint.objects.create(patient=patient, status=True, service='follow up')
         
         # Update handover status to 'waiting_for_vital_signs'
         patient_handover = patient.handovers.filter(status='waiting_for_payment').first()
@@ -897,7 +897,14 @@ class PayUpdateView(UpdateView):
     template_name = 'ehr/revenue/update_pay.html'
     form_class = PayUpdateForm
     success_url = reverse_lazy("pay_list")
-
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        paypoint = self.get_object()
+        context['patient'] = paypoint.patient
+        context['service'] = paypoint.service
+        return context
+    
     def form_valid(self, form):
         paypoint = form.save()
         hematology_result = paypoint.hematology_result_payment

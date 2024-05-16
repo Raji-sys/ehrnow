@@ -103,7 +103,7 @@ class HematologyTestCreateView(LoginRequiredMixin, CreateView):
     model = HematologyResult
     form_class = HematologyTestForm
     template_name = 'hema/hematology_result.html'
-
+        
     def form_valid(self, form):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
@@ -116,8 +116,8 @@ class HematologyTestCreateView(LoginRequiredMixin, CreateView):
             service=hematology_result.test, 
             price=hematology_result.test.price,
         )
-        hematology_result.payment = payment  # Link payment to the hematology result
-        hematology_result.save()  # Save the hematology result with the payment
+        hematology_result.payment = payment 
+        hematology_result.save()
         messages.success(self.request, 'Hematology test created successfully')
         return super().form_valid(form)
     

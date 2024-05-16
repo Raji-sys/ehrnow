@@ -5,10 +5,10 @@
 {%block content %}
 <div class="">
     <div class="uk-overlay rounded-3xl bg-white uk-position-center">
-      <h3 class="flex justify-center text-green-700">Payment Details</h3>
-      {% for service in pending_services %}
-      <p class="text-green-800">{{ service.department }} - {{ service.name }} ({{ service.price }})</p>
-    {% endfor %}
+      <h3 class="flex justify-center text-green-700 underline mb-10">Payment Details</h3>
+      <p class="text-green-800 uppercase">{{ patient }}</p>
+      <p class="text-green-800 uppercase">{{ service.name }}</p>
+      <p class="text-green-800 uppercase">{{ service.price }}</p>
         <section class="text-center border-cyan-700 p-4 m-2">
             {% for message in messages %}
           <div class="mt-2">
@@ -25,8 +25,9 @@
             <p>{{form.errors}}</p>
         </div>
             {% endif %}
-  <form method="post" enctype="multipart/form-data" >
-    {% csrf_token %}
+            <div class="px-24">
+              <form method="post" enctype="multipart/form-data" >
+                {% csrf_token %}
     <div class="mb-2 uppercase text-cyan-900 px-10">
       {% for field in form %}
       <div class="flex justify-center">
@@ -38,10 +39,11 @@
       {%endfor%}
     </div>
     <div class="gap-4 flex justify-center align-middle">
-      <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-  bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+      <input type="submit" value="pay_total" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+      bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
     </div>
-    </form>
+  </form>
+</div>
     </div>
     </div>
 {%endblock%}
