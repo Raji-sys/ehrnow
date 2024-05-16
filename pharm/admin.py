@@ -58,8 +58,8 @@ class DrugAdmin(ImportMixin,admin.ModelAdmin):
 
 @admin.register(Record)
 class RecordAdmin(admin.ModelAdmin):
-    exclude = ('issued_by', 'balance')
-    list_display = ['drug', 'unit_issued_to', 'issued_by_username', 'quantity', 'balance', 'date_issued','updated_at']
+    exclude = ('issued_by', 'drug__current_balance')
+    list_display = ['drug', 'unit_issued_to', 'issued_by_username', 'quantity','date_issued','updated_at']
     search_fields = ['drug', 'issued_to','drug__supplier','drug__date_added']
     list_filter = ['unit_issued_to', 'drug','drug__supplier','drug__date_added']
     list_per_page = 10
@@ -83,9 +83,9 @@ class RecordAdmin(admin.ModelAdmin):
 @admin.register(Dispensary)
 class DispenseAdmin(admin.ModelAdmin):
     exclude = ('balance',)
-    list_display = ['drug', 'patient','quantity', 'balance', 'dispensed_date']
-    search_fields = ['drug','patient','quantity', 'balance', 'dispensed_date']
-    list_filter = ['drug','patient','quantity', 'balance', 'dispensed_date']
+    list_display = ['drug', 'patient','quantity','dispensed_date']
+    search_fields = ['drug','patient','quantity','drug__current_balance', 'dispensed_date']
+    list_filter = ['drug','patient','quantity','dispensed_date']
     list_per_page = 10
 
     def save_model(self, request, obj, form, change):

@@ -65,7 +65,7 @@
                 CLINIC
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
-                TEAM
+                PRICE
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 DATE
@@ -93,13 +93,13 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 {{ d.drug|default_if_none:'' }}
                 {{ d.quantity|default_if_none:'' }}
-                {{ d.drug.cost_price|default_if_none:'' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 {{ d.patient.clinic|default_if_none:'' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ d.patient.team|default_if_none:'' }}
+                {{ d.drug.cost_price|default_if_none:'' }}
+                {{d.payment.status}}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 {{ d.dispensed_date|default_if_none:'' }}

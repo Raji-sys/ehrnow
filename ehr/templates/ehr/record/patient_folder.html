@@ -22,7 +22,7 @@
     <div>
       <a href="{%url 'follow_up' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">add</a>
     </div>
-    <ul class="text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 border-b-2 mb-16" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+    <ul class="text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 border-b-2 mb-10" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
       <li><a href="#" class="rounded-lg m-4">BIODATA</a></li>
       <li><a href="#" class="rounded-lg ">PAYMENT</a></li>
       <li><a href="#" class="rounded-lg ">VITAL SIGNS</a></li>
@@ -437,44 +437,8 @@
       <div> 
         <div>    
         <!-- Dispensary Form Section -->
-        <section>
-          <h2>Add Dispensary Record</h2>
-          <form method="post" enctype="multipart/form-data" class="text-xs">
-              {% csrf_token %}
-              <div class="mb-2 uppercase text-cyan-900 px-10">
-                  <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">DISPENSARY FORM</p>
-                  {% for field in dispense_form.visible_fields %}
-                  <div class="md:flex md:flex-row grid grid-cols-4 md:gap-6 p-4">
-                      <div>
-                          <div>
-                              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                          </div>
-                          <div>
-                              {{ field }}
-                              {% if field.errors %}
-                              <div class="text-red-500 text-xs italic">
-                                  {% for error in field.errors %}
-                                  <p>{{ error }}</p>
-                                  {% endfor %}
-                              </div>
-                              {% endif %}
-                          </div>
-                      </div>
-                  </div>
-                  {% endfor %}
-              </div>
-              <div class="gap-4 flex justify-center align-middle">
-                  <input type="hidden" name="current_tab" value="add-dispensary">
-                  <input type="submit" value="dispense" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600 bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
-              </div>
-          </form>
-          {% if dispense_form.errors %}
-          <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
-              <a href class="uk-alert-close font-bold" uk-close></a>
-              <p>{{ dispense_form.errors }}</p>
-          </div>
-          {% endif %}
-        </section>
+        <a href="{% url 'pharm:add_dispense' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">add</a>
+
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -622,4 +586,35 @@
 <!-- end  -->
   </div>
 </div>
+<script>
+  function initializePage() {
+      function load_drugs(categoryField) {
+          const categoryId = categoryField.value;
+          const form = categoryField.closest('.md\\:flex');
+          const drugSelect = form.querySelector('[name$="-drug"]');
+          const url = `/pharm/get_drugs_by_category/${categoryId}/`;
+
+          fetch(url)
+              .then(response => response.json())
+              .then(data => {
+                  drugSelect.innerHTML = ''; // Clear existing options
+                  data.drugs.forEach(drug => {
+                      const option = document.createElement('option');
+                      option.value = drug.id;
+                      option.text = drug.name;
+                      drugSelect.add(option);
+                  });
+              })
+              .catch(error => console.error('Error:', error));
+      }
+
+      document.querySelectorAll('select[name$="-category"]').forEach(categoryField => {
+          categoryField.addEventListener('change', function() {
+              load_drugs(this);
+          });
+      });
+  }
+
+  window.addEventListener('load', initializePage);
+</script>
 {% endblock %}

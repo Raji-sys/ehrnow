@@ -210,30 +210,42 @@ def record_pdf(request):
 
 
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class DispenseCreateView(CreateView):
-    model = Dispensary
-    form_class = DispenseForm
-    # template_name = 'ehr/record/patient_folder.html'
-    template_name='dispensary/dispense.html'
+@login_required(login_url='login')
+def create_dispensary(request, file_no):
+    patient = get_object_or_404(PatientData, file_no=file_no)
+    dispensary_instances = Dispensary.objects.filter(patient=patient)
+    DispensaryFormSet = modelformset_factory(Dispensary, form=DispenseForm, extra=5)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        file_no = self.kwargs.get('file_no')
-        context['patient'] = PatientData.objects.get(file_no=file_no)
-        context['dispensary_instances'] = Dispensary.objects.filter(patient=context['patient'])
-        return context
+    if request.method == 'POST':
+        formset = DispensaryFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                if form.has_changed():
+                    instance = form.save(commit=False)
+                    instance.patient = patient
+                    instance.dispensed_by = request.user
 
-    def form_valid(self, form):
-        patient = self.get_context_data()['patient']
-        instance = form.save(commit=False)
-        instance.patient = patient
-        instance.save()
-        return super().form_valid(form)
+                    # Create Paypoint instance with status=False
+                    paypoint = Paypoint.objects.create(
+                        user=request.user,
+                        patient=patient,
+                        service=instance.drug.name,
+                        price=instance.drug.pack_price,
+                        status=False
+                    )
+                    instance.payment = paypoint
+                    instance.save()
 
-    def get_success_url(self):
-        messages.success(self.request, 'Dispensary ADDED')
-        return self.object.patient.get_absolute_url()
+            return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
+    else:
+        formset = DispensaryFormSet(queryset=Dispensary.objects.none())
+
+    context = {
+        'formset': formset,
+        'patient': patient,
+        'dispensary_instances': dispensary_instances,
+    }
+    return render(request, 'dispensary/dispense.html', context)
 
     
 

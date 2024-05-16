@@ -27,20 +27,19 @@ class RecordForm(forms.ModelForm):
             field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
     def clean(self):
-        cleaned_data=super().clean()
-        quantity=cleaned_data.get('quantity')
-        category=cleaned_data.get('category')
-        drug=cleaned_data.get('drug')
-        if drug is not None:
-            balance=cleaned_data.get('drug').current_balance
+        cleaned_data = super().clean()
+        quantity = cleaned_data.get('quantity')
+        drug = cleaned_data.get('drug')
 
-        if quantity and balance is not None:
-            quantity_to_issue=min(quantity,balance)
-            if quantity_to_issue <= 0:
-                raise forms.ValidationError("sorry, not enough drugs in your store")
+        if drug and quantity:
+            if drug.current_balance is not None and quantity is not None:
+                quantity_to_dispense = drug.current_balance - quantity
+                if quantity_to_dispense < 0:
+                    raise ValidationError("Not enough drugs in stock.")
+            else:
+                raise ValidationError("Invalid data provided.")
+
         return cleaned_data
-
-
 
 class DispenseForm(forms.ModelForm):
     class Meta:
@@ -59,9 +58,13 @@ class DispenseForm(forms.ModelForm):
         cleaned_data = super().clean()
         quantity = cleaned_data.get('quantity')
         drug = cleaned_data.get('drug')
-        if drug:
-            balance = drug.current_balance
-            if quantity and balance is not None:
-                if quantity > balance:
-                    raise forms.ValidationError("Sorry, not enough drugs in your dispensary")
+
+        if drug and quantity:
+            if drug.current_balance is not None and quantity is not None:
+                quantity_to_dispense = drug.current_balance - quantity
+                if quantity_to_dispense < 0:
+                    raise ValidationError("Not enough drugs in stock.")
+            else:
+                raise ValidationError("Invalid data provided.")
+
         return cleaned_data

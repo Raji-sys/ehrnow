@@ -64,6 +64,7 @@ urlpatterns = [
     path('get-started/revenue/transactions/', TransactionView.as_view(), name='transaction_dash'),
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
     path('revenue/hema-list/', HematologyPayListView.as_view(), name='hema_pay_list'),
+    path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
 
@@ -91,11 +92,6 @@ urlpatterns = [
     path('waiting-consultation/sopd/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
     path('clinic/sopd/sopd-consultation-finished/', SOPDConsultationFinishView.as_view(), name="consultation_finished_sopd"),
     path('clinic/sopd/sopd-awaiting-review/', SOPDAwaitingReviewView.as_view(), name="waiting_for_review_sopd"),
-
-    #Prescription
-    path('clinic/add-prescription/<str:file_no>/', PrescriptionCreateView.as_view(), name='add_prescription'),
-    path('clinic/prescriptions/', PrescriptionListView.as_view(), name='prescription_list'),
-    path('clinic/update-prescription/<int:pk>/', PrescriptionUpdateView.as_view(), name='update_prescription'),
 
 
 ]

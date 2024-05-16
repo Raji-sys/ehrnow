@@ -1,36 +1,31 @@
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
-    model = ClinicalNote
-    form_class = ClinicalNoteForm
-    template_name = 'ehr/doctor/clinical_note.html'
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        form.instance.patient = patient_data
-        self.object = form.save()
-
-        # Update handover status to 'waiting_for_consultation'
-        patient_handovers = PatientHandover.objects.filter(patient=patient_data)
-        for patient_handover in patient_handovers:
-            patient_handover.status = 'consultated'
-            patient_handover.clinic = patient_handover.clinic
-            patient_handover.room = form.cleaned_data['handover_room']
-            patient_handover.save()
-
-        # If there are no existing handovers, create a new one
-        if not patient_handovers.exists():
-            PatientHandover.objects.create(patient=patient_data, status='consultate')
-        return super().form_valid(form)
-    
-    def test_func(self):
-        allowed_groups = ['doctor']
-        return any(group in self.request.user.groups.values_list('name', flat=True) for group in allowed_groups)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        return context
-
-    def get_success_url(self):
-        messages.success(self.request, 'PATIENT SEEN.')
-        return self.object.patient.get_absolute_url()
+        <section>
+          <form method="post" enctype="multipart/form-data" class="text-xs">
+              {% csrf_token %}
+              <div class="md:flex md:flex-row justify-center md:gap-6 uppercase text-cyan-900 px-10">
+                  {% for field in dispense_form.visible_fields %}
+                          <div class="flex flex-row justify-center gap-2 text-center align-text-bottom ">
+                            <div>
+                              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                              {{ field }}
+                            </div>
+                              {% if field.errors %}
+                              <div class="text-red-500 text-xs italic">
+                                  {% for error in field.errors %}
+                                  <p>{{ error }}</p>
+                                  {% endfor %}
+                              </div>
+                              {% endif %}
+                              {% endfor %}
+                            </div>
+                    <div class="">
+                      <input type="submit" value="dispense" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600 bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+                    </div>
+              </div>
+          </form>
+          {% if dispense_form.errors %}
+          <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
+              <a href class="uk-alert-close font-bold" uk-close></a>
+              <p>{{ dispense_form.errors }}</p>
+          </div>
+          {% endif %}
+        </section>

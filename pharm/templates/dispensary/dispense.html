@@ -1,89 +1,94 @@
 {% extends 'base.html' %}
-{% load static %}
-
-{% block title %}DISPENSARY{% endblock %}
-
+{% block title %}DRUG ISSUANCE RECORD{% endblock %}
 {% block content %}
-<div class="">
-    <div class="uk-overlay rounded-3xl bg-white uk-position-center mt-4">
-        <section class="text-center border-cyan-700 p-4 m-2">
-            {% for message in messages %}
-            <div class="mt-2">
-                <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
-                    <a href class="uk-alert-close font-bold" uk-close></a>
-                    <p class="text-green-700 font-semibold uppercase">{{ message }}</p>
+  <div class="flex justify-center mt-1 p-1 mb-4">
+    <div class="justify-center items-center font-semibold uppercase text-xs shadow-sm shadow-amber-500 mx-auto rounded-2xl bg-amber-50 mt-2 p-2">
+      <section class="text-center border-b-2 border-amber-500 p-2 m-2">
+        <p class="text-lg font-bold pt-2 text-amber-600">issue drugs to units</p>
+      </section>
+      <form id="recordForm" action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset %}
+          <div class="md:flex md:flex-row   grid grid-cols-4 md:gap-6 p-4">
+            {% if form.non_field_errors %}
+              <div class="text-red-600 text-lg">
+                {{ form.non_field_errors.0 }}
+              </div>
+            {% endif %}
+            <div class="flex flex-col md:w-1/4">
+              <span>CLASS</span>
+              {{ form.category }}
+              {% if form.category.errors %}
+                <div class="text-red-600 ">
+                  {{ form.category.errors.0 }}
                 </div>
+              {% endif %}
             </div>
-            {% endfor %}
-        </section>
-
-        {% if form.non_field_errors %}
-        <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
-            <a href class="uk-alert-close font-bold" uk-close></a>
-            <p>{{ form.non_field_errors }}</p>
+            <div class="flex flex-col md:w-1/4">
+              <span>DRUG</span>
+              {{ form.drug }}
+              {% if form.drug.errors %}
+                <div class="text-red-600 ">
+                  {{ form.drug.errors.0 }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="flex flex-col md:w-1/4">
+              <span>QUANTITY</span>
+              {{ form.quantity }}
+              {% if form.quantity.errors %}
+                <div class="text-red-600">
+                  {{ form.quantity.errors.0 }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+        <div class="flex justify-center align-middle m-2">
+          <input type="submit" value="issue drugs"
+                 class="focus:opacity-10 uppercase focus:border-amber-600 hover:bg-white hover:text-amber-600 hover:border-2 hover:border-amber-600
+                        bg-amber-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl">
         </div>
-        {% endif %}
-
-        <form method="post" enctype="multipart/form-data" class="text-xs">
-            {% csrf_token %}
-            <div class="mb-2 uppercase text-cyan-900 px-10">
-                <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">DISPENSARY FORM</p>
-                {% for field in form.visible_fields %}
-                <div class="md:flex md:flex-row grid grid-cols-4 md:gap-6 p-4">
-                    <div>
-                        <div>
-                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        </div>
-                        <div>
-                            {{ field }}
-                            {% if field.errors %}
-                            <div class="text-red-500 text-xs italic">
-                                {% for error in field.errors %}
-                                <p>{{ error }}</p>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="gap-4 flex justify-center align-middle">
-                <input type="submit" value="dispense" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600 bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
-            </div>
-        </form>
+      </form>
     </div>
-</div>
-
+  </div>
 <script>
-    function initializePage() {
-        function load_drugs(categoryField) {
-            const categoryId = categoryField.value;
-            const form = categoryField.closest('.md\\:flex');
-            const drugSelect = form.querySelector('[name$="-drug"]');
-            const url = `/pharm/get_drugs_by_category/${categoryId}/`;
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    drugSelect.innerHTML = ''; // Clear existing options
-                    data.drugs.forEach(drug => {
-                        const option = document.createElement('option');
-                        option.value = drug.id;
-                        option.text = drug.name;
-                        drugSelect.add(option);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
+// Your main JavaScript function
+function initializePage() {
+    // Other JavaScript code
 
-        document.querySelectorAll('select[name$="-category"]').forEach(categoryField => {
-            categoryField.addEventListener('change', function() {
-                load_drugs(this);
+function load_drugs(index) {
+    const categoryId = document.getElementsByName(`form-${index}-category`)[0].value;
+    const url = `/pharm/get_drugs_by_category/${categoryId}/`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const drugSelect = document.getElementsByName(`form-${index}-drug`)[0];
+            drugSelect.innerHTML = '';  // Clear existing options
+
+            data.drugs.forEach(drug => {
+                const option = document.createElement('option');
+                option.value = drug.id;
+                option.text = drug.name;
+                drugSelect.add(option);
             });
-        });
-    }
+        })
+        .catch(error => console.error('Error:', error));
+}    
+    // Event listener for category select elements in formset
+    {% for form in formset %}
+    document.getElementsByName('{{ form.category.html_name }}')[0].addEventListener('change', function() {
+        load_drugs('{{ forloop.counter0 }}');
+    });
+    {% endfor %}
+}
 
-    window.addEventListener('load', initializePage);
+// Call the initializePage function when the page loads
+window.addEventListener('load', initializePage);
+
 </script>
-{% endblock %}
+
+        {%endblock%}

@@ -975,53 +975,23 @@ class HematologyPayListView(ListView):
         return context  
 
 
-class PrescriptionCreateView(CreateView):
-    model=Prescription
-    template_name='ehr/pharm/prescription.html'
-    form_class=PrescriptionForm
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        self.object = form.save()
-        return super().form_valid(form)
-        
-    def get_success_url(self):
-        messages.success(self.request, 'PRESCRIPTION ADDED')
-        return self.object.patient.get_absolute_url()
-    
- 
-class PrescriptionUpdateView(UpdateView):
-    model = Prescription
-    template_name = 'ehr/pharm/update_prescription.html'
-    form_class = PrescriptionForm
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Prescription Updated Successfully')
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Error updating prescription information')
-        return self.render_to_response(self.get_context_data(form=form))
-    
-    def get_success_url(self):
-        messages.success(self.request, 'PRESCRIPTION ADDED')
-        return self.object.patient.get_absolute_url()
-
-
-class PrescriptionListView(ListView):
-    model=Prescription
-    template_name='ehr/pharm/prescription_list.html'
-    context_object_name='prescriptions'
-    paginate_by = 10
+class PharmPayListView(ListView):
+    model = Paypoint
+    template_name = 'ehr/revenue/pharm_pay_list.html'
+    context_object_name = 'pharm_pays'
+    paginate_by = 5
 
     def get_queryset(self):
-        updated = super().get_queryset().order_by('-updated')
-        prescription_filter = PrescriptionFilter(self.request.GET, queryset=updated)
-        return prescription_filter.qs
+        return Paypoint.objects.filter(pharm_payment__isnull=False).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['prescriptionFilter'] = PrescriptionFilter(self.request.GET, queryset=self.get_queryset())
-        return context
+        pay_total = self.get_queryset().count()
+
+        # Calculate total worth only for paid transactions
+        paid_transactions = self.get_queryset().filter(status=True)
+        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        return context  
