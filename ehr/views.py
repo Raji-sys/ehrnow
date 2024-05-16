@@ -25,6 +25,7 @@ from django.contrib import messages
 from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView
 from pathology.models import *
 from pathology.views import *
+from pharm.forms import DispenseForm
 User = get_user_model()
 from django.db.models import Sum
 from django.contrib.contenttypes.models import ContentType
@@ -459,15 +460,28 @@ class PatientFolderView(DetailView):
         context['patient'] = patient
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
-        context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
+        context['dispensed_drugs'] = patient.dispensed_drugs.all().order_by('-dispensed_date')
         context['hematology_results']=patient.hematology_result.all().order_by('-created')
         context['chempath_results']=patient.chemical_pathology_results.all().order_by('-created')
         context['micro_results']=patient.microbiology_results.all().order_by('-created')
         context['serology_results']=patient.serology_results.all().order_by('-created')
         context['general_results']=patient.general_results.all().order_by('-created')
-
+        context['dispense_form'] = DispenseForm()
         return context
-
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        patient = self.object
+        form = DispenseForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.patient = patient
+            instance.save()
+            messages.success(request, 'Dispensary record added successfully.')
+            return redirect(reverse('patient_details', kwargs={'file_no': patient.file_no}))
+        else:
+            context = self.get_context_data()
+            context['dispense_form'] = form
+            return self.render_to_response(context)
 # 2. FollowUpVisitCreateView
 class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
     model = FollowUpVisit

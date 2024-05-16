@@ -1,3 +1,4 @@
+from ehr.views import DoctorRequiredMixin
 from .filters import *
 from django.shortcuts import render, redirect
 from .forms import *
@@ -17,8 +18,10 @@ from django.core.paginator import Paginator
 from .decorators import  superuser_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.forms import modelformset_factory
-from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView
+from django.forms import modelformset_factory,inlineformset_factory
+
+from django.urls import reverse
+from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView, View
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.views.generic.base import TemplateView
@@ -131,7 +134,7 @@ def create_record(request):
             for instance in instances:
                 instance.issued_by = request.user
                 instance.save()
-            return redirect('record')
+            return redirect('pharm:record')
     else:
         formset = RecordFormSet(queryset=Record.objects.none())
 
@@ -205,43 +208,33 @@ def record_pdf(request):
         return response
     return HttpResponse('Error generating PDF', status=500)
 
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class DispenseCreateView(CreateView):
-    model=Dispensary
-    template_name='pharm/dispense.html'
-    form_class=DispenseForm
+    model = Dispensary
+    form_class = DispenseForm
+    # template_name = 'ehr/record/patient_folder.html'
+    template_name='dispensary/dispense.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        file_no = self.kwargs.get('file_no')
+        context['patient'] = PatientData.objects.get(file_no=file_no)
+        context['dispensary_instances'] = Dispensary.objects.filter(patient=context['patient'])
+        return context
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        self.object = form.save()
+        patient = self.get_context_data()['patient']
+        instance = form.save(commit=False)
+        instance.patient = patient
+        instance.save()
         return super().form_valid(form)
-        
+
     def get_success_url(self):
-        messages.success(self.request, 'Dispensed Successfully')
+        messages.success(self.request, 'Dispensary ADDED')
         return self.object.patient.get_absolute_url()
-    
-class RecordCreateView(PharmacyRequiredMixin, LoginRequiredMixin, CreateView):
-    template_name = 'inventory/create_record.html'
-    model = Record
-    form_class = modelformset_factory(Record, form=RecordForm, extra=5)
-    success_url = reverse_lazy('record')
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        if self.request.method == 'POST':
-            kwargs.update({'data': self.request.POST})
-        return kwargs
-
-    def form_valid(self, form):
-        formset = form
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.issued_by = self.request.user
-            instance.save()
-        return super().form_valid(form)
-
-    def get_initial(self):
-        return {'formset': self.form_class(queryset=self.model.objects.none())}
     
 
 class DispenseUpdateView(PharmacyRequiredMixin, LoginRequiredMixin, UpdateView):

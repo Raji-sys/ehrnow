@@ -10,7 +10,7 @@
         {% csrf_token %}
         {{ formset.management_form }}
         {% for form in formset %}
-          <div class="md:flex md:flex-row grid grid-cols-4 md:gap-6 p-4">
+          <div class="md:flex md:flex-row   grid grid-cols-4 md:gap-6 p-4">
             {% if form.non_field_errors %}
               <div class="text-red-600 text-lg">
                 {{ form.non_field_errors.0 }}
@@ -70,7 +70,7 @@ function initializePage() {
 
 function load_drugs(index) {
     const categoryId = document.getElementsByName(`form-${index}-category`)[0].value;
-    const url = `/get_drugs_by_category/${categoryId}/`;
+    const url = `/pharm/get_drugs_by_category/${categoryId}/`;
 
     fetch(url)
         .then(response => response.json())

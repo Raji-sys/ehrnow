@@ -20,7 +20,7 @@
 <!-- top  -->
 
     <div>
-      <a href="{%url 'follow_up' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+      <a href="{%url 'follow_up' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">add</a>
     </div>
     <ul class="text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 border-b-2 mb-16" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
       <li><a href="#" class="rounded-lg m-4">BIODATA</a></li>
@@ -49,6 +49,15 @@
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">AGE</th>
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">GENDER</th>
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">PHONE</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">OCCUPATION</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">MARITAL STATUS</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">RELIGION</th>
+                <!-- <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">TRIBE</th> -->
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">ADDRESS</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NEXT OF KIN</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">RELATIONSHIP WITH NEXT OF KIN</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NEXT OF KIN PHONE</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NEXT OF KIN ADDRESS</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
@@ -58,6 +67,15 @@
                 <td class="px-6 py-4">{{ patient.age|default_if_none:''|upper }}</td>
                 <td class="px-6 py-4">{{ patient.gender|default_if_none:''|upper }}</td>
                 <td class="px-6 py-4">{{ patient.phone|default_if_none:''|upper }}</td>
+                <td class="px-6 py-4">{{ patient.occupation|default_if_none:''|upper }}</td>
+                <td class="px-6 py-4">{{ patient.marital_status|default_if_none:''|upper }}</td>
+                <td class="px-6 py-4">{{ patient.religion|default_if_none:''|upper }}</td>
+                <!-- <td class="px-6 py-4">{{ patient.tribe|default_if_none:''|upper }}</td> -->
+                <td class="px-6 py-4">{{ patient.address|default_if_none:''|upper }}</td>
+                <td class="px-6 py-4">{{ patient.nok_name|default_if_none:''|upper }}</td>
+                <td class="px-6 py-4">{{ patient.nok_rel|default_if_none:''|upper }}</td>
+                <td class="px-6 py-4">{{ patient.nok_phone|default_if_none:''|upper }}</td>
+                <td class="px-6 py-4">{{ patient.nok_addr|default_if_none:''|upper }}</td>
                 
               </tr>
             </tbody>
@@ -68,7 +86,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="#" class="text-sm text-green-500 hover:text-green-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -91,7 +109,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="{%url 'vital_signs' patient.file_no%}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="{%url 'vital_signs' patient.file_no%}" class="text-sm text-green-500 hover:text-green-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -136,7 +154,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="{%url 'clinical_note' patient.file_no%}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="{%url 'clinical_note' patient.file_no%}" class="text-sm text-green-500 hover:text-green-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -154,7 +172,7 @@
                 <td class="px-6 py-4 whitespace-nowrap">{{ c.user }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ c.note.html|safe }}</td>
               </tr>
-            <a href="{% url 'new_appointment' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">appointment</a>
+            <a href="{% url 'new_appointment' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">appointment</a>
               {%empty%}
               <div class="p-4">
                   <p>No clinical notes found for this patient yet.</p>
@@ -181,7 +199,7 @@
               <div> 
             
                 <div >
-                <a href="{% url 'pathology:hematology_test' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+                <a href="{% url 'pathology:hematology_test' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">add</a>
                 </div>
              
                 <div class="overflow-x-auto px-4 md:px-10 m-4">
@@ -209,7 +227,7 @@
                           <span class="text-xs">{{ h.unit|default_if_none:'' }}</span>
                           <span class="text-sm">
                             {% for parameter in h.hema_parameters.all %}
-                            <p><a href="{% url 'pathology:hema_param' parameter.id %}" class="text-blue-500 hover:text-blue-700">{{ parameter.name }}: {{ parameter.value }}
+                            <p><a href="{% url 'pathology:hema_param' parameter.id %}" class="text-green-500 hover:text-green-700">{{ parameter.name }}: {{ parameter.value }}
                             </a></p>
                         {% endfor %}
                           </span>
@@ -217,7 +235,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ h.comment|default_if_none:'' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ h.reported|default_if_none:'' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                          <a href="{% url 'pathology:hematology_result' h.patient.file_no h.id %}" class="text-blue-500 hover:text-blue-700">input result</a>
+                          <a href="{% url 'pathology:hematology_result' h.patient.file_no h.id %}" class="text-green-500 hover:text-green-700">input result</a>
                         </td>
                       </tr>
                       {% endfor %}
@@ -228,7 +246,7 @@
             
               <div>
                 <div>
-                  <a href="{% url 'pathology:micro_test' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+                  <a href="{% url 'pathology:micro_test' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">add</a>
                 </div>
                 <div class="overflow-x-auto px-4 md:px-10 m-4">
                   <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -256,14 +274,14 @@
                           <span class="text-xs">{{ m.unit|default_if_none:'' }}</span>
                           <span class="text-sm">
                           {% for parameter in m.micro_parameters.all %}
-                          <p><a href="{% url 'pathology:micro_param' parameter.id %}" class="text-blue-500 hover:text-blue-700">{{ parameter.name }}: {{ parameter.value }}
+                          <p><a href="{% url 'pathology:micro_param' parameter.id %}" class="text-green-500 hover:text-green-700">{{ parameter.name }}: {{ parameter.value }}
                           </a></p>
                       {% endfor %}
                         </span></td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ m.comment|default_if_none:'' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ m.reported|default_if_none:'' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                          <a href="{% url 'pathology:micro_result' m.patient.file_no m.id %}" class="text-blue-500 hover:text-blue-700">input result</a>
+                          <a href="{% url 'pathology:micro_result' m.patient.file_no m.id %}" class="text-green-500 hover:text-green-700">input result</a>
                         </td>
                       </tr>
                       {% endfor %}
@@ -276,7 +294,7 @@
             
               <div>
                 <div>
-                  <a href="{% url 'pathology:chempath_test' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+                  <a href="{% url 'pathology:chempath_test' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">add</a>
                 </div>
                 <div class="overflow-x-auto px-4 md:px-10 m-4">
                   <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -304,7 +322,7 @@
                           <span class="text-xs">{{ c.unit|default_if_none:'' }}</span>
                           <span class="text-sm">
                             {% for parameter in c.chempath_parameters.all %}
-                            <p><a href="{% url 'pathology:chempath_param' parameter.id %}" class="text-blue-500 hover:text-blue-700">{{ parameter.name }}: {{ parameter.value }}
+                            <p><a href="{% url 'pathology:chempath_param' parameter.id %}" class="text-green-500 hover:text-green-700">{{ parameter.name }}: {{ parameter.value }}
                             </a></p>
                         {% endfor %}
                           </span>
@@ -312,7 +330,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ c.comment|default_if_none:'' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ c.reported|default_if_none:'' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                          <a href="{% url 'pathology:chempath_result' c.patient.file_no c.id %}" class="text-blue-500 hover:text-blue-700">input result</a>
+                          <a href="{% url 'pathology:chempath_result' c.patient.file_no c.id %}" class="text-green-500 hover:text-green-700">input result</a>
                         </td>
                       </tr>
                       {% endfor %}
@@ -323,7 +341,7 @@
             
               <div>
                 <div>
-                  <a href="{% url 'pathology:serology_test' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+                  <a href="{% url 'pathology:serology_test' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">add</a>
                       </div>
                       <div class="overflow-x-auto px-4 md:px-10 m-4">    
                         <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -352,7 +370,7 @@
                                 <span class="text-xs">{{ s.unit|default_if_none:'' }}</span>
                                 <span class="text-sm">
                                   {% for parameter in s.serology_parameters.all %}
-                                  <p><a href="{% url 'pathology:serology_param' parameter.id %}" class="text-blue-500 hover:text-blue-700">{{ parameter.name }}: {{ parameter.value }}
+                                  <p><a href="{% url 'pathology:serology_param' parameter.id %}" class="text-green-500 hover:text-green-700">{{ parameter.name }}: {{ parameter.value }}
                                   </a></p>
                               {% endfor %}
                                 </span>
@@ -360,7 +378,7 @@
                               <td class="px-6 py-4 whitespace-nowrap">{{ s.comments|default_if_none:'' }}</td>
                               <td class="px-6 py-4 whitespace-nowrap">{{ s.reported|default_if_none:'' }}</td>
                               <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{% url 'pathology:serology_result' s.id %}" class="text-blue-500 hover:text-blue-700">input result</a>
+                                <a href="{% url 'pathology:serology_result' s.id %}" class="text-green-500 hover:text-green-700">input result</a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -372,7 +390,7 @@
             
               <div>
                 <div>
-                  <a href="{% url 'pathology:general_test' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+                  <a href="{% url 'pathology:general_test' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">add</a>
                   </div>
                   <div class="overflow-x-auto px-4 md:px-10 m-4">
                     <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -402,7 +420,7 @@
                           <td class="px-6 py-4 whitespace-nowrap">{{ g.comment|default_if_none:'' }}</td>
                           <td class="px-6 py-4 whitespace-nowrap">{{ g.reported|default_if_none:'' }}</td>
                           <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{% url 'pathology:general_result' g.patient.file_no g.id %}" class="text-blue-500 hover:text-blue-700">input result</a>
+                            <a href="{% url 'pathology:general_result' g.patient.file_no g.id %}" class="text-green-500 hover:text-green-700">input result</a>
                           </td>
                         </tr>
                         {% endfor %}
@@ -417,8 +435,46 @@
     <!-- break -->
       <!-- break -->
       <div> 
-        <div>
-        <a href="{%url 'add_prescription' patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">prescribe drugs</a>
+        <div>    
+        <!-- Dispensary Form Section -->
+        <section>
+          <h2>Add Dispensary Record</h2>
+          <form method="post" enctype="multipart/form-data" class="text-xs">
+              {% csrf_token %}
+              <div class="mb-2 uppercase text-cyan-900 px-10">
+                  <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">DISPENSARY FORM</p>
+                  {% for field in dispense_form.visible_fields %}
+                  <div class="md:flex md:flex-row grid grid-cols-4 md:gap-6 p-4">
+                      <div>
+                          <div>
+                              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                          </div>
+                          <div>
+                              {{ field }}
+                              {% if field.errors %}
+                              <div class="text-red-500 text-xs italic">
+                                  {% for error in field.errors %}
+                                  <p>{{ error }}</p>
+                                  {% endfor %}
+                              </div>
+                              {% endif %}
+                          </div>
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+              <div class="gap-4 flex justify-center align-middle">
+                  <input type="hidden" name="current_tab" value="add-dispensary">
+                  <input type="submit" value="dispense" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600 bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+              </div>
+          </form>
+          {% if dispense_form.errors %}
+          <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
+              <a href class="uk-alert-close font-bold" uk-close></a>
+              <p>{{ dispense_form.errors }}</p>
+          </div>
+          {% endif %}
+        </section>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -431,12 +487,12 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              {% for p in prescribed_drugs %}
+              {% for d in dispensed_drugs %}
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ p.drugs|default_if_none:''}}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ p.updated}}</td>
-                <td class="px-6 py-4 whitespace-nowrap"><a href="{%url 'update_prescription' p.pk%}">update prescription</a></td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ d.drug|default_if_none:''}}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ d.dispensed_date}}</td>
+                <td class="px-6 py-4 whitespace-nowrap"><a href="{%url 'pharm:update_dispense' d.pk%}">update prescription</a></td>
               </tr>
               {%endfor%}
             </tbody>
@@ -451,7 +507,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="#" class="text-sm text-green-500 hover:text-green-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -474,7 +530,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="#" class="text-sm text-green-500 hover:text-green-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -497,7 +553,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="#" class="text-sm text-green-500 hover:text-green-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -520,7 +576,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="#" class="text-sm text-green-500 hover:text-green-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -543,7 +599,7 @@
     <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-blue-500 hover:text-blue-700">add</a>
+        <a href="#" class="text-sm text-green-500 hover:text-green-700">add</a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">

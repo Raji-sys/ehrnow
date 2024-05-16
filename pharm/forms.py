@@ -41,29 +41,27 @@ class RecordForm(forms.ModelForm):
         return cleaned_data
 
 
+
 class DispenseForm(forms.ModelForm):
     class Meta:
         model = Dispensary
-        fields = ['category','drug','quantity']
+        fields = ['category', 'drug', 'quantity']
 
     def __init__(self, *args, **kwargs):
         super(DispenseForm, self).__init__(*args, **kwargs)
-        self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})
+        self.fields['category'].widget.attrs.update({'class': 'category-field'})
         for field in self.fields.values():
-            # field.required=True
-            field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
 
     def clean(self):
-        cleaned_data=super().clean()
-        quantity=cleaned_data.get('quantity')
-        category=cleaned_data.get('category')
-        drug=cleaned_data.get('drug')
-        if drug is not None:
-            balance=cleaned_data.get('drug').current_balance
-
-        if quantity and balance is not None:
-            quantity_to_issue=min(quantity,balance)
-            if quantity_to_issue <= 0:
-                raise forms.ValidationError("sorry, not enough drugs in your dispensary")
+        cleaned_data = super().clean()
+        quantity = cleaned_data.get('quantity')
+        drug = cleaned_data.get('drug')
+        if drug:
+            balance = drug.current_balance
+            if quantity and balance is not None:
+                if quantity > balance:
+                    raise forms.ValidationError("Sorry, not enough drugs in your dispensary")
         return cleaned_data

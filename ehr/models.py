@@ -102,6 +102,8 @@ class PatientData(models.Model):
     address = models.CharField(max_length=300, null=True, blank=True)
     faith = (('ISLAM', 'ISLAM'), ('CHRISTIANITY', 'CHRISTIANITY'),('TRADITIONAL', 'TRADITIONAL'))
     religion = models.CharField(choices=faith, max_length=100, null=True, blank=True)
+    # tribes = (('ISLAM', 'ISLAM'), ('CHRISTIANITY', 'CHRISTIANITY'),('TRADITIONAL', 'TRADITIONAL'))
+    # tribe = models.CharField(choices=tribes, max_length=100, null=True, blank=True)
     occupation = models.CharField(max_length=300, null=True, blank=True)
     role_in_occupation = models.CharField(max_length=300, null=True, blank=True)
     nok_name = models.CharField('next of kin name', max_length=300, null=True, blank=True)

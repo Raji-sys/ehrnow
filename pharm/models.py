@@ -100,10 +100,10 @@ class Record(models.Model):
         verbose_name_plural = 'drugs issued record'
 
 class Dispensary(models.Model):
+    patient = models.ForeignKey(PatientData,null=True, blank=True, on_delete=models.CASCADE,related_name='dispensed_drugs')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug_catgory")
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug")
     payment = models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    patient = models.ForeignKey(PatientData,null=True, blank=True, on_delete=models.CASCADE,related_name='drug_dispensed')
     quantity = models.PositiveIntegerField('QTY TO DISPENSE',null=True, blank=True)
     balance = models.PositiveIntegerField('CURRENT BALANCE',null=True, blank=True)
     dispensed_date = models.DateField('DISPENSE DATE',auto_now_add=True)
@@ -121,6 +121,7 @@ class Dispensary(models.Model):
         self.quantity = quantity_to_dispense
         self.balance -= quantity_to_dispense
         super().save(*args, **kwargs)
+
         self.drug.save()
 
     def __str__(self):
