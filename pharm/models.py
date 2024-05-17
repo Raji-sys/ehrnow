@@ -7,7 +7,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Unit(models.TextChoices):
     ACCIDENT_AND_EMERGENCY = 'A & E', 'A & E'
@@ -27,21 +28,22 @@ class Category(models.Model):
         verbose_name_plural = 'categories'
 
 class Drug(models.Model):
-    date_added = models.DateField('DATE DRUG WAS ADDED',auto_now_add=True)
-    name = models.CharField('DRUG NAME',max_length=100, unique=True)
-    status=models.BooleanField(default=True)
-    generic_name = models.CharField('GENERIC NAME',max_length=100, null=True, blank=True)
-    brand_name = models.CharField('BRAND NAME',max_length=100, null=True, blank=True)
+    date_added = models.DateField('DATE DRUG WAS ADDED', auto_now_add=True)
+    name = models.CharField('DRUG NAME', max_length=100, unique=True)
+    status = models.BooleanField(default=True)
+    generic_name = models.CharField('GENERIC NAME', max_length=100, null=True, blank=True)
+    brand_name = models.CharField('BRAND NAME', max_length=100, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name='categories')
-    supplier = models.CharField('SUPPLIER',max_length=100, null=True, blank=True)
-    dosage_form = models.CharField('DOSAGE FORM',max_length=100, null=True, blank=True)
-    pack_price = models.DecimalField('PACK PRICE',max_digits=100, decimal_places=2, null=True, blank=True)
-    pack_size = models.CharField('PACK SIZE',max_length=100, null=True, blank=True)
-    cost_price = models.DecimalField('COST PRICE',max_digits=10, decimal_places=2, null=True, blank=True)
-    total_purchased_quantity = models.PositiveIntegerField('TOTAL QTY PURCHASED',default=0)
-    expiration_date = models.DateField('DATE ADDED',null=True, blank=True)
+    supplier = models.CharField('SUPPLIER', max_length=100, null=True, blank=True)
+    dosage_form = models.CharField('DOSAGE FORM', max_length=100, null=True, blank=True)
+    pack_price = models.DecimalField('PACK PRICE', max_digits=100, decimal_places=2, null=True, blank=True)
+    pack_size = models.CharField('PACK SIZE', max_length=100, null=True, blank=True)
+    cost_price = models.DecimalField('COST PRICE', max_digits=10, decimal_places=2, null=True, blank=True)
+    total_purchased_quantity = models.PositiveIntegerField('TOTAL QTY PURCHASED', default=0)
+    total_issued = models.PositiveIntegerField('TOTAL QTY ISSUED', default=0)
+    expiration_date = models.DateField('DATE ADDED', null=True, blank=True)
     added_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='added_drugs')
-    updated_at = models.DateField('DATE UPDATED',auto_now=True)
+    updated_at = models.DateField('DATE UPDATED', auto_now=True)
 
     def __str__(self):
         return self.name
@@ -56,21 +58,18 @@ class Drug(models.Model):
         return total_store_value
 
     @property
-    def total_issued(self):
-        return self.drug_records.aggregate(models.Sum('quantity'))['quantity__sum'] or 0
-
-    @property
     def current_balance(self):
         return self.total_purchased_quantity - self.total_issued
 
     def is_available(self):
         if self.current_balance is not None and self.current_balance <= 0:
             self.status = False
-            self.save()
+            self.save()  # Save the instance after updating the status
         return self.status
-        
+
     class Meta:
         verbose_name_plural = 'drugs'
+
 
 class Record(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="drug_records")
@@ -84,13 +83,16 @@ class Record(models.Model):
     issued_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='drug_records')
     remark = models.CharField('REMARKS',max_length=100, choices=Unit.choices, null=True, blank=True)
     updated_at = models.DateTimeField('DATE UPDATED',auto_now=True)
-
     def save(self, *args, **kwargs):
-        quantity_to_dispense = self.drug.current_balance - self.quantity
-        if quantity_to_dispense < 0:
-            raise ValidationError(_("Not enough drugs in stock."), code='invalid_quantity')
+        if self.pk:
+            # Update existing instance
+            self.drug.total_purchased_quantity -= self.quantity
+            self.drug.save()
+        else:
+            # Create new instance
+            self.drug.total_issued += self.quantity
+            self.drug.save()
         super().save(*args, **kwargs)
-        self.drug.is_available()
 
     def __str__(self):
         return self.drug.name
@@ -99,28 +101,32 @@ class Record(models.Model):
         verbose_name_plural = 'drugs issued record'
 
 class Dispensary(models.Model):
-    patient = models.ForeignKey(PatientData,null=True, blank=True, on_delete=models.CASCADE,related_name='dispensed_drugs')
+    patient = models.ForeignKey(PatientData, null=True, blank=True, on_delete=models.CASCADE, related_name='dispensed_drugs')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug_catgory")
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug")
-    payment = models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="pharm_payment")
-    quantity = models.PositiveIntegerField('QTY TO DISPENSE',null=True, blank=True)
-    dispensed_date = models.DateField('DISPENSE DATE',auto_now_add=True)
+    payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="pharm_payment")
+    quantity = models.PositiveIntegerField('QTY TO DISPENSE', null=True, blank=True)
+    dispensed_date = models.DateField('DISPENSE DATE', auto_now_add=True)
     dispensed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='dispensed_by')
-    remark = models.CharField('REMARKS',max_length=100, choices=Unit.choices, null=True, blank=True)
+    remark = models.CharField('REMARKS', max_length=100, choices=Unit.choices, null=True, blank=True)
+    quantity_deducted = models.BooleanField(default=False)  # Add this field to track if the quantity has been deducted
 
     def save(self, *args, **kwargs):
-        quantity_to_dispense = self.drug.current_balance - self.quantity
-        if quantity_to_dispense < 0:
-            raise ValidationError(_("Not enough drugs in stock."), code='invalid_quantity')
+        if self.pk and self.payment.status == True:
+            # Update existing instance
+            self.drug.total_purchased_quantity -= self.quantity
+            self.drug.save()
+        else:
+            # Create new instance
+            self.drug.total_issued += self.quantity
+            self.drug.save()
         super().save(*args, **kwargs)
-        self.drug.is_available()
 
     def __str__(self):
         return f"{self.patient}--{self.drug.name}--{self.dispensed_date}"
 
     class Meta:
         verbose_name_plural = 'dispensary record'
-
 
 class Purchase(models.Model):
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True,)

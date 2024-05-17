@@ -209,7 +209,6 @@ def record_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-
 @login_required(login_url='login')
 def create_dispensary(request, file_no):
     patient = get_object_or_404(PatientData, file_no=file_no)
@@ -224,19 +223,19 @@ def create_dispensary(request, file_no):
                     instance = form.save(commit=False)
                     instance.patient = patient
                     instance.dispensed_by = request.user
-
-                    # Create Paypoint instance with status=False
                     paypoint = Paypoint.objects.create(
                         user=request.user,
                         patient=patient,
                         service=instance.drug.name,
-                        price=instance.drug.pack_price,
+                        price=instance.drug.cost_price * instance.quantity,
                         status=False
                     )
                     instance.payment = paypoint
                     instance.save()
-
             return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
+        else:
+            # If formset is not valid, it will automatically contain the errors.
+            pass
     else:
         formset = DispensaryFormSet(queryset=Dispensary.objects.none())
 
@@ -246,13 +245,49 @@ def create_dispensary(request, file_no):
         'dispensary_instances': dispensary_instances,
     }
     return render(request, 'dispensary/dispense.html', context)
+# @login_required(login_url='login')
+# def create_dispensary(request, file_no):
+#     patient = get_object_or_404(PatientData, file_no=file_no)
+#     dispensary_instances = Dispensary.objects.filter(patient=patient)
+#     DispensaryFormSet = modelformset_factory(Dispensary, form=DispenseForm, extra=5)
+#     formset = DispensaryFormSet(queryset=Dispensary.objects.none())  # Initialize with an empty queryset
 
+#     if request.method == 'POST':
+#         formset = DispensaryFormSet(request.POST)
+#         if formset.is_valid():
+#             for form in formset:
+#                 if form.has_changed():
+#                     instance = form.save(commit=False)
+#                     instance.patient = patient
+#                     instance.dispensed_by = request.user
+
+#                     # Create Paypoint instance with status=False
+#                     paypoint = Paypoint.objects.create(
+#                         user=request.user,
+#                         patient=patient,
+#                         service=instance.drug.name,
+#                         price=instance.drug.cost_price * instance.quantity,
+#                         status=False
+#                     )
+#                     instance.payment = paypoint
+#                     instance.save()  # Call save() after creating the Paypoint instance
+            
+#             return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
+#         else:
+#             formset = DispensaryFormSet(queryset=Dispensary.objects.none())
+
+#     context = {
+#         'formset': formset,
+#         'patient': patient,
+#         'dispensary_instances': dispensary_instances,
+#     }
+#     return render(request, 'dispensary/dispense.html', context)
     
 
 class DispenseUpdateView(PharmacyRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Dispensary
     template_name = 'dispensary/update_dispense.html'
-    form_class = DispenseForm
+    # form_class = DispenseUpdateForm
 
     def form_valid(self, form):
         form.save()

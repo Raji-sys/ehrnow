@@ -98,7 +98,7 @@
                 {{ d.patient.clinic|default_if_none:'' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{ d.drug.cost_price|default_if_none:'' }}
+                {{ d.payment.price|default_if_none:'' }}
                 {{d.payment.status}}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">

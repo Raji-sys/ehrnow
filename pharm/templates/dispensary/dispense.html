@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
-{% block title %}DRUG ISSUANCE RECORD{% endblock %}
+{% block title %}DRUG DISPENSARY{% endblock %}
 {% block content %}
   <div class="flex justify-center mt-1 p-1 mb-4">
-    <div class="justify-center items-center font-semibold uppercase text-xs shadow-sm shadow-amber-500 mx-auto rounded-2xl bg-amber-50 mt-2 p-2">
-      <section class="text-center border-b-2 border-amber-500 p-2 m-2">
-        <p class="text-lg font-bold pt-2 text-amber-600">issue drugs to units</p>
+    <div class="justify-center items-center font-semibold uppercase text-xs shadow-sm shadow-green-500 mx-auto rounded-2xl bg-green-50 mt-2 p-2">
+      <section class="text-center border-b-2 border-green-500 p-2 m-2">
+        <p class="text-lg font-bold pt-2 text-green-600">DISPENSE DRUG</p>
       </section>
-      <form id="recordForm" action="" method="POST" enctype="multipart/form-data">
+      <form id="recordForm" action="" method="POST" enctype="multipart/form-data" class="text-center">
         {% csrf_token %}
         {{ formset.management_form }}
         {% for form in formset %}
-          <div class="md:flex md:flex-row   grid grid-cols-4 md:gap-6 p-4">
+          <div class="md:flex md:flex-row justify-center   grid grid-cols-4 md:gap-6 p-4">
             {% if form.non_field_errors %}
               <div class="text-red-600 text-lg">
                 {{ form.non_field_errors.0 }}
@@ -47,8 +47,8 @@
         {% endfor %}
         <div class="flex justify-center align-middle m-2">
           <input type="submit" value="issue drugs"
-                 class="focus:opacity-10 uppercase focus:border-amber-600 hover:bg-white hover:text-amber-600 hover:border-2 hover:border-amber-600
-                        bg-amber-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl">
+                 class="focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+                        bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl">
         </div>
       </form>
     </div>

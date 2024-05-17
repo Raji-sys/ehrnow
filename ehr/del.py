@@ -1,31 +1,36 @@
-        <section>
-          <form method="post" enctype="multipart/form-data" class="text-xs">
-              {% csrf_token %}
-              <div class="md:flex md:flex-row justify-center md:gap-6 uppercase text-cyan-900 px-10">
-                  {% for field in dispense_form.visible_fields %}
-                          <div class="flex flex-row justify-center gap-2 text-center align-text-bottom ">
-                            <div>
-                              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                              {{ field }}
-                            </div>
-                              {% if field.errors %}
-                              <div class="text-red-500 text-xs italic">
-                                  {% for error in field.errors %}
-                                  <p>{{ error }}</p>
-                                  {% endfor %}
-                              </div>
-                              {% endif %}
-                              {% endfor %}
-                            </div>
-                    <div class="">
-                      <input type="submit" value="dispense" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600 bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
-                    </div>
-              </div>
-          </form>
-          {% if dispense_form.errors %}
-          <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
-              <a href class="uk-alert-close font-bold" uk-close></a>
-              <p>{{ dispense_form.errors }}</p>
-          </div>
-          {% endif %}
-        </section>
+@login_required(login_url='login')
+def create_dispensary(request, file_no):
+    patient = get_object_or_404(PatientData, file_no=file_no)
+    dispensary_instances = Dispensary.objects.filter(patient=patient)
+    DispensaryFormSet = modelformset_factory(Dispensary, form=DispenseForm, extra=5)
+
+    if request.method == 'POST':
+        formset = DispensaryFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                if form.has_changed():
+                    instance = form.save(commit=False)
+                    instance.patient = patient
+                    instance.dispensed_by = request.user
+
+                    # Create Paypoint instance with status=False
+                    paypoint = Paypoint.objects.create(
+                        user=request.user,
+                        patient=patient,
+                        service=instance.drug.name,
+                        price=instance.drug.cost_price * instance.quantity,
+                        status=False
+                    )
+                    instance.payment = paypoint
+                    instance.save()  # Call save() after creating the Paypoint instance
+
+            return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
+        else:
+            formset = DispensaryFormSet(queryset=Dispensary.objects.none())
+
+    context = {
+        'formset': formset,
+        'patient': patient,
+        'dispensary_instances': dispensary_instances,
+    }
+    return render(request, 'dispensary/dispense.html', context)
