@@ -11,7 +11,7 @@
             {% if request.GET.urlencode%}
     <div class="flex justify-center gap-1">
     <a class="text-xl bg-white focus:opacity-10 focus:border-zinc-600  
-    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center" href="{% url 'record_pdf' %}?{{request.GET.urlencode}}">
+    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center" href="{% url 'pharm:record_pdf' %}?{{request.GET.urlencode}}">
     <i class="fa-solid fa-file-pdf fa-lg text-amber-500"></i></a>
     <a href="?" class="text-xl text-white focus:opacity-10  focus:border-blue-600 bg-white 
     px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-lg text-amber-600"></i></a>

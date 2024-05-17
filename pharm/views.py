@@ -232,7 +232,7 @@ def create_dispensary(request, file_no):
                     )
                     instance.payment = paypoint
                     instance.save()
-            return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
+            return redirect(reverse_lazy('dispensed_list'))
         else:
             # If formset is not valid, it will automatically contain the errors.
             pass

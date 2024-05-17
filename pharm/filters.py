@@ -40,23 +40,23 @@ class RecordFilter(django_filters.FilterSet):
 
 class DispenseFilter(django_filters.FilterSet):
     patient_no=django_filters.NumberFilter(label='FILE NUMBER', field_name="patient__file_no",lookup_expr='exact')
-    dispense_date1 = django_filters.DateFilter(label="DISPENSE DATE R1",field_name='dispensed_date',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
-    dipsense_date2 = django_filters.DateFilter(label="DISPENSE DATE R2",field_name='dispensed_date',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
-    category = django_filters.CharFilter(label="CLASS",field_name='drug__category__name', lookup_expr='iexact')
+    dispense_date1 = django_filters.DateFilter(label="DIS DATE R1",field_name='dispensed_date',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    dipsense_date2 = django_filters.DateFilter(label="DIS DATE R2",field_name='dispensed_date',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
     drug = django_filters.CharFilter(label="DRUG",field_name='drug__name', lookup_expr='iexact')
     dispensed_by = django_filters.CharFilter(label="DISPENSED BY",field_name='dispensed_by__username', lookup_expr='iexact')
 
     class Meta:
         model = Dispensary
-        fields= ['patient','drug','category','dispensed_date','dispensed_by']
+        exclude=['remark','quantity','quantity_deducted','category','patient','payment','dispensed_date']
 
 
 class PrescriptionFilter(django_filters.FilterSet):
     patient_no=django_filters.NumberFilter(label='FILE NUMBER', field_name="patient__file_no",lookup_expr='exact')
-    prescription_date1 = django_filters.DateFilter(label="PRES DATE R1",field_name='updated',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
+    prescription_date1 = django_filters.DateFilter(label="PRES DATE R1",field_name='updated',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
     prescription_date2 = django_filters.DateFilter(label="PRES DATE R2",field_name='updated',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     prescribed_by = django_filters.CharFilter(label="PRESCRIBED BY",field_name='prescribed_by__username', lookup_expr='iexact')
+    drug = django_filters.CharFilter(label="DRUG",field_name='drug__name', lookup_expr='iexact')
 
     class Meta:
         model = Prescription
-        fields= ['prescribed_by',]
+        exclude=['remark','quantity','category','patient','payment','category','updated']

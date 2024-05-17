@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}DISPENSARY DIRECTORY{%endblock%}
-<div class="flex justify-center items-end enom">DISPENSARY DIRECTORY</div>
+{%block page_title%}<div class="flex justify-center items-end enom">DISPENSARY DIRECTORY</div>{%endblock%}
+
 {%block content %}
 <div class="mt-2 p-4">
     <section class="text-center border-cyan-700 p-4 m-2">
@@ -19,7 +20,7 @@
         <div class="mt-2 mx-4">
                     {% if request.GET.urlencode %}
                     <span>
-                        <a href="?" class=" p-2 focus:opacity-10  focus:border-cyan-600 bg-orange-500text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
+                        <a href="?" class=" p-2 focus:opacity-10  focus:border-cyan-600 bg-orange-500text-white rounded shadow-sm hover:shadow-xl text-center w-fit">
                             <i class="fa-solid fa-rotate fa-lg text-cyan"></i></a>
                         </span>
                         {%endif%}
@@ -35,7 +36,7 @@
                 <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
                 {%if field.value%} value="{{field.value}}"{%endif%}
                 class="text-center text-sm focus:outline-none w-fit text-cyan-950 p-2
-                rounded shadow-xl shadow-cyan-900 border-cyan-900 border">
+                rounded shadow-sm shadow-cyan-900 border-cyan-900 border">
                 <span class="form-error">{{ field.errors }}</span>
                 {% endfor %}
                 <button type="submit" class="shadow-xl shadow-cyan-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-cyan-900 text-white rounded hover:border-cyan-700 ">
