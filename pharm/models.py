@@ -6,9 +6,6 @@ from ehr.models import PatientData,Paypoint
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 class Unit(models.TextChoices):
     ACCIDENT_AND_EMERGENCY = 'A & E', 'A & E'
@@ -99,6 +96,29 @@ class Record(models.Model):
 
     class Meta:
         verbose_name_plural = 'drugs issued record'
+
+
+class Prescription(models.Model):
+    patient = models.ForeignKey(PatientData, null=True, blank=True, on_delete=models.CASCADE, related_name='prescribed_drugs')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="prescribed_drug_catgory")
+    drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="prescribed_drug")
+    quantity = models.PositiveIntegerField('QTY', null=True, blank=True)
+    updated = models.DateField(auto_now_add=True)
+    prescribed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='prescribed_by')
+    remark = models.CharField('REMARKS', max_length=100, choices=Unit.choices, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+    @property
+    def price(self):
+        return self.drug.cost_price * self.quantity
+
+    def __str__(self):
+        return f"{self.patient}--{self.drug.name}--{self.updated}"
+
+    class Meta:
+        verbose_name_plural = 'prescription record'
+
 
 class Dispensary(models.Model):
     patient = models.ForeignKey(PatientData, null=True, blank=True, on_delete=models.CASCADE, related_name='dispensed_drugs')

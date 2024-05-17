@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}PRESCRIPTION DIRECTORY{%endblock%}
-<div class="flex justify-center items-end enom">PRESCRIPTION DIRECTORY</div>
+{%block title%}DISPENSARY DIRECTORY{%endblock%}
+<div class="flex justify-center items-end enom">DISPENSARY DIRECTORY</div>
 {%block content %}
 <div class="mt-2 p-4">
     <section class="text-center border-cyan-700 p-4 m-2">
@@ -26,11 +26,11 @@
                 </div>
       <div class="text-cyan-900">
         <form method="get" class="text-xs text-center">
-          {% for field in prescriptionFilter.form %}
+          {% for field in DispenseFilter.form %}
           {{field.errors}}
           {% endfor %}
             <div class="text-center ">
-                {% for field in prescriptionFilter.form %}
+                {% for field in DispenseFilter.form %}
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
                 <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
                 {%if field.value%} value="{{field.value}}"{%endif%}
@@ -59,13 +59,19 @@
                 NAME
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
-                DISPENSED DRUG & QTY
+                DISPENSED DRUG
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+                QUANTITY
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 CLINIC
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 PRICE
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+                PAYMENT STATUS
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 DATE
@@ -92,6 +98,8 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 {{ d.drug|default_if_none:'' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
                 {{ d.quantity|default_if_none:'' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -99,6 +107,8 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 {{ d.payment.price|default_if_none:'' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
                 {{d.payment.status}}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -106,7 +116,7 @@
               </td>
             <td class="px-6 py-4 whitespace-nowrap">
                 <span class="space-x-4">
-                    <a href="{% url 'pharm:update_dispense' d.pk %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib "></i></a>
+                    <a href="#" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib "></i></a>
                     
                 </span>
               </td>

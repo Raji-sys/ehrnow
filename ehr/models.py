@@ -358,19 +358,6 @@ class ClinicalNote(models.Model):
         return f"notes for: {self.patient.file_no}"
 
 
-class Prescription(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='prescribed_drugs')
-    drugs=models.TextField(blank=True, null=True)
-    updated = models.DateTimeField(auto_now=True)
-
-    def get_absolute_url(self):
-        return reverse('prescription_details', args=[self.patient.file_no])
-
-    def __str__(self):
-        return f"{self.patient}-{self.drugs}-{self.user}"
-
-
 # class Radiology(models.Model):
 #     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 #     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)

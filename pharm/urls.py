@@ -20,9 +20,11 @@ urlpatterns=[
     path('drug_pdf/', views.drug_pdf, name='drug_pdf'),
     path('record_pdf/', views.record_pdf, name='record_pdf'),
 
-    #Prescription
+    # dispensary
     path('pharmacy/dispensary/add-dispense/<str:file_no>/', views.create_dispensary, name='add_dispense'),
     path('pharmacy/dispensary/dispensed/', DispenseListView.as_view(), name='dispensed_list'),
-    path('pharmacy/dispensary/update-dispense/<int:pk>/', DispenseUpdateView.as_view(), name='update_dispense'),
-
+    
+    #Prescription
+    path('pharmacy/prescription/prescribe/<str:file_no>/', views.create_prescription, name='add_prescription'),
+    path('pharmacy/prescription/prescribed/', PrescriptionListView.as_view(), name='prescription_list'),
 ]

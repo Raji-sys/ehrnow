@@ -61,21 +61,9 @@ class PayFilter(django_filters.FilterSet):
     user=django_filters.CharFilter(label='STAFF', field_name="user__username",lookup_expr='iexact')
     patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
     service=django_filters.CharFilter(label='SERVICE',field_name="service",lookup_expr='iexact')                                                                                                     
-    # receipt_no=django_filters.CharFilter(label='RECEIPT NO',field_name="receipt_no",lookup_expr='iexact')                                                                                                     
     # status=django_filters.BooleanFilter(label='STATUS',field_name="status")                                                                                                     
     created = django_filters.DateFilter(label="DATE", field_name="created", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     class Meta:
         model = Paypoint
         fields = ['user','patient','service','created']
-
-
-class PrescriptionFilter(django_filters.FilterSet):
-    user=django_filters.CharFilter(label='DOCTOR', field_name="user__username",lookup_expr='iexact')
-    patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
-    drugs=django_filters.CharFilter(label='DRUG',field_name="drugs",lookup_expr='iexact')                                                                                                     
-    updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
-
-    class Meta:
-        model = Prescription
-        fields = ['user','patient','drugs','updated']

@@ -102,3 +102,10 @@ class DispenseAdmin(admin.ModelAdmin):
         return obj.issued_by.username if obj.issued_by else None
 
     issued_by_username.short_description = "Issued By"
+
+
+@admin.register(Prescription)
+class PrescriptionAdmin(admin.ModelAdmin):
+    list_display = ('patient','drug','quantity','updated')
+    search_fields = ('patient','drug','quantity','updated')
+    list_filter = ('patient','drug','quantity','updated')
