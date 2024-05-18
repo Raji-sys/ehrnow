@@ -356,11 +356,17 @@ class ClinicalNote(models.Model):
 class TheatreItem(models.Model):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Bill(models.Model):
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='patient_bill')
     date = models.DateField(auto_now_add=True)
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"{self.patient}___{self.date}"
 
 class BillItem(models.Model):
     bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='theatre_items')

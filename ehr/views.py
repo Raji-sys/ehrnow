@@ -1017,37 +1017,104 @@ class PharmPayListView(ListView):
         return context  
     
 
-def billing_view(request, file_no):
-    patient = PatientData.objects.get(file_no=file_no)
+# def billing_view(request, file_no):
+#     patient = PatientData.objects.get(file_no=file_no)
+    
+#     if request.method == 'POST':
+#         item_id = request.POST.get('item_id')
+#         item = TheatreItem.objects.get(id=item_id)
 
+#         bill, created = Bill.objects.get_or_create(patient=patient)
+#         bill_item, created = BillItem.objects.get_or_create(bill=bill, item=item)
+
+#         bill_item.quantity += 1
+#         bill_item.save()
+
+#         bill.total_cost += item.price * bill_item.quantity
+#         bill.save()
+
+#         return JsonResponse({'success': True, 'quantity': bill_item.quantity})
+
+#     theatre_items = TheatreItem.objects.all()
+#     bill = patient.patient_bill.filter().last()  # Assuming patient_bill is the related_name
+#     bill_items = bill.theatre_items.all() if bill else []  # Assuming theatre_items is the related_name
+    
+#     # Prepare bill_items with additional data
+#     detailed_bill_items = []
+#     for bill_item in bill_items:
+#         detailed_bill_items.append({
+#             'name': bill_item.item.name,
+#             'quantity': bill_item.quantity,
+#             'unit_price': bill_item.item.price,
+#             'total_price': bill_item.item.price * bill_item.quantity
+#         })
+    
+#     context = {
+#         'patient': patient,
+#         'theatre_items': theatre_items,
+#         'bill_items': detailed_bill_items,
+#         'total_cost': bill.total_cost if bill else 0.00,
+#     }
+#     return render(request, 'ehr/revenue/billing.html', context)
+
+
+def billing_view(request, file_no):
+    patient = get_object_or_404(PatientData, file_no=file_no)
+    
     if request.method == 'POST':
         item_id = request.POST.get('item_id')
-        item = TheatreItem.objects.get(id=item_id)
+        action = request.POST.get('action', 'add')  # Default action is 'add'
+        item = get_object_or_404(TheatreItem, id=item_id)
 
         bill, created = Bill.objects.get_or_create(patient=patient)
         bill_item, created = BillItem.objects.get_or_create(bill=bill, item=item)
 
-        bill.total_cost += item.price
-        bill.save()
-        bill_item.quantity += 1
-        bill_item.save()
+        if action == 'add':
+            bill_item.quantity += 1
+            bill_item.save()
+            bill.total_cost += item.price
+            bill.save()
+            message = 'Item added successfully.'
+        elif action == 'remove':
+            bill_item.quantity -= 1
+            if bill_item.quantity <= 0:
+                bill_item.delete()
+                message = 'Item removed successfully.'
+            else:
+                bill_item.save()
+                message = 'Item quantity reduced successfully.'
+            bill.total_cost -= item.price
+            bill.save()
 
-        bill.total_cost += item.price * bill_item.quantity
-        bill.save()
-
-        return JsonResponse({'success': True, 'quantity': bill_item.quantity})
+        return JsonResponse({
+            'success': True,
+            'quantity': bill_item.quantity if bill_item.pk else 0,
+            'total_cost': bill.total_cost,
+            'message': message
+        })
 
     theatre_items = TheatreItem.objects.all()
     bill = patient.patient_bill.filter().last()  # Assuming patient_bill is the related_name
     bill_items = bill.theatre_items.all() if bill else []  # Assuming theatre_items is the related_name
-
+    
+    detailed_bill_items = []
+    for bill_item in bill_items:
+        detailed_bill_items.append({
+            'id': bill_item.id,
+            'name': bill_item.item.name,
+            'quantity': bill_item.quantity,
+            'unit_price': bill_item.item.price,
+            'total_price': bill_item.item.price * bill_item.quantity
+        })
+    
     context = {
         'patient': patient,
         'theatre_items': theatre_items,
-        'bill_items': bill_items,
-        'total_cost': bill.total_cost if bill else 0.00
+        'bill_items': detailed_bill_items,
+        'total_cost': bill.total_cost if bill else 0.00,
     }
     return render(request, 'ehr/revenue/billing.html', context)
+
 
 def search_items(request):
     search_text = request.GET.get('search_text', '')

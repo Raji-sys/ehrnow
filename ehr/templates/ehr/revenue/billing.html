@@ -4,6 +4,10 @@
 {% block content %}
 <div class="max-w-3xl mx-auto py-8">
     <h1 class="text-2xl font-bold mb-4">Billing System for {{ patient.name }}</h1>
+    
+    <!-- Notification Div -->
+    <div id="notification" class="hidden bg-green-200 text-green-800 border border-green-600 rounded p-2 mb-4"></div>
+    
     <div class="mb-4">
         <input type="text" id="item-search" placeholder="Search for items" class="border border-gray-300 rounded-md px-3 py-2 w-full">
     </div>
@@ -18,36 +22,53 @@
         <h2 class="text-xl font-semibold mb-2">Bill</h2>
         <div class="overflow-x-auto px-4 md:px-10 m-4">
             <table class="min-w-full divide-y divide-cyan-200 mb-4">
-              <thead class="bg-cyan-50">
-                <tr class="text-sm">
-                  <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                  <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">item</th>
-                  <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">quantity</th>
-                  <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">price</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-cyan-200">
-                {% for bill_item in bill_items %}       
-                <div id="bill-items" class="space-y-2">
-                   
-                    <tr class="text-xs uppercase bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                        <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ bill_item.item.name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">({{ bill_item.quantity }})</td>
-                        <td class="px-6 py-4 whitespace-nowrap">&#x20A6;{{ bill_item.item.price }}</td>
+                <thead class="bg-cyan-50">
+                    <tr class="text-sm text-center">
+                        <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                        <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Item</th>
+                        <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Quantity</th>
+                        <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Unit Price</th>
+                        <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Total Price</th>
+                        <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th>
                     </tr>
-                </div>
-                {% endfor %}
-                
-            </tbody>
+                </thead>
+                <tbody class="bg-white divide-y divide-cyan-200">
+                    {% for bill_item in bill_items %}
+                    <tr class="text-xs text-center uppercase bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300" data-item-id="{{ bill_item.id }}">
+                        <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ bill_item.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap item-quantity">{{ bill_item.quantity }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">&#x20A6;{{ bill_item.unit_price }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap total-price">&#x20A6;{{ bill_item.total_price }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <button class="remove-item-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" data-item-id="{{ bill_item.id }}">Remove</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-          </div>
-        <p class="mt-4 font-semibold">Total Cost: $<span id="total-cost">{{ total_cost }}</span></p>
+        </div>
+        <p class="mt-4 font-semibold">Total Cost: &#x20A6;<span id="total-cost">{{ total_cost }}</span></p>
     </div>
 </div>
-
 <script>
     $(document).ready(function() {
+        function showNotification(message, success = true) {
+            var notification = $('#notification');
+            notification.removeClass('hidden');
+            notification.removeClass('bg-green-200 text-green-800 border-green-600');
+            notification.removeClass('bg-red-200 text-red-800 border-red-600');
+            if (success) {
+                notification.addClass('bg-green-200 text-green-800 border border-green-600');
+            } else {
+                notification.addClass('bg-red-200 text-red-800 border border-red-600');
+            }
+            notification.text(message);
+            setTimeout(function() {
+                notification.addClass('hidden');
+            }, 3000);
+        }
+
         $('#item-search').on('input', function() {
             var searchText = $(this).val();
             $.ajax({
@@ -73,21 +94,56 @@
                 url: '{% url "billing_view" patient.file_no %}',
                 data: {
                     'item_id': itemId,
+                    'action': 'add',  // specify the action
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function(data) {
-                    var billItemHtml = '<p>' + itemName + ' (' + data.quantity + ') - $' + itemPrice + '</p>';
-                    $('#bill-items').append(billItemHtml);
-                    updateTotalCost(itemPrice * data.quantity);
+                    var itemRow = $('tr[data-item-id="' + itemId + '"]');
+                    if (itemRow.length > 0) {
+                        itemRow.find('.item-quantity').text(data.quantity);
+                        itemRow.find('.total-price').text('&#x20A6;' + (itemPrice * data.quantity).toFixed(2));
+                    } else {
+                        var newRow = '<tr class="text-xs text-center uppercase bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300" data-item-id="' + itemId + '">' +
+                            '<td class="px-6 py-4 whitespace-nowrap">' + ($('tbody tr').length + 1) + '</td>' +
+                            '<td class="px-6 py-4 whitespace-nowrap">' + itemName + '</td>' +
+                            '<td class="px-6 py-4 whitespace-nowrap item-quantity">' + data.quantity + '</td>' +
+                            '<td class="px-6 py-4 whitespace-nowrap">&#x20A6;' + itemPrice + '</td>' +
+                            '<td class="px-6 py-4 whitespace-nowrap total-price">' + (itemPrice * data.quantity).toFixed(2) + '</td>' +
+                            '<td class="px-6 py-4 whitespace-nowrap">' +
+                                '<button class="remove-item-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" data-item-id="' + itemId + '">Remove</button>' +
+                            '</td>' +
+                        '</tr>';
+                        $('tbody').append(newRow);
+                    }
+                    $('#total-cost').text(data.total_cost.toFixed(2));
+                    showNotification(data.message);
                 }
             });
         });
 
-        function updateTotalCost(itemTotal) {
-            var currentTotalCost = parseFloat($('#total-cost').text());
-            var newTotalCost = currentTotalCost + parseFloat(itemTotal);
-            $('#total-cost').text(newTotalCost.toFixed(2));
-        }
+        $(document).on('click', '.remove-item-btn', function() {
+            var itemId = $(this).data('item-id');
+            $.ajax({
+                type: 'POST',
+                url: '{% url "billing_view" patient.file_no %}',
+                data: {
+                    'item_id': itemId,
+                    'action': 'remove',  // specify the action
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    var itemRow = $('tr[data-item-id="' + itemId + '"]');
+                    if (data.quantity > 0) {
+                        itemRow.find('.item-quantity').text(data.quantity);
+                        itemRow.find('.total-price').text('&#x20A6;' + (data.quantity * itemPrice).toFixed(2));
+                    } else {
+                        itemRow.remove();
+                    }
+                    $('#total-cost').text(data.total_cost.toFixed(2));
+                    showNotification(data.message);
+                }
+            });
+        });
     });
 </script>
 {% endblock %}
