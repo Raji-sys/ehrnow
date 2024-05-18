@@ -536,15 +536,12 @@ class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
     context_object_name = 'handovers'
 
     def get_queryset(self):
-        # Get all follow-up visits waiting for payment
         follow_up_visits = FollowUpVisit.objects.filter(patient__handovers__status='waiting_for_payment')
 
-        # Get distinct clinic choices from these follow-up visits
         clinic_choices = follow_up_visits.values_list('clinic', flat=True).distinct()
 
-        # Filter PatientHandover objects based on clinics with follow-up visits waiting for payment
         return PatientHandover.objects.filter(
-            status='waiting_for_payment',  # Only include handovers waiting for payment
+            status='waiting_for_payment', 
             clinic__in=clinic_choices
         )
 
@@ -602,8 +599,9 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         file_no = self.kwargs.get('file_no')
         context['patient'] = get_object_or_404(PatientData, file_no=file_no)
+
         service_name = 'follow up'
-        service = Services.objects.get(name=service_name)
+        service = MedicalRecord.objects.get(name=service_name)
         context['service_name'] = service.name
         context['service_price'] = service.price
 
@@ -611,16 +609,20 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
 
     def form_valid(self, form):
         file_no = self.kwargs.get('file_no')
-        patient = get_object_or_404(PatientData, file_no=file_no)
-        payment = Paypoint.objects.create(patient=patient, status=True, service='follow up')
-        
-        # Update handover status to 'waiting_for_vital_signs'
-        patient_handover = patient.handovers.filter(status='waiting_for_payment').first()
-        if patient_handover:
-            patient_handover.status = 'waiting_for_vital_signs'
-            patient_handover.save()
-            messages.success(self.request, 'Payment successful. Patient handed over for vitals.')
-        
+        patient = get_object_or_404(PatientData, file_no=file_no)        
+        handover = patient.handovers.filter(status='waiting_for_payment').first()
+        if handover:
+            payment = form.save(commit=False)
+            payment.patient = patient
+            payment.status = True
+            service = MedicalRecord.objects.get(name='follow up')
+            payment.service = service.name
+            payment.price = service.price
+            payment.save()
+
+            handover.status = 'waiting_for_vital_signs'
+            handover.save()
+            messages.success(self.request, 'Payment successful. Patient handed over for vitals.')        
         return super().form_valid(form)
 
 
@@ -787,13 +789,13 @@ class AEAwaitingReviewView(ClinicListView):
 
 class SOPDConsultationFinishView(ClinicListView):
     template_name = 'ehr/doctor/sopd_patient_seen.html'
-    status_filter = 'seen'
+    status_filter = 'complete'
     clinic_filter = 'SOPD'
     room_filter = None
 
 class SOPDAwaitingReviewView(ClinicListView):
     template_name = 'ehr/doctor/sopd_review_patient.html'
-    status_filter = 'review'
+    status_filter = 'await review'
     clinic_filter = 'SOPD'
     room_filter = None
     
