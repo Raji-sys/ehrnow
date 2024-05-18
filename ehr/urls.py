@@ -62,6 +62,8 @@ urlpatterns = [
     path('revenue/add-service/', ServiceCreateView.as_view(), name='add_service'),
     path('revenue/service-list/', ServiceListView.as_view(), name='service_list'),
     path('revenue/update-service/<int:pk>/', ServiceUpdateView.as_view(), name='update_service'),
+    
+    path('revenue/hospital-services/', HospitalServicesListView.as_view(), name='hospital_services'),
 
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
     path('revenue/hema-list/', HematologyPayListView.as_view(), name='hema_pay_list'),

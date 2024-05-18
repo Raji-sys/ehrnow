@@ -191,22 +191,17 @@ class Room(models.Model):
         return self.name
 
 
-class ServiceType(models.Model):
-    name = models.CharField('TYPE OF SERVICE',max_length=200,null=True)
-    def __str__(self):
-        return self.name
-
 class Services(models.Model):
-    type=models.ForeignKey(ServiceType,null=True, on_delete=models.CASCADE)
+    type=models.CharField(max_length=100, null=True, blank=True)
     name=models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.name}-{self.price}"
+        return f"{self.type}----{self.name}"
 
     class Meta:
-        verbose_name_plural = 'hospital services'
+        verbose_name_plural = 'general services'
 
     def get_absolute_url(self):
         return reverse('service_details', args=[self.type])

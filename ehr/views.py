@@ -853,11 +853,21 @@ class AppointmentListView(ListView):
         return context
 
 
+class HospitalServicesListView(TemplateView):
+    template_name='ehr/dashboard/services.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['medical_record'] = MedicalRecord.objects.all()
+        context['hematology'] = HematologyTest.objects.all()
+        context['services'] = Services.objects.all()
+        return context
+
+
 class ServiceCreateView(RevenueRequiredMixin, CreateView):
         model = Services
         form_class = ServiceForm
         template_name = 'ehr/revenue/new_service.html'
-        success_url = reverse_lazy("service_list")
+        success_url = reverse_lazy("hospital_services")
 
         def form_valid(self, form):
             messages.success(self.request, 'SERVICE ADDED')
@@ -885,7 +895,7 @@ class ServiceUpdateView(UpdateView):
 
 class ServiceListView(ListView):
     model=Services
-    template_name='ehr/revenue/service_list.html'
+    template_name='ehr/revenue/general_services.html'
     context_object_name='services'
     paginate_by = 10
 

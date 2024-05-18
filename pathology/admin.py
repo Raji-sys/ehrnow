@@ -1,14 +1,10 @@
 from .models import *
 from django.contrib import admin
 
-# admin.site.site_header="ADMIN PANEL"
-# admin.site.index_title="PATHOLOGY MANAGEMENT SYSTEM"
-# admin.site.site_title="SUPREME DIAGNOSTIC LABORATORIES"
-
 
 @admin.register(HematologyTest)
 class HematologyTestAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name','reference_range','price',)
 
 
 @admin.register(HematologyResult)
@@ -18,7 +14,7 @@ class HematologyResultAdmin(admin.ModelAdmin):
 
 @admin.register(ChempathTestName)
 class ChempathTestNameAdmin(admin.ModelAdmin):
-    list_display = ('name', 'reference_range')
+    list_display = ('name', 'reference_range', 'price',)
 
 
 @admin.register(ChemicalPathologyResult)
@@ -33,7 +29,7 @@ class MicroResultAdmin(admin.ModelAdmin):
 
 @admin.register(MicrobiologyTest)
 class MicroTestAdmin(admin.ModelAdmin):
-    list_display = ('name','reference_range',)
+    list_display = ('name','reference_range','price')
 
 
 @admin.register(SerologyResult)
@@ -44,5 +40,4 @@ class SerologyTestResultAdmin(admin.ModelAdmin):
 
 @admin.register(SerologyTestName)
 class SerologyTestNameAdmin(admin.ModelAdmin):
-    list_display = ('name', 'reference_range')
-
+    list_display = ('name', 'reference_range','price')

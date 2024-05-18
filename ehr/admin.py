@@ -34,12 +34,6 @@ class PaypointAdmin(admin.ModelAdmin):
     list_filter = ('status','service')
 
 
-@admin.register(ServiceType)
-class ServicesTypeAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
-    list_filter = ('name',)
-
 
 @admin.register(Services)
 class ServicesAdmin(admin.ModelAdmin):
