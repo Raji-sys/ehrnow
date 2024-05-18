@@ -38,6 +38,7 @@ urlpatterns = [
     path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
     path('record/create-patient/', PatientCreateView.as_view(), name='new_patient'),
     path('record/patient-list/', PatientListView.as_view(), name='patient_list'),
+    path('record/follow-up/', FollowUpListView.as_view(), name='follow_up_list'),
     path('record/patient-report/', PatientReportView.as_view(), name='patient_report'),
     path('record/statistics/', PatientStatsView.as_view(), name='patient_stats'),
     path('record/patient/update-patient/<int:pk>/', UpdatePatientView.as_view(), name='update_patient'),

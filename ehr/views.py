@@ -379,7 +379,7 @@ class PatientListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        patients = super().get_queryset().order_by('-updated')
+        patients = super().get_queryset().order_by('file_no')
         patient_filter = PatientFilter(self.request.GET, queryset=patients)
         return patient_filter.qs
 
@@ -467,21 +467,9 @@ class PatientFolderView(DetailView):
         context['micro_results']=patient.microbiology_results.all().order_by('-created')
         context['serology_results']=patient.serology_results.all().order_by('-created')
         context['general_results']=patient.general_results.all().order_by('-created')
+   
         return context
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        patient = self.object
-        form = DispenseForm(request.POST)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.patient = patient
-            instance.save()
-            messages.success(request, 'Dispensary record added successfully.')
-            return redirect(reverse('patient_details', kwargs={'file_no': patient.file_no}))
-        else:
-            context = self.get_context_data()
-            context['dispense_form'] = form
-            return self.render_to_response(context)
+   
 # 2. FollowUpVisitCreateView
 class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
     model = FollowUpVisit
@@ -510,6 +498,23 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
 
         messages.success(self.request, 'Follow-up visit created successfully')
         return redirect(self.success_url)
+
+
+class FollowUpListView(ListView):
+    model=PatientData
+    template_name='ehr/record/follow_up_list.html'
+    context_object_name='patients'
+    paginate_by = 10
+
+    def get_queryset(self):
+        patients = super().get_queryset().order_by('-updated')
+        patient_filter = PatientFilter(self.request.GET, queryset=patients)
+        return patient_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patientFilter'] = PatientFilter(self.request.GET, queryset=self.get_queryset())
+        return context
 
 
 class PaypointDashboardView(RevenueRequiredMixin, ListView):

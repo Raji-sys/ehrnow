@@ -83,10 +83,10 @@ class PatientData(models.Model):
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     titles = (('Mr.','Mr.'),('Mrs.','Mrs.'),('Miss','Miss'),('Alhaji','Alhaji'),('Mallam','Mallam'),('Chief','Chief'),('Prof.','Prof.'),('Dr.','Dr.'),('Engr.','Engr.'),('Ach.','Ach.'))
     title = models.CharField(choices=titles, max_length=10, null=True, blank=True)
-    last_name = models.CharField(max_length=300, blank=True, null=True)
+    last_name = models.CharField('SURNAME', max_length=300, blank=True, null=True)
     first_name = models.CharField(max_length=300, blank=True, null=True)
     other_name = models.CharField(max_length=300, blank=True, null=True)
-    phone = models.PositiveIntegerField(null=True, blank=True, unique=True)
+    phone = models.CharField(max_length=300, null=True, blank=True, unique=True)
     photo = models.ImageField(null=True, blank=True)
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True, blank=True)
@@ -102,7 +102,7 @@ class PatientData(models.Model):
     address = models.CharField(max_length=300, null=True, blank=True)
     faith = (('ISLAM', 'ISLAM'), ('CHRISTIANITY', 'CHRISTIANITY'),('TRADITIONAL', 'TRADITIONAL'))
     religion = models.CharField(choices=faith, max_length=100, null=True, blank=True)
-    # tribes = (('ISLAM', 'ISLAM'), ('CHRISTIANITY', 'CHRISTIANITY'),('TRADITIONAL', 'TRADITIONAL'))
+    # tribes = (('YORUBA', 'YORUBA'), ('HAUSA', 'HAUSA'),('IGBO', 'IGBO'),('IBIRA','IBIRA))
     # tribe = models.CharField(choices=tribes, max_length=100, null=True, blank=True)
     occupation = models.CharField(max_length=300, null=True, blank=True)
     role_in_occupation = models.CharField(max_length=300, null=True, blank=True)
@@ -144,7 +144,7 @@ class PatientData(models.Model):
         return reverse('patient_details', args=[self.file_no])
 
     def full_name(self):
-        return f"{self.title} {self.first_name} {self.last_name} {self.other_name}"
+        return f"{self.title} {self.last_name} {self.first_name} {self.other_name}"
 
     def __str__(self):
         return self.full_name()
