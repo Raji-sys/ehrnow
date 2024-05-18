@@ -63,6 +63,9 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 EDIT
               </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+                ADD APPOINTMENT
+              </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-emerald-200">
@@ -85,11 +88,10 @@
             <td class="px-6 py-4 whitespace-nowrap">
                 <span class="space-x-4">
                     <a href="{% url 'update_patient' p.pk %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib "></i></a>
-                    
                 </span>
               </td>
-              <td>
-                
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <a href="{% url 'new_appointment' p.file_no %}" class="text-sm text-green-500 hover:text-green-700"><i class="fa-solid fa-calendar-week fa-2xl"></i></a>        
               </td>
             </tr>
             {% empty %}

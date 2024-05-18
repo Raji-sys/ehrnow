@@ -18,6 +18,7 @@
   <div class="text-center rounded-xl md:p-10 bg-gray-50 uppercase">
 <!-- start -->
 <!-- top  -->
+
     <ul class="text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 border-b-2 mb-10" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
       <li><a href="#" class="rounded-lg m-4">BIODATA</a></li>
       <li><a href="#" class="rounded-lg ">PAYMENT</a></li>
@@ -166,6 +167,7 @@
         <div>
         <a href="{%url 'clinical_note' patient.file_no%}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
       </div>     
+
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
@@ -173,6 +175,9 @@
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DOCTOR</th>
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NOTE</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DIAGNOSIS</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">APPOINTMENT</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DATE CONSULTED</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
@@ -180,7 +185,17 @@
               <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ c.user }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ c.note.html|safe }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <details>
+                    <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">NOTE</summary>
+                    <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto rounded-md m-4">
+                      <p class="text-xs text-center">{{ c.note.html|safe }}</p>
+                    </div>
+                  </details>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ c.diagnosis|default_if_none:'' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ c.appointment|default_if_none:'' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ c.updated }}</td>
               </tr>
               {%empty%}
               <div class="p-4">

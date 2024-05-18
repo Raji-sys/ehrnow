@@ -249,6 +249,10 @@ class PatientMovementView(TemplateView):
     template_name = "ehr/record/patient_moves.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+class AppointmentDashboardView(TemplateView):
+    template_name = "ehr/record/appt_dashboard.html"
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class RevenueView(TemplateView):
     template_name = "ehr/dashboard/revenue.html"
 
@@ -321,11 +325,6 @@ class AuditView(TemplateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ServiceView(TemplateView):
     template_name = "ehr/dashboard/service.html"
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class TransactionView(TemplateView):
-    template_name = "ehr/dashboard/transaction.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -804,7 +803,9 @@ class AppointmentCreateView(RecordRequiredMixin, CreateView):
         model = Appointment
         form_class = AppointmentForm
         template_name = 'ehr/record/new_appointment.html'
+        success_url = reverse_lazy("patient_list")
 
+        
         def form_valid(self, form):
             form.instance.user = self.request.user
             form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
@@ -813,14 +814,13 @@ class AppointmentCreateView(RecordRequiredMixin, CreateView):
         
         def get_success_url(self):
             messages.success(self.request, 'APPOINTMENT ADDED')
-            return self.object.patient.get_absolute_url()
 
 
 class AppointmentUpdateView(UpdateView):
     model = Appointment
     template_name = 'ehr/record/update_appt.html'
     form_class = AppointmentForm
-    success_url = reverse_lazy("medical_record")
+    success_url = reverse_lazy("patient_list")
 
     
     def form_valid(self, form):
@@ -940,7 +940,7 @@ class PayUpdateView(UpdateView):
 
 class PayListView(ListView):
     model=Paypoint
-    template_name='ehr/revenue/pay_list.html'
+    template_name='ehr/revenue/transaction.html'
     context_object_name='pays'
     paginate_by = 5
 

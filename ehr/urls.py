@@ -36,6 +36,7 @@ urlpatterns = [
 
     # Record URLs
     path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
+    path('medical-record/appointment-dash/', AppointmentDashboardView.as_view(), name='appt_dashboard'),
     path('record/create-patient/', PatientCreateView.as_view(), name='new_patient'),
     path('record/patient-list/', PatientListView.as_view(), name='patient_list'),
     path('record/follow-up/', FollowUpListView.as_view(), name='follow_up_list'),
@@ -62,7 +63,6 @@ urlpatterns = [
     path('revenue/service-list/', ServiceListView.as_view(), name='service_list'),
     path('revenue/update-service/<int:pk>/', ServiceUpdateView.as_view(), name='update_service'),
 
-    path('get-started/revenue/transactions/', TransactionView.as_view(), name='transaction_dash'),
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
     path('revenue/hema-list/', HematologyPayListView.as_view(), name='hema_pay_list'),
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
