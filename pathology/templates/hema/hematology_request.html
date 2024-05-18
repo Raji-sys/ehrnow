@@ -80,7 +80,7 @@
         </td>
         <td>
           {% if r.payment.status == True %}
-          <a href="{% url 'pathology:hematology_result' r.patient.file_no r.id %}" class="text-green-500 hover:text-blue-700"> <i class="fa-solid fa-plus-square fa-2xl"></i></a>
+          <a href="{% url 'pathology:hematology_result' r.patient.file_no r.id %}" class="text-green-500 hover:text-blue-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
           {%else%}
           <i class="fa-solid fa-xmark-square text-red-700 fa-2xl"></i>
           {%endif%}

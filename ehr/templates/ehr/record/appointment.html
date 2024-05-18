@@ -15,6 +15,8 @@
         {% endfor %}
       </section>
     <div class="mx-20 rounded-xl p-4 shadow-black shadow-2xl bg-emerald-50">
+      <a href="{% url 'new_appointment' patient.file_no %}" class="text-sm text-green-500 hover:text-green-700">new appointment</a>
+          
       <div class="flex justify-center m-1">
         <div class="mt-2 mx-4">
                     {% if request.GET.urlencode %}

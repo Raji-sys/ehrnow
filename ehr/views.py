@@ -459,6 +459,7 @@ class PatientFolderView(DetailView):
         patient = self.get_object()
         context['patient'] = patient
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
+        context['payments'] = patient.patient_payments.all().order_by('-updated')
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
         context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
         context['hematology_results']=patient.hematology_result.all().order_by('-created')
