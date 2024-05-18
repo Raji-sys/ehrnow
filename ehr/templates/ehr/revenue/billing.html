@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-8">
+    <h1 class="text-2xl font-bold mb-4">Billing System for {{ patient.name }}</h1>
+    <div class="mb-4">
+        <input type="text" id="item-search" placeholder="Search for items" class="border border-gray-300 rounded-md px-3 py-2 w-full">
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="text-xl font-semibold mb-2">Search Results</h2>
+        <ul id="item-list" class="list-disc list-inside">
+        </ul>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-4 mt-4">
+        <h2 class="text-xl font-semibold mb-2">Bill</h2>
+        <div class="overflow-x-auto px-4 md:px-10 m-4">
+            <table class="min-w-full divide-y divide-cyan-200 mb-4">
+              <thead class="bg-cyan-50">
+                <tr class="text-sm">
+                  <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                  <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">item</th>
+                  <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">quantity</th>
+                  <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">price</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-cyan-200">
+                {% for bill_item in bill_items %}       
+                <div id="bill-items" class="space-y-2">
+                   
+                    <tr class="text-xs uppercase bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                        <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ bill_item.item.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">({{ bill_item.quantity }})</td>
+                        <td class="px-6 py-4 whitespace-nowrap">&#x20A6;{{ bill_item.item.price }}</td>
+                    </tr>
+                </div>
+                {% endfor %}
+                
+            </tbody>
+            </table>
+          </div>
+        <p class="mt-4 font-semibold">Total Cost: $<span id="total-cost">{{ total_cost }}</span></p>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#item-search').on('input', function() {
+            var searchText = $(this).val();
+            $.ajax({
+                url: '{% url "search_items" %}',
+                data: {
+                    'search_text': searchText
+                },
+                success: function(data) {
+                    $('#item-list').empty();
+                    $.each(data.items, function(index, item) {
+                        $('#item-list').append('<li data-item-id="' + item.id + '" data-item-name="' + item.name + '" data-item-price="' + item.price + '" class="flex justify-between items-center"><span>' + item.name + ' - $' + item.price + '</span><button class="add-item-btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Add</button></li>');
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.add-item-btn', function() {
+            var itemId = $(this).parent().data('item-id');
+            var itemName = $(this).parent().data('item-name');
+            var itemPrice = $(this).parent().data('item-price');
+            $.ajax({
+                type: 'POST',
+                url: '{% url "billing_view" patient.file_no %}',
+                data: {
+                    'item_id': itemId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    var billItemHtml = '<p>' + itemName + ' (' + data.quantity + ') - $' + itemPrice + '</p>';
+                    $('#bill-items').append(billItemHtml);
+                    updateTotalCost(itemPrice * data.quantity);
+                }
+            });
+        });
+
+        function updateTotalCost(itemTotal) {
+            var currentTotalCost = parseFloat($('#total-cost').text());
+            var newTotalCost = currentTotalCost + parseFloat(itemTotal);
+            $('#total-cost').text(newTotalCost.toFixed(2));
+        }
+    });
+</script>
+{% endblock %}

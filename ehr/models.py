@@ -44,7 +44,7 @@ class Profile(models.Model):
     title = models.CharField(max_length=300, null=True, blank=True)
     department = models.ForeignKey(Department, blank=True, max_length=300, null=True, on_delete=models.CASCADE)
     unit = models.ForeignKey(Unit, blank=True, max_length=300, null=True, on_delete=models.CASCADE)
-    phone = models.PositiveIntegerField(null=True, blank=True, unique=True)
+    phone = models.CharField(max_length=300, null=True, blank=True, unique=True)
     photo = models.ImageField(null=True, blank=True)
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True, blank=True)
@@ -353,38 +353,30 @@ class ClinicalNote(models.Model):
         return f"notes for: {self.patient.file_no}"
 
 
-# class Radiology(models.Model):
+class TheatreItem(models.Model):
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+class Bill(models.Model):
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='patient_bill')
+    date = models.DateField(auto_now_add=True)
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+class BillItem(models.Model):
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='theatre_items')
+    item = models.ForeignKey(TheatreItem, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+
+# class Admission(models.Model):
 #     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 #     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
 #     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     ward=models.CharField()
 #     updated = models.DateTimeField(auto_now=True)
 
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
-
-    
-# class Physio(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
+    # def __str__(self):
+    #     return f"{self.full_name()}"
 
 
 # class Ward(models.Model):
@@ -405,6 +397,40 @@ class ClinicalNote(models.Model):
 
 
 # class Theatre(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
+
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
+
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
+
+
+# class Radiology(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+#     updated = models.DateTimeField(auto_now=True)
+
+#     def get_absolute_url(self):
+#         return reverse('pay_details', args=[self.user])
+
+#     def full_name(self):
+#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
+
+#     def __str__(self):
+#         if self.user:
+#             return f"{self.full_name}"
+
+    
+# class Physio(models.Model):
 #     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 #     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
 #     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)

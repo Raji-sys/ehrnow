@@ -86,3 +86,23 @@ class VitalSignAdmin(admin.ModelAdmin):
 @admin.register(MedicalRecord)
 class MedicalRecordAdmin(admin.ModelAdmin):
     list_display = ('name','price')
+
+
+@admin.register(TheatreItem)
+class TheatreAdmin(admin.ModelAdmin):
+    list_display = ('name','price')
+    search_fields = ('name','price')
+    list_filter = ('name','price')
+
+
+@admin.register(BillItem)
+class BillItemAdmin(admin.ModelAdmin):
+    list_display = ('bill','item','quantity')
+    search_fields = ('bill','item')
+    list_filter = ('bill','item')
+
+@admin.register(Bill)
+class BillAdmin(admin.ModelAdmin):
+    list_display = ('patient','date','total_cost')
+    search_fields = ('patient','date')
+    list_filter = ('patient','date')

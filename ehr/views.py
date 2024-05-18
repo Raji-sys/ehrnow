@@ -23,6 +23,9 @@ from django.utils import timezone
 from datetime import timedelta
 User = get_user_model()
 from django.db.models import Sum
+from django.shortcuts import render
+from django.http import JsonResponse
+from decimal import Decimal
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -1012,3 +1015,42 @@ class PharmPayListView(ListView):
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         return context  
+    
+
+def billing_view(request, file_no):
+    patient = PatientData.objects.get(file_no=file_no)
+
+    if request.method == 'POST':
+        item_id = request.POST.get('item_id')
+        item = TheatreItem.objects.get(id=item_id)
+
+        bill, created = Bill.objects.get_or_create(patient=patient)
+        bill_item, created = BillItem.objects.get_or_create(bill=bill, item=item)
+
+        bill.total_cost += item.price
+        bill.save()
+        bill_item.quantity += 1
+        bill_item.save()
+
+        bill.total_cost += item.price * bill_item.quantity
+        bill.save()
+
+        return JsonResponse({'success': True, 'quantity': bill_item.quantity})
+
+    theatre_items = TheatreItem.objects.all()
+    bill = patient.patient_bill.filter().last()  # Assuming patient_bill is the related_name
+    bill_items = bill.theatre_items.all() if bill else []  # Assuming theatre_items is the related_name
+
+    context = {
+        'patient': patient,
+        'theatre_items': theatre_items,
+        'bill_items': bill_items,
+        'total_cost': bill.total_cost if bill else 0.00
+    }
+    return render(request, 'ehr/revenue/billing.html', context)
+
+def search_items(request):
+    search_text = request.GET.get('search_text', '')
+    items = TheatreItem.objects.filter(name__icontains=search_text)
+    data = [{'id': item.id, 'name': item.name, 'price': str(item.price)} for item in items]
+    return JsonResponse({'items': data})
