@@ -1,13 +1,10 @@
-from multiprocessing import context
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
-# from django.views.generic.edit import UpdateView, CreateView
 from django.views.generic.base import TemplateView
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponse
 from .models import *
 from .forms import *
 from .filters import *
@@ -16,19 +13,16 @@ from django.contrib.auth import get_user_model
 from io import BytesIO
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-import datetime
-from django.conf import settings
-import os
 from django.db.models import Count
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib import messages
-from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from pathology.models import *
 from pathology.views import *
-from pharm.forms import DispenseForm
+from django.utils import timezone
+from datetime import timedelta
 User = get_user_model()
 from django.db.models import Sum
-from django.contrib.contenttypes.models import ContentType
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -667,10 +661,16 @@ class ClinicListView(DoctorRequiredMixin, ListView):
         filters = {
             'status': self.status_filter,
             'clinic': self.clinic_filter,
+            'created_at__gte': timezone.now() - timedelta(days=1), 
+            # 'updated_at__gte': timezone.now() - timedelta(hours=12)
         }
+        # if self.room_filter is not None:
+        #     filters['room'] = self.room_filter
+        # return queryset.filter(**filters)
         if self.room_filter is not None:
             filters['room'] = self.room_filter
-        return queryset.filter(**filters)
+        filtered_queryset = queryset.filter(**filters)
+        return filtered_queryset.order_by('-created_at')
 
 
 class AENursingDeskView(ClinicListView):
