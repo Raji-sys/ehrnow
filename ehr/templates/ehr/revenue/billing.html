@@ -101,13 +101,13 @@
                     var itemRow = $('tr[data-item-id="' + itemId + '"]');
                     if (itemRow.length > 0) {
                         itemRow.find('.item-quantity').text(data.quantity);
-                        itemRow.find('.total-price').text('&#x20A6;' + (itemPrice * data.quantity).toFixed(2));
+                        itemRow.find('.total-price').text((itemPrice * data.quantity).toFixed(2));
                     } else {
                         var newRow = '<tr class="text-xs text-center uppercase bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300" data-item-id="' + itemId + '">' +
                             '<td class="px-6 py-4 whitespace-nowrap">' + ($('tbody tr').length + 1) + '</td>' +
                             '<td class="px-6 py-4 whitespace-nowrap">' + itemName + '</td>' +
                             '<td class="px-6 py-4 whitespace-nowrap item-quantity">' + data.quantity + '</td>' +
-                            '<td class="px-6 py-4 whitespace-nowrap">&#x20A6;' + itemPrice + '</td>' +
+                            '<td class="px-6 py-4 whitespace-nowrap">' + itemPrice + '</td>' +
                             '<td class="px-6 py-4 whitespace-nowrap total-price">' + (itemPrice * data.quantity).toFixed(2) + '</td>' +
                             '<td class="px-6 py-4 whitespace-nowrap">' +
                                 '<button class="remove-item-btn bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" data-item-id="' + itemId + '">Remove</button>' +
@@ -135,7 +135,7 @@
                     var itemRow = $('tr[data-item-id="' + itemId + '"]');
                     if (data.quantity > 0) {
                         itemRow.find('.item-quantity').text(data.quantity);
-                        itemRow.find('.total-price').text('&#x20A6;' + (data.quantity * itemPrice).toFixed(2));
+                        itemRow.find('.total-price').text((data.quantity * itemPrice).toFixed(2));
                     } else {
                         itemRow.remove();
                     }

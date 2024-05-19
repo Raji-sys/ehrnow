@@ -823,7 +823,7 @@ class AppointmentUpdateView(UpdateView):
     model = Appointment
     template_name = 'ehr/record/update_appt.html'
     form_class = AppointmentForm
-    success_url = reverse_lazy("patient_list")
+    success_url = reverse_lazy("appointments")
 
     
     def form_valid(self, form):
@@ -838,6 +838,23 @@ class AppointmentUpdateView(UpdateView):
         messages.error(self.request, 'Error updating appointment information')
         return self.render_to_response(self.get_context_data(form=form))
 
+
+class NewAppointmentListView(ListView):
+    model=PatientData
+    template_name='ehr/record/new_appt_list.html'
+    context_object_name='patients'
+    paginate_by = 10
+
+    def get_queryset(self):
+        patients = super().get_queryset().order_by('-updated')
+        patient_filter = PatientFilter(self.request.GET, queryset=patients)
+        return patient_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patientFilter'] = PatientFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+    
 
 class AppointmentListView(ListView):
     model=Appointment

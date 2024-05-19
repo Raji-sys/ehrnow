@@ -37,17 +37,23 @@ urlpatterns = [
     # Record URLs
     path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
     path('medical-record/appointment-dash/', AppointmentDashboardView.as_view(), name='appt_dashboard'),
+
     path('record/create-patient/', PatientCreateView.as_view(), name='new_patient'),
     path('record/patient-list/', PatientListView.as_view(), name='patient_list'),
+    path('record/patient/update-patient/<int:pk>/', UpdatePatientView.as_view(), name='update_patient'),
+    path('record/patient/<str:file_no>/', PatientFolderView.as_view(), name='patient_details'),
+
     path('record/follow-up/', FollowUpListView.as_view(), name='follow_up_list'),
+    path('record/patient/follow-up/<str:file_no>/', FollowUpVisitCreateView.as_view(), name='follow_up'),
+
     path('record/patient-report/', PatientReportView.as_view(), name='patient_report'),
     path('record/statistics/', PatientStatsView.as_view(), name='patient_stats'),
-    path('record/patient/update-patient/<int:pk>/', UpdatePatientView.as_view(), name='update_patient'),
+
     path('record/create-appointment/<str:file_no>/', AppointmentCreateView.as_view(), name='new_appointment'),
     path('record/appointments/', AppointmentListView.as_view(), name='appointments'),
     path('record/appointment/update-appointment/<int:pk>/', AppointmentUpdateView.as_view(), name='update_appointment'),
-    path('record/patient/<str:file_no>/', PatientFolderView.as_view(), name='patient_details'),
-    path('record/patient/follow-up/<str:file_no>/', FollowUpVisitCreateView.as_view(), name='follow_up'),
+    path('record/appointment/new-appointment/', NewAppointmentListView.as_view(), name='new_appt_list'),
+
 
     # Payment Clerk URLs
     path('revenue/paypoint-dash/record/', RevenueRecordView.as_view(), name='record_revenue'),

@@ -38,10 +38,10 @@ class PatientReportFilter(django_filters.FilterSet):
 
 
 class AppointmentFilter(django_filters.FilterSet):
-    date = django_filters.DateFilter(label="date", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
-    patient=django_filters.CharFilter(label='file no.', field_name="patient__file_no",lookup_expr='exact')
-    clinic=django_filters.CharFilter(label='clinic',field_name="clinic",lookup_expr='iexact')                                                                                                     
-    team=django_filters.CharFilter(label='team',field_name="team",lookup_expr='iexact')                                                                                                     
+    date = django_filters.DateFilter(label="DATE", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    patient=django_filters.CharFilter(label='FILE NUMBER', field_name="patient__file_no",lookup_expr='exact')
+    clinic=django_filters.CharFilter(label='CLINIC',field_name="clinic",lookup_expr='iexact')                                                                                                     
+    team=django_filters.CharFilter(label='TEAM',field_name="team",lookup_expr='iexact')                                                                                                     
 
     class Meta:
         model = Appointment

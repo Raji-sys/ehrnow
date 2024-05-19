@@ -2,19 +2,19 @@
 <h1>Stats</h1>
 {% block title %}stats{% endblock%}
 {%block page_title%}
-<div class="flex justify-center items-end enom">
-PATIENT PERSONAL STATISTICS
-</div>
+<div class="flex justify-center items-end enom">PATIENT PERSONAL STATISTICS</div>
  {%endblock%}
-{% block content %}
-<div class="flex justify-center items-center bg-white shadow-lg shadow-black mx-20 p-12 mt-10 rounded-xl">
+
+ {% block content %}
+<div class="flex justify-center items-center bg-stone-100 shadow-sm shadow-black mx-20 p-12 mt-10 rounded-xl">
 <div class=" p-10 max-sm:p-4 grid grid-cols-5 gap-24 max-sm:grid max-sm:grid-cols-2">
 <div>
 <details> 
-    <summary class="bg-cyan-600 p-2 text-white text-center text-lg rounded-md w-fit">GENDER</summary>
+    <summary class="bg-cyan-600 p-2 text-white text-center text-sm rounded-md w-fit">GENDER</summary>
+    <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
     <table class="justify-center table-auto m-2 max-sm:flex p-2">
-        <tbody class="uppercase text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-cyan-600 bg-white">
-            <tr class=" text-sm">
+        <tbody class="uppercase text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-cyan-600 bg-white">
+            <tr class=" text-xs">
               {%for g in gender_counts %}
             <th scope="col" class="border-2 p-2 ">{{g.gender}}</th>
             <th class="border-2 p-2 text-center">{{g.pc}}</th>
@@ -22,14 +22,16 @@ PATIENT PERSONAL STATISTICS
           </tr>
         </tbody>
     </table>
+    </div>
 </details>
 </div>
 <div>
     <details>
-        <summary class="bg-blue-600 p-2 text-white text-lg rounded-md w-fit text-center">GEO-POLITICAL ZONE</summary>
+        <summary class="bg-blue-600 p-2 text-white text-sm rounded-md w-fit text-center">GEO-POLITICAL ZONE</summary>
+        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
     <table class="justify-center table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-blue-700 bg-white">
-            <tr class=" text-sm">
+        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-blue-700 bg-white">
+            <tr class=" text-xs">
             {%for gz in geo_counts %}
             <th scope="col" class="border-2 p-2 ">{{gz.zone}}</th>
             <td class="border-2 p-2 text-center">{{gz.pc}}</td>
@@ -37,15 +39,17 @@ PATIENT PERSONAL STATISTICS
         </tr>
         </tbody>
     </table>
+    </div>
     </details>
 </div>
 
 <div>
     <details>
-        <summary class=" bg-amber-600 p-2 text-white  text-lg rounded-md w-fit text-center">STATE OF ORIGIN</summary>
+        <summary class=" bg-amber-600 p-2 text-white  text-sm rounded-md w-fit text-center">STATE OF ORIGIN</summary>
+        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
             <table class="justify-center table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-amber-600 bg-white">
-            <tr class=" text-sm">
+        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-amber-600 bg-white">
+            <tr class=" text-xs">
                 {%for s in state_counts %}
             <th scope="col" class="border-2 p-2 ">{{s.state}}</th>
             <td class="border-2 p-2 text-center">{{s.pc}}</td>
@@ -53,15 +57,17 @@ PATIENT PERSONAL STATISTICS
         </tr>
         </tbody>
     </table>
+    </div>
     </details>
 </div>
 
 <div>
     <details>
-        <summary class=" bg-cyan-800 p-2 text-white  text-lg rounded-md w-fit text-center">LGA</summary>
+        <summary class=" bg-cyan-800 p-2 text-white  text-sm rounded-md w-fit text-center">LGA</summary>
+        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
     <table class="justify-center table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-cyan-800 bg-white">
-            <tr class=" text-sm">
+        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-cyan-800 bg-white">
+            <tr class=" text-xs">
                 {%for l in lga_counts%}
             <th scope="col" class="border-2 p-2 ">{{l.lga}}</th>
             <td class="border-2 p-2 text-center">{{l.pc}}</td>
@@ -69,15 +75,17 @@ PATIENT PERSONAL STATISTICS
         </tr>
         </tbody>
     </table>
+    </div>
     </details>    
 </div>
 
 <div>
     <details>
-        <summary class=" bg-teal-400 p-2 text-white  text-lg rounded-md w-fit text-center">RELIGION</summary>
+        <summary class=" bg-teal-400 p-2 text-white  text-sm rounded-md w-fit text-center">RELIGION</summary>
+        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
         <table class="justify-center table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-teal-400 bg-white">
-            <tr class=" text-sm">
+        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-teal-400 bg-white">
+            <tr class=" text-xs">
                 {%for r in religion_counts %}
             <th scope="col" class="border-2 p-2 ">{{r.religion}}</th>
             <td class="border-2 p-2 text-center">{{r.pc}}</td>
@@ -85,15 +93,17 @@ PATIENT PERSONAL STATISTICS
         </tr>
         </tbody>
     </table>
+    </div>
 </details>    
 </div>
 
 <div>
     <details>
-        <summary class=" bg-orange-500 p-2 text-white  text-lg rounded-md w-fit text-center">MARITAL STATUS</summary>
+        <summary class=" bg-orange-500 p-2 text-white  text-sm rounded-md w-fit text-center">MARITAL STATUS</summary>
+        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
         <table class="justify-center table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-orange-500 bg-white">
-            <tr class=" text-sm">
+        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-orange-500 bg-white">
+            <tr class=" text-xs">
             {%for m in marital_status_counts %}
             <th scope="col" class="border-2 p-2 ">{{m.marital_status}}</th>
             <td class="border-2 p-2 text-center">{{m.pc}}</td>
@@ -101,15 +111,17 @@ PATIENT PERSONAL STATISTICS
         </tr>
         </tbody>
     </table>
+    </div>
 </details>    
 </div>
 
 <div>
     <details>
-        <summary class=" bg-green-500 p-2 text-white  text-lg rounded-md w-fit text-center">NATIONALITY</summary>
+        <summary class=" bg-green-500 p-2 text-white  text-sm rounded-md w-fit text-center">NATIONALITY</summary>
+        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
         <table class="justify-center table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-green-500 bg-white">
-            <tr class=" text-sm">
+        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-green-500 bg-white">
+            <tr class=" text-xs">
                 {%for n in nationality_counts %}
             <th scope="col" class="border-2 p-2 ">{{n.nationality}}</th>
             <td class="border-2 p-2 text-center">{{n.pc}}</td>
@@ -117,31 +129,35 @@ PATIENT PERSONAL STATISTICS
         </tr>
         </tbody>
     </table>
+    </div>
 </details>    
 </div>
 
 <div>
     <details>
-        <summary class=" bg-purple-600 p-2 text-white  text-lg rounded-md w-fit text-center">OCCUPATION</summary>
-        <table class="justify-center table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-purple-600 bg-white">
-            <tr class=" text-sm">
+        <summary class=" bg-purple-600 p-2 text-white  text-sm rounded-md w-fit text-center">OCCUPATION</summary>
+        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
+            <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+                <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-purple-600 bg-white">
+                    <tr class=" text-xs">
                 {%for c in occupation_counts%}
-            <th scope="col" class="border-2 p-2 ">{{c.occupation}}</th>
+                <th scope="col" class="border-2 p-2 ">{{c.occupation}}</th>
             <td class="border-2 p-2 text-center">{{c.pc}}</td>
             {%endfor%}
         </tr>
         </tbody>
     </table>
+</div>
 </details>    
 </div>
 
 <div>
     <details>
-        <summary class=" bg-red-600 p-2 text-white  text-lg rounded-md w-fit text-center">ROLE IN OCCUPATION</summary>
+        <summary class=" bg-red-600 p-2 text-white  text-sm rounded-md w-fit text-center">ROLE IN OCCUPATION</summary>
+        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
     <table class="justify-center table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-red-600 bg-white">
-            <tr class=" text-sm">
+        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-red-600 bg-white">
+            <tr class=" text-xs">
                 {%for r in role_in_occupation_counts %}
             <th scope="col" class="border-2 p-2 ">{{r.role_in_occupation}}</th>
             <td class="border-2 p-2 text-center">{{r.pc}}</td>
@@ -149,15 +165,17 @@ PATIENT PERSONAL STATISTICS
         </tr>
         </tbody>
     </table>
+    </div>
     </details>    
 </div>
 
 <div>
     <details>
-        <summary class=" bg-teal-600 p-2 text-white  text-lg rounded-md w-fit text-center">ADDRESS</summary>
+        <summary class=" bg-teal-600 p-2 text-white  text-sm rounded-md w-fit text-center">ADDRESS</summary>
+        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
     <table class="justify-center table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-sm rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-teal-600 bg-white">
-            <tr class=" text-sm">
+        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-teal-600 bg-white">
+            <tr class=" text-xs">
                 {%for a in address_counts %}
             <th scope="col" class="border-2 p-2 ">{{a.address}}</th>
             <td class="border-2 p-2 text-center">{{a.pc}}</td>
@@ -165,6 +183,7 @@ PATIENT PERSONAL STATISTICS
         </tr>
         </tbody>
     </table>
+    </div>
     </details>    
 </div>
 

@@ -3,28 +3,28 @@
 {%block title%}APPOINTMENT DIRECTORY{%endblock%}
 <div class="flex justify-center items-end enom">APPOINTMENT DIRECTORY</div>
 {%block content %}
-<div class="mt-2 p-4">
-    <section class="text-center border-cyan-700 p-4 m-2">
+<div class="p-4">
+    <section class="text-center border-fuchsia-700 p-4 m-2">
         {% for message in messages %}
-        <div class="">
-          <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
-            <a href class="uk-alert-close font-bold" uk-close></a>
-            <p class="text-green-700 font-semibold">{{ message }}</p>
+        <div class="mt-2 ">
+          <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
+              <a href class="uk-alert-close font-bold" uk-close></a>
+              <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
           </div>
-        </div>
+      </div>
         {% endfor %}
       </section>
-    <div class="mx-20 rounded-xl p-4 shadow-black shadow-2xl bg-emerald-50">
+    <div class="mx-20 rounded-xl p-4 shadow-black shadow-sm bg-fuchsia-50">
       <div class="flex justify-center m-1">
         <div class="mt-2 mx-4">
                     {% if request.GET.urlencode %}
                     <span>
-                        <a href="?" class=" p-2 focus:opacity-10  focus:border-cyan-600 bg-orange-500text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
-                            <i class="fa-solid fa-rotate fa-lg text-cyan"></i></a>
+                        <a href="?" class=" p-2 focus:opacity-10  focus:border-fuchsia-600 bg-orange-500text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
+                            <i class="fa-solid fa-rotate fa-lg text-fuchsia"></i></a>
                         </span>
                         {%endif%}
                 </div>
-      <div class="text-cyan-900">
+      <div class="text-fuchsia-900">
         <form method="get" class="text-xs text-center">
           {% for field in appointmentFilter.form %}
           {{field.errors}}
@@ -34,47 +34,47 @@
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
                 <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
                 {%if field.value%} value="{{field.value}}"{%endif%}
-                class="text-center text-sm focus:outline-none w-fit text-cyan-950 p-2
-                rounded shadow-xl shadow-cyan-900 border-cyan-900 border">
+                class="mx-1 text-center text-sm focus:outline-none w-fit text-fuchsia-950 p-2
+                rounded shadow-sm shadow-fuchsia-900 border-fuchsia-900 border">
                 <span class="form-error">{{ field.errors }}</span>
                 {% endfor %}
-                <button type="submit" class="shadow-xl shadow-cyan-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-cyan-900 text-white rounded hover:border-cyan-700 ">
+                <button type="submit" class="shadow-sm shadow-fuchsia-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-fuchsia-600 bg-fuchsia-900 text-white rounded hover:border-fuchsia-700 ">
                     <i class="fa-solid fa-search fa-xl "></i>
                 </button>
             </div>
         </form>
     </div>
     </div>
-      <div class="overflow-x-auto px-4 md:px-10 m-4">
-        <table class="min-w-full divide-y divide-emerald-200">
-          <thead class="bg-emerald-50">
+      <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
+        <table class="min-w-full divide-y divide-fuchsia-200">
+          <thead class="bg-fuchsia-50">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+                <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                     S/N
                 </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 FILE NUMBER
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 NAME
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 CLINIC
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 TEAM
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 DATE
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 EDIT
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-emerald-200">
+          <tbody class="bg-white divide-y divide-fuchsia-200">
             {% for a in appointments %}
-            <tr class="bg-emerald-100 hover:bg-emerald-200 transition-colors duration-300">
+            <tr class="bg-fuchsia-100 hover:bg-fuchsia-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
@@ -107,7 +107,7 @@
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="px-6 py-4 text-center text-emerald-500">
+              <td colspan="2" class="px-6 py-4 text-center text-fuchsia-500">
                 No patients found
               </td>
             </tr>

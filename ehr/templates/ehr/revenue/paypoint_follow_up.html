@@ -5,10 +5,8 @@
 {%block content %}
 <div class="">
     <div class="uk-overlay rounded-3xl bg-white uk-position-center">
-      <h3 class="flex justify-center text-green-700">Payment Details</h3>
-      <p>Patient: <span class="text-green-800">{{patient}}</span></p>    
-      <p>Service: <span class="text-green-800">{{service_name}}</span></p>    
-      <p>Price: <span class="text-green-800">{{service_price}}</span></p>
+      <h3 class="flex justify-center text-green-700 uppercase">Payment Details</h3>
+      <p>Price: <span class="text-green-800 text-center">{{service_price}}</span></p>
         <section class="text-center border-cyan-700 p-4 m-2">
             {% for message in messages %}
           <div class="mt-2">
@@ -38,7 +36,7 @@
       {%endfor%}
     </div>
     <div class="gap-4 flex justify-center align-middle">
-      <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+      <input type="submit" value="pay" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
   bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
     </div>
     </form>

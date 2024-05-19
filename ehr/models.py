@@ -87,7 +87,7 @@ class PatientData(models.Model):
     first_name = models.CharField(max_length=300, blank=True, null=True)
     other_name = models.CharField(max_length=300, blank=True, null=True)
     phone = models.CharField(max_length=300, null=True, blank=True, unique=True)
-    photo = models.ImageField(null=True, blank=True)
+    # photo = models.ImageField(null=True, blank=True)
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True, blank=True)
     dob = models.DateField('date of birth', null=True, blank=True)
@@ -102,12 +102,50 @@ class PatientData(models.Model):
     address = models.CharField(max_length=300, null=True, blank=True)
     faith = (('ISLAM', 'ISLAM'), ('CHRISTIANITY', 'CHRISTIANITY'),('TRADITIONAL', 'TRADITIONAL'))
     religion = models.CharField(choices=faith, max_length=100, null=True, blank=True)
-    # tribes = (('YORUBA', 'YORUBA'), ('HAUSA', 'HAUSA'),('IGBO', 'IGBO'),('IBIRA','IBIRA))
-    # tribe = models.CharField(choices=tribes, max_length=100, null=True, blank=True)
+    tribes = (('HAUSA', 'Hausa'),
+        ('IGBO', 'Igbo'),
+        ('IBIRA', 'Ibira'),
+        ('FULANI', 'Fulani'),
+        ('KANURI', 'Kanuri'),
+        ('IJAW', 'Ijaw'),
+        ('TIV', 'Tiv'),
+        ('NUPE', 'Nupe'),
+        ('EFIK', 'Efik'),
+        ('IDOMA', 'Idoma'),
+        ('IBIBIO', 'Ibibio'),
+        ('IGALA', 'Igala'),
+        ('ANNANG', 'Annang'),
+        ('EBIRA', 'Ebira'),
+        ('JUKUN', 'Jukun'),
+        ('BINI', 'Bini'),
+        ('GWARi', 'Gwari'),
+        ('KURAMA', 'Kurama'),
+        ('ANGAS', 'Angas'),
+        ('BACHAMA', 'Bachama'),
+        ('MBULA', 'Mbula'),
+        ('KAGORO', 'Kagoro'),
+        ('KAMUKU', 'Kamuku'),
+        ('TAROK', 'Tarok'),
+        ('BIROM', 'Birom'),
+        ('BURA', 'Bura'),
+        ('MARGI', 'Margi'),
+        ('SHUA', 'Shua'),
+        ('AWORI', 'Awori'),
+        ('EKITI', 'Ekiti'),
+        ('IJEBU', 'Ijebu'),
+        ('IKALE', 'Ikale'),
+        ('ILORIN', 'Ilorin'),
+        ('ONDO', 'Ondo'),
+        ('OSHOGBO', 'Oshogbo'),
+        ('OYO', 'Oyo'),
+        ('YAGBA', 'Yagba'),
+        ('KABBA', 'Kabba'),
+        ('Other','other'))
+    tribe = models.CharField(choices=tribes, max_length=100, null=True, blank=True)
     occupation = models.CharField(max_length=300, null=True, blank=True)
     role_in_occupation = models.CharField(max_length=300, null=True, blank=True)
     nok_name = models.CharField('next of kin name', max_length=300, null=True, blank=True)
-    nok_phone = models.PositiveIntegerField('next of kin phone', null=True, blank=True)
+    nok_phone = models.CharField('next of kin phone', max_length=300, null=True, blank=True)
     nok_addr = models.CharField('next of kin address', max_length=300, null=True, blank=True)
     rel = (('FATHER', 'FATHER'), ('MOTHER', 'MOTHER'),('SON', 'SON'),('DAUGHTER','DAUGHTER'),('BROTHER','BROTHER'),('SISTER','SISTER'),
            ('UNCLE','UNCLE'),('AUNT','AUNT'),('NEPHEW','NEPHEW'),('NIECE','NIECE'),('GRANDFATHER','GRANDFATHER'),('GRANDMOTHER','GRANDMOTHTER'),
