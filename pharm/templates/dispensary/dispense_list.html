@@ -15,7 +15,7 @@
         </div>
         {% endfor %}
       </section>
-    <div class="mx-20 rounded-xl p-4 shadow-black shadow-2xl bg-emerald-50">
+    <div class="mx-20 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
       <div class="flex justify-center m-1">
         <div class="mt-2 mx-4">
                     {% if request.GET.urlencode %}
@@ -30,7 +30,7 @@
           {% for field in DispenseFilter.form %}
           {{field.errors}}
           {% endfor %}
-            <div class="text-center ">
+            <div class="text-center flex justify-center gap-1">
                 {% for field in DispenseFilter.form %}
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
                 <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
@@ -39,17 +39,17 @@
                 rounded shadow-sm shadow-cyan-900 border-cyan-900 border">
                 <span class="form-error">{{ field.errors }}</span>
                 {% endfor %}
-                <button type="submit" class="shadow-xl shadow-cyan-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-cyan-900 text-white rounded hover:border-cyan-700 ">
+                <button type="submit" class="shadow-sm shadow-cyan-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-emerald-700 text-white rounded hover:border-cyan-700 ">
                     <i class="fa-solid fa-search fa-xl "></i>
                 </button>
             </div>
         </form>
     </div>
     </div>
-      <div class="overflow-x-auto px-4 md:px-10 m-4">
+      <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
         <table class="min-w-full divide-y divide-emerald-200">
           <thead class="bg-emerald-50">
-            <tr>
+            <tr class="text-sm">
                 <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                     #
                 </th>
@@ -84,7 +84,7 @@
           </thead>
           <tbody class="bg-white divide-y divide-emerald-200">
             {% for d in dispensed %}
-            <tr class="bg-emerald-100 hover:bg-emerald-200 transition-colors duration-300">
+            <tr class="bg-emerald-100 hover:bg-emerald-200 transition-colors duration-300 text-xs">
                 <td class="px-6 py-4 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>

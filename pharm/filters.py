@@ -26,7 +26,7 @@ class DrugFilter(django_filters.FilterSet):
 class RecordFilter(django_filters.FilterSet):
     date_issued1 = django_filters.DateFilter(label="DATE ISSUED R1",field_name='date_issued',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     date_issued2 = django_filters.DateFilter(label="DATE ISSUED R2",field_name='date_issued',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
-    category = django_filters.CharFilter(label="CLASS",field_name='drug__category__name', lookup_expr='iexact')
+    # category = django_filters.CharFilter(label="CLASS",field_name='drug__category__name', lookup_expr='iexact')
     drug = django_filters.CharFilter(label="DRUG",field_name='drug__name', lookup_expr='iexact')
     supplier = django_filters.CharFilter(label="SUPPLIER",field_name='drug__supplier', lookup_expr='iexact')
     brand_name = django_filters.CharFilter(label="BRAND",field_name='drug__brand_name', lookup_expr='iexact')
@@ -35,7 +35,7 @@ class RecordFilter(django_filters.FilterSet):
 
     class Meta:
         model = Record
-        exclude= ['date_issued','balance','siv','srv','invoice_no','updated_at','remark','quantity']
+        exclude= ['date_issued','balance','siv','srv','invoice_no','updated_at','remark','quantity','category']
 
 
 class DispenseFilter(django_filters.FilterSet):

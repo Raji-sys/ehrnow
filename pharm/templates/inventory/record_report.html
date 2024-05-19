@@ -5,8 +5,10 @@
 {% block content %}
 <!-- <div class="flex justify-start items-start mt-14 relative"> -->
     <!-- start of first grid  -->
-    <div class="grid sm:block sm:fixed sm:top-20 sm:right-1 bottom-2 overflow-y-auto mt-2">
-        <!-- Add your styling for the fixed div here -->
+    <div class="">
+
+        <div class="mx-20 rounded-xl shadow-black shadow-sm mt-4">
+            <!-- Add your styling for the fixed div here -->
         <div class="sm:flex sm:flex-col justify-center items-center rounded-b-2xl shadow-2xl bg-amber-500 p-2 text-white">
             {% if request.GET.urlencode%}
     <div class="flex justify-center gap-1">
@@ -17,30 +19,30 @@
     px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-lg text-amber-600"></i></a>
     </div>
     {%endif%}
-            <form method="get" class="text-xs ">
+            <form method="get" class="text-xs">
                 {% for field in recordfilter.form %}
                 {{field.errors}}
                 {% endfor %}
-                    <div class="p-4 grid sm:grid-cols-1 grid-cols-2 sm:justify-center sm:items-center sm:gap-2 text-center">
+                        <div class="text-center flex flex-row flex-wrap gap-2 justify-center">
                     {% for field in recordfilter.form %}
-                        <div class="flex flex-col flex-wrap gap-1">
+                    <div class="flex justify-center items-start flex-col">
                         <label class="form-label">{{ field.label_tag }}</label>
-                        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"placeholder="{{field.name}}"
-                            class="text-xs text-zinc-700 focus:outline-none border border-blue-300 p-1 rounded shadow-lg hover:shadow-xl">
+                        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"
+                            class="text-xs text-zinc-700 focus:outline-none border w-fit border-blue-300 p-2 rounded shadow-lg hover:shadow-xl">
                         <span class="form-error">{{ field.errors }}</span>
                         </div>
                     {% endfor %}
-                </div>
-                <div class="flex justify-center align-middle ">
-                <button type="submit" class="focus:opacity-10 uppercase focus:border-amber-600
-            bg-white text-amber-500 px-4 py-2 rounded shadow-lg hover:shadow-xl">
-            <i class="fa-solid fa-search fa-lg"></i></button>                     
-        </div>
-            </form>
-        </div>
-    </div>
-    <!-- end of first grid -->
+                    <div class="mt-4 flex justify-center align-middle">
 
+                        <button type="submit" class="focus:opacity-10 uppercase focus:border-amber-600
+                        bg-white text-amber-500 p-2 rounded shadow-lg hover:shadow-sm">
+                    <i class="fa-solid fa-search fa-xl"></i></button>                     
+                </div>
+            </div>
+                </form>
+        </div>
+        <!-- end of first grid -->
+        
     {% if request.GET.urlencode %}
 <div class="mx-auto max-w-screen-xl">
    <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
@@ -106,9 +108,9 @@
                     <td colspan="9" class="text-right border-1 border-amber-700 p-3 text-green-700 font-semibold">
                       issued: {{ total_appearance }} times - quantity: {{ total_quantity }} - worth: &#x20A6;{{ total_price }}
                     </td>
-                  </tr>
-        <tr class="">
-            <td class="p-3 text-center">        
+                </tr>
+                <tr class="">
+                    <td class="p-3 text-center">        
            <div class="pagination flex justify-between my-4 ">
             <span class="flex items-center">
                 {% if po.has_previous %}
@@ -126,14 +128,16 @@
                     {% endif %}
                 </span>
             </div>
-
+            
         </td>
-        </tr>
+    </tr>
 </tbody>
 </table>
 </div>
 
 {% endif %}
+</div>
+</div>
 
   <!-- end of second grid  -->
   {% endblock %}

@@ -14,12 +14,12 @@
     </div>
     {% endfor %}
   </section>
-  <div class="max-w-6xl mx-auto rounded-xl p-4 shadow-black shadow-2xl bg-emerald-50">
-  <div class="overflow-x-auto">
+  <div class="mx-20 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
+  <div class="overflow-x-auto uppercase">
   <table class="min-w-full divide-y divide-emerald-500">
     <thead class="bg-emerald-100">
-      <tr>
-        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">S/N</th>
+      <tr class="text-sm">
+        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">#</th>
         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">FILE NUMBER</th>
         <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
           PATIENT NAME
@@ -40,7 +40,7 @@
     </thead>
     <tbody class="bg-white divide-y divide-emerald-200">
       {% for h in handovers %}
-      <tr class="bg-emerald-50 hover:bg-emerald-200 transition-colors duration-300">
+      <tr class="bg-emerald-50 hover:bg-emerald-200 transition-colors duration-300 text-xs">
         <td class="px-6 py-4 whitespace-nowrap">
           {{forloop.counter}}
       </td>

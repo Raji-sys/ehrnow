@@ -3,16 +3,18 @@
 {% load static %}
 {% block title %}WORTH{% endblock %}
 {% block content %}
-<div class="grid grid-cols-1 text-center shadow-md shadow-black rounded-xl mt-10 md:mt-20 w-fit mx-auto bg-white">
-    <div class="rounded">
-        <h3 class="uppercase md:text-2xl text-lg p-2 bg-zinc-700 text-white">
-            <p class="md:text-xl text-lg bg-cyan-900 text-white rounded p-2"> {{ today }} <p>
-            Live Inventory Worth</h3>
-        </div>
-        <div class="md:p-20">
-            <h1 class="text-cyan-700 md:text-6xl text-4xl font-bold md:p-5 p-14 mx-auto">
-                &#x20A6;{{ total_store_value|floatformat:2 }}
-            </h1>
+<div class="text-center shadow-md shadow-black rounded-xl mt-10 md:mt-20 w-fit flex mx-auto justify-center bg-white">
+    <div>
+        <div class="rounded">
+            <h3 class="uppercase md:text-2xl text-lg p-4  text-zinc-700">
+                <p class="md:text-xl text-lg bg-green-700 text-white rounded p-4"> {{ today }} <p>
+                    Live Inventory Worth</h3>
+                </div>
+                <div class="md:p-20 bg-gray-100 rounded-xl">
+                    <h1 class="text-green-700 md:text-6xl text-4xl font-bold md:p-5 p-14 mx-auto">
+                        &#x20A6;{{ total_store_value|floatformat:2 }}
+                    </h1>
+                </div>
         </div>
 </div>
   {% endblock %}

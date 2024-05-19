@@ -65,7 +65,7 @@
 			<!-- <span class="enom md:text-md text-center text-white font-semibold m-4">
 			</span> -->
 			<div class="flex align-middle">
-				<span class="text-white m-4 uppercase">{{request.user}}</span>
+			<span class="text-white m-4 uppercase text-lg"><span class="text-xs mr-2">logged-in as:</span>{{request.user}}</span>
 		            <form method="POST" action="{% url 'logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="border-4 border-white rounded-xl focus:opacity-10">

@@ -19,7 +19,7 @@
     <p>{{form.errors}}</p>
 </div>
     {% endif %}
-        <div class="max-w-6xl mx-auto rounded-xl p-4  shadow-lg bg-blue-50">
+        <div class="mx-20 rounded-xl p-4  shadow-lg bg-blue-50">
     <div class="flex justify-between m-1">
       <div class="">
           <span class="shadow-md  gap-4 bg-blue-900 text-white uppercase max-sm:text-lg text-sm border-b-2 border-blue-900 py-4 px-4 rounded-md mx-2 w-fit">total staff
@@ -52,9 +52,9 @@
     <div class="overflow-x-auto px-4 py-6 md:px-10 m-4">
       <table class="min-w-full divide-y divide-stone-300">
         <thead class="bg-blue-50 ">
-          <tr class="text-left uppercase tracking-wider">
+          <tr class="text-sm text-center uppercase tracking-wider">
               <th class="">
-                  S/N
+                  #
               </th>
             <th class="">
               Name
@@ -72,7 +72,7 @@
         </thead>
         <tbody class="bg-white divide-y divide-stone-300">
           {% for p in profiles %}
-          <tr class="uppercase text-blue-500 bg-blue-100 hover:bg-blue-200 transition-colors duration-300">
+          <tr class="uppercase text-blue-500 bg-blue-100 hover:bg-blue-200 transition-colors duration-300 text-xs text-center">
               <td class="px-6 py-4 whitespace-nowrap">
                   {{forloop.counter}}
               </td>

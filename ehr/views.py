@@ -225,8 +225,8 @@ class StaffListView(ListView):
         return context
     
 class IndexView(TemplateView):
-    # template_name = "index.html"
-    template_name = "get_started.html"
+    template_name = "index.html"
+    # template_name = "get_started.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class GetStartedView(TemplateView):

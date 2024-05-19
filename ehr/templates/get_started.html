@@ -3,14 +3,14 @@
 {%block title%}DASHBOARD{%endblock%}
 
 {%block page_title%}
-<div class="flex justify-end items-end gap-10">
-    <a href="{%url 'patient_list' %}" class="text-xs md:text-sm font-semibold text-green-800"><i class="fa-solid fa-user-injured fa-2x mr-2"></i>PATIENTS MANAGEMENT</a>
-    <a href="{%url 'staff' %}" class="text-xs md:text-sm font-semibold text-green-800"><i class="fa-solid fa-user-group fa-2x mr-2"></i>STAFF MANAGEMENT</a>
-    <a href="{%url 'hospital_services' %}" class="text-xs md:text-sm font-semibold text-green-800"><i class="fa-solid fa-list-check fa-2x mr-2"></i>HOSPITAL SERVICES</a>
+<div class="flex justify-center gap-10">
+    <a href="{%url 'patient_list' %}" class="text-xs md:text-sm font-semibold text-green-600"><i class="fa-solid fa-user-injured fa-2x mr-2"></i>PATIENT MANAGEMENT</a>
+    <a href="{%url 'staff' %}" class="text-xs md:text-sm font-semibold text-blue-500"><i class="fa-solid fa-user-group fa-2x mr-2"></i>STAFF MANAGEMENT</a>
+    <a href="{%url 'hospital_services' %}" class="text-xs md:text-sm font-semibold text-orange-500"><i class="fa-solid fa-list-check fa-2x mr-2"></i>HOSPITAL SERVICES</a>
 </div> 
 {%endblock%}
 {%block content %}
-<div class="uk-container mt-2 md:mt-2 p-2">
+<div class="uk-container mt-2 md:mt-2">
     <section class="text-center border-cyan-700 p-4 m-2">
         {% for message in messages %}
       <div class="mt-2">
@@ -21,11 +21,11 @@
       </div>
       {% endfor %}
     </section>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 uppercase text-center rounded-xl p-4 md:p-10  shadow-md shadow-emerald-700 bg-white">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-10 uppercase text-center rounded-xl p-4 md:p-16  shadow-sm shadow-emerald-700 bg-white">
         <div>
             <a href="{%url 'medical_record' %}" class="text-xs md:text-sm font-semibold text-slate-600">
                 <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-book-medical fa-2x"></i><br>
+                    <i class="fa-solid fa-book fa-2x"></i><br>
                     MEDICAL RECORD</div>
             </a>
         </div>

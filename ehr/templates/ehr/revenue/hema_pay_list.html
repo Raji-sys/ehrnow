@@ -4,7 +4,7 @@
 {%block page_title%}<div class="enom flex justify-center">HEMATOLOGY TRANSACTION HISTORY</div>{%endblock%}
 {%block content %}
 <div class="p-4">
-    <section class="text-center border-cyan-700 p-4 m-2">
+    <section class="text-center border-purple-700 p-4 m-2">
         {% for message in messages %}
         <div class="mt-2 ">
           <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
@@ -14,11 +14,11 @@
       </div>
         {% endfor %} 
         <div class=" mx-4">
-          <span class="shadow-sm shadow-cyan-900 gap-4 bg-cyan-900 text-white uppercase max-sm:text-lg text-sm border-b-2 border-cyan-900 py-2 px-4 rounded-xl mx-2 w-fit">
-            <span class=" shadow-white text-sm p-1 rounded-full bg-white text-cyan-900">{{pay_total}}</span>&nbsp;transactions 
+          <span class="shadow-sm shadow-purple-900 gap-4 bg-purple-600 text-white uppercase max-sm:text-lg text-sm border-b-2 border-purple-900 py-2 px-4 rounded-xl mx-2 w-fit">
+            <span class=" shadow-white text-sm p-1 rounded-full bg-white text-purple-900">{{pay_total}}</span>&nbsp;transactions 
                 {% if request.GET.urlencode %}
                 <span>
-                    <a href="?" class=" p-2 focus:opacity-10  focus:border-cyan-600 bg-orange-500text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
+                    <a href="?" class=" p-2 focus:opacity-10  focus:border-purple-600 bg-orange-500text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
                         <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
                     </span>
                     {%endif%}
@@ -77,7 +77,7 @@
                 {{ p.service }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                {{p.price}}
+                &#x20A6;{{p.price}}
               </td>
 
               {% if r.payment.status == False %}

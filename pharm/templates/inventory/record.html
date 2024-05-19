@@ -12,7 +12,7 @@
     <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
         <tbody class="bg-white rounded-2xl max-sm:p-3 p-2 overflow-x-auto border-amber-700 shadow-sm shadow-amber-600">
             <tr class="text-xs bg-amber-500 text-white">
-                <th scope="col" class="border-2 border-white p-1 w-fit">S/N</th>
+                <th scope="col" class="border-2 border-white p-1 w-fit">#</th>
                 <th scope="col" class="border-2 border-white p-3">DATE ISSUED</th>
                 <th scope="col" class="border-2 border-white p-3">DRUG</th>
                 <th scope="col" class="border-2 border-white p-3">CLASS</th>
@@ -62,7 +62,7 @@
             {{r.quantity|default_if_none:''}}
             </td>
             <td class="border-amber-700 p-3 text-center">
-            {{r.balance|default_if_none:''}}
+            {{r.drug.current_balance|default_if_none:''}}
             </td>
             <td class="border-amber-700 p-3 text-center">
             {{r.remarks|default_if_none:''}}
