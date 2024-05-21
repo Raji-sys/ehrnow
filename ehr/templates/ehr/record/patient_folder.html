@@ -8,7 +8,7 @@
       <div class="">
         <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
           <a href class="uk-alert-close font-bold" uk-close></a>
-          <p class="text-green-700 font-semibold">{{ message }}</p>
+          <p class="text-green-700 font-semibold uppercase">{{ message }}</p>
         </div>
       </div>
       {% endfor %}
@@ -18,7 +18,7 @@
   <div class="text-center rounded-xl md:p-10 bg-gray-50 uppercase">
 <!-- start -->
 <!-- top  -->
-<a href="{%url 'billing_view' patient.file_no %}">bill</a>
+<!-- <a href="{%url 'billing_view' patient.file_no %}">bill</a> -->
     <ul class="text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 border-b-2 mb-10" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
       <li><a href="#" class="rounded-lg m-4">BIODATA</a></li>
       <li><a href="#" class="rounded-lg ">PAYMENT</a></li>
@@ -114,6 +114,14 @@
              {%endfor%}
             </tbody>
           </table>
+          <div class="mt-2">
+            <!-- times: {{paid_transactions_count}} -->
+            <span class="uppercase text-lg font-semibold">
+          Total amount: <span class="text-green-700 uppercase text-xl font-bold">
+            &#x20A6;{{ total_amount|floatformat:2 }}
+          </span>
+        </span>
+        </div>
         </div>
      </div>
     <!-- break -->
@@ -187,7 +195,7 @@
                 <td class="px-6 py-4 whitespace-nowrap">{{ c.user }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <details>
-                    <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">NOTE</summary>
+                    <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">SEE NOTE</summary>
                     <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto rounded-md m-4">
                       <p class="text-xs text-center">{{ c.note.html|safe }}</p>
                     </div>
@@ -236,7 +244,7 @@
                         <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Result</th>
                         <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
                         <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Reported</th>
-                        <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th>
+                        <!-- <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th> -->
                       </tr>
             
                     </thead>
@@ -249,9 +257,9 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ h.result.html|safe }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ h.comment|default_if_none:'' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ h.reported|default_if_none:'' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <!-- <td class="px-6 py-4 whitespace-nowrap">
                           <a href="{% url 'pathology:hematology_result' h.patient.file_no h.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
-                        </td>
+                        </td> -->
                       </tr>
                       {%empty%}
                       <div class="p-4">
@@ -438,7 +446,7 @@
       <div> 
         <div>    
         <!-- Dispensary Form Section -->
-        <a href="{% url 'pharm:add_prescription' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-prescriptiong fa-2xl"></i></a>
+        <a href="{% url 'pharm:add_prescription' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-prescription fa-2xl"></i></a>
 
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
@@ -447,6 +455,7 @@
               <tr class="text-sm">
                 <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                 <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Prescribed Drugs</th>
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Quantity</th>
                 <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Prescribed</th>
               </tr>
             </thead>

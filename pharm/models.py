@@ -40,7 +40,7 @@ class Drug(models.Model):
     total_issued = models.PositiveIntegerField('TOTAL QTY ISSUED', default=0)
     expiration_date = models.DateField('DATE ADDED', null=True, blank=True)
     added_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='added_drugs')
-    updated_at = models.DateField('DATE UPDATED', auto_now=True)
+    updated_at = models.DateTimeField('DATE UPDATED', auto_now=True)
 
     def __str__(self):
         return self.name
@@ -76,7 +76,7 @@ class Record(models.Model):
     srv = models.CharField('SRV',max_length=100, null=True, blank=True)
     invoice_no = models.PositiveIntegerField('INVOICE NUMBER',null=True, blank=True)
     quantity = models.PositiveIntegerField('QTY ISSUED',null=True, blank=True)
-    date_issued = models.DateField('DATE DRUG WAS ISSUED',auto_now_add=True)
+    date_issued = models.DateTimeField('DATE DRUG WAS ISSUED',auto_now_add=True)
     issued_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='drug_records')
     remark = models.CharField('REMARKS',max_length=100, choices=Unit.choices, null=True, blank=True)
     updated_at = models.DateTimeField('DATE UPDATED',auto_now=True)
@@ -103,7 +103,7 @@ class Prescription(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="prescribed_drug_catgory")
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="prescribed_drug")
     quantity = models.PositiveIntegerField('QTY', null=True, blank=True)
-    updated = models.DateField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now_add=True)
     prescribed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='prescribed_by')
     remark = models.CharField('REMARKS', max_length=100, choices=Unit.choices, null=True, blank=True)
 
@@ -126,7 +126,7 @@ class Dispensary(models.Model):
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug")
     payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="pharm_payment")
     quantity = models.PositiveIntegerField('QTY TO DISPENSE', null=True, blank=True)
-    dispensed_date = models.DateField('DISPENSE DATE', auto_now_add=True)
+    dispensed_date = models.DateTimeField('DISPENSE DATE', auto_now_add=True)
     dispensed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='dispensed_by')
     remark = models.CharField('REMARKS', max_length=100, choices=Unit.choices, null=True, blank=True)
     quantity_deducted = models.BooleanField(default=False)  # Add this field to track if the quantity has been deducted

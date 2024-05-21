@@ -95,7 +95,7 @@ class HematologyListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(result__isnull=False,payment__status=True)
+        queryset = queryset.filter(result__isnull=False,payment__status=True).order_by('-updated')
         return queryset
     
 

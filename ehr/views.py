@@ -463,7 +463,18 @@ class PatientFolderView(DetailView):
         context['micro_results']=patient.microbiology_results.all().order_by('-created')
         context['serology_results']=patient.serology_results.all().order_by('-created')
         context['general_results']=patient.general_results.all().order_by('-created')
-   
+
+        # Calculate total worth only for paid transactions
+        paid_transactions = patient.patient_payments.filter(status=True)
+        paid_transactions_count = paid_transactions.count()
+
+        context['paid_transactions_count'] = paid_transactions_count
+
+        # Calculate the total amount
+        total_amount = paid_transactions.aggregate(total_amount=Sum('price'))['total_amount'] or 0
+        context['total_amount'] = total_amount
+
+    
         return context
    
 # 2. FollowUpVisitCreateView
@@ -960,7 +971,7 @@ class PayUpdateView(UpdateView):
         paypoint = form.save()
         hematology_result = paypoint.hematology_result_payment
         # Update hematology_result instance if needed
-        messages.success(self.request, 'Payment Updated Successfully')
+        messages.success(self.request, 'Payment Successfully')
         return super().form_valid(form)
 
     def form_invalid(self, form):

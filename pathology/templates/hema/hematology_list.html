@@ -3,20 +3,20 @@
 {%block page_title%}<div class="enom flex justify-center">HEMATOLOGY RESULT LIST</div>{%endblock%}
 {% block content %}
 <div class="mt-5 p-4">
-  <div class="mx-20 rounded-xl p-4 shadow-black shadow-2xl bg-gray-50">
+  <div class="mx-20 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
   <div class="overflow-x-auto">
   <table class="min-w-full divide-y divide-gray-500">
     <thead class="bg-gray-100">
       <tr class="text-sm bg-emerald-100 text-center">
-        <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">S/N</th>
+        <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">#</th>
         <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">Code</th>
         <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">
           Patient
         </th>
-        <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="px-6 py-3 font-medium uppercase tracking-wider text-rose-500">
           Test
         </th>
-        <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="px-6 py-3 font-medium text-green-700 uppercase tracking-wider">
           Result
         </th>
         <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">
@@ -36,16 +36,15 @@
       <td class="px-6 py-4 whitespace-nowrap">
         {{ result.result_code }}
       </td>
-      <td class="px-6 py-4 whitespace-nowrap">
+      <td class="px-6 py-4 whitespace-nowrap text-blue-500">
           {{ result.patient }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="px-6 py-4 whitespace-nowrap text-rose-400">
             {{ result.test }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
-          <span class="text-sm">{{ result.result.html|safe }}</span>
-          <span class="text-xs">{{ result.unit|default_if_none:'' }}</span>
-        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-green-600">
+          {{ result.result.html|safe }}
+          </td>
         <td class="px-6 py-4 whitespace-nowrap">
           {{ result.updated|default_if_none:'' }}
         </td>

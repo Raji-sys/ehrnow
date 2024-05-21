@@ -15,13 +15,13 @@
         {% endfor %}
       </section>
     <div class="md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
-      <div class="flex justify-between m-1">
+      <div class="flex justify-between m-2">
         <div class="">
             <span class="shadow-sm shadow-emerald-700 gap-4 bg-emerald-700 text-white uppercase max-sm:text-lg text-sm border-b-2 border-emerald-900 py-2 px-4 rounded-xl mx-2 w-fit">
                 <span class=" shadow-white text-sm p-1 rounded-full bg-white text-emerald-900">{{total_patient}}</span>&nbsp;patients registered
                     {% if request.GET.urlencode %}
-                    <span>
-                        <a href="?" class=" p-2 focus:opacity-10  focus:border-emerald-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-sm text-center w-fit">
+                    <span class="p-2">
+                        <a href="?" class=" p-2 focus:opacity-10  focus:border-emerald-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-sm text-center w-fit ">
                             <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
                         </span>
                         {%endif%}
