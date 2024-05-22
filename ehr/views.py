@@ -1,3 +1,4 @@
+import dicom
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from django.views import View
@@ -26,6 +27,7 @@ from django.db.models import Sum
 from django.shortcuts import render
 from django.http import JsonResponse
 from decimal import Decimal
+from django.http import HttpResponse
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -463,6 +465,9 @@ class PatientFolderView(DetailView):
         context['micro_results']=patient.microbiology_results.all().order_by('-created')
         context['serology_results']=patient.serology_results.all().order_by('-created')
         context['general_results']=patient.general_results.all().order_by('-created')
+     # Get the DICOM studies for the patient
+        radiology_studies = Radiology.objects.filter(patient=patient)
+        context['radiology_studies'] = radiology_studies
 
         # Calculate total worth only for paid transactions
         paid_transactions = patient.patient_payments.filter(status=True)
@@ -472,9 +477,7 @@ class PatientFolderView(DetailView):
 
         # Calculate the total amount
         total_amount = paid_transactions.aggregate(total_amount=Sum('price'))['total_amount'] or 0
-        context['total_amount'] = total_amount
-
-    
+        context['total_amount'] = total_amount    
         return context
    
 # 2. FollowUpVisitCreateView
@@ -1149,3 +1152,42 @@ def search_items(request):
     items = TheatreItem.objects.filter(name__icontains=search_text)
     data = [{'id': item.id, 'name': item.name, 'price': str(item.price)} for item in items]
     return JsonResponse({'items': data})
+
+
+class RadiologyCreateView(CreateView):
+    model = Radiology
+    form_class = DicomUploadForm
+    template_name = 'app/radiology_form.html'
+    success_url = reverse_lazy('radiology-list')
+
+    def form_valid(self, form):
+        # Get the patient instance from the submitted form data
+        patient_id = form.cleaned_data.get('patient')
+        patient = get_object_or_404(PatientData, id=patient_id)
+
+        # Process the uploaded DICOM file using python-dicom
+        dicom_file = form.cleaned_data.get('file')
+        dataset = dicom.read_file(dicom_file)
+
+        # Extract relevant information from the DICOM dataset
+        # and create the Radiology instance
+        radiology = form.save(commit=False)
+        radiology.patient = patient
+        radiology.user = self.request.user
+        radiology.dicom_file = dicom_file.read()
+        # Set other fields based on the DICOM dataset
+        radiology.save()
+
+        return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.method == 'GET':
+            kwargs['initial'] = {'patient': self.request.GET.get('patient', None)}
+        return kwargs
+
+def serve_dicom_data(request, study_id):
+    study = get_object_or_404(Radiology, id=study_id)
+    dicom_data = study.dicom_file
+    response = HttpResponse(dicom_data, content_type='application/dicom')
+    return response

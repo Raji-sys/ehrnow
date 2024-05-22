@@ -103,5 +103,8 @@ urlpatterns = [
     path('clinic/sopd/sopd-consultation-finished/', SOPDConsultationFinishView.as_view(), name="consultation_finished_sopd"),
     path('clinic/sopd/sopd-awaiting-review/', SOPDAwaitingReviewView.as_view(), name="waiting_for_review_sopd"),
 
+    #radiology
+    path('radiology/create/', views.RadiologyCreateView.as_view(), name='radiology-create'),
+    path('radiology/<int:study_id>/dicom/', views.serve_dicom_data, name='serve-dicom-data'),
 
 ]
