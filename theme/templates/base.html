@@ -27,15 +27,16 @@
 
 <link rel="stylesheet" href="{% static 'css/darcula.min.css' %}">
 <script src="{% static 'js/highlight.min.js' %}"></script>
+<script src="{% static 'js/dicom_viewer.js' %}"></script>   
 
 <link href="{% static 'css/quill.snow.css' %}" rel="stylesheet">
 <script src="{% static 'js/quill.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/dicom-web-viewer@2.7.0/dist/dicom-web-viewer.min.js"></script>
 
 <script src="{% static 'js/quill.imageCompressor.min.js' %}"></script>
-
-
 <script src="{% static 'js/quill-resize-module.min.js' %}"></script>
 <script src="{%static 'js/jquery-3.6.0.min.js'%}"></script>
+<script src="{% static 'cornerstoneTools.min.js' %}"></script>
 {% include 'django_quill/media.html' %}
 </head>
 
@@ -75,7 +76,7 @@
 			</div>
 		</nav>
 	</header>
-	<div class="font-semibold uppercase text-xl text-green-700 shadow-sm md:mx-20 rounded bg-green-50  p-3 border-b-2 border-gray-900 ">
+	<div class="font-medium uppercase text-md text-green-700 shadow-sm md:mx-20 rounded bg-green-50  p-3 border-b-2 border-gray-900 ">
 		{% block page_title%}{%endblock%}
 	</div>
 	{% endif %}

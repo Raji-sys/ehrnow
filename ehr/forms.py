@@ -190,15 +190,14 @@ class PayUpdateForm(forms.ModelForm):
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
             
 
+
 class DicomUploadForm(forms.ModelForm):
     class Meta:
         model = Radiology
         fields = ['dicom_file']
-
     def __init__(self, *args, **kwargs):
         super(DicomUploadForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
-            

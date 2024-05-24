@@ -106,3 +106,9 @@ class BillAdmin(admin.ModelAdmin):
     list_display = ('patient','date','total_cost')
     search_fields = ('patient','date')
     list_filter = ('patient','date')
+
+@admin.register(Radiology)
+class RadiologyAdmin(admin.ModelAdmin):
+    list_display = ('patient','dicom_file','updated')
+    search_fields = ('patient','updated')
+    list_filter = ('patient','updated')

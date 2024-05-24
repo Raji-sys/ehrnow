@@ -390,6 +390,92 @@ class ClinicalNote(models.Model):
     def __str__(self):
         return f"notes for: {self.patient.file_no}"
 
+class Radiology(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="radiology_files")
+    dicom_file = models.FileField(upload_to='dicom_files/')
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    updated = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'radiology'
+
+    def __str__(self):
+        return self.patient
+    
+
+class Admission(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="admission_info")
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    status=models.BooleanField(default=False)
+    wards=(('male ward','male ward'),('female ward','female ward'),('childrens ward','childrens ward'))
+    ward=models.CharField(choices=wards,max_length=300,null=True, Blank=True)
+    room=models.CharField(max_length=300,null=True, Blank=True)
+    bed_number=models.CharField(max_length=300,null=True, Blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.patient
+
+
+class WardVitalSigns(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='ward_vital_signs')
+    body_temperature=models.CharField(max_length=10, null=True, blank=True)
+    pulse_rate=models.CharField(max_length=10, null=True, blank=True)
+    respiration_rate=models.CharField(max_length=10, null=True, blank=True)
+    blood_pressure=models.CharField(max_length=10, null=True, blank=True)
+    blood_oxygen=models.CharField(max_length=10, null=True, blank=True)
+    blood_glucose=models.CharField(max_length=10, null=True, blank=True)
+    weight=models.CharField(max_length=10, null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'ward vital signs'
+
+    def __str__(self):
+        return self.patient
+
+class WardMedication(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='ward_medication')
+    drug=models.CharField(max_length=10, null=True, blank=True)
+    dose=models.CharField(max_length=10, null=True, blank=True)
+    comments=models.CharField(max_length=10, null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'ward vital signs'
+
+    def __str__(self):
+        return self.patient
+
+
+class WardClinicalNote(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='ward_clinical_notes')
+    note=QuillField(null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'ward notes'
+    
+    def __str__(self):
+        return self.patient
+
+
+class TheatreNotes(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="theatre_notes")
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    operation_notes=models.TextField()
+    anaesthesia=(('GENERAL ANAESTHESIA','GENERAL ANAESTHESIA'),('SPINE ANAESTHESIA','SPINE ANAESTHESIA'))
+    type_of_anaesthesia=models.CharField(choices=anaesthesia,null=True,blank=True)
+    findings=models.CharField(max_length=300,null=True,blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.patient
+
 
 class TheatreItem(models.Model):
     name = models.CharField(max_length=255)
@@ -411,77 +497,14 @@ class BillItem(models.Model):
     item = models.ForeignKey(TheatreItem, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
-
-# class Admission(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     ward=models.CharField()
-#     updated = models.DateTimeField(auto_now=True)
-
-    # def __str__(self):
-    #     return f"{self.full_name()}"
-
-
-# class Ward(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
-
-
-# class Theatre(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
-
-
-class Radiology(models.Model):
+    
+class Physio(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="radiology_files")
-    dicom_file = models.BinaryField()
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        self.dicom_file
-    
-# class Physio(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
+        return self.patient
 
 
 # class ICU(models.Model):

@@ -1,4 +1,4 @@
-import dicom
+import pydicom
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from django.views import View
@@ -11,9 +11,6 @@ from .forms import *
 from .filters import *
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
-from io import BytesIO
-from django.template.loader import get_template
-from xhtml2pdf import pisa
 from django.db.models import Count
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib import messages
@@ -26,8 +23,12 @@ User = get_user_model()
 from django.db.models import Sum
 from django.shortcuts import render
 from django.http import JsonResponse
-from decimal import Decimal
 from django.http import HttpResponse
+from django.http import FileResponse
+from django.conf import settings
+import os
+# import matplotlib.pyplot as plt
+from io import BytesIO
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -311,6 +312,9 @@ class TheatreView(TemplateView):
 class WardView(TemplateView):
     template_name = "ehr/dashboard/ward.html"
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class WardDashView(TemplateView):
+    template_name = "ehr/ward/ward_list.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ICUView(TemplateView):
@@ -465,9 +469,7 @@ class PatientFolderView(DetailView):
         context['micro_results']=patient.microbiology_results.all().order_by('-created')
         context['serology_results']=patient.serology_results.all().order_by('-created')
         context['general_results']=patient.general_results.all().order_by('-created')
-     # Get the DICOM studies for the patient
-        radiology_studies = Radiology.objects.filter(patient=patient)
-        context['radiology_studies'] = radiology_studies
+        context['radiology_files'] = patient.radiology_files.all().order_by('-updated')
 
         # Calculate total worth only for paid transactions
         paid_transactions = patient.patient_payments.filter(status=True)
@@ -1157,37 +1159,56 @@ def search_items(request):
 class RadiologyCreateView(CreateView):
     model = Radiology
     form_class = DicomUploadForm
-    template_name = 'app/radiology_form.html'
-    success_url = reverse_lazy('radiology-list')
+    template_name = 'ehr/radiology/radiology_form.html'
+
+    def get_initial(self):
+        initial = super().get_initial()
+        file_no = self.kwargs.get('file_no')
+        if file_no:
+            patient = get_object_or_404(PatientData, file_no=file_no)
+            initial['patient'] = patient.file_no
+        return initial
 
     def form_valid(self, form):
-        # Get the patient instance from the submitted form data
-        patient_id = form.cleaned_data.get('patient')
-        patient = get_object_or_404(PatientData, id=patient_id)
+        # Get the patient instance from the URL parameter
+        file_no = self.kwargs.get('file_no')
+        patient = get_object_or_404(PatientData, file_no=file_no)
 
-        # Process the uploaded DICOM file using python-dicom
-        dicom_file = form.cleaned_data.get('file')
-        dataset = dicom.read_file(dicom_file)
-
-        # Extract relevant information from the DICOM dataset
-        # and create the Radiology instance
+        # Create the Radiology instance
         radiology = form.save(commit=False)
         radiology.patient = patient
         radiology.user = self.request.user
-        radiology.dicom_file = dicom_file.read()
-        # Set other fields based on the DICOM dataset
+
+        # Save the DICOM file
+        dicom_file = form.cleaned_data.get('dicom_file')
+        radiology.dicom_file = dicom_file
+
         radiology.save()
 
-        return super().form_valid(form)
+        messages.success(self.request, 'DICOM file uploaded successfully.')
+        return redirect(patient.get_absolute_url())
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        if self.request.method == 'GET':
-            kwargs['initial'] = {'patient': self.request.GET.get('patient', None)}
+        kwargs['initial'] = self.get_initial()
         return kwargs
 
-def serve_dicom_data(request, study_id):
+
+def serve_dicom_file(request, study_id):
     study = get_object_or_404(Radiology, id=study_id)
-    dicom_data = study.dicom_file
-    response = HttpResponse(dicom_data, content_type='application/dicom')
-    return response
+    dicom_file_path = os.path.join(settings.MEDIA_ROOT, study.dicom_file.name)
+
+    # Read the DICOM file
+    ds = pydicom.dcmread(dicom_file_path)
+
+    # Convert the DICOM pixel data to a PIL image
+    pixels = ds.pixel_array
+    # img = plt.imread(pixels, format='png')
+
+    # Convert the image to bytes
+    buffer = BytesIO()
+    # plt.imsave(buffer, img, format='png')
+    buffer.seek(0)
+
+    # Serve the image
+    return HttpResponse(buffer.getvalue(), content_type='image/png')
