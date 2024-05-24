@@ -11,6 +11,7 @@ class StaffFilter(django_filters.FilterSet):
 
 class PatientFilter(django_filters.FilterSet):
     file_no = django_filters.CharFilter(label='FILE NUMBER', field_name='file_no')
+    patient_phone=django_filters.CharFilter(label='PHONE',field_name="phone",lookup_expr='iexact')                                                                                                     
     last_name = django_filters.CharFilter(label='SURNAME', field_name='last_name', lookup_expr='icontains')
 
     class Meta:
@@ -51,7 +52,7 @@ class AppointmentFilter(django_filters.FilterSet):
 class ServiceFilter(django_filters.FilterSet):
     type=django_filters.CharFilter(label='CATEGORY', field_name="type",lookup_expr='iexact')
     name=django_filters.CharFilter(label='SERVICE',field_name="name",lookup_expr='iexact')                                                                                                     
-    updated = django_filters.DateFilter(label="date", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     class Meta:
         model = Services
@@ -68,3 +69,14 @@ class PayFilter(django_filters.FilterSet):
     class Meta:
         model = Paypoint
         fields = ['user','patient','service','created']
+
+
+class AdmissionFilter(django_filters.FilterSet):
+    patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
+    patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')            
+    ward=django_filters.CharFilter(label='WARD',field_name="ward",lookup_expr='iexact')                                                                                                     
+    updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+
+    class Meta:
+        model = Admission
+        fields = ['patient','ward','updated']

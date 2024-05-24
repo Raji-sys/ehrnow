@@ -201,3 +201,29 @@ class DicomUploadForm(forms.ModelForm):
             # field.required=True
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            
+
+class AdmissionForm(forms.ModelForm):
+    class Meta:
+        model = Admission
+        fields = ['admit','ward']
+
+    def __init__(self, *args, **kwargs):
+        super(AdmissionForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
+
+class AdmissionUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Admission
+        fields = ['bed_number']
+
+    def __init__(self, *args, **kwargs):
+        super(AdmissionForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})

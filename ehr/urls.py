@@ -78,6 +78,7 @@ urlpatterns = [
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
     path('patient/<str:file_no>/', views.billing_view, name='billing_view'),
     path('search-items/', views.search_items, name='search_items'),
+    
     #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
 
@@ -106,5 +107,11 @@ urlpatterns = [
     #radiology
     path('patient/<str:file_no>/radiology/create/', RadiologyCreateView.as_view(), name='radiology_create'),
     path('dicom/<int:study_id>/', views.serve_dicom_file, name='serve-dicom-file'),
+
+    #admission
+    path('clinic/admit-patient/', AdmissionCreateView.as_view(), name='admit_patient'),
+    path('clinic/admission-list/', AdmissionListView.as_view(), name='admission_list'),
+    path('clinic/update-admission/<int:pk>/', AdmissionUpdateView.as_view(), name='receive_patient'),
+    
 
 ]
