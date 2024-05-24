@@ -101,14 +101,23 @@ class BillItemAdmin(admin.ModelAdmin):
     search_fields = ('bill','item')
     list_filter = ('bill','item')
 
+
 @admin.register(Bill)
 class BillAdmin(admin.ModelAdmin):
     list_display = ('patient','date','total_cost')
     search_fields = ('patient','date')
     list_filter = ('patient','date')
 
+
 @admin.register(Radiology)
 class RadiologyAdmin(admin.ModelAdmin):
     list_display = ('patient','dicom_file','updated')
     search_fields = ('patient','updated')
     list_filter = ('patient','updated')
+
+
+@admin.register(Admission)
+class AdmissionAdmin(admin.ModelAdmin):
+    list_display = ('patient','ward','bed_number','updated')
+    search_fields = ('patient','ward','bed_number','updated')
+    list_filter = ('patient','ward','bed_number','updated')

@@ -406,16 +406,16 @@ class Radiology(models.Model):
 class Admission(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="admission_info")
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    # payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     admit=models.BooleanField(default=False)
-    wards=(('male ward','male ward'),('female ward','female ward'),('childrens ward','childrens ward'))
-    ward=models.CharField(choices=wards,max_length=300,null=True, Blank=True)
-    # room=models.CharField(max_length=300,null=True, Blank=True)
-    bed_number=models.CharField(max_length=300,null=True, Blank=True)
+    wards=(('MALE WARD','MALE WARD'),('FEMALE WARD','FEMALE WARD'),('CHILDRENS WARD','CHILDRENS WARD'),('ICU','ICU'))
+    ward=models.CharField(choices=wards,max_length=300,null=True, blank=True)
+    # room=models.CharField(max_length=300,null=True, blank=True)
+    bed_number=models.CharField(max_length=300,null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.patient
+        return self.patient.full_name().upper()
 
 
 class WardVitalSigns(models.Model):
@@ -469,7 +469,7 @@ class TheatreNotes(models.Model):
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     operation_notes=models.TextField()
     anaesthesia=(('GENERAL ANAESTHESIA','GENERAL ANAESTHESIA'),('SPINE ANAESTHESIA','SPINE ANAESTHESIA'))
-    type_of_anaesthesia=models.CharField(choices=anaesthesia,null=True,blank=True)
+    type_of_anaesthesia=models.CharField(choices=anaesthesia, max_length=300,null=True,blank=True)
     findings=models.CharField(max_length=300,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -506,22 +506,6 @@ class Physio(models.Model):
     def __str__(self):
         return self.patient
 
-
-# class ICU(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
 
 
 # class NHIS(models.Model):

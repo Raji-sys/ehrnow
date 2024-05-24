@@ -130,7 +130,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="{%url 'vital_signs' patient.file_no%}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+        <a href="{%url 'vital_signs' patient.file_no%}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-heartbeat fa-2xl"></i></a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -175,7 +175,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="{%url 'clinical_note' patient.file_no%}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+        <a href="{%url 'clinical_note' patient.file_no%}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-notes-medical fa-2xl"></i></a>
       </div>     
 
         <div class="overflow-x-auto px-4 md:px-10 m-4">
@@ -233,7 +233,7 @@
               <div> 
             
                 <div >
-                <a href="{% url 'pathology:hematology_test' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+                <a href="{% url 'pathology:hematology_test' patient.file_no %}" class="text-sm text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                 </div>
              
                 <div class="overflow-x-auto px-4 md:px-10 m-4">
@@ -275,7 +275,7 @@
             
               <div>
                 <div>
-                  <a href="{% url 'pathology:micro_test' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+                  <a href="{% url 'pathology:micro_test' patient.file_no %}" class="text-sm text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                 </div>
                 <div class="overflow-x-auto px-4 md:px-10 m-4">
                   <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -317,7 +317,7 @@
             
               <div>
                 <div>
-                  <a href="{% url 'pathology:chempath_test' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+                  <a href="{% url 'pathology:chempath_test' patient.file_no %}" class="text-sm text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                 </div>
                 <div class="overflow-x-auto px-4 md:px-10 m-4">
                   <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -359,7 +359,7 @@
             
               <div>
                 <div>
-                  <a href="{% url 'pathology:serology_test' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+                  <a href="{% url 'pathology:serology_test' patient.file_no %}" class="text-sm text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                       </div>
                       <div class="overflow-x-auto px-4 md:px-10 m-4">    
                         <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -402,7 +402,7 @@
             
               <div>
                 <div>
-                  <a href="{% url 'pathology:general_test' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+                  <a href="{% url 'pathology:general_test' patient.file_no %}" class="text-sm text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                   </div>
                   <div class="overflow-x-auto px-4 md:px-10 m-4">
                     <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -483,7 +483,7 @@
 
       <div> 
         <div>
-        <a href="{%url 'radiology_create' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+        <a href="{%url 'radiology_create' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-x-ray fa-2xl"></i></a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -517,7 +517,7 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+        <a href="#" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-crutch fa-2xl"></i></a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -540,10 +540,41 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+        <a href="{%url 'admit_patient' patient.file_no %}" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-bed fa-2xl"></i></a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4 uppercase">
+            <thead class="bg-cyan-50">
+              <tr class="text-sm">
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">status</th>
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">ward</th>
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">bed number</th>
+                <th class="px-6 py-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-cyan-200">
+              {%for a in admission_info %}
+              <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{%if a.admit == True %}<span class="text-green-600">on admission</span>{%else%}<span class="text-rose-500">not admitted yet</span>{%endif%}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ a.ward|default_if_none:'' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{%if a.bed_number is None%}<span class="text-rose-500">bed not assigned yet</span> {%else%}<span class="text-green-600">{{ a.bed_number|default_if_none:''}}</span>{%endif%}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ a.updated }}</td>
+              </tr>
+              {%endfor%}
+            </tbody>
+          </table>
+        </div>
+     </div>
+    <!-- break -->
+      <!-- break -->
+      <div> 
+        <div>
+        <a href="#" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-mask-face fa-2xl"></i></a>
+      </div>     
+        <div class="overflow-x-auto px-4 md:px-10 m-4">
+          <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr class="text-sm">
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
@@ -559,11 +590,13 @@
           </table>
         </div>
      </div>
+
+    <!-- break -->
     <!-- break -->
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+        <a href="#" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-mask-ventilator fa-2xl"></i></a>
       </div>     
         <div class="overflow-x-auto px-4 md:px-10 m-4">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">

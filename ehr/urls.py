@@ -109,9 +109,16 @@ urlpatterns = [
     path('dicom/<int:study_id>/', views.serve_dicom_file, name='serve-dicom-file'),
 
     #admission
-    path('clinic/admit-patient/', AdmissionCreateView.as_view(), name='admit_patient'),
+    path('clinic/admit-patient/<str:file_no>/', AdmissionCreateView.as_view(), name='admit_patient'),
     path('clinic/admission-list/', AdmissionListView.as_view(), name='admission_list'),
     path('clinic/update-admission/<int:pk>/', AdmissionUpdateView.as_view(), name='receive_patient'),
     
+    #ward    
+    path('ward/male-ward/', MaleWardView.as_view(), name="male_ward"),
+    path('ward/female-ward/', FemaleWardView.as_view(), name="female_ward"),
+    path('ward/childrens-ward/', ChildrensWardView.as_view(), name="childrens_ward"),
+
+    path('ward/nursing/vital_signs/<str:file_no>/', WardVitalSignCreateView.as_view(), name='ward_vital_signs'),
+    path('ward/nursing/medication/<str:file_no>/', WardMedicationCreateView.as_view(), name='ward_medication'),
 
 ]

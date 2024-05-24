@@ -310,7 +310,7 @@ class TheatreView(TemplateView):
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class WardView(TemplateView):
-    template_name = "ehr/dashboard/ward.html"
+    template_name = "ehr/dashboard/ward_list.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class WardDashView(TemplateView):
@@ -671,7 +671,7 @@ class VitalSignCreateView(NurseRequiredMixin,CreateView):
         return context
 
     
-###BASECLINIC###
+###BASE CLINIC###
 class ClinicListView(DoctorRequiredMixin, ListView):
     model = PatientHandover
     context_object_name = 'handovers'
@@ -684,9 +684,6 @@ class ClinicListView(DoctorRequiredMixin, ListView):
             'created_at__gte': timezone.now() - timedelta(days=1), 
             # 'updated_at__gte': timezone.now() - timedelta(hours=12)
         }
-        # if self.room_filter is not None:
-        #     filters['room'] = self.room_filter
-        # return queryset.filter(**filters)
         if self.room_filter is not None:
             filters['room'] = self.room_filter
         filtered_queryset = queryset.filter(**filters)
@@ -825,7 +822,6 @@ class AppointmentCreateView(RecordRequiredMixin, CreateView):
         template_name = 'ehr/record/new_appointment.html'
         success_url = reverse_lazy("patient_list")
 
-        
         def form_valid(self, form):
             form.instance.user = self.request.user
             form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
@@ -1219,11 +1215,16 @@ class AdmissionCreateView(RevenueRequiredMixin, CreateView):
     model = Admission
     form_class = AdmissionForm
     template_name = 'ehr/ward/new_admission.html'
-    success_url = reverse_lazy("addmission_list")
 
     def form_valid(self, form):
+            form.instance.user = self.request.user
+            form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+            self.object = form.save()
+            return super().form_valid(form)
+    
+    def get_success_url(self):
         messages.success(self.request, 'PATIENT ADMITTED')
-        return super().form_valid(form)
+        return self.object.patient.get_absolute_url()
 
  
 class AdmissionUpdateView(UpdateView):
@@ -1259,152 +1260,227 @@ class AdmissionListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         total_admissions = self.get_queryset().count()
-        context['admissionFilter'] = ServiceFilter(self.request.GET, queryset=self.get_queryset())
+        context['admissionFilter'] = AdmissionFilter(self.request.GET, queryset=self.get_queryset())
         context['total_admission'] = total_admissions
         return context
     
 
-class ServiceCreateView(RevenueRequiredMixin, CreateView):
-    model = Services
-    form_class = ServiceForm
-    template_name = 'ehr/revenue/new_service.html'
-    success_url = reverse_lazy("hospital_services")
-
-    def form_valid(self, form):
-        messages.success(self.request, 'SERVICE ADDED')
-        return super().form_valid(form)
-
- 
-class ServiceUpdateView(UpdateView):
-    model = Services
-    template_name = 'ehr/revenue/update_service.html'
-    form_class = ServiceForm
-    success_url = reverse_lazy("service_list")
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Service Updated Successfully')
-        if form.is_valid():
-            form.save()
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Error updating service information')
-        return self.render_to_response(self.get_context_data(form=form))
-
-
-class ServiceListView(ListView):
-    model=Services
-    template_name='ehr/revenue/general_services.html'
-    context_object_name='services'
-    paginate_by = 10
+###BASE WARD###
+class WardListView(DoctorRequiredMixin, ListView):
+    model = Admission
+    context_object_name = 'admissions'
 
     def get_queryset(self):
-        type = super().get_queryset().order_by('-type')
-        service_filter = ServiceFilter(self.request.GET, queryset=type)
-        return service_filter.qs
+        queryset = super().get_queryset()
+        filters = {
+            'admit': self.admit_filter,
+            'ward': self.ward_filter,
+            # 'created_at__gte': timezone.now() - timedelta(days=1), 
+        }
+        return queryset.order_by('-updated')
+
+
+class MaleWardView(WardListView):
+    template_name = 'ehr/ward/male_ward.html'
+    ward_filter = 'MALE WARD'
+    admit_filter = True
+
+
+class FemaleWardView(WardListView):
+    template_name = 'ehr/ward/male_ward.html'
+    ward_filter = 'FEMALE WARD'
+    admit_filter = True
+
+
+class ChildrensWardView(WardListView):
+    template_name = 'ehr/ward/male_ward.html'
+    ward_filter = 'CHILDRENS WARD'
+    admit_filter = True
+
+
+class WardVitalSignCreateView(NurseRequiredMixin,CreateView):
+    model = WardVitalSigns
+    form_class = WardVitalSignsForm
+    template_name = 'ehr/ward/ward_vital_signs.html'
+    success_url = reverse_lazy('ward_nursing')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
+        self.object = form.save()
+
+        messages.success(self.request, 'Vitals taken')
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_services = self.get_queryset().count()
-        context['serviceFilter'] = ServiceFilter(self.request.GET, queryset=self.get_queryset())
-        context['total_services'] = total_services
+        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
         return context
 
-        class ServiceCreateView(RevenueRequiredMixin, CreateView):
-    model = Services
-    form_class = ServiceForm
-    template_name = 'ehr/revenue/new_service.html'
-    success_url = reverse_lazy("hospital_services")
+
+class WardMedicationCreateView(NurseRequiredMixin,CreateView):
+    model = WardMedication
+    form_class = WardMedicationForm
+    template_name = 'ehr/ward/ward_medication.html'
+    success_url = reverse_lazy('ward_nursing')
 
     def form_valid(self, form):
-        messages.success(self.request, 'SERVICE ADDED')
+        form.instance.user = self.request.user
+        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
+        self.object = form.save()
+
+        messages.success(self.request, 'Medication Given')
         return super().form_valid(form)
-
- 
-class ServiceUpdateView(UpdateView):
-    model = Services
-    template_name = 'ehr/revenue/update_service.html'
-    form_class = ServiceForm
-    success_url = reverse_lazy("service_list")
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Service Updated Successfully')
-        if form.is_valid():
-            form.save()
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Error updating service information')
-        return self.render_to_response(self.get_context_data(form=form))
-
-
-class ServiceListView(ListView):
-    model=Services
-    template_name='ehr/revenue/general_services.html'
-    context_object_name='services'
-    paginate_by = 10
-
-    def get_queryset(self):
-        type = super().get_queryset().order_by('-type')
-        service_filter = ServiceFilter(self.request.GET, queryset=type)
-        return service_filter.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_services = self.get_queryset().count()
-        context['serviceFilter'] = ServiceFilter(self.request.GET, queryset=self.get_queryset())
-        context['total_services'] = total_services
+        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
         return context
+    clea
+# class ServiceCreateView(RevenueRequiredMixin, CreateView):
+#     model = Services
+#     form_class = ServiceForm
+#     template_name = 'ehr/revenue/new_service.html'
+#     success_url = reverse_lazy("hospital_services")
+
+#     def form_valid(self, form):
+#         messages.success(self.request, 'SERVICE ADDED')
+#         return super().form_valid(form)
+
+ 
+# class ServiceUpdateView(UpdateView):
+#     model = Services
+#     template_name = 'ehr/revenue/update_service.html'
+#     form_class = ServiceForm
+#     success_url = reverse_lazy("service_list")
+
+#     def form_valid(self, form):
+#         messages.success(self.request, 'Service Updated Successfully')
+#         if form.is_valid():
+#             form.save()
+#             return super().form_valid(form)
+#         else:
+#             return self.form_invalid(form)
+
+#     def form_invalid(self, form):
+#         messages.error(self.request, 'Error updating service information')
+#         return self.render_to_response(self.get_context_data(form=form))
+
+
+# class ServiceListView(ListView):
+#     model=Services
+#     template_name='ehr/revenue/general_services.html'
+#     context_object_name='services'
+#     paginate_by = 10
+
+#     def get_queryset(self):
+#         type = super().get_queryset().order_by('-type')
+#         service_filter = ServiceFilter(self.request.GET, queryset=type)
+#         return service_filter.qs
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         total_services = self.get_queryset().count()
+#         context['serviceFilter'] = ServiceFilter(self.request.GET, queryset=self.get_queryset())
+#         context['total_services'] = total_services
+#         return context
+
+# class ServiceCreateView(RevenueRequiredMixin, CreateView):
+#     model = Services
+#     form_class = ServiceForm
+#     template_name = 'ehr/revenue/new_service.html'
+#     success_url = reverse_lazy("hospital_services")
+
+#     def form_valid(self, form):
+#         messages.success(self.request, 'SERVICE ADDED')
+#         return super().form_valid(form)
+
+ 
+# class ServiceUpdateView(UpdateView):
+#     model = Services
+#     template_name = 'ehr/revenue/update_service.html'
+#     form_class = ServiceForm
+#     success_url = reverse_lazy("service_list")
+
+#     def form_valid(self, form):
+#         messages.success(self.request, 'Service Updated Successfully')
+#         if form.is_valid():
+#             form.save()
+#             return super().form_valid(form)
+#         else:
+#             return self.form_invalid(form)
+
+#     def form_invalid(self, form):
+#         messages.error(self.request, 'Error updating service information')
+#         return self.render_to_response(self.get_context_data(form=form))
+
+
+# class ServiceListView(ListView):
+#     model=Services
+#     template_name='ehr/revenue/general_services.html'
+#     context_object_name='services'
+#     paginate_by = 10
+
+#     def get_queryset(self):
+#         type = super().get_queryset().order_by('-type')
+#         service_filter = ServiceFilter(self.request.GET, queryset=type)
+#         return service_filter.qs
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         total_services = self.get_queryset().count()
+#         context['serviceFilter'] = ServiceFilter(self.request.GET, queryset=self.get_queryset())
+#         context['total_services'] = total_services
+#         return context
     
-    class ServiceCreateView(RevenueRequiredMixin, CreateView):
-    model = Services
-    form_class = ServiceForm
-    template_name = 'ehr/revenue/new_service.html'
-    success_url = reverse_lazy("hospital_services")
 
-    def form_valid(self, form):
-        messages.success(self.request, 'SERVICE ADDED')
-        return super().form_valid(form)
+# class ServiceCreateView(RevenueRequiredMixin, CreateView):
+#     model = Services
+#     form_class = ServiceForm
+#     template_name = 'ehr/revenue/new_service.html'
+#     success_url = reverse_lazy("hospital_services")
+
+#     def form_valid(self, form):
+#         messages.success(self.request, 'SERVICE ADDED')
+#         return super().form_valid(form)
 
  
-class ServiceUpdateView(UpdateView):
-    model = Services
-    template_name = 'ehr/revenue/update_service.html'
-    form_class = ServiceForm
-    success_url = reverse_lazy("service_list")
+# class ServiceUpdateView(UpdateView):
+#     model = Services
+#     template_name = 'ehr/revenue/update_service.html'
+#     form_class = ServiceForm
+#     success_url = reverse_lazy("service_list")
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Service Updated Successfully')
-        if form.is_valid():
-            form.save()
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
+#     def form_valid(self, form):
+#         messages.success(self.request, 'Service Updated Successfully')
+#         if form.is_valid():
+#             form.save()
+#             return super().form_valid(form)
+#         else:
+#             return self.form_invalid(form)
 
-    def form_invalid(self, form):
-        messages.error(self.request, 'Error updating service information')
-        return self.render_to_response(self.get_context_data(form=form))
+#     def form_invalid(self, form):
+#         messages.error(self.request, 'Error updating service information')
+#         return self.render_to_response(self.get_context_data(form=form))
 
 
-class ServiceListView(ListView):
-    model=Services
-    template_name='ehr/revenue/general_services.html'
-    context_object_name='services'
-    paginate_by = 10
+# class ServiceListView(ListView):
+#     model=Services
+#     template_name='ehr/revenue/general_services.html'
+#     context_object_name='services'
+#     paginate_by = 10
 
-    def get_queryset(self):
-        type = super().get_queryset().order_by('-type')
-        service_filter = ServiceFilter(self.request.GET, queryset=type)
-        return service_filter.qs
+#     def get_queryset(self):
+#         type = super().get_queryset().order_by('-type')
+#         service_filter = ServiceFilter(self.request.GET, queryset=type)
+#         return service_filter.qs
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        total_services = self.get_queryset().count()
-        context['serviceFilter'] = ServiceFilter(self.request.GET, queryset=self.get_queryset())
-        context['total_services'] = total_services
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         total_services = self.get_queryset().count()
+#         context['serviceFilter'] = ServiceFilter(self.request.GET, queryset=self.get_queryset())
+#         context['total_services'] = total_services
+#         return context
     

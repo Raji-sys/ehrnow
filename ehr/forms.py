@@ -227,3 +227,32 @@ class AdmissionUpdateForm(forms.ModelForm):
             # field.required=True
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            
+
+class WardVitalSignsForm(forms.ModelForm):
+    class Meta:
+        model = WardVitalSigns
+        fields = [
+            'body_temperature', 'pulse_rate', 'respiration_rate',
+            'blood_pressure', 'blood_oxygen', 'blood_glucose',
+            'weight', 'height','handover_room',
+        ]
+    def __init__(self, *args, **kwargs):
+        super(WardVitalSignsForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+
+class WardMedicationForm(forms.ModelForm):
+    class Meta:
+        model = WardMedication
+        fields = [
+            'drug', 'dose', 'comments',]
+    def __init__(self, *args, **kwargs):
+        super(WardMedicationForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
