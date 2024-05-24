@@ -219,7 +219,7 @@ class AdmissionForm(forms.ModelForm):
 class AdmissionUpdateForm(forms.ModelForm):
     class Meta:
         model = Admission
-        fields = ['bed_number']
+        fields = ['accept','bed_number']
 
     def __init__(self, *args, **kwargs):
         super(AdmissionForm, self).__init__(*args, **kwargs)
@@ -235,7 +235,7 @@ class WardVitalSignsForm(forms.ModelForm):
         fields = [
             'body_temperature', 'pulse_rate', 'respiration_rate',
             'blood_pressure', 'blood_oxygen', 'blood_glucose',
-            'weight', 'height','handover_room',
+            'weight',
         ]
     def __init__(self, *args, **kwargs):
         super(WardVitalSignsForm, self).__init__(*args, **kwargs)

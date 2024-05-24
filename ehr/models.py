@@ -408,6 +408,7 @@ class Admission(models.Model):
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="admission_info")
     # payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     admit=models.BooleanField(default=False)
+    accept=models.BooleanField(default=False)
     wards=(('MALE WARD','MALE WARD'),('FEMALE WARD','FEMALE WARD'),('CHILDRENS WARD','CHILDRENS WARD'),('ICU','ICU'))
     ward=models.CharField(choices=wards,max_length=300,null=True, blank=True)
     # room=models.CharField(max_length=300,null=True, blank=True)

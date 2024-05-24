@@ -340,6 +340,23 @@ class SOPDClinicDetailView(TemplateView):
     template_name = 'ehr/clinic/sopd_details.html'
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class MaleWardDetailView(TemplateView):
+    template_name = 'ehr/ward/male_ward_details.html'
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class FemaleWardDetailView(TemplateView):
+    template_name = 'ehr/ward/female_ward_details.html'
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ChildrensWardDetailView(TemplateView):
+    template_name = 'ehr/ward/childrens_ward_details.html'
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ICUDetailView(TemplateView):
+    template_name = 'ehr/ward/icu_details.html'
+
+
 #1 Patient create
 class PatientCreateView(RecordRequiredMixin, CreateView):
     model = PatientData
@@ -1274,10 +1291,25 @@ class WardListView(DoctorRequiredMixin, ListView):
         queryset = super().get_queryset()
         filters = {
             'admit': self.admit_filter,
+            'accept': self.accept_filter,
             'ward': self.ward_filter,
             # 'created_at__gte': timezone.now() - timedelta(days=1), 
         }
-        return queryset.order_by('-updated')
+        filtered_queryset = queryset.filter(**filters)
+        return filtered_queryset.order_by('-updated')
+
+
+class ICUWaitListView(WardListView):
+    template_name = 'ehr/ward/icu_wait_list.html'
+    ward_filter = 'ICU'
+    admit_filter = True
+
+
+class ICUView(WardListView):
+    template_name = 'ehr/ward/icu.html'
+    ward_filter = 'ICU'
+    admit_filter = True
+    accept_filter=False
 
 
 class MaleWardView(WardListView):
@@ -1286,16 +1318,37 @@ class MaleWardView(WardListView):
     admit_filter = True
 
 
+class MaleWardWaitListView(WardListView):
+    template_name = 'ehr/ward/male_ward_wait_list.html'
+    ward_filter = 'MALE WARD'
+    admit_filter = True
+    accept_filter=False
+
+
 class FemaleWardView(WardListView):
-    template_name = 'ehr/ward/male_ward.html'
+    template_name = 'ehr/ward/female_ward.html'
     ward_filter = 'FEMALE WARD'
     admit_filter = True
 
 
+class FemaleWardWaitListView(WardListView):
+    template_name = 'ehr/ward/female_ward_wait_list.html'
+    ward_filter = 'FEMALE WARD'
+    admit_filter = True
+    accept_filter=False
+
+
 class ChildrensWardView(WardListView):
-    template_name = 'ehr/ward/male_ward.html'
+    template_name = 'ehr/ward/childrens_ward.html'
     ward_filter = 'CHILDRENS WARD'
     admit_filter = True
+
+
+class ChildrensWardWaitListView(WardListView):
+    template_name = 'ehr/ward/childrens_ward_wait_list.html'
+    ward_filter = 'CHILDRENS WARD'
+    admit_filter = True
+    accept_filter=False
 
 
 class WardVitalSignCreateView(NurseRequiredMixin,CreateView):
@@ -1338,7 +1391,7 @@ class WardMedicationCreateView(NurseRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
         return context
-    clea
+    
 # class ServiceCreateView(RevenueRequiredMixin, CreateView):
 #     model = Services
 #     form_class = ServiceForm

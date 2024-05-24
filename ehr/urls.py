@@ -113,10 +113,22 @@ urlpatterns = [
     path('clinic/admission-list/', AdmissionListView.as_view(), name='admission_list'),
     path('clinic/update-admission/<int:pk>/', AdmissionUpdateView.as_view(), name='receive_patient'),
     
-    #ward    
-    path('ward/male-ward/', MaleWardView.as_view(), name="male_ward"),
-    path('ward/female-ward/', FemaleWardView.as_view(), name="female_ward"),
-    path('ward/childrens-ward/', ChildrensWardView.as_view(), name="childrens_ward"),
+    #wards    
+    path('ward/icu/', ICUDetailView.as_view(), name="icu_details"),
+    path('ward/ICU/patient-list', ICUView.as_view(), name="icu_list"),
+    path('ward/ICU-wait-list/', ICUWaitListView.as_view(), name="icu_wait_list"),
+
+    path('ward/male-ward/', MaleWardDetailView.as_view(), name="male_ward_details"),
+    path('ward/male-ward/patient-list', MaleWardView.as_view(), name="male_ward_list"),
+    path('ward/male-ward-wait-list/', MaleWardWaitListView.as_view(), name="male_ward_wait_list"),
+
+    path('ward/female-ward/', MaleWardDetailView.as_view(), name="female_ward_details"),
+    path('ward/female-ward/patient-list/', FemaleWardView.as_view(), name="female_ward_list"),
+    path('ward/female-ward-wait-list/', FemaleWardWaitListView.as_view(), name="female_ward_wait_list"),
+
+    path('ward/childrens-ward/', ChildrensWardDetailView.as_view(), name="childrens_ward_details"),
+    path('ward/childrens-ward/', ChildrensWardView.as_view(), name="childrens_ward_list"),
+    path('ward/childrens-ward/', ChildrensWardWaitListView.as_view(), name="childrens_ward_wait_list"),
 
     path('ward/nursing/vital_signs/<str:file_no>/', WardVitalSignCreateView.as_view(), name='ward_vital_signs'),
     path('ward/nursing/medication/<str:file_no>/', WardMedicationCreateView.as_view(), name='ward_medication'),
