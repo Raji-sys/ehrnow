@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{%block title%}THEATRE BOOKINGS{%endblock%}
+{%block page_title%}<div class="enom flex justify-center">THEATRE BOOKINGS</div>{%endblock%}
+{%block content %}
+<div class="p-4">
+    <section class="text-center border-amber-700 p-4 m-2">
+        {% for message in messages %}
+        <div class=""> 
+          <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
+            <a href class="uk-alert-close font-bold" uk-close></a>
+            <p class="text-green-700 font-semibold">{{ message }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </section>
+    <div class="mx-20 rounded-xl p-4 shadow-black shadow-sm bg-amber-50">
+      <div class="flex justify-center m-1">
+        <div class="mx-4 mt-4 ">
+          <span class="shadow-sm shadow-amber-900 gap-4 bg-mber-900 text-amber-800 uppercase max-sm:text-lg text-sm border-b-2 border-amber-900 py-2 px-4 rounded-xl mx-2 w-fit">
+            <span class=" shadow-white text-sm p-1 rounded-full bg-amber-800 text-white">{{total_bookings}}</span>&nbsp; patient booked
+                {% if request.GET.urlencode %}
+                <span>
+                    <a href="?" class=" p-2 focus:opacity-10  focus:border-amber-600 bg-orange-500text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
+                        <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
+                    </span>
+                    {%endif%}
+                </span>
+                </div>
+      <div class="text-amber-900">
+        <form method="get" class="text-xs text-center">
+          {% for field in theatreBookingFilter.form %}
+          {{field.errors}}
+          {% endfor %}
+          <div class="text-center flex flex-row flex-wrap gap-1 justify-center">
+            {% for field in theatreBookingFilter.form %}
+            <div class="flex justify-center items-start flex-col">
+                <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
+                <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
+                {%if field.value%} value="{{field.value}}"{%endif%}
+                class="text-center text-sm focus:outline-none w-fit text-amber-950 p-2
+                rounded shadow-sm shadow-amber-900 border-amber-900 border">
+                <span class="form-error">{{ field.errors }}</span>
+                </div>
+                {% endfor %}
+                <div class="mt-4 flex justify-center align-middle ">
+                <button type="submit" class="shadow-sm shadow-amber-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-amber-600 bg-amber-900 text-white rounded hover:border-amber-700 ">
+                    <i class="fa-solid fa-search fa-xl "></i>
+                </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    </div>
+      <div class="overflow-x-auto px-4 md:px-10 m-4">
+        <table class="min-w-full divide-y divide-amber-200">
+          <thead class="bg-amber-50">
+            <tr class="text-sm">
+                <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+                    S/N
+                </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              PATIENT
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+                THEATRE
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+                TEAM
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+                DATE 
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-amber-200">
+            {% for b in bookings %}
+            <tr class="uppercase text-xs bg-amber-100 hover:bg-amber-200 transition-colors duration-300">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    {{forloop.counter}}
+                </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <a href="{{a.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+                {{ b.patient }}
+                </a>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ b.theatre }}
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ b.team }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ b.date }}
+              </td>
+            </tr>
+            {% empty %}
+            <tr class="bg-white">
+              <td colspan="2" class="px-6 py-4 text-center text-amber-500">
+                Patient not found
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{%endblock%}

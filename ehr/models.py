@@ -473,11 +473,12 @@ class TheatreBooking(models.Model):
         ('BLUE', 'BLUE'),
         ('YELLOW', 'YELLOW')
     ]
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_booking')
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_bookings')
     theatre = models.CharField(max_length=30, null=True, choices=THEATRES)
     team = models.CharField(max_length=30, null=True, choices=TEAMS)
     date = models.DateField(null=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.patient

@@ -488,6 +488,7 @@ class PatientFolderView(DetailView):
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
         context['ward_medication'] = patient.ward_medication.all().order_by('-updated')
         context['ward_clinical_notes'] = patient.ward_clinical_notes.all().order_by('-updated')
+        context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
         context['theatre_notes'] = patient.theatre_notes.all().order_by('-updated')
 
         # Calculate total worth only for paid transactions
@@ -1390,13 +1391,13 @@ class TheatreBookingCreateView(DoctorRequiredMixin, CreateView):
             return super().form_valid(form)
         
         def get_success_url(self):
-            messages.success(self.request, 'PATIENT BOOKED FOR THEATRE')
+            messages.success(self.request, 'PATIENT BOOKED FOR SURGERY')
             return self.object.patient.get_absolute_url()
 
 
 class TheatreBookingUpdateView(DoctorRequiredMixin,UpdateView):
     model = TheatreBooking
-    template_name = 'ehr/theatre/update_theatre.html'
+    template_name = 'ehr/theatre/update_theatre_booking.html'
     form_class = TheatreBookingForm
 
     def form_valid(self, form):
@@ -1419,16 +1420,18 @@ class TheatreBookingUpdateView(DoctorRequiredMixin,UpdateView):
 class TheatreBookingListView(DoctorRequiredMixin,ListView):
     model=TheatreBooking
     template_name='ehr/theatre/theatre_bookings.html'
-    context_object_name='theatre_bookings'
+    context_object_name='bookings'
     paginate_by = 10
 
     def get_queryset(self):
-        theatrebooking = super().get_queryset().order_by('-updated_at')
+        theatrebooking = super().get_queryset().order_by('-updated')
         theatrebooking_filter = TheatreBookingFilter(self.request.GET, queryset=theatrebooking)
         return theatrebooking_filter.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        total_bookings = self.get_queryset().count()
+        context['total_bookings'] = total_bookings
         context['theatreBookingFilter'] = TheatreBookingFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
@@ -1452,7 +1455,7 @@ class TheatreNotesCreateView(DoctorRequiredMixin,CreateView):
         return context
 
     def get_success_url(self):
-        messages.success(self.request, 'PATIENT THEATRE NOTES TAKEN')
+        messages.success(self.request, 'PATIENT THEATRE NOTES ADDED')
         return self.object.patient.get_absolute_url()
 
 
@@ -1463,11 +1466,13 @@ class TheatreNotesListView(DoctorRequiredMixin,ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        theatre = super().get_queryset().order_by('-updated_at')
+        theatre = super().get_queryset().order_by('-updated')
         theatre_filter = TheatreNotesFilter(self.request.GET, queryset=theatre)
         return theatre_filter.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        total_operations = self.get_queryset().count()
+        context['total_operations'] = total_operations
         context['theatreFilter'] = TheatreNotesFilter(self.request.GET, queryset=self.get_queryset())
         return context

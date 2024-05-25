@@ -130,8 +130,16 @@ urlpatterns = [
     path('ward/childrens-ward/list/', ChildrensWardView.as_view(), name="childrens_ward_list"),
     path('ward/childrens-ward/wat-list/', ChildrensWardWaitListView.as_view(), name="childrens_ward_wait_list"),
 
-    path('ward/nursing/vital_signs/<str:file_no>/', WardVitalSignCreateView.as_view(), name='ward_vital_signs'),
+    path('ward/nursing/vital-signs/<str:file_no>/', WardVitalSignCreateView.as_view(), name='ward_vital_signs'),
     path('ward/nursing/medication/<str:file_no>/', WardMedicationCreateView.as_view(), name='ward_medication'),
     path('ward/nursing/notes/<str:file_no>/', WardNotesCreateView.as_view(), name='ward_notes'),
+
+    #theatre
+    path('clinic/theatre-booking/book-for-surgery/<str:file_no>/', TheatreBookingCreateView.as_view(), name='book_for_surgery'),
+    path('clinic/theatre-booking/surgery-wait-list', TheatreBookingListView.as_view(), name="surgery_wait_list"),
+    path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
+
+    path('theatre/theatre-notes/<str:file_no>/', TheatreNotesCreateView.as_view(), name='theatre_note'),
+    path('theatre/operated-patient-list', TheatreNotesListView.as_view(), name="operated_list"),
 
 ]

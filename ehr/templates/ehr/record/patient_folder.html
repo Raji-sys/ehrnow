@@ -16,7 +16,7 @@
       {% endfor %}
     </section>
 
-<div class="md:mx-20 bg-white rounded-xl shadow-black shadow-2xl">
+<div class="md:mx-20 bg-white rounded-xl shadow-black shadow-lg">
   <div class="text-center rounded-xl md:p-10 bg-gray-50 uppercase">
 <!-- start -->
 <!-- top  -->
@@ -703,11 +703,10 @@
                 </tbody>
               </table>
             </div>
-          </div>
-        
-        
+          </div>  
         
   </div>
+
   </div>
      </div>
 
@@ -715,25 +714,100 @@
     <!-- break -->
       <!-- break -->
       <div> 
-        <div>
-        <a href="#" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-mask-ventilator fa-2xl"></i></a>
-      </div>     
-        <div class="overflow-x-auto px-4 md:px-10 m-4">
-          <table class="min-w-full divide-y divide-cyan-200 mb-4">
-            <thead class="bg-cyan-50">
-              <tr class="text-sm">
-                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-cyan-200">
-              
-              <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
+        <div class="text-center rounded-xl p-4 m-4  md:p-10 bg-gray-50">
+          <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+            <li ><a href="#" class="rounded-lg ">THEATRE BOOKINGS</a></li>
+            <li><a href="#" class="rounded-lg ">THEATRE NOTES</a></li>
+          </ul>
+          
+          <div class="uk-switcher uk-margin">
+     
+            <div>
+              <div>
+                <a href="{% url 'book_for_surgery' patient.file_no %}" class="text-sm text-cyan-600 hover:text-green-700"><i class="fa-solid fa-calendar-days fa-2xl"></i></a>
+              </div>
+              <div class="overflow-x-auto px-4 md:px-10 m-4">
+                <table class="min-w-full divide-y divide-cyan-200 mb-4">
+                  <thead class="bg-cyan-50">
+                    <tr class="text-sm">
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Theatre</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Team</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">operation date</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Booked By</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Booked</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-cyan-200">
+                    {% for t in theatre_bookings %}
+                    <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                      <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">{{ t.theatre|default_if_none:''}}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">{{ t.team|default_if_none:'' }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">{{ t.date|default_if_none:'' }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">{{ t.user|default_if_none:'' }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">{{ t.updated|default_if_none:'' }}</td>
+                 
+                    </tr>
+                    {%empty%}
+                    <div class="p-4">
+                        <p>No theatre bookings yet</p>
+                    </div>
+                   {%endfor%}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          
+          
+            <div>
+              <div>
+                <a href="{% url 'theatre_note' patient.file_no %}" class="text-sm text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
+              </div>
+              <div class="overflow-x-auto px-4 md:px-10 m-4">
+                <table class="min-w-full divide-y divide-cyan-200 mb-4">
+                  <thead class="bg-cyan-50">
+          
+                    <tr class="text-sm">
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">anaesthesia used</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">findings</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Note</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">By</th>
+                      <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
+                    </tr>
+          
+                  </thead>
+                  <tbody class="bg-white divide-y divide-cyan-200">
+                    {% for t in theatre_notes %}
+                    <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                      <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">{{ t.type_of_anaesthesia }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">{{ t.findings }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <details>
+                          <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
+                          <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto rounded-md m-4">
+                            <p class="text-xs text-center">{{ t.operation_notes }}</p>
+                          </div>
+                        </details>    
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">{{ t.user|default_if_none:'' }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">{{ t.updated|default_if_none:'' }}</td>
+                    </tr>
+                    {%empty%}
+                    <div class="p-4">
+                        <p>No theatre notes yet</p>
+                    </div>
+                   {%endfor%}
+                  </tbody>
+                </table>
+              </div>
+            </div>  
+          
+    </div>
+  
+    </div>
      </div>
 
     <!-- break -->

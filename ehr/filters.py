@@ -102,5 +102,5 @@ class TheatreNotesFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     class Meta:
-        model = TheatreBooking
-        fields = ['patient','type_of_anesthesia','findings','date']
+        model = TheatreNotes
+        fields = ['patient','type_of_anaesthesia','findings','date']

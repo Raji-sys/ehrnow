@@ -273,6 +273,9 @@ class TheatreBookingForm(forms.ModelForm):
     class Meta:
         model = TheatreBooking
         fields = ['theatre','team','date']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'})
+        }
 
     def __init__(self, *args, **kwargs):
         super(TheatreBookingForm, self).__init__(*args, **kwargs)

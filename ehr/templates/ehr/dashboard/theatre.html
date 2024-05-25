@@ -1,11 +1,24 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}THEATRE {%endblock%}
-
-{%block content %}
-<div class="uk-container mt-10 p-3 ">
-    <div>
-        <h1 class="enom md:text-6xl text-center bg-gradient-to-r from-green-600 via-stone-500 to-indigo-600 text-transparent bg-clip-text font-semibold">THEATRE</h1>
+{%block title%}THEATRE DASHBOARD{%endblock%}
+{%block page_title%}<div class="enom flex justify-center">THEATRE DASHBOARD</div>{%endblock%}
+{% block content %}
+    <div class="md:max-w-7xl  bg-white rounded-md shadow-black h-fit shadow-2xl mx-auto mt-4">
+        <div class=" grid grid-cols-2 gap-6 uppercase text-center rounded-xl p-8 md:p-6 ">
+            <div>
+                <a href="{% url 'surgery_wait_list' %}">
+            <div class="hover:bg-white hover:text-amber-700 bg-amber-600 text-white rounded-2xl shadow-2xl p-2 md:p-16 border-2 border-white-400 transition duration-300">
+              <div class="font-semibold text-xs md:text-sm">PATIENT BOOKED FOR SURGERY</div>
+            </div>
+          </a> 
+        </div>
+            <div>
+                <a href="{% url 'operated_list' %}">
+            <div class="hover:bg-white hover:text-emerald-700 bg-emerald-600 text-white rounded-2xl shadow-2xl p-2 md:p-16 border-2 border-white-400 transition duration-300">
+              <div class="font-semibold text-xs md:text-sm">OPERATED PATIENTS</div>
+            </div>
+          </a> 
+        </div>
     </div>
 </div>
-{%endblock%}
+{% endblock %}
