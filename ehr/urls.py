@@ -30,7 +30,7 @@ urlpatterns = [
     path('get-started/physio', PhysioView.as_view(), name='physio'),
     path('get-started/theatre', TheatreView.as_view(), name='theatre'),
  
-    path('get-started/ward', WardView.as_view(), name='ward'),
+    path('get-started/ward', WardView.as_view(), name='ward_list'),
     path('get-started/icu', ICUView.as_view(), name='icu'),
     path('get-started/audit', AuditView.as_view(), name='audit'),
 
@@ -132,5 +132,6 @@ urlpatterns = [
 
     path('ward/nursing/vital_signs/<str:file_no>/', WardVitalSignCreateView.as_view(), name='ward_vital_signs'),
     path('ward/nursing/medication/<str:file_no>/', WardMedicationCreateView.as_view(), name='ward_medication'),
+    path('ward/nursing/notes/<str:file_no>/', WardNotesCreateView.as_view(), name='ward_notes'),
 
 ]

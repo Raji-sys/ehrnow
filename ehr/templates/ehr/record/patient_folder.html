@@ -31,8 +31,8 @@
       <li><a href="#" class="rounded-lg ">RADIOLOGY</a></li>
       <li><a href="#" class="rounded-lg ">PHYSIO</a></li>
       <li><a href="#" class="rounded-lg ">ADMISSION</a></li>
+      <li><a href="#" class="rounded-lg ">WARD</a></li>
       <li><a href="#" class="rounded-lg ">THEATRE</a></li>
-      <li><a href="#" class="rounded-lg ">ICU</a></li>
     </ul>
 <!-- top end  -->
     <div class="uk-switcher uk-margin">
@@ -137,6 +137,7 @@
             <thead class="bg-cyan-50">
               <tr class="text-sm">
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Nurse</th>
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">body temperature</th>
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">pulse rate</th>
                 <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">respiration rate</th>
@@ -152,6 +153,7 @@
               {%for v in vitals %}
               <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ v.user }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ v.body_temperature }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ v.pulse_rate }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ v.respiration_rate }}</td>
@@ -197,7 +199,7 @@
                 <td class="px-6 py-4 whitespace-nowrap">{{ c.user }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <details>
-                    <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">SEE NOTE</summary>
+                    <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
                     <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto rounded-md m-4">
                       <p class="text-xs text-center">{{ c.note.html|safe }}</p>
                     </div>
@@ -219,7 +221,6 @@
     <!-- break -->
       <!-- break -->
       <div> 
-        <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-black shadow-2xl">
           <div class="text-center rounded-xl p-4 md:p-10 bg-gray-50">
             <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
               <li ><a href="#" class="rounded-lg ">HEMATOLOGY</a></li>
@@ -442,7 +443,7 @@
             </div>
       
       </div>
-      </div>     </div>
+    </div>
     <!-- break -->
       <!-- break -->
       <div> 
@@ -570,25 +571,144 @@
     <!-- break -->
       <!-- break -->
       <div> 
-        <div>
-        <a href="#" class="text-sm text-green-600 hover:text-green-700"><i class="fa-solid fa-mask-face fa-2xl"></i></a>
-      </div>     
-        <div class="overflow-x-auto px-4 md:px-10 m-4">
-          <table class="min-w-full divide-y divide-cyan-200 mb-4">
-            <thead class="bg-cyan-50">
-              <tr class="text-sm">
-                <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-cyan-200">
-              
-              <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
+      <div class="text-center rounded-xl p-4 md:p-10 bg-gray-50">
+        <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+          <li ><a href="#" class="rounded-lg ">WARD VITAL SIGNS</a></li>
+          <li class=><a href="#" class="rounded-lg ">WARD MEDICATION</a></li>
+          <li><a href="#" class="rounded-lg ">WARD NOTES</a></li>
+        </ul>
+        
+        <div class="uk-switcher uk-margin">
+          <div> 
+        
+            <div >
+            <a href="{% url 'ward_vital_signs' patient.file_no %}" class="text-sm text-rose-600 hover:text-green-700"><i class="fa-solid fa-heartbeat fa-2xl"></i></a>
+            </div>
+         
+            <div class="overflow-x-auto px-4 md:px-10 m-4">
+              <table class="min-w-full divide-y divide-cyan-200 mb-4">
+                <thead class="bg-cyan-50">
+                  <tr class="text-sm">
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">body temperature</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">pulse rate</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">respiration rate</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">blood pressure</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">blood oxygen</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">blood glucose</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">weight</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">by</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
+                      </tr>
+        
+                </thead>
+                <tbody class="bg-white divide-y divide-cyan-200">
+                  {% for w in ward_vital_signs %}
+                  <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                    <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.body_temperature }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.pulse_rate }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.respiration_rate }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.blood_pressure }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.blood_oxygen }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.blood_glucose }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.weight }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.user }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.updated }}</td>
+                      </tr>
+                  {%empty%}
+                  <div class="p-4">
+                      <p>No ward vitals sign yet</p>
+                  </div>
+                 {%endfor%}
+                </tbody>
+              </table>
+            </div>
+         </div>
+        
+          <div>
+            <div>
+              <a href="{% url 'ward_medication' patient.file_no %}" class="text-sm text-cyan-600 hover:text-green-700"><i class="fa-solid fa-file-prescription fa-2xl"></i></a>
+            </div>
+            <div class="overflow-x-auto px-4 md:px-10 m-4">
+              <table class="min-w-full divide-y divide-cyan-200 mb-4">
+                <thead class="bg-cyan-50">
+                  <tr class="text-sm">
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Drug</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Dose</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">By</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-cyan-200">
+                  {% for w in ward_medication%}
+                  <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                    <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.drug|default_if_none:''}}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.dose|default_if_none:'' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.comments|default_if_none:'' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.user|default_if_none:'' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.updated|default_if_none:'' }}</td>
+               
+                  </tr>
+                  {%empty%}
+                  <div class="p-4">
+                      <p>No ward medications yet</p>
+                  </div>
+                 {%endfor%}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        
+        
+          <div>
+            <div>
+              <a href="{% url 'ward_notes' patient.file_no %}" class="text-sm text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
+            </div>
+            <div class="overflow-x-auto px-4 md:px-10 m-4">
+              <table class="min-w-full divide-y divide-cyan-200 mb-4">
+                <thead class="bg-cyan-50">
+        
+                  <tr class="text-sm">
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Note</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">By</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
+                  </tr>
+        
+                </thead>
+                <tbody class="bg-white divide-y divide-cyan-200">
+                  {% for w in ward_clinical_notes %}
+                  <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                    <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <details>
+                        <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
+                        <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto rounded-md m-4">
+                          <p class="text-xs text-center">{{ w.note.html|safe }}</p>
+                        </div>
+                      </details>    
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.user|default_if_none:'' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ w.updated|default_if_none:'' }}</td>
+                  </tr>
+                  {%empty%}
+                  <div class="p-4">
+                      <p>No ward clinical notes yet</p>
+                  </div>
+                 {%endfor%}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        
+        
+        
+  </div>
+  </div>
      </div>
 
     <!-- break -->

@@ -222,7 +222,7 @@ class AdmissionUpdateForm(forms.ModelForm):
         fields = ['accept','bed_number']
 
     def __init__(self, *args, **kwargs):
-        super(AdmissionForm, self).__init__(*args, **kwargs)
+        super(AdmissionUpdateForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
@@ -252,6 +252,18 @@ class WardMedicationForm(forms.ModelForm):
             'drug', 'dose', 'comments',]
     def __init__(self, *args, **kwargs):
         super(WardMedicationForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+class WardNotesForm(forms.ModelForm):
+    class Meta:
+        model = WardClinicalNote
+        fields = [
+            'note',]
+    def __init__(self, *args, **kwargs):
+        super(WardNotesForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'

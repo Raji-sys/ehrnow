@@ -485,6 +485,10 @@ class PatientFolderView(DetailView):
         context['general_results']=patient.general_results.all().order_by('-created')
         context['radiology_files'] = patient.radiology_files.all().order_by('-updated')
         context['admission_info'] = patient.admission_info.all().order_by('-updated')
+        context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
+        context['ward_medication'] = patient.ward_medication.all().order_by('-updated')
+        context['ward_clinical_notes'] = patient.ward_clinical_notes.all().order_by('-updated')
+        context['theatre_notes'] = patient.theatre_notes.all().order_by('-updated')
 
         # Calculate total worth only for paid transactions
         paid_transactions = patient.patient_payments.filter(status=True)
@@ -1245,7 +1249,7 @@ class AdmissionUpdateView(UpdateView):
     model = Admission
     template_name = 'ehr/ward/update_admission.html'
     form_class = AdmissionUpdateForm
-    success_url = reverse_lazy("admission_list")
+    success_url = reverse_lazy("ward_list")
 
     def form_valid(self, form):
         messages.success(self.request, 'PATIENT RECEIVED')
@@ -1356,7 +1360,7 @@ class WardVitalSignCreateView(NurseRequiredMixin,CreateView):
     model = WardVitalSigns
     form_class = WardVitalSignsForm
     template_name = 'ehr/ward/ward_vital_signs.html'
-    success_url = reverse_lazy('ward_nursing')
+    success_url = reverse_lazy('ward_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -1377,7 +1381,7 @@ class WardMedicationCreateView(NurseRequiredMixin,CreateView):
     model = WardMedication
     form_class = WardMedicationForm
     template_name = 'ehr/ward/ward_medication.html'
-    success_url = reverse_lazy('ward_nursing')
+    success_url = reverse_lazy('ward_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -1386,6 +1390,26 @@ class WardMedicationCreateView(NurseRequiredMixin,CreateView):
         self.object = form.save()
 
         messages.success(self.request, 'Medication Given')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        return context
+
+class WardNotesCreateView(NurseRequiredMixin,CreateView):
+    model = WardClinicalNote
+    form_class = WardNotesForm
+    template_name = 'ehr/ward/ward_notes.html'
+    success_url = reverse_lazy('ward_list')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
+        self.object = form.save()
+
+        messages.success(self.request, 'Notes Taken')
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):

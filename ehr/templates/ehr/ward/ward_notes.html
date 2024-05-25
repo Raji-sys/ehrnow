@@ -1,8 +1,10 @@
 {%extends "base.html" %}
-{%load static%}
-{% block title %}NEW ADMISSION RECEPTION{% endblock%}
+{% load static %}
+{% block title %}WARD NOTES{% endblock%}
+{%block page_title%}<div class="enom flex justify-center">WARD NOTES</div>{%endblock%}
 {% block content %}
-  <div class="uk-overlay rounded-3xl bg-white uk-position-center mt-6">
+<div class="">
+  <div class="uk-overlay rounded-3xl bg-white uk-position-center">
       <section class="text-center border-cyan-700 p-4 m-2">
           {% for message in messages %}
         <div class="mt-2">
@@ -23,23 +25,23 @@
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
     <div class="grid grid-cols-1 p-2 gap-4">
-      {% for field in form %}
-        <div>
-            <div class="">
-                <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
-            </div>
-            <div class="">
-                {{ field }}
-            </div>
-            </div>
-            {%endfor%}
-        </div>
-  <div class="flex justify-center align-middle gap-4">
-    <input type="submit" value="accept patient" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+    {% for field in form %}
+    <div>
+    <div class="flex justify-center">
+      <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
+    </div>
+    <div class="flex justify-center mb-6">
+      {{ field }}
+    </div>
+  </div>
+  {%endfor%}
+</div>
+  </div>
+  <div class="mt-4 gap-4 flex justify-center align-middle">
+    <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
 bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
-    <a href="{%url 'service_list' %}" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-    bg-rose-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">cancel</a>
   </div>
   </form>
   </div>
-  {% endblock %}
+  </div>
+{% endblock %}
