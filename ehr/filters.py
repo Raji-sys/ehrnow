@@ -80,3 +80,27 @@ class AdmissionFilter(django_filters.FilterSet):
     class Meta:
         model = Admission
         fields = ['patient','ward','updated']
+
+
+class TheatreBookingFilter(django_filters.FilterSet):
+    patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
+    patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')            
+    theatre=django_filters.CharFilter(label='THEATRE',field_name="theatre",lookup_expr='iexact')                                                                                                     
+    team=django_filters.CharFilter(label='TEAM',field_name="team",lookup_expr='iexact')                                                                                                     
+    date = django_filters.DateFilter(label="DATE", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+
+    class Meta:
+        model = TheatreBooking
+        fields = ['patient','theatre','team','date']
+
+
+class TheatreNotesFilter(django_filters.FilterSet):
+    patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
+    patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')            
+    type_of_anaesthesia=django_filters.CharFilter(label='ANAESTHESIA',field_name="type_of_anaesthesia",lookup_expr='iexact')                                                                                                     
+    findings=django_filters.CharFilter(label='FINDINGS',field_name="findings",lookup_expr='iexact')                                                                                                     
+    date = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+
+    class Meta:
+        model = TheatreBooking
+        fields = ['patient','type_of_anesthesia','findings','date']

@@ -341,7 +341,6 @@ class Appointment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
 
-
 class VitalSigns(models.Model):
     ROOM_CHOICES = [
         ('ROOM 1', 'ROOM 1'),
@@ -463,10 +462,31 @@ class WardClinicalNote(models.Model):
     def __str__(self):
         return self.patient
 
+class TheatreBooking(models.Model):
+    THEATRES = [
+        ('MAIN THEATRE', 'MAIN THEATRE'),
+        ('SPINE THEATRE', 'THEATRE'),
+    ]
+    TEAMS = [
+        ('WHITE', 'WHITE'),
+        ('GREEN', 'GREEN'),
+        ('BLUE', 'BLUE'),
+        ('YELLOW', 'YELLOW')
+    ]
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_booking')
+    theatre = models.CharField(max_length=30, null=True, choices=THEATRES)
+    team = models.CharField(max_length=30, null=True, choices=TEAMS)
+    date = models.DateField(null=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.patient
+
 
 class TheatreNotes(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="theatre_notes")
+    operated=models.BooleanField(default=False)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     operation_notes=models.TextField()
     anaesthesia=(('GENERAL ANAESTHESIA','GENERAL ANAESTHESIA'),('SPINE ANAESTHESIA','SPINE ANAESTHESIA'))

@@ -260,10 +260,34 @@ class WardMedicationForm(forms.ModelForm):
 class WardNotesForm(forms.ModelForm):
     class Meta:
         model = WardClinicalNote
-        fields = [
-            'note',]
+        fields = ['note',]
     def __init__(self, *args, **kwargs):
         super(WardNotesForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+
+class TheatreBookingForm(forms.ModelForm):
+    class Meta:
+        model = TheatreBooking
+        fields = ['theatre','team','date']
+
+    def __init__(self, *args, **kwargs):
+        super(TheatreBookingForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+class TheatreNotesForm(forms.ModelForm):
+    class Meta:
+        model = TheatreNotes
+        fields = ['operated','operation_notes','type_of_anaesthesia','findings']
+
+    def __init__(self, *args, **kwargs):
+        super(TheatreNotesForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
