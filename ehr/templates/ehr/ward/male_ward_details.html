@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}ICU DASHBOARD{%endblock%}
-{%block page_title%}<div class="enom flex justify-center">ICU DASHBOARD</div>{%endblock%}
+{%block title%}MALE WARD DASHBOARD{%endblock%}
+{%block page_title%}<div class="enom flex justify-center">MALE WARD DASHBOARD</div>{%endblock%}
 {% block content %}
     <div class="md:max-w-7xl  bg-white rounded-md shadow-black h-fit shadow-2xl mx-auto mt-2">
         <div class=" grid grid-cols-2 gap-6 uppercase text-center rounded-xl p-8 md:p-6 ">
             <div>
-                <a href="{% url 'icu_wait_list' %}">
+                <a href="{% url 'male_ward_wait_list' %}">
             <div class="hover:bg-slate-300 hover:text-white bg-zinc-600 text-white rounded-2xl shadow-2xl p-2 md:p-16 border-2 border-white-400 transition duration-300">
               <div class="font-semibold text-xs md:text-sm">PATIENT ON WAITING LIST</div>
             </div>
           </a> 
         </div>
             <div>
-                <a href="{% url 'icu_list' %}">
-            <div class="hover:bg-rose-200 hover:text-white bg-red-500 text-white rounded-2xl shadow-2xl p-2 md:p-16 border-2 border-white-400 transition duration-300">
-              <div class="font-semibold text-xs md:text-sm">ADMITTED PATIENTs</div>
+                <a href="{% url 'male_ward_list' %}">
+            <div class="hover:bg-blue-300 hover:text-white bg-blue-600 text-white rounded-2xl shadow-2xl p-2 md:p-16 border-2 border-white-400 transition duration-300">
+              <div class="font-semibold text-xs md:text-sm">ADMITTED PATIENTS</div>
             </div>
           </a> 
         </div>

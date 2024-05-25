@@ -312,9 +312,6 @@ class TheatreView(TemplateView):
 class WardView(TemplateView):
     template_name = "ehr/dashboard/ward_list.html"
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class WardDashView(TemplateView):
-    template_name = "ehr/ward/ward_list.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ICUView(TemplateView):
@@ -1303,19 +1300,14 @@ class ICUWaitListView(WardListView):
     template_name = 'ehr/ward/icu_wait_list.html'
     ward_filter = 'ICU'
     admit_filter = True
+    accept_filter = False
 
 
 class ICUView(WardListView):
     template_name = 'ehr/ward/icu.html'
     ward_filter = 'ICU'
     admit_filter = True
-    accept_filter=False
-
-
-class MaleWardView(WardListView):
-    template_name = 'ehr/ward/male_ward.html'
-    ward_filter = 'MALE WARD'
-    admit_filter = True
+    accept_filter = True
 
 
 class MaleWardWaitListView(WardListView):
@@ -1325,15 +1317,30 @@ class MaleWardWaitListView(WardListView):
     accept_filter=False
 
 
-class FemaleWardView(WardListView):
-    template_name = 'ehr/ward/female_ward.html'
-    ward_filter = 'FEMALE WARD'
+class MaleWardView(WardListView):
+    template_name = 'ehr/ward/male_ward.html'
+    ward_filter = 'MALE WARD'
     admit_filter = True
+    accept_filter = True
 
 
 class FemaleWardWaitListView(WardListView):
     template_name = 'ehr/ward/female_ward_wait_list.html'
     ward_filter = 'FEMALE WARD'
+    admit_filter = True
+    accept_filter= False
+
+
+class FemaleWardView(WardListView):
+    template_name = 'ehr/ward/female_ward.html'
+    ward_filter = 'FEMALE WARD'
+    admit_filter = True
+    accept_filter= True
+
+
+class ChildrensWardWaitListView(WardListView):
+    template_name = 'ehr/ward/childrens_ward_wait_list.html'
+    ward_filter = 'CHILDRENS WARD'
     admit_filter = True
     accept_filter=False
 
@@ -1342,13 +1349,7 @@ class ChildrensWardView(WardListView):
     template_name = 'ehr/ward/childrens_ward.html'
     ward_filter = 'CHILDRENS WARD'
     admit_filter = True
-
-
-class ChildrensWardWaitListView(WardListView):
-    template_name = 'ehr/ward/childrens_ward_wait_list.html'
-    ward_filter = 'CHILDRENS WARD'
-    admit_filter = True
-    accept_filter=False
+    accept_filter= True
 
 
 class WardVitalSignCreateView(NurseRequiredMixin,CreateView):

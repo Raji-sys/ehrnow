@@ -1,7 +1,7 @@
 {% extends 'base.html'%}
 {% load static %}
-{%block title%}ICU{%endblock%}
-{%block page_title%}<div class="enom flex justify-center">ICU</div>{%endblock%}
+{%block title%}MALE WARD{%endblock%}
+{%block page_title%}<div class="enom flex justify-center">MALE WARD</div>{%endblock%}
 {%block content %}
 <div class="p-4">
   <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-2">
@@ -14,36 +14,36 @@
   </div>
     {% endfor %}
   </section>
-  <div class="mx-20 rounded-xl p-4 shadow-black shadow-sm bg-red-50">
+  <div class="mx-20 rounded-xl p-4 shadow-black shadow-sm bg-blue-50">
   <div class="overflow-x-auto uppercase">
-  <table class="min-w-full divide-y divide-red-500">
-    <thead class="bg-red-100">
+  <table class="min-w-full divide-y divide-blue-500">
+    <thead class="bg-blue-100">
       <tr class="text-sm">
-        <th class="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">#</th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">FILE NUMBER</th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">#</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">FILE NUMBER</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
           PATIENT NAME
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
           PHONE NUMBER
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
           GENDER
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
           BED NUMBER
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
           TAKEN VITALS
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
           GIVE MEDICATION
         </th>
       </tr>
     </thead>
-    <tbody class="bg-white divide-y divide-red-200">
+    <tbody class="bg-white divide-y divide-blue-200">
       {% for a in admissions %}
-      <tr class="text-xs bg-red-50 hover:bg-red-200 transition-colors duration-300">
+      <tr class="text-xs bg-blue-50 hover:bg-blue-200 transition-colors duration-300">
         <td class="px-6 py-4 whitespace-nowrap">
           {{forloop.counter}}
       </td>
@@ -63,7 +63,7 @@
             {{ a.bed_number|default_if_none:'' }}
           </td>  
         <td class="px-6 py-4 whitespace-nowrap">
-          <a href="{%url 'ward_vital_signs' a.patient.file_no%}" class="text-sm text-red-500 hover:text-red-700"><i class="fa-solid fa-heartbeat fa-2xl"></i></a>
+          <a href="{%url 'ward_vital_signs' a.patient.file_no%}" class="text-sm text-blue-500 hover:text-blue-700"><i class="fa-solid fa-heartbeat fa-2xl"></i></a>
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
         <a href="{%url 'ward_medication' a.patient.file_no %}" class="text-sm text-green-500 hover:text-green-700"><i class="fa-solid fa-prescription fa-2xl"></i></a>
