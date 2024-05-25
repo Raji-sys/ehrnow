@@ -88,25 +88,19 @@ class MedicalRecordAdmin(admin.ModelAdmin):
     list_display = ('name','price')
 
 
-@admin.register(TheatreItem)
-class TheatreAdmin(admin.ModelAdmin):
-    list_display = ('name','price')
-    search_fields = ('name','price')
-    list_filter = ('name','price')
-
-
-@admin.register(BillItem)
-class BillItemAdmin(admin.ModelAdmin):
-    list_display = ('bill','item','quantity')
-    search_fields = ('bill','item')
-    list_filter = ('bill','item')
-
 
 @admin.register(Bill)
-class BillAdmin(admin.ModelAdmin):
-    list_display = ('patient','date','total_cost')
-    search_fields = ('patient','date')
-    list_filter = ('patient','date')
+class BillItemAdmin(admin.ModelAdmin):
+    list_display = ('patient','total_amount','created')
+    search_fields = ('patient','created')
+    list_filter = ('patient','created')
+
+
+@admin.register(TheatreItem)
+class TheatreItemAdmin(admin.ModelAdmin):
+    list_display = ('bill','name','price','quantity')
+    search_fields = ('name','price','quantity')
+    list_filter = ('name','price','quantity')
 
 
 @admin.register(Radiology)
@@ -121,3 +115,19 @@ class AdmissionAdmin(admin.ModelAdmin):
     list_display = ('patient','ward','bed_number','updated')
     search_fields = ('patient','ward','bed_number','updated')
     list_filter = ('patient','ward','bed_number','updated')
+
+
+@admin.register(TheatreBooking)
+class TheatreBookingAdmin(admin.ModelAdmin):
+    list_display = ('patient','theatre','team','date','updated')
+    search_fields = ('patient','theatre','team','date','updated')
+    list_filter = ('patient','theatre','team','date','updated')
+
+
+@admin.register(TheatreNotes)
+class TheatreNotesAdmin(admin.ModelAdmin):
+    list_display = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
+    search_fields = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
+    list_filter = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
+
+

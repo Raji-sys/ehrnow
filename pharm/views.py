@@ -321,3 +321,21 @@ class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
         context['PrescriptionFilter'] = PrescriptionFilter(self.request.GET, queryset=self.get_queryset())
         context['total_prescription'] = total_presscription
         return context
+
+
+class PrescriptionUpdateView(UpdateView):
+    model = Prescription
+    template_name = 'dispensary/update_prescription.html'
+    form_class = PrescriptionUpdateForm
+    success_url=reverse_lazy('pharm:prescription_list')
+    
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error')
+        return self.render_to_response(self.get_context_data(form=form))

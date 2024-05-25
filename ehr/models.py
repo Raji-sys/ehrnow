@@ -499,27 +499,38 @@ class TheatreNotes(models.Model):
         return self.patient
 
 
-class TheatreItem(models.Model):
-    name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    def __str__(self):
-        return f"{self.name}"
-
-
 class Bill(models.Model):
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='patient_bill')
-    date = models.DateField(auto_now_add=True)
-    total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='surgery_bill',null=True)
+    created = models.DateTimeField(auto_now_add=True,null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
 
     def __str__(self):
-        return f"{self.patient}___{self.date}"
+        return f"Bill for {self.patient}"
 
-class BillItem(models.Model):
-    bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='theatre_items')
+
+class TheatreItem(models.Model):
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='items',null=True)
+    name = models.CharField(max_length=100,null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
+    quantity = models.PositiveIntegerField(default=1,null=True)
+
+    def __str__(self):
+        return f"{self.name} (x{self.quantity})"
+
+    @property
+    def total_item_price(self):
+        return self.price * self.quantity
+
+class CartItem(models.Model):
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='cart_items')
     item = models.ForeignKey(TheatreItem, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
-    
+    @property
+    def total_item_price(self):
+        return self.item.price * self.quantity
+        
 class Physio(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)

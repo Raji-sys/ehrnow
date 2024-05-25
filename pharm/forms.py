@@ -82,3 +82,15 @@ class PrescriptionForm(forms.ModelForm):
             if total_issued > total_purchased_quantity:
                 raise ValidationError("Not enough drugs in stock.")
         return cleaned_data
+
+
+class PrescriptionUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Prescription
+        fields = ['dispensed']
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.required=False    
+            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+

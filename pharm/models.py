@@ -105,6 +105,7 @@ class Prescription(models.Model):
     quantity = models.PositiveIntegerField('QTY', null=True, blank=True)
     updated = models.DateTimeField(auto_now_add=True)
     prescribed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='prescribed_by')
+    dispensed=models.BooleanField(default=False)
     remark = models.CharField('REMARKS', max_length=100, choices=Unit.choices, null=True, blank=True)
 
     def save(self, *args, **kwargs):

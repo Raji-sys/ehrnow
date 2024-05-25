@@ -20,7 +20,6 @@
   <div class="text-center rounded-xl md:p-10 bg-gray-50 uppercase">
 <!-- start -->
 <!-- top  -->
-<!-- <a href="{%url 'billing_view' patient.file_no %}">bill</a> -->
     <ul class="text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 border-b-2 mb-10" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
       <li><a href="#" class="rounded-lg m-4">BIODATA</a></li>
       <li><a href="#" class="rounded-lg ">PAYMENT</a></li>
@@ -573,6 +572,7 @@
       <div> 
       <div class="text-center rounded-xl p-4 md:p-10 bg-gray-50">
         <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-4 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+          <li ><a href="#" class="rounded-lg ">SURGERY BILL</a></li>
           <li ><a href="#" class="rounded-lg ">WARD VITAL SIGNS</a></li>
           <li class=><a href="#" class="rounded-lg ">WARD MEDICATION</a></li>
           <li><a href="#" class="rounded-lg ">WARD NOTES</a></li>
@@ -580,7 +580,44 @@
         
         <div class="uk-switcher uk-margin">
           <div> 
+            <div >
+            <a href="{% url 'surgery_bill' patient.file_no %}" class="text-sm text-rose-600 hover:text-green-700"><i class="fa-solid fa-money-check fa-2xl"></i></a>
+            </div>
+         
+            <div class="overflow-x-auto px-4 md:px-10 m-4">
+              <table class="min-w-full divide-y divide-cyan-200 mb-4">
+                <thead class="bg-cyan-50">
+                  <tr class="text-sm">
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">item</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">price</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">quantity</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">billed by</th>
+                    <th class="px-6 py-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
+                      </tr>
         
+                </thead>
+                <tbody class="bg-white divide-y divide-cyan-200">
+                  {% for s in surgery_bill %}
+                  <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                    <td class="px-6 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ s.item }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ s.price }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ s.quantity }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ s.user }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ s.created }}</td>
+                      </tr>
+                  {%empty%}
+                  <div class="p-4">
+                      <p>No surgery bill yet</p>
+                  </div>
+                 {%endfor%}
+                </tbody>
+              </table>
+            </div>
+         </div>
+
+         <div> 
             <div >
             <a href="{% url 'ward_vital_signs' patient.file_no %}" class="text-sm text-rose-600 hover:text-green-700"><i class="fa-solid fa-heartbeat fa-2xl"></i></a>
             </div>

@@ -59,4 +59,4 @@ class PrescriptionFilter(django_filters.FilterSet):
 
     class Meta:
         model = Prescription
-        exclude=['remark','quantity','category','patient','payment','category','updated']
+        exclude=['remark','quantity','category','patient','payment','category','dispensed','updated']

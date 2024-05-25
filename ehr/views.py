@@ -1,7 +1,7 @@
 import pydicom
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.base import TemplateView
-from django.views import View
+from django.forms import inlineformset_factory
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -21,10 +21,7 @@ from django.utils import timezone
 from datetime import timedelta
 User = get_user_model()
 from django.db.models import Sum
-from django.shortcuts import render
-from django.http import JsonResponse
 from django.http import HttpResponse
-from django.http import FileResponse
 from django.conf import settings
 import os
 # import matplotlib.pyplot as plt
@@ -490,6 +487,7 @@ class PatientFolderView(DetailView):
         context['ward_clinical_notes'] = patient.ward_clinical_notes.all().order_by('-updated')
         context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
         context['theatre_notes'] = patient.theatre_notes.all().order_by('-updated')
+        context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
 
         # Calculate total worth only for paid transactions
         paid_transactions = patient.patient_payments.filter(status=True)
@@ -1066,70 +1064,6 @@ class PharmPayListView(ListView):
         return context  
     
 
-def billing_view(request, file_no):
-    patient = get_object_or_404(PatientData, file_no=file_no)
-    
-    if request.method == 'POST':
-        item_id = request.POST.get('item_id')
-        action = request.POST.get('action', 'add')  # Default action is 'add'
-        item = get_object_or_404(TheatreItem, id=item_id)
-
-        bill, created = Bill.objects.get_or_create(patient=patient)
-        bill_item, created = BillItem.objects.get_or_create(bill=bill, item=item)
-
-        if action == 'add':
-            bill_item.quantity += 1
-            bill_item.save()
-            bill.total_cost += item.price
-            bill.save()
-            message = 'Item added successfully.'
-        elif action == 'remove':
-            bill_item.quantity -= 1
-            if bill_item.quantity <= 0:
-                bill_item.delete()
-                message = 'Item removed successfully.'
-            else:
-                bill_item.save()
-                message = 'Item quantity reduced successfully.'
-            bill.total_cost -= item.price
-            bill.save()
-
-        return JsonResponse({
-            'success': True,
-            'quantity': bill_item.quantity if bill_item.pk else 0,
-            'total_cost': bill.total_cost,
-            'message': message
-        })
-
-    theatre_items = TheatreItem.objects.all()
-    bill = patient.patient_bill.filter().last()  # Assuming patient_bill is the related_name
-    bill_items = bill.theatre_items.all() if bill else []  # Assuming theatre_items is the related_name
-    
-    detailed_bill_items = []
-    for bill_item in bill_items:
-        detailed_bill_items.append({
-            'id': bill_item.id,
-            'name': bill_item.item.name,
-            'quantity': bill_item.quantity,
-            'unit_price': bill_item.item.price,
-            'total_price': bill_item.item.price * bill_item.quantity
-        })
-    
-    context = {
-        'patient': patient,
-        'theatre_items': theatre_items,
-        'bill_items': detailed_bill_items,
-        'total_cost': bill.total_cost if bill else 0.00,
-    }
-    return render(request, 'ehr/revenue/billing.html', context)
-
-
-def search_items(request):
-    search_text = request.GET.get('search_text', '')
-    items = TheatreItem.objects.filter(name__icontains=search_text)
-    data = [{'id': item.id, 'name': item.name, 'price': str(item.price)} for item in items]
-    return JsonResponse({'items': data})
-
 
 class RadiologyCreateView(CreateView):
     model = Radiology
@@ -1378,6 +1312,46 @@ class WardNotesCreateView(NurseRequiredMixin,CreateView):
         context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
         return context
 
+
+from django.forms import modelformset_factory
+
+class TheatreBillCreateView(DoctorRequiredMixin, LoginRequiredMixin, CreateView):
+    model = Bill
+    template_name = 'ehr/revenue/billing.html'
+    fields = []
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        items = TheatreItem.objects.all()
+        CartItemFormSet = modelformset_factory(CartItem, form=CartItemForm, extra=1)
+        if self.request.POST:
+            formset = CartItemFormSet(self.request.POST)
+            context['formset'] = formset
+        else:
+            formset = CartItemFormSet(queryset=CartItem.objects.none())
+            context['formset'] = formset
+        context['items'] = items
+        return context
+
+    def form_valid(self, form):
+        formset = self.get_context_data()['formset']
+        if formset.is_valid():
+            bill = form.save(commit=False)
+            bill.user = self.request.user
+            patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+            form.instance.patient = patient_data
+            bill.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.bill = bill
+                instance.save()
+            return super().form_valid(form)
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+    def get_success_url(self):
+        messages.success(self.request, 'BILL ADDED')
+        return self.object.patient.get_absolute_url()
 
 class TheatreBookingCreateView(DoctorRequiredMixin, CreateView):
         model = TheatreBooking

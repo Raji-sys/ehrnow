@@ -76,8 +76,6 @@ urlpatterns = [
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
-    path('patient/<str:file_no>/', views.billing_view, name='billing_view'),
-    path('search-items/', views.search_items, name='search_items'),
     
     #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
@@ -139,7 +137,10 @@ urlpatterns = [
     path('clinic/theatre-booking/surgery-wait-list', TheatreBookingListView.as_view(), name="surgery_wait_list"),
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
 
+    path('theatre/theatre-bill/<str:file_no>/', TheatreBillCreateView.as_view(), name='surgery_bill'),
+    
     path('theatre/theatre-notes/<str:file_no>/', TheatreNotesCreateView.as_view(), name='theatre_note'),
+
     path('theatre/operated-patient-list', TheatreNotesListView.as_view(), name="operated_list"),
 
 ]
