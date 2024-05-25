@@ -1042,6 +1042,7 @@ class PayListView(ListView):
         context['total_worth'] = total_worth
         return context    
     
+    
 class HematologyPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/hema_pay_list.html'

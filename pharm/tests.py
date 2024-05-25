@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from .models import Unit, Category, Item, Record, Purchase
+from .models import *
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -315,16 +315,16 @@ class DynamicDropdownTest(TestCase):
         self.category2 = Category.objects.create(name="Category 2")
 
         # Create test items
-        self.item1 = Item.objects.create(name="Item 1", category=self.category1)
-        self.item2 = Item.objects.create(name="Item 2", category=self.category1)
-        self.item3 = Item.objects.create(name="Item 3", category=self.category2)
+        self.item1 = Drug.objects.create(name="Item 1", category=self.category1)
+        self.item2 = Drug.objects.create(name="Item 2", category=self.category1)
+        self.item3 = Drug.objects.create(name="Item 3", category=self.category2)
 
     def test_dynamic_dropdown(self):
         # Log in the user
         self.client.force_login(self.user)
 
         # Access the view that contains the form
-        response = self.client.get(reverse('get_items_for_category', kwargs={'category_id': self.category1.id}))
+        response = self.client.get(reverse('pharm:get_drugs_for_category', kwargs={'category_id': self.category1.id}))
 
         # Check that the response is successful (status code 200)
         self.assertEqual(response.status_code, 200)

@@ -234,10 +234,6 @@ class Services(models.Model):
     class Meta:
         verbose_name_plural = 'general services'
 
-    def get_absolute_url(self):
-        return reverse('service_details', args=[self.type])
-
-
 class Paypoint(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="patient_payments")
@@ -246,9 +242,6 @@ class Paypoint(models.Model):
     status=models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateField(auto_now=True)
-
-    def get_absolute_url(self):
-        return reverse('pay_details', args=[self.service])
    
 
 class FollowUpVisit(models.Model):
@@ -278,9 +271,6 @@ class MedicalRecord(models.Model):
     class Meta:
         verbose_name_plural = 'medical record'
 
-    def get_absolute_url(self):
-        return reverse('service_details', args=[self.type])
-
 
 class PatientHandover(models.Model):
     CLINIC_CHOICES = [
@@ -306,12 +296,12 @@ class PatientHandover(models.Model):
         ('complete','complete'),
         ('await_review','await review'),
     ])
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # class Meta:
-    #     unique_together = ('patient', 'clinic', 'room')
-    
+
+    def str(self):
+        f"Handover for {self.patient.file_no} in {self.clinic} with {self.room} room"
+
 class Appointment(models.Model):
     CLINIC_CHOICES = [
         ('A & E', 'A & E'),
@@ -333,6 +323,8 @@ class Appointment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def str(self):
+        f"Appointment for {self.patient.file_no} in {self.clinic} with {self.team} team"
 
 class VitalSigns(models.Model):
     ROOM_CHOICES = [
@@ -360,12 +352,11 @@ class VitalSigns(models.Model):
     height=models.CharField(max_length=10, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def str(self):
+        f"Vitals for {self.patient.file_no} in {self.clinic} with {self.room} room"
+
     class Meta:
         verbose_name_plural = 'vital signs'
-
-    def get_absolute_url(self):
-        return reverse('vitals_details', args=[self.user])
-
 
 class ClinicalNote(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -381,6 +372,7 @@ class ClinicalNote(models.Model):
 
     def __str__(self):
         return f"notes for: {self.patient.file_no}"
+
 
 class Radiology(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
