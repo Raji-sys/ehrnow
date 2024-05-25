@@ -86,7 +86,7 @@ class PatientData(models.Model):
     last_name = models.CharField('SURNAME', max_length=300, blank=True, null=True)
     first_name = models.CharField(max_length=300, blank=True, null=True)
     other_name = models.CharField(max_length=300, blank=True, null=True)
-    phone = models.CharField(max_length=300, null=True, blank=True, unique=True)
+    phone = models.CharField(max_length=11, null=True, blank=True, unique=True)
     # photo = models.ImageField(null=True, blank=True)
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True, blank=True)
@@ -151,13 +151,6 @@ class PatientData(models.Model):
            ('UNCLE','UNCLE'),('AUNT','AUNT'),('NEPHEW','NEPHEW'),('NIECE','NIECE'),('GRANDFATHER','GRANDFATHER'),('GRANDMOTHER','GRANDMOTHTER'),
            ('GRANDSON','GRANDSON'),('GRANDDAUGHTER','GRANDAUGHTER'),('COUSIN','COUSIN'),('OTHER','OTHER'))
     nok_rel = models.CharField('relationship with next of kin',choices=rel, max_length=300, null=True, blank=True)
-    # CLINIC_CHOICES = [
-    #     ('A & E', 'A & E'),
-    #     ('SOPD', 'SOPD'),
-    #     ('SPINE SOPD', 'SPINE SOPD'),
-    #     ('GOPD', 'GOPD')
-    # ]
-    # clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     # nok_photo = models.ImageField('first next of kin photo', null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 

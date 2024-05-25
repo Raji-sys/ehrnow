@@ -115,7 +115,7 @@ class Prescription(models.Model):
         return self.drug.cost_price * self.quantity
 
     def __str__(self):
-        return f"{self.patient}--{self.drug.name}--{self.updated}"
+        return self.patient
 
     class Meta:
         verbose_name_plural = 'prescription record'

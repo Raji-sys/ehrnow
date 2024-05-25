@@ -364,6 +364,7 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
         messages.success(self.request, 'Patient created successfully')
         return super().form_valid(form)
 
+
 class UpdatePatientView(UpdateView):
     model = PatientData
     template_name = 'ehr/record/update_patient.html'
@@ -803,6 +804,27 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
 
     def get_success_url(self):
         messages.success(self.request, 'PATIENT SEEN.')
+        return self.object.patient.get_absolute_url()
+
+
+class ClinicalNoteUpdateView(UpdateView):
+    model = ClinicalNote
+    template_name = 'ehr/doctor/update_clinical_note.html'
+    form_class = ClinicalNoteUpdateForm
+    
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error')
+        return self.render_to_response(self.get_context_data(form=form))
+    
+    def get_success_url(self):
+        messages.success(self.request, 'CLINICAL NOTE UPDATED')
         return self.object.patient.get_absolute_url()
 
 

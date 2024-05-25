@@ -48,8 +48,6 @@ class ProfileForm(forms.ModelForm):
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 class PatientForm(forms.ModelForm):
-    clinic = forms.ChoiceField(choices=PatientHandover.CLINIC_CHOICES, required=False)
-
     class Meta:
         model = PatientData
         exclude = ['file_no','user','updated']
@@ -145,6 +143,19 @@ class ClinicalNoteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClinicalNoteForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # field.required=True
+            field.widget.attrs.update(
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
+
+class ClinicalNoteUpdateForm(forms.ModelForm):
+    class Meta:
+        model = ClinicalNote
+        fields = ('needs_review',)
+
+    def __init__(self, *args, **kwargs):
+        super(ClinicalNoteUpdateForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
