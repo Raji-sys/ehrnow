@@ -328,3 +328,8 @@ class TheatreNotesForm(forms.ModelForm):
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
+
+class DicomFileForm(forms.ModelForm):
+    class Meta:
+        model = DicomFile
+        fields = ['file']

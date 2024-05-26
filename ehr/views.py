@@ -1087,65 +1087,6 @@ class PharmPayListView(ListView):
         return context  
     
 
-
-class RadiologyCreateView(CreateView):
-    model = Radiology
-    form_class = DicomUploadForm
-    template_name = 'ehr/radiology/radiology_form.html'
-
-    def get_initial(self):
-        initial = super().get_initial()
-        file_no = self.kwargs.get('file_no')
-        if file_no:
-            patient = get_object_or_404(PatientData, file_no=file_no)
-            initial['patient'] = patient.file_no
-        return initial
-
-    def form_valid(self, form):
-        # Get the patient instance from the URL parameter
-        file_no = self.kwargs.get('file_no')
-        patient = get_object_or_404(PatientData, file_no=file_no)
-
-        # Create the Radiology instance
-        radiology = form.save(commit=False)
-        radiology.patient = patient
-        radiology.user = self.request.user
-
-        # Save the DICOM file
-        dicom_file = form.cleaned_data.get('dicom_file')
-        radiology.dicom_file = dicom_file
-
-        radiology.save()
-
-        messages.success(self.request, 'DICOM file uploaded successfully.')
-        return redirect(patient.get_absolute_url())
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['initial'] = self.get_initial()
-        return kwargs
-
-
-def serve_dicom_file(request, study_id):
-    study = get_object_or_404(Radiology, id=study_id)
-    dicom_file_path = os.path.join(settings.MEDIA_ROOT, study.dicom_file.name)
-
-    # Read the DICOM file
-    ds = pydicom.dcmread(dicom_file_path)
-
-    # Convert the DICOM pixel data to a PIL image
-    pixels = ds.pixel_array
-    # img = plt.imread(pixels, format='png')
-
-    # Convert the image to bytes
-    buffer = BytesIO()
-    # plt.imsave(buffer, img, format='png')
-    buffer.seek(0)
-
-    # Serve the image
-    return HttpResponse(buffer.getvalue(), content_type='image/png')
-
-
 class AdmissionCreateView(RevenueRequiredMixin, CreateView):
     model = Admission
     form_class = AdmissionForm
@@ -1473,3 +1414,60 @@ class TheatreNotesListView(DoctorRequiredMixin,ListView):
         context['total_operations'] = total_operations
         context['theatreFilter'] = TheatreNotesFilter(self.request.GET, queryset=self.get_queryset())
         return context
+
+def upload_file(request):
+    if request.method == 'POST':
+        form = DicomFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('dicom_app:file_list')
+    else:
+        form = DicomFileForm()
+    return render(request, 'dicom_app/upload.html', {'form': form})
+
+def file_list(request):
+    files = DicomFile.objects.all()
+    return render(request, 'dicom_app/file_list.html', {'files': files})
+
+def view_file(request, pk):
+    dicom_file = DicomFile.objects.get(pk=pk)
+    return render(request, 'dicom_app/view_file.html', {'dicom_file': dicom_file})
+
+
+class RadiologyCreateView(CreateView):
+    model = Radiology
+    form_class = DicomUploadForm
+    template_name = 'ehr/radiology/radiology_form.html'
+
+    def get_initial(self):
+        initial = super().get_initial()
+        file_no = self.kwargs.get('file_no')
+        if file_no:
+            patient = get_object_or_404(PatientData, file_no=file_no)
+            initial['patient'] = patient.file_no
+        return initial
+
+    def form_valid(self, form):
+        # Get the patient instance from the URL parameter
+        file_no = self.kwargs.get('file_no')
+        patient = get_object_or_404(PatientData, file_no=file_no)
+
+        # Create the Radiology instance
+        radiology = form.save(commit=False)
+        radiology.patient = patient
+        radiology.user = self.request.user
+
+        # Save the DICOM file
+        dicom_file = form.cleaned_data.get('dicom_file')
+        radiology.dicom_file = dicom_file
+
+        radiology.save()
+
+        messages.success(self.request, 'DICOM file uploaded successfully.')
+        return redirect(patient.get_absolute_url())
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['initial'] = self.get_initial()
+        return kwargs
+

@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django_quill',
     'pathology',
     'pharm',
+    'compressor',
 ]
 
 MIDDLEWARE = [
@@ -138,6 +139,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'node_modules', 'cornerstone-tools', 'dist'),
 ]
+
+STATICFILES_FINDERS = [
+    'compressor.finders.CompressorFinder',
+]
+
+COMPRESS_ENABLED = True
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

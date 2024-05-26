@@ -106,8 +106,9 @@ urlpatterns = [
 
     #radiology
     path('patient/<str:file_no>/radiology/create/', RadiologyCreateView.as_view(), name='radiology_create'),
-    path('dicom/<int:study_id>/', views.serve_dicom_file, name='serve-dicom-file'),
-
+    path('dicom/list/', views.file_list, name='file_list'),
+    path('upload/', views.upload_file, name='upload_file'),
+    path('view/<int:pk>/', views.view_file, name='view_file'),
     #admission
     path('clinic/admit-patient/<str:file_no>/', AdmissionCreateView.as_view(), name='admit_patient'),
     path('clinic/admission-list/', AdmissionListView.as_view(), name='admission_list'),

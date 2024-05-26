@@ -29,6 +29,8 @@
 <script src="{% static 'js/highlight.min.js' %}"></script>
 <script src="{% static 'js/dicom_viewer.js' %}"></script>   
 
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/quill.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.min.css" rel="stylesheet">
 <link href="{% static 'css/quill.snow.css' %}" rel="stylesheet">
 <script src="{% static 'js/quill.min.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/dicom-web-viewer@2.7.0/dist/dicom-web-viewer.min.js"></script>
@@ -42,6 +44,7 @@
 </head>
 
 <body class="bgd h-screen">
+	{{ form.media }}
   <style>
 	a{
 		text-decoration: none;

@@ -373,7 +373,10 @@ class ClinicalNote(models.Model):
     def __str__(self):
         return f"notes for: {self.patient.file_no}"
 
-
+class DicomFile(models.Model):
+    file = models.FileField(upload_to='dicom_files/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
 class Radiology(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="radiology_files")
@@ -474,7 +477,7 @@ class TheatreNotes(models.Model):
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="theatre_notes")
     operated=models.BooleanField(default=False)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    operation_notes=models.TextField()
+    operation_notes=QuillField(null=True,blank=True)
     anaesthesia=(('GENERAL ANAESTHESIA','GENERAL ANAESTHESIA'),('SPINE ANAESTHESIA','SPINE ANAESTHESIA'))
     type_of_anaesthesia=models.CharField(choices=anaesthesia, max_length=300,null=True,blank=True)
     findings=models.CharField(max_length=300,null=True,blank=True)

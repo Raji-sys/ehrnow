@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DICOM Files</title>
+</head>
+<body>
+    <h1>DICOM Files</h1>
+    <ul>
+        {% for file in files %}
+        <li>
+            <a href="{% url 'dicom_app:view_file' file.pk %}">{{ file.file.name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
