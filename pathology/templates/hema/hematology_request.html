@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {%load static %}
-{%block page_title%}<div class="enom flex justify-center">HEMATOLOGY REQUEST LIST</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'pathology:hematology' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>HEMATOLOGY REQUEST LIST</div>{%endblock%}
 {% block content %}
 <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-1">
   {% for message in messages %}

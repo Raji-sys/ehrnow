@@ -2,7 +2,7 @@
 {% load humanize %}
 {% load static %}
 {% block title %}DRUGS{% endblock %}
-{%block page_title%}<div class="enom flex justify-center">LIST OF DRUGS</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'pharm:pharm_inventory' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>LIST OF DRUGS</div>{%endblock%}
 {% block content %}
 <div class="mx-20 flex justify-center justify-items-center text-center text-gray-800 font-medium text-sm align-middle uppercase items-center p-3 bg-cyan-50 border-b border-gray-100 shadow-md shadow-cyan-900 rounded-b-xl">
     <a href="{%url 'pharm:create_drug'%}" class="focus:opacity-10 bg-cyan-800 p-2 px-4 rounded-2xl m-2 text-white"><i class="text-white fa-solid fa-plus fa-lg mr-2"></i>add new drug</a>

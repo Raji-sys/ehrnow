@@ -2,7 +2,7 @@
 {% load static %}
 {%block title%}CLINIC DASHBOARD{%endblock%}
 
-{%block page_title%}<div class="enom flex justify-center">CLINICS</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>CLINICS</div>{%endblock%}
 {%block content %}
     <section class="text-center border-cyan-700 p-4 m-2">
         {% for message in messages %}

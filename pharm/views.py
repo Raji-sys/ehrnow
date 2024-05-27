@@ -19,6 +19,7 @@ from .decorators import  superuser_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.forms import modelformset_factory,inlineformset_factory
+from django.db.models import Sum
 
 from django.urls import reverse
 from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView, View
@@ -339,3 +340,25 @@ class PrescriptionUpdateView(UpdateView):
     def form_invalid(self, form):
         messages.error(self.request, 'Error')
         return self.render_to_response(self.get_context_data(form=form))
+    
+
+class PharmPayListView(ListView):
+    model = Paypoint
+    template_name = 'dispensary/pharmacy_transaction.html'
+    context_object_name = 'pharm_pays'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Paypoint.objects.filter(pharm_payment__isnull=False).order_by('-updated')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pay_total = self.get_queryset().count()
+
+        # Calculate total worth only for paid transactions
+        paid_transactions = self.get_queryset().filter(status=True)
+        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        return context  

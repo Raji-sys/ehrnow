@@ -464,6 +464,7 @@ class PatientFolderView(DetailView):
         obj = PatientData.objects.get(file_no=self.kwargs['file_no'])
         user = self.request.user
         allowed_groups = ['nurse', 'doctor', 'record', 'pathologist', 'pharmacist']
+
         if not any(group in user.groups.values_list('name', flat=True) for group in allowed_groups):
             raise PermissionDenied()
         return obj
@@ -856,19 +857,17 @@ class SOPDAwaitingReviewView(ClinicListView):
     
 
 class AppointmentCreateView(RecordRequiredMixin, CreateView):
-        model = Appointment
-        form_class = AppointmentForm
-        template_name = 'ehr/record/new_appointment.html'
-        success_url = reverse_lazy("patient_list")
+    model = Appointment
+    form_class = AppointmentForm
+    template_name = 'ehr/record/new_appointment.html'
+    success_url = reverse_lazy("appointments")
 
-        def form_valid(self, form):
-            form.instance.user = self.request.user
-            form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-            self.object = form.save()
-            return super().form_valid(form)
-        
-        def get_success_url(self):
-            messages.success(self.request, 'APPOINTMENT ADDED')
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        self.object = form.save()
+        messages.success(self.request, 'APPOINTMENT ADDED')
+        return super().form_valid(form)
 
 
 class AppointmentUpdateView(UpdateView):
@@ -1024,7 +1023,7 @@ class PayListView(ListView):
     model=Paypoint
     template_name='ehr/revenue/transaction.html'
     context_object_name='pays'
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
         updated = super().get_queryset().filter(status=True).order_by('-updated')
@@ -1047,7 +1046,7 @@ class HematologyPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/hema_pay_list.html'
     context_object_name = 'hematology_pays'
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
         return Paypoint.objects.filter(hematology_result_payment__isnull=False).order_by('-updated')
@@ -1069,7 +1068,7 @@ class PharmPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/pharm_pay_list.html'
     context_object_name = 'pharm_pays'
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
         return Paypoint.objects.filter(pharm_payment__isnull=False).order_by('-updated')

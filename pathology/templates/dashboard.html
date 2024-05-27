@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}DASHBOARD{% endblock %}
-
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATHOLOGY DASHBOARD</div>{%endblock%}
 {% block content %}
 <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-2">
   {% for message in messages %}
@@ -14,10 +14,10 @@
   </div>
   {% endfor %}
 </section>
-<div class=" py-10">
+<div class="">
   <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-xl shadow-black shadow-2xl">
-    <div class="p-8 md:p-4 text-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="p-8 text-center grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <a href="{% url 'pathology:hematology' %}" class="block">
           <div class=" hover:bg-white hover:text-gray-600 text-white bg-emerald-500  rounded-lg shadow-lg p-8 border-2 border-white transition duration-300">

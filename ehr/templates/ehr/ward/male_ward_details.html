@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}MALE WARD DASHBOARD{%endblock%}
-{%block page_title%}<div class="enom flex justify-center">MALE WARD DASHBOARD</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'ward_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>MALE WARD DASHBOARD</div>{%endblock%}
 {% block content %}
     <div class="md:max-w-7xl  bg-white rounded-md shadow-black h-fit shadow-2xl mx-auto mt-2">
         <div class=" grid grid-cols-2 gap-6 uppercase text-center rounded-xl p-8 md:p-6 ">

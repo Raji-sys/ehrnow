@@ -28,4 +28,6 @@ urlpatterns=[
     path('pharmacy/prescription/prescribe/<str:file_no>/', views.create_prescription, name='add_prescription'),
     path('pharmacy/prescription/prescribed/', PrescriptionListView.as_view(), name='prescription_list'),
     path('pharmacy/prescription/update/<int:pk>/', PrescriptionUpdateView.as_view(), name='update_prescription'),
+    path('pharmacy/transaction/', PharmPayListView.as_view(), name='pharmacy_transaction'),
+
 ]

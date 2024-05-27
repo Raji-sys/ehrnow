@@ -198,10 +198,7 @@ class PatientData(models.Model):
 class Room(models.Model):
     CLINIC_CHOICES = [
         ('A & E', 'A & E'),
-        ('SOPD', 'SOPD'),
-        ('SPINE SOPD', 'SPINE SOPD'),
-        ('GOPD', 'GOPD')
-    ]
+        ('SOPD', 'SOPD'),]    
     ROOM_CHOICES = [
         ('ROOM 1', 'ROOM 1'),
         ('ROOM 2', 'ROOM 2'),
@@ -248,8 +245,6 @@ class FollowUpVisit(models.Model):
     CLINIC_CHOICES = [
         ('A & E', 'A & E'),
         ('SOPD', 'SOPD'),
-        ('SPINE SOPD', 'SPINE SOPD'),
-        ('GOPD', 'GOPD')
     ]
 
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE,related_name='follow_up')
@@ -276,8 +271,6 @@ class PatientHandover(models.Model):
     CLINIC_CHOICES = [
         ('A & E', 'A & E'),
         ('SOPD', 'SOPD'),
-        ('SPINE SOPD', 'SPINE SOPD'),
-        ('GOPD', 'GOPD')
     ]
 
     ROOM_CHOICES = [
@@ -306,8 +299,6 @@ class Appointment(models.Model):
     CLINIC_CHOICES = [
         ('A & E', 'A & E'),
         ('SOPD', 'SOPD'),
-        ('SPINE SOPD', 'SPINE SOPD'),
-        ('GOPD', 'GOPD')
     ]
     TEAM_CHOICES = [
         ('WHITE', 'WHITE'),
@@ -335,8 +326,6 @@ class VitalSigns(models.Model):
     CLINIC_CHOICES = [
         ('A & E', 'A & E'),
         ('SOPD', 'SOPD'),
-        ('SPINE SOPD', 'SPINE SOPD'),
-        ('GOPD', 'GOPD')
     ]
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
@@ -453,7 +442,7 @@ class WardClinicalNote(models.Model):
 class TheatreBooking(models.Model):
     THEATRES = [
         ('MAIN THEATRE', 'MAIN THEATRE'),
-        ('SPINE THEATRE', 'THEATRE'),
+        ('SPINE THEATRE', 'SPINE THEATRE'),
     ]
     TEAMS = [
         ('WHITE', 'WHITE'),
