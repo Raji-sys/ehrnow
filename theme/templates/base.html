@@ -14,7 +14,15 @@
 <link rel="icon" type="image/png" sizes="16x16" href="{%static 'favicon/favicon-16x16.png' %}">
 <link rel="manifest" href="{%static 'favicon/site.webmanifest' %}">
 <link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
+<!-- UIkit CSS -->
 <link rel="stylesheet" href="{% static 'uikit/css/uikit.min.css' %}" type="text/css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/css/uikit.min.css" />
+
+<!-- UIkit JS -->
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit-icons.min.js"></script>
+<!-- <script src="{% static 'uikit/js/uikit.min.js' %}"></script>
+<script src="{% static 'uikit/js/uikit-icons.js' %}"></script> -->
 
 <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
 <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
@@ -22,8 +30,6 @@
 
 <script src="{% static 'js/_hyperscript.js' %}"></script>
 <script src="{% static 'js/htmx.min.js'%}"></script>
-<script src="{% static 'uikit/js/uikit.min.js' %}"></script>
-<script src="{% static 'uikit/js/uikit-icons.js' %}"></script>
 
 <link rel="stylesheet" href="{% static 'css/darcula.min.css' %}">
 <script src="{% static 'js/highlight.min.js' %}"></script>
@@ -43,7 +49,7 @@
 {% include 'django_quill/media.html' %}
 </head>
 
-<body class="bgd h-screen">
+<body class="h-screen">
 	{{ form.media }}
   <style>
 	a{
@@ -53,11 +59,13 @@
 		text-decoration: none;
 	}
 	
-      .bgd{
+  body {
+        font-family: 'Lato', sans-serif;
 		background-image: url('{% static "images/4.jpg" %}');
 		background-repeat: no-repeat;
 		background-size: cover;
-	}
+		height: auto;
+        }
   </style>
 		{% if request.user.is_authenticated %}
 	<header class="bg-emerald-500 p-4 shadow-md border-b-2 border-gray-900 md:mx-20">

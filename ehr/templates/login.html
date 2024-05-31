@@ -22,15 +22,15 @@
             {% endif %}
         <form action="" method="POST" class="text-center">
             {% csrf_token %}
-            <div class="mb-2 uppercase text-cyan-900 px-10">
-                  <p class="text-green-900 text-sm font-bold border-b border-green-700">sign in to your account</p>
-                <div class="flex justify-center">
+            <div class="mb-2 uppercase text-cyan-900 px-14">
+                  <p class="text-green-900 text-md font-bold border-b border-green-700">sign in to your account</p>
+                <div class="flex justify-center text-sm">
                   <label for="uname">username</label>
                 </div>
                 <div class="flex justify-center mb-6">
                   <input class="text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200" type="text" name="username" id="uname"/>
                 </div>
-                <div class="flex justify-center">
+                <div class="flex justify-center text-sm">
                   <label for="password">password </label>
                 </div>
                 <div class="flex justify-center mb-4">
