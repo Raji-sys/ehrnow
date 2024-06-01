@@ -77,7 +77,7 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         if self.request.user.is_superuser:
-            return reverse_lazy('get_started')
+            return reverse_lazy('index')
         else:
             return reverse_lazy('profile_folder', args=[self.request.user.profile.unit])
 

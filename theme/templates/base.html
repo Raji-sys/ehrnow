@@ -33,13 +33,11 @@
 
 <link rel="stylesheet" href="{% static 'css/darcula.min.css' %}">
 <script src="{% static 'js/highlight.min.js' %}"></script>
-<script src="{% static 'js/dicom_viewer.js' %}"></script>   
 
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/quill.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.min.css" rel="stylesheet">
 <link href="{% static 'css/quill.snow.css' %}" rel="stylesheet">
 <script src="{% static 'js/quill.min.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/dicom-web-viewer@2.7.0/dist/dicom-web-viewer.min.js"></script>
 
 <script src="{% static 'js/quill.imageCompressor.min.js' %}"></script>
 <script src="{% static 'js/quill-resize-module.min.js' %}"></script>
@@ -64,8 +62,8 @@
 		background-image: url('{% static "images/4.jpg" %}');
 		background-repeat: no-repeat;
 		background-size: cover;
-		height: auto;
         }
+
   </style>
 		{% if request.user.is_authenticated %}
 	<header class="bg-emerald-500 p-4 shadow-md border-b-2 border-gray-900 md:mx-20">
