@@ -19,10 +19,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/css/uikit.min.css" />
 
 <!-- UIkit JS -->
-<script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit-icons.min.js"></script>
-<!-- <script src="{% static 'uikit/js/uikit.min.js' %}"></script>
-<script src="{% static 'uikit/js/uikit-icons.js' %}"></script> -->
+<script src="{% static 'uikit/js/uikit.min.js' %}"></script>
+<script src="{% static 'uikit/js/uikit-icons.js' %}"></script>
 
 <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
 <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
@@ -66,7 +66,7 @@
 
   </style>
 		{% if request.user.is_authenticated %}
-	<header class="bg-emerald-500 p-4 shadow-md border-b-2 border-gray-900 md:mx-20">
+	<header class="bg-emerald-500 p-2 shadow-md border-b-2 border-gray-900 md:mx-20">
 		<nav class="flex flex-row flex-wrap justify-between">
 			  <div class="border-4 border-white bg-green-800 rounded-xl p-1 text-xs text-white text-center flex justify-center items-center align-middle">
 				<a href="{% url 'get_started' %}" class="focus:opacity-10 text-white text-center"> 

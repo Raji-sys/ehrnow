@@ -3,7 +3,7 @@
 {% block title %}Create an account{% endblock %}
 {% block content %} 
 <div class="">
-    <div class="uk-overlay rounded-3xl bg-white uk-position-center">
+    <div class="mb-10 mx-auto m-2 rounded-3xl bg-white uk-position-center md:p-8">
       <section class="text-center border-cyan-700 p-2 m-2">
         {% for message in messages %}
       <div class="mt-2">
@@ -15,7 +15,7 @@
       {% endfor %}
     </section>
     {% if form.errors %}
-    <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
+    <div class="uk-alert-danger text-xs uppercase text-rose-700 rounded-xl" uk-alert>
         <a href class="uk-alert-close font-bold" uk-close></a>
         <p class="text-xs">{{form.errors}}</p>
       </div>
@@ -23,14 +23,14 @@
     <form action="{% url 'register' %}" method="POST" class="text-xs">
       {% csrf_token %}
       <div class="mb-1 text-cyan-900 px-16 uppercase">
-        <p class="text-green-900 text-md font-bold text-center border-b border-green-700">register to get started</p>
+        <p class="text-green-900 md:text-lg text-sm font-bold text-center border-b border-green-700">register to get started</p>
         <div class="flex justify-center">
           <label for="uname">username</label>
         </div>
         <div class="flex justify-center mb-4">
           <input
             id="uname"
-            class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
+            class="text-center text-xs focus:outline-none border border-green-400 p-2 px-8 md:p-4 md:px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="text"
             name="username"
           />
@@ -41,7 +41,7 @@
         <div class="flex justify-center mb-4">
           <input
             id="email"
-            class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
+            class="text-center text-xs focus:outline-none border border-green-400 p-2 px-8 md:p-4 md:px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="text"
             name="email"
           />
@@ -51,7 +51,7 @@
         </div>
         <div class="flex justify-center mb-4">
           <input
-            class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
+            class="text-center text-xs focus:outline-none border border-green-400 p-2 px-8 md:p-4 md:px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="text"
             name="last_name"
             id="lname"
@@ -62,7 +62,7 @@
         </div>
         <div class="flex justify-center mb-4">
           <input
-            class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
+            class="text-center text-xs focus:outline-none border border-green-400 p-2 px-8 md:p-4 md:px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="text"
             name="first_name"
             id="fname"
@@ -73,7 +73,7 @@
         </div>
         <div class="flex justify-center mb-4">
           <input
-            class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
+            class="text-center text-xs focus:outline-none border border-green-400 p-2 px-8 md:p-4 md:px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="password"
             name="password1"
             id="password"
@@ -84,7 +84,7 @@
         </div>
         <div class="flex justify-center mb-4">
           <input
-            class="text-center text-xs focus:outline-none border border-green-400 p-4 px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
+            class="text-center text-xs focus:outline-none border border-green-400 p-2 px-8 md:p-4 md:px-12 rounded shadow-lg focus:shadow-xl focus:border-green-200"
             type="password"
             name="password2"
             id="conpassword"
@@ -93,7 +93,7 @@
         <div class="flex justify-center mb-4">
           <input
             class="ocus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-            bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl"
+            bg-green-700 text-white md:py-4 py-4 px-8 rounded shadow-lg hover:shadow-xl"
             type="submit"
             value="Register"
           />

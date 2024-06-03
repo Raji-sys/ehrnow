@@ -1,3 +1,105 @@
-<div class="p-2 flex justify-center ">
-  <div class=" rounded-3xl bg-white p-4 mt-32">
-        <section class="text-center border-cyan-700 p-4 m-2">
+{% extends 'base.html' %}
+{% load static %}
+{%block title%}FOLLOW UP{%endblock%}
+{%block page_title%}<div class="flex justify-center">FOLLOW UP</div>{%endblock%}
+{%block content %}
+<div class="">
+    <section class="text-center border-purple-700 p-4 m-2">
+        {% for message in messages %}
+        <div class="mt-2 ">
+          <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
+              <a href class="uk-alert-close font-bold" uk-close></a>
+              <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
+          </div>
+      </div>
+        {% endfor %}
+      </section>
+    <div class="md:mx-20 mx-2 justify-center flex text-center rounded-xl p-4 shadow-black shadow-sm bg-purple-50">
+      <div class="text-purple-900">
+        <form method="get" class="text-xs">
+          
+          {% for field in patientFilter.form %}
+          <div class="text-center md:flex md:justify-center grid grid-cols-1 gap-3 md:gap-1">
+                <!-- <label for="{{field.id_for_label}}" class="inline">{{ field.label_tag }}</label> -->
+                <input type="field.field.widget.input_type" name="{{field.name}}"
+                class="text-center text-sm focus:outline-none w-fit text-purple-950 p-2
+                rounded shadow-sm shadow-purple-900 border-purple-900 border" placeholder="{{field.name}}"
+                {%if field.value%} value="{{field.value}}"{%endif%}> 
+                {% endfor %}
+           
+              </div>
+              <div class="flex justify-center">
+                <button type="submit" class=" shadow-sm shadow-purple-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-purple-600 bg-purple-900 text-white rounded hover:border-purple-700 ">
+                  <i class="fa-solid fa-search fa-xl "></i>
+                </button>
+                <span class="flex justify-center">
+                  {% if request.GET.urlencode %}
+                    <a href="?" class=" p-3 focus:opacity-10  focus:border-purple-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
+                      <i class="fa-solid fa-rotate fa-xl text-white"></i></a>
+                      {%endif%}
+                    </span>
+                </div>
+        </form>
+    </div>
+    {% if request.GET.urlencode %}
+      <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
+        <table class="min-w-full divide-y divide-purple-200">
+          <thead class="bg-purple-50">
+            <tr class="text-sm">
+                <th class="px-6 py-3 text-left text-xs font-medium text-purple-500 uppercase tracking-wider">
+                    #
+                </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-purple-500 uppercase tracking-wider">
+                FILE NUMBER
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-purple-500 uppercase tracking-wider">
+                NAME
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-purple-500 uppercase tracking-wider">
+                PHONE
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-purple-500 uppercase tracking-wider">
+                BOOK
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-purple-200">
+            {% for p in patients %}
+            <tr class="bg-purple-100 hover:bg-purple-200 transition-colors duration-300 text-xs">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    {{forloop.counter}}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  {{ p.file_no }}
+                </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <a href="{{p.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+                {{ p.full_name }}
+                </a>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{ p.phone }}
+              </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div>
+                    <a href="{%url 'follow_up' p.file_no %}" class="text-sm text-fuchsia-600 hover:text-fuchsia-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+                  </div>
+              </td>
+              <td>
+                
+              </td>
+            </tr>
+            {% empty %}
+            <tr class="bg-white">
+              <td colspan="2" class="px-6 py-4 text-center text-purple-500">
+                No patients found
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {%endif%}
+    </div>
+  </div>
+{%endblock%}

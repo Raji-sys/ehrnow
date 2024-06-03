@@ -109,9 +109,15 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 &#x20A6;{{ d.payment.price|default_if_none:'' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{d.payment.status}}
+              {% if d.payment.status == False %}
+              <td class="px-6 py-4 whitespace-nowrap text-red-700">
+            <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
               </td>
+          {% else %}
+              <td class="px-6 py-4 whitespace-nowrap text-green-700">
+               <i class="fa-solid fa-thumbs-up fa-2xl"></i>
+             </td>
+          {% endif %}
               <td class="px-6 py-4 whitespace-nowrap">
                 {{ d.dispensed_date|default_if_none:'' }}
               </td>

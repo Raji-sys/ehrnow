@@ -361,7 +361,7 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
     def form_valid(self, form):
         patient = form.save()
         PatientHandover.objects.create(patient=patient, clinic='A & E', status='waiting_for_payment')
-        messages.success(self.request, 'Patient created successfully')
+        messages.success(self.request, 'Patient registered successfully')
         return super().form_valid(form)
 
 

@@ -2,7 +2,7 @@
 {% load static %}
 {%block title%}HANDLE PATIENT VISIT{%endblock%}
 {%block content %}
-    <div class="p-2 rounded-3xl bg-white uk-position-center mt-14">
+    <div class="p-2 rounded-3xl bg-white mx-2 md:mx-20 m-2 md:mt-10">
         <section class="text-center border-cyan-700 p-4 m-2">
             {% for message in messages %}
           <div class="mt-1">
@@ -21,11 +21,11 @@
             {% endif %}
   <form method="post" enctype="multipart/form-data" class="text-xs">
     {% csrf_token %}
-    <div class="mb-2 uppercase text-cyan-900 px-10">
-        <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">New Patient Registration</p>
-        <div class="grid grid-cols-3 p-2 gap-4">
+    <div class="mb-2 uppercase text-cyan-900">
+        <p class="text-green-900 text-lg font-bold text-center border-b border-green-700">New Patient Registration</p>
+        <div class="grid md:grid-cols-3 p-2 md:gap-4">
       {% for field in form %}
-        <div>
+        <div class="text-center">
             <div class="">
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
             </div>
@@ -35,7 +35,7 @@
             </div>
             {%endfor%}
           </div>
-            <div class="gap-3 flex justify-center align-middle p-6">
+            <div class="gap-3 flex justify-center align-middle p-3">
             <input type="submit" value="register" class="text-md focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
             bg-green-700 text-white py-6 px-16 rounded shadow-lg hover:shadow-xl">
           </div>

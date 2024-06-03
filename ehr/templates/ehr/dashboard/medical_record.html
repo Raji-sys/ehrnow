@@ -18,11 +18,11 @@
 </section>
     <div class="grid grid-cols-1 md:mx-20 mt-2 md:mt-4">
         <div class="rounded-xl md:p-6 shadow-green-700 shadow-sm bg-zinc-200" >
-                <div class="flex justify-center items-center gap-20 uppercase text-center mx-auto rounded-xl p-8 md:p-8">
+                <div class="grid grid-cols-3 gap-10 md:flex md:justify-center items-center md:gap-20 uppercase text-center mx-auto rounded-xl p-4 md:p-8">
                     <div class="w-fit">
                         <a href="{%url 'new_patient' %}" class="text-xs font-semibold text-white">
-                            <div class="bg-white rounded-2xl shadow-md shadow-black p-2 md:p-4    hover:bg-emerald-600 text-emerald-600 hover:text-white border-2 border-white transition duration-300">
-                        <i class="fa-solid fa-folder-plus fa-3x m-2"></i><br>
+                            <div class="text-xs bg-white rounded-2xl shadow-md shadow-black p-1 md:p-4 hover:bg-emerald-600 text-emerald-600 hover:text-white border-2 border-white transition duration-300">
+                        <i class="fa-solid fa-folder-plus fa-2x md:fa-3x m-2"></i><br>
                                 NEW PATIENT REGISTRATION</div>
                         </a>
                     </div>
@@ -30,14 +30,14 @@
                         
                         <a href="{%url 'follow_up_list' %}" class="text-xs font-semibold text-white">
                             <div class="bg-white rounded-2xl shadow-md shadow-black p-2 md:p-4   border-2 border-white transition duration-300 hover:bg-purple-600 text-purple-600 hover:text-white">
-                        <i class="fa-solid fa-recycle fa-3x m-2"></i><br>
+                        <i class="fa-solid fa-recycle fa-2x md:fa-3x m-2"></i><br>
                                 RETURNING PATIENT</div>
                         </a>
                     </div>                    
                     <div class="w-fit">
                         <a href="{%url 'patient_movement' %}" class="text-xs font-semibold text-white">
                             <div class="bg-white rounded-2xl shadow-md shadow-black p-2 md:p-4 border-2 border-white transition duration-300 hover:bg-cyan-600 text-cyan-600 hover:text-white">
-                        <i class="fa-solid fa-walking fa-3x m-2"></i><br>
+                        <i class="fa-solid fa-walking fa-2x md:fa-3x m-2"></i><br>
                                 PATIENT MOVEMENT</div>
                         </a>
                     </div>
@@ -45,7 +45,7 @@
                 <div class="grid grid-cols-1 gap-3 uppercase text-center p-2 mt-8 bg-white rounded">
                     <div class="mt-10">
                         <a href="{%url 'appt_dashboard' %}" class="text-xs font-semibold text-white">
-                            <div class="bg-white mx-auto md:p-4 rounded-2xl shadow-md shadow-black border-2 border-white transition duration-300 hover:bg-fuchsia-600 text-fuchsia-600 hover:text-white w-fit">
+                            <div class="bg-white mx-auto p-2 md:p-4 rounded-2xl shadow-md shadow-black border-2 border-white transition duration-300 hover:bg-fuchsia-600 text-fuchsia-600 hover:text-white w-fit">
                         <i class="fa-solid fa-calendar-days fa-6x m-2"></i>
                         <br>appointment schedule</div>
                         </a>

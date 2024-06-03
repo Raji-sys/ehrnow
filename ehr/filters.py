@@ -12,11 +12,11 @@ class StaffFilter(django_filters.FilterSet):
 class PatientFilter(django_filters.FilterSet):
     file_no = django_filters.CharFilter(label='FILE NUMBER', field_name='file_no')
     patient_phone=django_filters.CharFilter(label='PHONE',field_name="phone",lookup_expr='iexact')                                                                                                     
-    last_name = django_filters.CharFilter(label='SURNAME', field_name='last_name', lookup_expr='icontains')
+    # last_name = django_filters.CharFilter(label='SURNAME', field_name='last_name', lookup_expr='icontains')
 
     class Meta:
         model = PatientData
-        fields = ['file_no','last_name']
+        fields = ['file_no',]
 
 
 class PatientReportFilter(django_filters.FilterSet):
