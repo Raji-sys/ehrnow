@@ -1,6 +1,7 @@
 {% extends 'base.html'%}
 {% load static %}
-{%block title%}HANDLE PATIENT VISIT{%endblock%}
+{%block title%}NEW PATIENT REGISTRATION{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>NEW PATIENT REGISTRATION</div>{%endblock%}
 {%block content %}
     <div class="p-2 rounded-3xl bg-white mx-2 md:mx-20 m-2 md:mt-10">
         <section class="text-center border-cyan-700 p-4 m-2">
@@ -21,8 +22,8 @@
             {% endif %}
   <form method="post" enctype="multipart/form-data" class="text-xs">
     {% csrf_token %}
-    <div class="mb-2 uppercase text-cyan-900">
-        <p class="text-green-900 text-lg font-bold text-center border-b border-green-700">New Patient Registration</p>
+    <div class="uppercase text-cyan-900">
+        <p class="text-green-900 text-lg font-bold text-center border-b border-green-700">Register new patient</p>
         <div class="grid md:grid-cols-3 p-2 md:gap-4">
       {% for field in form %}
         <div class="text-center">

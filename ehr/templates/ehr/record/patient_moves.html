@@ -1,22 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}PATIENT MOVEMENT{% endblock %}
-
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT MOVEMENT</div>{%endblock%}
 {% block content %}
 <div class="py-10">
   <div class="max-w-7xl mx-auto">
     <div class="p-4 bg-white rounded-xl shadow-black shadow-2xl">
               <!-- start -->
 <!-- top  -->
-<ul class="text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
-    <li><a href="#">ACCIDENT AND EMERGENCY PATIENT</a></li>
-    <li><a href="#">SOPD PATIENT</a></li>
+<ul class=" text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+    <li><a href="#" class="rounded-xl">ACCIDENT AND EMERGENCY PATIENT</a></li>
+    <li><a href="#" class="rounded-xl">SOPD PATIENT</a></li>
 </ul>
 
 <div class="uk-switcher uk-margin">
     <div>
-        <div class=" grid grid-cols-4 gap-6 uppercase text-center rounded-xl p-8 md:p-14 ">
+        <div class=" grid md:grid-cols-4 grid-cols-2 gap-6 uppercase text-center rounded-xl p-8 md:p-14 ">
             <div>
                 <a href="{% url 'nursing_station_ae' %}">
             <div class="hover:bg-cyan-600 hover:text-white bg-white text-cyan-800 rounded-2xl shadow-2xl p-2 md:p-16 border-2 border-white-400 transition duration-300">
@@ -50,7 +49,7 @@
     <!-- break  -->
     <!-- break  -->
     <div>
-        <div class=" grid grid-cols-4 gap-6 uppercase text-center rounded-xl p-8 md:p-14 ">
+        <div class=" grid md:grid-cols-4 grid-cols-2 gap-6 uppercase text-center rounded-xl p-8 md:p-14 ">
             <div>
                 <a href="{% url 'nursing_station_sopd' %}">
             <div class="hover:bg-cyan-600 hover:text-white bg-white text-cyan-800 rounded-2xl shadow-2xl p-2 md:p-16 border-2 border-white-400 transition duration-300">
