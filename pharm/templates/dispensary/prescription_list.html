@@ -4,7 +4,7 @@
 {%block page_title%}<div class="flex justify-center items-end "><a href="{%url 'pharm:dispensary' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PRESCRIPTION DIRECTORY</div>{%endblock%}
 
 {%block content %}
-<div class="mt-2 p-4">
+<div class="mt-2 p-1">
     <section class="text-center border-cyan-700 p-4 m-2">
         {% for message in messages %}
         <div class="">
@@ -15,7 +15,7 @@
         </div>
         {% endfor %}
       </section>
-    <div class="mx-20 rounded-xl p-4 shadow-black shadow-sm bg-amber-50">
+    <div class="md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-amber-50">
       <div class="flex justify-center m-1">
         <div class="mt-2 mx-4">
                     {% if request.GET.urlencode %}
@@ -30,13 +30,15 @@
           {% for field in PrescriptionFilter.form %}
           {{field.errors}}
           {% endfor %}
-            <div class="text-center flex justify-center gap-1">
+            <div class="text-center md:flex md:justify-center gap-1">
                 {% for field in PrescriptionFilter.form %}
-                <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
-                <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
+                <div>
+                  <!-- <label for="{{field.id_for_label}}">{{ field.label_tag }}</label> -->
+                  <input type="{{field.field.widget.input_type}}" name="{{field.name}}"placeholder="{{field.name}}"
                 {%if field.value%} value="{{field.value}}"{%endif%}
                 class="text-center text-sm focus:outline-none w-fit text-cyan-950 p-2
                 rounded shadow-sm shadow-cyan-900 border-cyan-900 border">
+              </div>
                 <span class="form-error">{{ field.errors }}</span>
                 {% endfor %}
                 <button type="submit" class="shadow-sm shadow-amber-600 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-amber-700 text-white rounded hover:border-cyan-700 ">
@@ -116,7 +118,7 @@
               
             <td class="text-center px-6 py-4 whitespace-nowrap">
                 <span class="space-x-4">
-                    <a href="{%url 'pharm:update_prescription' p.id %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-close"></i></a>
+                    <a href="{%url 'pharm:update_prescription' p.id %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-close fa-2xl"></i></a>
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">

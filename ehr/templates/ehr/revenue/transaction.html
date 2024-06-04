@@ -3,7 +3,7 @@
 {%block title%}TRANSACTION HISTORY{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>TRANSACTION HISTORY</div>{%endblock%}
 {%block content %}
-<div class="p-4">
+<div class="p-1">
     <section class="text-center border-emerald-700 p-4 m-2">
         {% for message in messages %}
         <div class="mt-2 ">
@@ -27,7 +27,7 @@
             
       </section>
       
-    <div class=" m-1 mx-24 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
+    <div class=" m-1 md:mx-24 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
       <div class="text-emerald-900">
         <form method="get" class="text-xs text-center">
           {% for field in payFilter.form %}

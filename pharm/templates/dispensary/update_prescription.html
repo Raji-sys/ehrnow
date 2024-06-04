@@ -2,7 +2,7 @@
 {%load static%}
 {% block title %}UPDATED PRESCRIPTION{% endblock%}
 {% block content %}
-  <div class="uk-overlay rounded-3xl bg-white uk-position-center mt-6">
+  <div class="rounded-3xl bg-white mt-32 mx-2 md:w-fit md:mx-auto">
       <section class="text-center border-cyan-700 p-4 m-2">
           {% for message in messages %}
         <div class="">
@@ -19,7 +19,7 @@
           <p>{{form.errors}}</p>
       </div>
           {% endif %}
-<form method="post" enctype="multipart/form-data" >
+<form method="post" enctype="multipart/form-data" class="text-center">
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
     <div class="flex justify-center p-2 gap-4">
@@ -34,7 +34,7 @@
             </div>
             {%endfor%}
         </div>
-  <div class="flex justify-center align-middle gap-4">
+  <div class="md:flex md:justify-center grid grid-cols-1 align-middle gap-4 p-4">
     <input type="submit" value="clear prescription" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
 bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
     <a href="{%url 'pharm:prescription_list' %}" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600

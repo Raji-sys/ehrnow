@@ -3,7 +3,7 @@
 {%block title%}HEMATOLOGY TRANSACTION HISTORY{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>HEMATOLOGY TRANSACTION HISTORY</div>{%endblock%}
 {%block content %}
-<div class="p-4">
+<div class="p-1">
     <section class="text-center border-purple-700 p-4 m-2">
         {% for message in messages %}
         <div class="mt-2 ">
@@ -27,7 +27,7 @@
             
       </section>
       
-    <div class=" m-1 mx-24 rounded-xl p-4 shadow-black shadow-sm bg-purple-50">
+    <div class=" m-1 md:mx-24 rounded-xl p-4 shadow-black shadow-sm bg-purple-50">
       <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
         <table class="min-w-full divide-y divide-purple-200">
           <thead class="bg-purple-50">

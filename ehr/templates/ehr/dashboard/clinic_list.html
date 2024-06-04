@@ -4,7 +4,7 @@
 
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>CLINICS</div>{%endblock%}
 {%block content %}
-    <section class="text-center border-cyan-700 p-4 m-2">
+    <section class="text-center border-cyan-700 p-2 m-2">
         {% for message in messages %}
         <div class="">
             <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
@@ -14,8 +14,9 @@
         </div>
       {% endfor %}
     </section>
-    <div class="flex justify-center gap-6 uppercase text-center rounded-xl p-8 ">
-        <div>
+    <div class="flex justify-center m-10">
+        <div class="md:flex md:justify-center grid grid-cols-1 gap-6 uppercase text-center rounded-xl p-12 md:p-16 bg-gray-50">
+            <div>
             <a href="{%url 'ae_details' %}" class="text-xs md:text-sm font-semibold text-slate-600">
                 <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
                     ACCIDENT AND EMERGENCY</div>
@@ -27,5 +28,6 @@
                     SOPD</div>
                 </a>
             </div>
+    </div>
     </div>
 {%endblock%}

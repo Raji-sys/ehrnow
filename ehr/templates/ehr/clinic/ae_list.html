@@ -3,7 +3,7 @@
 {%block title%}WAITING FOR CONSULTATION{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'ae_details' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>WAITING FOR CONSULTATION (A&E)</div>{%endblock%}
 {%block content %}
-<div class="p-4">
+<div class="p-1">
   <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-2">
     {% for message in messages %}
     <div class="">
@@ -13,7 +13,7 @@
       </div>
   </div>  {% endfor %}
   </section>
-  <div class="mx-20 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
+  <div class="md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
   <div class="overflow-x-auto uppercase">
   <table class="min-w-full divide-y divide-emerald-500">
     <thead class="bg-emerald-100">

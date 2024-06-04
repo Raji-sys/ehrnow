@@ -6,13 +6,13 @@
  {%endblock%}
 
  {% block content %}
-<div class="flex justify-center items-center bg-stone-100 shadow-sm shadow-black mx-20 p-12 mt-10 rounded-xl">
-<div class=" p-10 max-sm:p-4 grid grid-cols-5 gap-24 max-sm:grid max-sm:grid-cols-2">
+<div class="flex md:justify-center justify-start items-center bg-stone-100 shadow-sm shadow-black md:mx-20 mx-2 md:p-8 p-2 md:mt-10 mt-2 rounded-xl">
+<div class="grid md:grid-cols-5 md:gap-24 grid-cols-1 gap-4">
 <div>
 <details> 
     <summary class="bg-cyan-600 p-2 text-white text-center text-sm rounded-md w-fit">GENDER</summary>
-    <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-    <table class="justify-center table-auto m-2 max-sm:flex p-2">
+    <div class="overflow-x-auto px-1 md:px-10 m-4 uppercase">
+    <table class="md:justify-center justify-start table-auto m-2 max-sm:flex p-2">
         <tbody class="uppercase text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-cyan-600 bg-white">
             <tr class=" text-xs">
               {%for g in gender_counts %}
@@ -29,7 +29,7 @@
     <details>
         <summary class="bg-blue-600 p-2 text-white text-sm rounded-md w-fit text-center">GEO-POLITICAL ZONE</summary>
         <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-    <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+    <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
         <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-blue-700 bg-white">
             <tr class=" text-xs">
             {%for gz in geo_counts %}
@@ -47,7 +47,7 @@
     <details>
         <summary class=" bg-amber-600 p-2 text-white  text-sm rounded-md w-fit text-center">STATE OF ORIGIN</summary>
         <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-            <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+            <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
         <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-amber-600 bg-white">
             <tr class=" text-xs">
                 {%for s in state_counts %}
@@ -65,7 +65,7 @@
     <details>
         <summary class=" bg-cyan-800 p-2 text-white  text-sm rounded-md w-fit text-center">LGA</summary>
         <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-    <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+    <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
         <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-cyan-800 bg-white">
             <tr class=" text-xs">
                 {%for l in lga_counts%}
@@ -83,7 +83,7 @@
     <details>
         <summary class=" bg-teal-400 p-2 text-white  text-sm rounded-md w-fit text-center">RELIGION</summary>
         <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+        <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
         <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-teal-400 bg-white">
             <tr class=" text-xs">
                 {%for r in religion_counts %}
@@ -101,7 +101,7 @@
     <details>
         <summary class=" bg-orange-500 p-2 text-white  text-sm rounded-md w-fit text-center">MARITAL STATUS</summary>
         <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+        <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
         <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-orange-500 bg-white">
             <tr class=" text-xs">
             {%for m in marital_status_counts %}
@@ -119,7 +119,7 @@
     <details>
         <summary class=" bg-green-500 p-2 text-white  text-sm rounded-md w-fit text-center">NATIONALITY</summary>
         <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+        <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
         <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-green-500 bg-white">
             <tr class=" text-xs">
                 {%for n in nationality_counts %}
@@ -137,7 +137,7 @@
     <details>
         <summary class=" bg-purple-600 p-2 text-white  text-sm rounded-md w-fit text-center">OCCUPATION</summary>
         <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-            <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+            <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
                 <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-purple-600 bg-white">
                     <tr class=" text-xs">
                 {%for c in occupation_counts%}
@@ -155,7 +155,7 @@
     <details>
         <summary class=" bg-red-600 p-2 text-white  text-sm rounded-md w-fit text-center">ROLE IN OCCUPATION</summary>
         <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-    <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+    <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
         <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-red-600 bg-white">
             <tr class=" text-xs">
                 {%for r in role_in_occupation_counts %}
@@ -173,7 +173,7 @@
     <details>
         <summary class=" bg-teal-600 p-2 text-white  text-sm rounded-md w-fit text-center">ADDRESS</summary>
         <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-    <table class="justify-center table-auto  m-2 max-sm:flex p-2">
+    <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
         <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-teal-600 bg-white">
             <tr class=" text-xs">
                 {%for a in address_counts %}
