@@ -1,16 +1,22 @@
 {% extends 'base.html' %}
 {% block title %}DRUG ISSUANCE RECORD{% endblock %}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'pharm:record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>DRUGS ISSUED RECORD</div>{%endblock%}
 {% block content %}
   <div class="flex justify-center mt-1 p-1 mb-4">
     <div class="justify-center items-center font-semibold uppercase text-xs shadow-sm shadow-amber-500 mx-auto rounded-2xl bg-amber-50 mt-2 p-2">
-      <section class="text-center border-b-2 border-amber-500 p-2 m-2">
-        <p class="text-lg font-bold pt-2 text-amber-600">issue drugs to units</p>
+      <section class="p-2 m-2">
+        {% if form.non_field_errors %}
+        <div class="text-red-600 text-sm">
+          {{ form.non_field_errors.0 }}
+        </div>
+      {% endif %}
       </section>
-      <form id="recordForm" action="" method="POST" enctype="multipart/form-data">
+      <p class="text-center border-b-2 border-amber-500 p-1 m-2 text-sm font-bold text-amber-600">issue drugs to units</p>
+      <form id="recordForm" action="" method="POST" enctype="multipart/form-data" class="text-xs">
         {% csrf_token %}
         {{ formset.management_form }}
         {% for form in formset %}
-          <div class="md:flex md:flex-row   grid grid-cols-4 md:gap-6 p-4">
+          <div class="md:flex md:flex-row  grid grid-cols-4 md:gap-6 p-2">
             {% if form.non_field_errors %}
               <div class="text-red-600 text-lg">
                 {{ form.non_field_errors.0 }}

@@ -14,11 +14,11 @@
   </div>
   {% endfor %}
 </section>
-<div class="md:gap-10 md:mx-20 md:mt-10 rounded-xl p-2 mx-1 shadow-black shadow-sm  bg-white">
-  <div class="p-1 md:p-8 text-center grid grid-cols-2 md:flex md:justify-center gap-6">
+<div class="md:gap-10 md:max-w-4xl md:mx-auto md:mt-10 rounded-xl p-8 mx-1 shadow-black shadow-sm  bg-white">
+  <div class="p-1 md:p-8 text-center grid grid-cols-1 md:flex md:justify-center gap-6">
               <div>
                 <a href="{%url 'pharm:dispensary' %}">
-                  <div class="bg-blue-500 hover:bg-white text-white hover:text-gray-600 rounded-xl shadow-lg p-6 md:p-12 border-2 border-white transition duration-300">
+                  <div class="bg-blue-500 hover:bg-white text-white hover:text-blue-600 rounded-xl shadow-lg p-6 md:p-12 border-2 border-white transition duration-300">
                     <div class="font-semibold uppercase md:text-sm text-xs ">
                       <i class="fa-solid fa-prescription fa-4x"></i><br>
                       DISPENSARY</div>
@@ -27,40 +27,24 @@
               </div>
               <div>
                 <a href="{%url 'pharm:pharm_inventory' %}">
-                  <div class="bg-purple-600 border-2 hover:bg-white text-white hover:text-gray-600 rounded-xl shadow-lg p-6 md:p-12 transition duration-300">
+                  <div class="bg-purple-600 border-2 hover:bg-white text-white hover:text-purple-600 rounded-xl shadow-lg p-6 md:p-12 transition duration-300">
                     <div class="font-semibold uppercase md:text-sm text-xs">
                     <i class="fa-solid fa-box-archive fa-4x"></i><br>
                       INVENTORY</div>
                   </div>
                 </a>
               </div>
-              </div>
-              <div class=" m-4  border-t-2 bg-zinc-200 md:flex md:justify-center grid grid-cols-1 gap-6 uppercase text-center p-2 md:p-16 mt-10 rounded-xl">
-               
-              <div>
-                <a href="">
-                  <div class="bg-white hover:bg-blue-600 hover:text-white text-blue-600  rounded-2xl shadow-sm shadow-black p-8 border-2 border-white transition duration-300">
-                    <div class=" font-semibold uppercase text-sm md:text-base">GENERATE REPORT</div>
-                  </div>
-                </a>
-              </div>
-              <div>
-                <a href="">
-                  <div class="bg-white hover:bg-rose-600 hover:text-white text-rose-600  rounded-2xl shadow-sm shadow-black p-8 border-2 border-white transition duration-300">
-                    <div class=" font-semibold uppercase text-sm md:text-base">STATISTICS</div>
-                  </div>
-                </a>
-              </div>
               <div>
                 <a href="{%url 'pharm:pharmacy_transaction' %}">
-                  <div class="bg-white hover:bg-emerald-600 hover:text-white text-emerald-600  rounded-2xl shadow-sm shadow-black p-8 border-2 border-white transition duration-300">
-                    <div class=" font-semibold uppercase text-sm md:text-base">TRANSCATIONS</div>
+                  <div class="bg-emerald-600 border-2 hover:bg-white text-white hover:text-emerald-600 rounded-xl shadow-lg p-6 md:p-12 transition duration-300">
+                    <div class="font-semibold uppercase md:text-sm text-xs">
+                    <i class="fa-solid fa-money-bill-trend-up fa-4x"></i><br>
+                      TRANSCATIONS</div>
                   </div>
                 </a>
               </div>
+             </div>
 
-
-      </div>
-      
+              
     </div>    
 {%endblock%}

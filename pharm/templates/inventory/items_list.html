@@ -5,10 +5,10 @@
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'pharm:pharm_inventory' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>LIST OF DRUGS</div>{%endblock%}
 {% block content %}
 <div class="mx-20 flex justify-center justify-items-center text-center text-gray-800 font-medium text-sm align-middle uppercase items-center p-3 bg-cyan-50 border-b border-gray-100 shadow-md shadow-cyan-900 rounded-b-xl">
-    <a href="{%url 'pharm:create_drug'%}" class="focus:opacity-10 bg-cyan-800 p-2 px-4 rounded-2xl m-2 text-white"><i class="text-white fa-solid fa-plus fa-lg mr-2"></i>add new drug</a>
-    <a href="{%url 'pharm:drug_report' %}" class="focus:opacity-10 bg-cyan-800 p-2 px-4 rounded-2xl m-2 text-white"><i class="text-white fa-solid fa-file fa-lg mr-2"></i>generate report</a>
+    <a href="{%url 'pharm:create_drug'%}" class="focus:opacity-10 bg-cyan-800 p-2 rounded-2xl m-2 text-white text-xs"><i class="text-white fa-solid fa-plus fa-lg mr-2"></i><br>add drug</a>
+    <a href="{%url 'pharm:drug_report' %}" class="focus:opacity-10 bg-cyan-800 p-2 rounded-2xl m-2 text-white text-xs"><i class="text-white fa-solid fa-file fa-lg mr-2"></i><br>generate report</a>
 </div>
-<div class="p-1 text-sm rounded-2xl text-center mt-6 mb-6 ">    
+<div class="md:mx-20 p-1 text-sm rounded-2xl text-center mt-6 mb-6 ">    
     <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center ">
         <tbody class="bg-white border-1 rounded-2xl max-sm:p-3 p-2 overflow-x-auto border-cyan-700 shadow-md shadow-cyan-900">
             <tr class="text-xs bg-cyan-800 text-white">
@@ -81,16 +81,16 @@
             </td>
             </tr>
             {%endfor%} 
-        <tr class="">
+        <tr class="flex justify-center">
             <td class="p-3 text-center">        
-       <div class="pagination flex justify-between ">
+       <div class="pagination flex justify-center ">
             <span class="flex items-center">
                 {% if po.has_previous %}
                 <a href="?page=1" class="p-2 px-2 rounded-lg bg-cyan-800 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-lg"></i></a>
                 <a href="?page={{po.previous_page_number}}" class="p-2 px-2 rounded-lg bg-cyan-800 text-white"><i class="fa-solid fa-angle-left fa-lg"></i></a>
                 {% endif %}
             </span>
-                <span class="text-sm text-gray-700 m-2 font-semibold">
+                <span class="text-xs text-gray-700 m-2 font-semibold">
                     {{po.number}}-{{po.paginator.num_pages}}
                 </span>
                 <span class="flex item-center">

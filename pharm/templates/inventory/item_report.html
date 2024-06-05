@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}DRUG REPORT PAGE{% endblock %}
-
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'pharm:list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>GENERATE REPORT</div>{%endblock%}
 {% block content %}
 
 <!-- start of first grid  -->
-<div class="m-1 mx-20 rounded-xl p-2 shadow-black shadow-2xl bg-cyan-50">
+<div class="m-1 md:mx-20 rounded-xl p-2 shadow-black shadow-2xl bg-cyan-50">
                 {% if request.GET.urlencode %}
                 <div class="flex justify-center gap-1">
                     <a class="text-xl text-white focus:opacity-10 focus:border-cyan-600 bg-cyan-600 
@@ -44,7 +44,7 @@
 
 <!-- end of first grid -->
     {% if request.GET.urlencode %}
-<div class="overflow-x-auto px-4 md:px-10 m-4">
+<div class="overflow-x-auto  md:px-10 p-2 mb-10">
    <table class="table-auto min-w-full max-sm:flex flex rounded-2xl items-center justify-center">
         <tbody class="bg-white border-1 shadow-md rounded-2xl max-sm:p-4 p-2 overflow-x-auto border-cyan-700 shadow-cyan-900">
             <tr class="text-xs bg-cyan-800 text-white">

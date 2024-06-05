@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}ISSUANCE RECORD REPORT{% endblock %}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'pharm:pharm_inventory' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>DRUGS ISSUED RECORD</div>{%endblock%}
 
 {% block content %}
 <!-- <div class="flex justify-start items-start mt-14 relative"> -->
     <!-- start of first grid  -->
     <div class="">
-
-        <div class="mx-20 rounded-xl shadow-black shadow-sm mt-4">
+        <div class="md:mx-auto md:max-w-7xl rounded-xl shadow-black shadow-sm m-1">
             <!-- Add your styling for the fixed div here -->
-        <div class="sm:flex sm:flex-col justify-center items-center rounded-b-2xl shadow-2xl bg-amber-500 p-2 text-white">
+        <div class="sm:flex sm:flex-col justify-center items-center rounded-2xl shadow-2xl bg-amber-500 p-2 text-white">
             {% if request.GET.urlencode%}
     <div class="flex justify-center gap-1">
     <a class="text-xl bg-white focus:opacity-10 focus:border-zinc-600  
@@ -23,9 +23,10 @@
                 {% for field in recordfilter.form %}
                 {{field.errors}}
                 {% endfor %}
-                        <div class="text-center flex flex-row flex-wrap gap-2 justify-center">
+                <div class="text-center flex flex-row flex-wrap gap-1 justify-center">
                     {% for field in recordfilter.form %}
                     <div class="flex justify-center items-start flex-col">
+
                         <label class="form-label">{{ field.label_tag }}</label>
                         <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"
                             class="text-xs text-zinc-700 focus:outline-none border w-fit border-blue-300 p-2 rounded shadow-lg hover:shadow-xl">
@@ -41,12 +42,13 @@
             </div>
                 </form>
         </div>
+        </div>
         <!-- end of first grid -->
         
     {% if request.GET.urlencode %}
-<div class="mx-auto max-w-screen-xl">
+<div class="rounded-xl mx-2 md:mx-auto max-w-screen-xl">
    <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
-        <tbody class="bg-white border-1 shadow-2xl rrounded-2xl max-sm:p-4 p-2 overflow-x-auto border-amber-600">
+        <tbody class="bg-white border-1 shadow-2xl rounded-2xl max-sm:p-4 p-2 overflow-x-auto border-amber-600">
             <tr class="text-xs bg-amber-500 text-white">
                 <th scope="col" class="border-2 border-white p-3">S/N</th>
                 <th scope="col" class="border-2 border-white p-3">DATE ISSUED</th>
