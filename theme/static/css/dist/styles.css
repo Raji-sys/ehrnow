@@ -931,6 +931,18 @@ select {
   margin-top: 2rem;
 }
 
+.mt-28 {
+  margin-top: 7rem;
+}
+
+.mt-36 {
+  margin-top: 9rem;
+}
+
+.mt-40 {
+  margin-top: 10rem;
+}
+
 .block {
   display: block;
 }
@@ -1029,22 +1041,12 @@ select {
   max-width: 36rem;
 }
 
-.max-w-5xl {
-  max-width: 64rem;
-}
-
 .table-auto {
   table-layout: auto;
 }
 
 .border-collapse {
   border-collapse: collapse;
-}
-
-.border-spacing-3 {
-  --tw-border-spacing-x: 0.75rem;
-  --tw-border-spacing-y: 0.75rem;
-  border-spacing: var(--tw-border-spacing-x) var(--tw-border-spacing-y);
 }
 
 .transform {
@@ -1330,11 +1332,6 @@ select {
 
 .rounded-xl {
   border-radius: 0.75rem;
-}
-
-.rounded-b-2xl {
-  border-bottom-right-radius: 1rem;
-  border-bottom-left-radius: 1rem;
 }
 
 .rounded-b-xl {
@@ -2131,10 +2128,6 @@ select {
   padding: 2rem;
 }
 
-.p-16 {
-  padding: 4rem;
-}
-
 .px-1 {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
@@ -2287,21 +2280,6 @@ select {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.text-base {
-  font-size: 1rem;
-  line-height: 1.5rem;
-}
-
-.text-8xl {
-  font-size: 6rem;
-  line-height: 1;
-}
-
-.text-6xl {
-  font-size: 3.75rem;
-  line-height: 1;
 }
 
 .font-bold {
@@ -3069,11 +3047,6 @@ select {
   background-color: rgb(254 205 211 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-rose-600:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(225 29 72 / var(--tw-bg-opacity));
-}
-
 .hover\:bg-slate-200:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(226 232 240 / var(--tw-bg-opacity));
@@ -3189,6 +3162,11 @@ select {
   color: rgb(219 39 119 / var(--tw-text-opacity));
 }
 
+.hover\:text-purple-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(147 51 234 / var(--tw-text-opacity));
+}
+
 .hover\:text-red-700:hover {
   --tw-text-opacity: 1;
   color: rgb(185 28 28 / var(--tw-text-opacity));
@@ -3217,11 +3195,6 @@ select {
 .hover\:text-zinc-700:hover {
   --tw-text-opacity: 1;
   color: rgb(63 63 70 / var(--tw-text-opacity));
-}
-
-.hover\:text-purple-600:hover {
-  --tw-text-opacity: 1;
-  color: rgb(147 51 234 / var(--tw-text-opacity));
 }
 
 .hover\:shadow-sm:hover {
@@ -3415,10 +3388,6 @@ select {
     margin: 0.75rem;
   }
 
-  .md\:m-20 {
-    margin: 5rem;
-  }
-
   .md\:mx-20 {
     margin-left: 5rem;
     margin-right: 5rem;
@@ -3429,42 +3398,18 @@ select {
     margin-right: 6rem;
   }
 
-  .md\:mx-auto {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .md\:mx-10 {
-    margin-left: 2.5rem;
-    margin-right: 2.5rem;
-  }
-
-  .md\:mx-0 {
-    margin-left: 0px;
-    margin-right: 0px;
-  }
-
-  .md\:mx-32 {
-    margin-left: 8rem;
-    margin-right: 8rem;
-  }
-
-  .md\:mx-36 {
-    margin-left: 9rem;
-    margin-right: 9rem;
-  }
-
   .md\:mx-48 {
     margin-left: 12rem;
     margin-right: 12rem;
   }
 
-  .md\:mt-10 {
-    margin-top: 2.5rem;
+  .md\:mx-auto {
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  .md\:mt-20 {
-    margin-top: 5rem;
+  .md\:mt-10 {
+    margin-top: 2.5rem;
   }
 
   .md\:mt-32 {
@@ -3481,14 +3426,6 @@ select {
 
   .md\:mt-8 {
     margin-top: 2rem;
-  }
-
-  .md\:mb-6 {
-    margin-bottom: 1.5rem;
-  }
-
-  .md\:mb-8 {
-    margin-bottom: 2rem;
   }
 
   .md\:flex {
@@ -3516,6 +3453,10 @@ select {
     max-width: 56rem;
   }
 
+  .md\:max-w-5xl {
+    max-width: 64rem;
+  }
+
   .md\:max-w-6xl {
     max-width: 72rem;
   }
@@ -3524,8 +3465,12 @@ select {
     max-width: 80rem;
   }
 
-  .md\:max-w-5xl {
-    max-width: 64rem;
+  .md\:max-w-xl {
+    max-width: 36rem;
+  }
+
+  .md\:max-w-3xl {
+    max-width: 48rem;
   }
 
   .md\:grid-cols-2 {
@@ -3550,14 +3495,6 @@ select {
 
   .md\:flex-row {
     flex-direction: row;
-  }
-
-  .md\:flex-col {
-    flex-direction: column;
-  }
-
-  .md\:items-start {
-    align-items: flex-start;
   }
 
   .md\:items-center {
@@ -3596,10 +3533,6 @@ select {
     gap: 1.5rem;
   }
 
-  .md\:border-2 {
-    border-width: 2px;
-  }
-
   .md\:p-10 {
     padding: 2.5rem;
   }
@@ -3634,10 +3567,6 @@ select {
 
   .md\:p-8 {
     padding: 2rem;
-  }
-
-  .md\:p-1 {
-    padding: 0.25rem;
   }
 
   .md\:px-10 {

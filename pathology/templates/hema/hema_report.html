@@ -2,11 +2,11 @@
 {% block title %}HEMATOLOGY REPORT{% endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'pathology:hematology' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>HEMATOLOGY REPORT</div>{%endblock%}
 {% block content %}
-<div class="mt-1 p-4">
+<div class="mt-1 p-1">
 <div class="grid grid-rows-2 mt-0 relative ">
     <div class="center-2 h-full overflow-y-auto ">
         <div class="flex flex-row justify-center items-center max-w-6xl mx-auto rounded-xl p-4 shadow-2xl bg-green-50 text-black m-2">
-          <form method="get" class="text-xs text-center">
+          <form method="get" class="text-xs text-center uppercase">
             {% for field in hema_filter.form %}
                 {{field.errors}}
                 {% endfor %}
@@ -38,11 +38,11 @@
     <!-- end of first grid -->
 
     {% if request.GET.urlencode %}
-  <div class="mx-20 rounded-xl p-6 bg-green-50 m-4">
+  <div class="md:max-w-6xl md:mx-auto rounded-xl p-6 bg-green-50">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-green-500">
           <thead class="bg-green-100">
-      <tr class="text-md bg-emerald-100 text-center">
+      <tr class="text-sm bg-emerald-100 text-center">
               <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">#</th>
               <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">
                 Test
@@ -72,7 +72,7 @@
           </thead>
           <tbody class="bg-white divide-y divide-green-200">
             {% for i in patient %}
-            <tr class="text-center text-sm bg-green-50 hover:bg-green-200 transition-colors duration-300 uppercase">
+            <tr class="text-center text-xs bg-green-50 hover:bg-green-200 transition-colors duration-300 uppercase">
 
               <td class="px-6 py-4 whitespace-nowrap">
                 {{forloop.counter}}

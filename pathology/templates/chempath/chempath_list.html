@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {%load static %}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'pathology:chempath' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>CHEMPATH RESULT LIST</div>{%endblock%}
 {% block content %}
-<div class="mt-5 p-4">
-  <div class="max-w-6xl mx-auto rounded-xl p-4 shadow-black shadow-2xl bg-gray-50">
+<div class="mt-2 p-1">
+  <div class="md:max-w-6xl md:mx-auto rounded-xl p-1 shadow-black shadow-2xl bg-gray-50">
   <div class="overflow-x-auto">
   <table class="min-w-full divide-y divide-gray-500">
     <thead class="bg-gray-100">
-      <tr>
+      <tr class="text-sm">
         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">S/N</th>
         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -28,7 +29,7 @@
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
       {% for result in chempath_results %}
-      <tr class="bg-gray-50 hover:bg-gray-200 transition-colors duration-300">
+      <tr class="bg-gray-50 hover:bg-gray-200 transition-colors duration-300 text-xs">
         <td class="px-6 py-4 whitespace-nowrap">
           {{forloop.counter}}
       </td>
