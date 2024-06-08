@@ -4,108 +4,108 @@
 
 {%block page_title%}
 <div class="flex justify-center gap-10">
-    <a href="{%url 'patient_list' %}" class="text-xs md:text-sm font-medium text-green-600"><i class="fa-solid fa-user-injured fa-2x mr-2"></i>PATIENT MANAGEMENT</a>
-    <a href="{%url 'staff' %}" class="text-xs md:text-sm font-medium text-blue-500"><i class="fa-solid fa-user-group fa-2x mr-2"></i>STAFF MANAGEMENT</a>
-    <a href="{%url 'hospital_services' %}" class="text-xs md:text-sm font-medium text-orange-500"><i class="fa-solid fa-list-check fa-2x mr-2"></i>SERVICES</a>
+    <a href="{%url 'patient_list' %}" class="text-xs font-medium text-green-600 "><i class="fa-solid fa-user-injured fa-xl mr-2"></i>PATIENT</a>
+    <a href="{%url 'staff' %}" class="text-xs font-medium text-blue-500"><i class="fa-solid fa-user-group fa-xl mr-2"></i>STAFF</a>
+    <a href="{%url 'hospital_services' %}" class="text-xs font-medium text-orange-500"><i class="fa-solid fa-list-check fa-xl mr-2"></i>SERVICES</a>
 </div> 
 {%endblock%}
 {%block content %}
-<div class="uk-container m-2 md:mt-6">
+<div class="mx-2 mt-8 md:mt-12 md:mx-20">
     <!-- <section class="text-center border-cyan-700 p-4 m-2">
         {% for message in messages %}
       <div class="mt-2">
-           <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
+           <div class="uk-alert-success rounded-xl text-sm" uk-alert>
             <a href class="uk-alert-close font-bold" uk-close></a>
             <p class="text-green-700 font-semibold">{{ message }}</p>
             </div>
       </div>
       {% endfor %}
     </section> -->
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-10 uppercase text-center rounded-xl p-4 md:p-16  shadow-sm shadow-emerald-700 bg-white">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10 uppercase text-center rounded-xl p-10 md:p-12  shadow-sm shadow-emerald-700 bg-zinc-200">
         <div>
-            <a href="{%url 'medical_record' %}" class="text-xs md:text-sm font-medium  text-slate-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-book fa-2x"></i><br>
+            <a href="{%url 'medical_record' %}" class="text-xs font-medium  text-slate-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-book fa-xl"></i><br>
                     MEDICAL RECORD</div>
             </a>
         </div>
         <div>
-            <a href="{%url 'revenue' %}" class="text-xs md:text-sm font-medium text-green-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-1 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <span class="text-2xl">&#x20A6;</span><br>
+            <a href="{%url 'revenue' %}" class="text-xs  font-medium text-green-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-cash-register fa-xl"></i><br>
                     REVENUE</div>
             </a>
         </div>
         <div>
-            <a href="{%url 'nursing' %}" class="text-xs md:text-sm font-medium text-blue-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-stethoscope fa-2x"></i><br>
+            <a href="{%url 'nursing' %}" class="text-xs  font-medium text-blue-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-stethoscope fa-xl"></i><br>
                     NURSING</div>
             </a>
         </div>
         <div>
-            <a href="{%url 'clinic_list' %}" class="text-xs md:text-sm font-medium text-gray-800">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-user-doctor fa-2x"></i><br>
+            <a href="{%url 'clinic_list' %}" class="text-xs  font-medium text-gray-800">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-user-doctor fa-xl"></i><br>
                     CLINIC</div>
             </a>
         </div>
         <div>
-            <a href="{%url 'pharmacy' %}" class="text-xs md:text-sm font-medium text-indigo-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-file-prescription fa-2x"></i><br>
+            <a href="{%url 'pharmacy' %}" class="text-xs  font-medium text-indigo-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-file-prescription fa-xl"></i><br>
                     PHARMACY</div>
             </a>
         </div>
         <div>
-            <a href="{%url 'pathology:dashboard' %}" class="text-xs md:text-sm font-medium text-fuchsia-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-vial fa-2x"></i><br>
+            <a href="{%url 'pathology:dashboard' %}" class="text-xs  font-medium text-fuchsia-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-vial fa-xl"></i><br>
                     PATHOLOGY</div>
             </a>
         </div>
         <div>
-            <a href="{%url 'radiology' %}" class="text-xs md:text-sm font-medium text-amber-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-x-ray fa-2x"></i><br>
+            <a href="{%url 'radiology' %}" class="text-xs  font-medium text-amber-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-x-ray fa-xl"></i><br>
                     RADIOLOGY</div>
             </a>
         </div>
         <div>
-            <a href="{%url 'ward_list' %}" class="text-xs md:text-sm font-medium text-purple-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-bed-pulse fa-2x"></i><br>
+            <a href="{%url 'ward_list' %}" class="text-xs  font-medium text-purple-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-bed-pulse fa-xl"></i><br>
                     WARD</div>
             </a>
         </div>
 
         <div>
-            <a href="{%url 'theatre' %}" class="text-xs md:text-sm font-medium text-pink-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-head-side-mask fa-2x"></i><br>
+            <a href="{%url 'theatre' %}" class="text-xs  font-medium text-pink-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-head-side-mask fa-xl"></i><br>
                     THEATRE</div>
             </a>
         </div>
 
         <div>
-            <a href="{%url 'physio' %}" class="text-xs md:text-sm font-medium text-gray-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-wheelchair-move fa-2x"></i><br>
+            <a href="{%url 'physio' %}" class="text-xs  font-medium text-gray-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-wheelchair-move fa-xl"></i><br>
                     PHYSIO</div>
             </a>
         </div>
 
         <div>
-            <a href="" class="text-xs md:text-sm font-medium text-rose-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-warehouse fa-2x"></i><br>
+            <a href="" class="text-xs  font-medium text-rose-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-warehouse fa-xl"></i><br>
                     STORE</div>
             </a>
         </div>
         <div>
-            <a href="{%url 'audit' %}" class="text-xs md:text-sm font-medium text-emerald-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-2 md:p-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    <i class="fa-solid fa-calculator fa-2x"></i><br>
+            <a href="{%url 'audit' %}" class="text-xs  font-medium text-emerald-600">
+                <div class="bg-white rounded-xl shadow-2xl p-2 md:px-1 md:py-6 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
+                    <i class="fa-solid fa-calculator fa-xl"></i><br>
                     AUDIT</div>
             </a>
         </div>

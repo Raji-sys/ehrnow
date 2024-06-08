@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}APPOINTMENT DIRECTORY{%endblock%}
-{%block page_title%}<div class="flex justify-center items-end"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>APPOINTMENT DIRECTORY</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center items-end"><a href="{%url 'appt_dashboard' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>APPOINTMENT DIRECTORY</div>{%endblock%}
 {%block content %}
 <div class="p-1">
     <section class="text-center border-fuchsia-700 p-4 m-2">
@@ -14,9 +14,9 @@
       </div>
         {% endfor %}
       </section>
-    <div class="md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-fuchsia-50">        
+    <div class="md:mx-20 rounded-xl mx-2 p-2 shadow-black shadow-sm bg-fuchsia-50">        
       <div class="text-fuchsia-900">
-        <form method="get" class="text-xs text-left gap-4 md:text-right">
+        <form method="get" class="text-xs text-left gap-4 md:text-center">
           {% for field in appointmentFilter.form %}
           {{field.errors}}
           {% endfor %}
@@ -24,12 +24,12 @@
                 {% for field in appointmentFilter.form %}
                 <!-- <label for="{{field.id_for_label}}" class="">{{ field.label_tag }}</label> -->
                 <input type="{{field.field.widget.input_type}}" name="{{field.name}}"placeholder="{{field.name}}"
-                class="text-xs md:text-sm focus:outline-none w-1/3 md:w-fit text-fuchsia-950 p-2
+                class="text-xs focus:outline-none w-1/3 md:w-fit text-fuchsia-950 p-2
                 rounded shadow-sm shadow-fuchsia-800 border-fuchsia-800 border md:gap-2 gap-10"
                 {%if field.value%} value="{{field.value}}"{%endif%}>
                 <span class="form-error">{{ field.errors }}</span>
                 {% endfor %}
-                <button type="submit" class="shadow-sm shadow-fuchsia-900 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-fuchsia-600 bg-fuchsia-900 text-white rounded hover:border-fuchsia-700 ">
+                <button type="submit" class="shadow-sm shadow-fuchsia-900 w-fit p-2 focus:opacity-10  border-gray-500 focus:border-fuchsia-600 bg-fuchsia-900 text-white rounded hover:border-fuchsia-700 ">
                     <i class="fa-solid fa-search fa-xl "></i>
                 </button>
                   {% if request.GET.urlencode %}
@@ -41,29 +41,29 @@
             </div>
         </form>
     </div>
-      <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
+      <div class="overflow-x-auto px-4  m-2 uppercase">
         <table class="min-w-full divide-y divide-fuchsia-200">
           <thead class="bg-fuchsia-50">
-            <tr class="text-sm">
-                <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
+            <tr class="text-xs">
+                <th class="px-3 py-1 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                     #
                 </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
+              <th class="px-3 py-1 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 FILE NUMBER
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
+              <th class="px-3 py-1 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 NAME
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
+              <th class="px-3 py-1 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 CLINIC
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
+              <th class="px-3 py-1 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 TEAM
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
+              <th class="px-3 py-1 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 DATE
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
+              <th class="px-3 py-1 text-left text-xs font-medium text-fuchsia-500 uppercase tracking-wider">
                 EDIT
               </th>
             </tr>
@@ -71,27 +71,27 @@
           <tbody class="bg-white divide-y divide-fuchsia-200">
             {% for a in appointments %}
             <tr class="bg-fuchsia-100 hover:bg-fuchsia-200 transition-colors duration-300 text-xs">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-3 py-3 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-3 py-3 whitespace-nowrap">
                   {{ a.patient.file_no }}
                 </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-3 py-3 whitespace-nowrap">
                 <a href="{{a.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
                 {{ a.patient.full_name }}
                 </a>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-3 py-3 whitespace-nowrap">
                 {{ a.clinic }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-3 py-3 whitespace-nowrap">
                 {{ a.team }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-3 py-3 whitespace-nowrap">
                 {{ a.date }}
               </td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-3 py-3 whitespace-nowrap">
                 <span class="space-x-4">
                     <a href="{% url 'update_appointment' a.pk %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib "></i></a>
                     
@@ -103,7 +103,7 @@
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="px-6 py-4 text-center text-fuchsia-500">
+              <td colspan="2" class="px-3 py-3 text-center text-fuchsia-500">
                 No patients found
               </td>
             </tr>

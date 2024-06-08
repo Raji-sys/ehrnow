@@ -21,7 +21,7 @@ class UserForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class ProfileForm(forms.ModelForm):
@@ -45,7 +45,7 @@ class ProfileForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 class PatientForm(forms.ModelForm):
     class Meta:
@@ -62,7 +62,7 @@ class PatientForm(forms.ModelForm):
         super(PatientForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class VisitForm(forms.ModelForm):
@@ -77,7 +77,7 @@ class VisitForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class VitalSignsForm(forms.ModelForm):
@@ -96,7 +96,7 @@ class VitalSignsForm(forms.ModelForm):
         super(VitalSignsForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
 
@@ -116,7 +116,7 @@ class FollowUpVitalSignsForm(forms.ModelForm):
         super(FollowUpVitalSignsForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
 
@@ -132,7 +132,7 @@ class AppointmentForm(forms.ModelForm):
         super(AppointmentForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
 
@@ -146,7 +146,7 @@ class ClinicalNoteForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class ClinicalNoteUpdateForm(forms.ModelForm):
@@ -159,7 +159,7 @@ class ClinicalNoteUpdateForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class ServiceForm(forms.ModelForm):
@@ -172,7 +172,7 @@ class ServiceForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class PayForm(forms.ModelForm):
@@ -185,7 +185,7 @@ class PayForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class PayUpdateForm(forms.ModelForm):
@@ -198,7 +198,7 @@ class PayUpdateForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
             
 
 
@@ -211,7 +211,7 @@ class DicomUploadForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
             
 
 class AdmissionForm(forms.ModelForm):
@@ -224,7 +224,7 @@ class AdmissionForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class AdmissionUpdateForm(forms.ModelForm):
@@ -237,7 +237,7 @@ class AdmissionUpdateForm(forms.ModelForm):
         for field in self.fields.values():
             # field.required=True
             field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
             
 
 class WardVitalSignsForm(forms.ModelForm):
@@ -252,7 +252,7 @@ class WardVitalSignsForm(forms.ModelForm):
         super(WardVitalSignsForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
 
@@ -265,7 +265,7 @@ class WardMedicationForm(forms.ModelForm):
         super(WardMedicationForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
 class WardNotesForm(forms.ModelForm):
@@ -276,7 +276,7 @@ class WardNotesForm(forms.ModelForm):
         super(WardNotesForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
 
@@ -289,7 +289,7 @@ class TheatreItemForm(forms.ModelForm):
         super(TheatreItemForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
 
@@ -314,7 +314,7 @@ class TheatreBookingForm(forms.ModelForm):
         super(TheatreBookingForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
 class TheatreNotesForm(forms.ModelForm):
@@ -326,7 +326,7 @@ class TheatreNotesForm(forms.ModelForm):
         super(TheatreNotesForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
 class DicomFileForm(forms.ModelForm):

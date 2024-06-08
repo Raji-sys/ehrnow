@@ -55,8 +55,7 @@
 	}
 	a:hover{
 		text-decoration: none;
-	}
-	
+	}	
   body {
         font-family: 'Lato', sans-serif;
 		background-image: url('{% static "images/4.jpg" %}');
@@ -66,27 +65,25 @@
 
   </style>
 		{% if request.user.is_authenticated %}
-	<header class="bg-emerald-500 p-2 shadow-md border-b-2 border-gray-900 md:mx-20">
+	<header class="bg-emerald-500 p-1 shadow-md md:mx-20 mx-2 rounded-t">
 		<nav class="flex flex-row flex-wrap justify-between">
 			  <div class="border-4 border-white bg-green-800 rounded-xl p-1 text-xs text-white text-center flex justify-center items-center align-middle">
 				<a href="{% url 'get_started' %}" class="focus:opacity-10 text-white text-center"> 
-					<i class="fa-solid fa-home-user fa-2xl p-4 rounded-xl text-white"></i>
+					<i class="fa-solid fa-home-user fa-xl p-3 rounded-lg text-white"></i>
 				</a>
 			</div> 
-			<!-- <span class="enom md:text-md text-center text-white font-semibold m-4">
-			</span> -->
 			<div class="flex align-middle">
-			<span class="text-white m-4 uppercase text-lg"><span class="text-xs mr-2">logged-in as:</span>{{request.user}}</span>
+			<span class="text-white m-4 uppercase text-sm"><span class="text-xs mr-2">logged-in as:</span>{{request.user}}</span>
 		            <form method="POST" action="{% url 'logout' %}">
                         {% csrf_token %}
-                        <button type="submit" class="border-4 border-white rounded-xl focus:opacity-10">
-                            <i class="fa-solid fa-x bg-rose-700 p-4 rounded-xl text-white"></i>
+                        <button type="submit" class="border-4 border-white rounded-lg focus:opacity-10 bg-rose-700">
+                            <i class="fa-solid fa-x p-3 rounded-lg text-white"></i>
                         </button>
                     </form>
 			</div>
 		</nav>
 	</header>
-	<div class="text-center font-medium uppercase text-sm text-green-700 shadow-sm md:mx-20 rounded bg-green-50 p-2 border-b-2 border-gray-900 ">
+	<div class="text-center font-medium text-xs md:text-sm text-green-700 shadow-sm md:mx-20 mx-2 rounded-b bg-green-100 p-2 ">
 		{% block page_title%}{%endblock%}
 	</div>
 	{% endif %}

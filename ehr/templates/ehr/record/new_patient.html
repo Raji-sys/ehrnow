@@ -3,17 +3,17 @@
 {%block title%}NEW PATIENT REGISTRATION{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>NEW PATIENT REGISTRATION</div>{%endblock%}
 {%block content %}
-    <div class="p-2 rounded-3xl bg-white mx-2 md:mx-20 m-2 md:mt-10">
-        <section class="text-center border-cyan-700 p-4 m-2">
-            {% for message in messages %}
-          <div class="mt-1">
-               <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
-                <a href class="uk-alert-close font-bold" uk-close></a>
-                <p class="text-green-700 font-semibold">{{ message }}</p>
-                </div>
-          </div>
-          {% endfor %}
-        </section>
+    <div class="p-2 rounded-xl bg-white mx-2 md:mx-20 mt-2">
+      <section class="text-center border-cyan-700 p-1 m-1">
+        {% for message in messages %}
+        <div class="mt-1">
+            <div class="uk-alert-success rounded-xl text-xs w-fit mx-auto" uk-alert>
+                <a href class="uk-alert-close" uk-close></a>
+                <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
         {% if form.errors %}
         <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
             <a href class="uk-alert-close font-bold" uk-close></a>
@@ -23,22 +23,22 @@
   <form method="post" enctype="multipart/form-data" class="text-xs">
     {% csrf_token %}
     <div class="uppercase text-cyan-900">
-        <p class="text-green-900 text-lg font-bold text-center border-b border-green-700">Register new patient</p>
-        <div class="grid md:grid-cols-3 p-2 md:gap-4">
+        <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">Register new patient</p>
+        <div class="grid md:grid-cols-5 p-4 gap-4">
       {% for field in form %}
-        <div class="text-center">
+        <div class="text-center text-xs">
             <div class="">
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
             </div>
-            <div class="">
+            <div class="text-xs">
                 {{ field }}
             </div>
             </div>
             {%endfor%}
           </div>
-            <div class="gap-3 flex justify-center align-middle p-3">
+            <div class="gap-1 flex justify-center align-middle p-2">
             <input type="submit" value="register" class="text-md focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-            bg-green-700 text-white py-6 px-16 rounded shadow-lg hover:shadow-xl">
+            bg-green-700 text-white py-3 px-8 rounded shadow-lg hover:shadow-xl">
           </div>
     </div>
     </form>
