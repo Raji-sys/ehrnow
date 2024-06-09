@@ -1,12 +1,12 @@
 {% extends 'base.html'%}
 {% load static %}
 {%block title%}NURSING DESK{%endblock%}
-{%block page_title%}<div class="enom flex justify-center"><a href="{%url 'nursing' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>SOPD NURSING DESK</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'nursing' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>SOPD NURSING DESK</div>{%endblock%}
 {%block content %}
-<div class="p-1 ">
-  <section class="max-w-xl mx-auto text-center border-cyan-700 p-4 m-2">
+<div class="">
+  <section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
     {% for message in messages %}
-    <div class="mt-2 ">
+    <div class="">
       <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
           <a href class="uk-alert-close font-bold" uk-close></a>
           <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
@@ -14,26 +14,26 @@
   </div>
     {% endfor %}
   </section>
-  <div class="md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
+  <div class="md:mx-20 mx-2 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
   <div class="overflow-x-auto uppercase">
   <table class="min-w-full divide-y divide-emerald-500">
     <thead class="bg-emerald-100">
-      <tr class="text-sm">
-        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">#</th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">FILE NUMBER</th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+      <tr class="text-xs">
+        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">#</th>
+        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">FILE NUMBER</th>
+        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
           PATIENT NAME
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
           PHONE NUMBER
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
           CLINIC
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
           ROOM
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
           PROCESS
         </th>
       </tr>
@@ -41,25 +41,25 @@
     <tbody class="bg-white divide-y divide-emerald-200">
       {% for h in handovers %}
       <tr class="bg-emerald-50 hover:bg-emerald-200 transition-colors duration-300 text-xs">
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
           {{forloop.counter}}
       </td>
-      <td class="px-6 py-4 whitespace-nowrap">
+      <td class="p-3 whitespace-nowrap">
         {{ h.patient.file_no|default_if_none:'' }}
       </td>
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
           {{ h.patient.full_name|default_if_none:'' }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
           {{ h.patient.phone|default_if_none:'' }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
           {{ h.clinic|default_if_none:'' }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
           {{ h.room|default_if_none:'' }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
         <a href="{%url 'vital_signs' h.patient.file_no%}" class="text-sm text-blue-500 hover:text-blue-700"><i class="fa-solid fa-heartbeat fa-2xl"></i></a>
         </td>        
       </tr>
