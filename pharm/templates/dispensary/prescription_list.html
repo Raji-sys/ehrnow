@@ -4,8 +4,8 @@
 {%block page_title%}<div class="flex justify-center items-end "><a href="{%url 'pharm:dispensary' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PRESCRIPTION DIRECTORY</div>{%endblock%}
 
 {%block content %}
-<div class="mt-2 p-1">
-    <section class="text-center border-cyan-700 p-4 m-2">
+<div class="">
+    <section class="text-center border-cyan-700 p-1 m-1">
         {% for message in messages %}
         <div class="">
           <div class="bg-yellow-100 rounded-2xl text-sm p-4" uk-alert>
@@ -15,12 +15,12 @@
         </div>
         {% endfor %}
       </section>
-    <div class="md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-amber-50">
+    <div class="md:mx-20 mx-2 rounded-xl p-4 shadow-black shadow-sm bg-amber-50">
       <div class="flex justify-center m-1">
-        <div class="mt-2 mx-4">
+        <div class="mt-2 mx-2">
                     {% if request.GET.urlencode %}
                     <span>
-                        <a href="?" class=" p-2 focus:opacity-10  focus:border-cyan-600 bg-orange-500text-white rounded shadow-sm hover:shadow-xl text-center w-fit">
+                        <a href="?" class=" p-2 focus:opacity-10  focus:border-cyan-600 bg-orange-500 text-white rounded shadow-sm hover:shadow-xl text-center w-fit">
                             <i class="fa-solid fa-rotate fa-lg text-cyan"></i></a>
                         </span>
                         {%endif%}
@@ -36,50 +36,51 @@
                   <!-- <label for="{{field.id_for_label}}">{{ field.label_tag }}</label> -->
                   <input type="{{field.field.widget.input_type}}" name="{{field.name}}"placeholder="{{field.name}}"
                 {%if field.value%} value="{{field.value}}"{%endif%}
-                class="text-center text-sm focus:outline-none w-fit text-cyan-950 p-2
+                class="text-center text-xs uppercase focus:outline-none w-fit text-cyan-950 p-2
                 rounded shadow-sm shadow-cyan-900 border-cyan-900 border">
               </div>
                 <span class="form-error">{{ field.errors }}</span>
                 {% endfor %}
-                <button type="submit" class="shadow-sm shadow-amber-600 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-amber-700 text-white rounded hover:border-cyan-700 ">
-                    <i class="fa-solid fa-search fa-xl "></i>
-                </button>
+              <button type="submit" class="shadow-sm shadow-amber-600 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-amber-700 text-white rounded hover:border-cyan-700 ">
+                <i class="fa-solid fa-search fa-xl "></i>
+              </button>
             </div>
         </form>
     </div>
     </div>
-      <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
+      <div class="overflow-x-auto p-4 uppercase">
         <table class="min-w-full divide-y divide-amber-200">
           <thead class="bg-amber-50">
-            <tr class="text-sm">
-                <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+            <tr class="text-xs">
+                <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                     #
                 </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 FILE NUMBER
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 NAME
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 PRESCRIBED DRUG
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 QUANTITY
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 CLINIC
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 PRICE
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              
+              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 DATE
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 clear PRESCRIPTION
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 Dispense
               </th>
             </tr>
@@ -88,40 +89,40 @@
             {% for p in prescribed %}
             {% if p.dispensed == False %}
             <tr class="text-xs bg-amber-100 hover:bg-amber-200 transition-colors duration-300">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class=" p-3 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
                 
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class=" p-3 whitespace-nowrap">
                   {{ p.patient.file_no|default_if_none:'' }}
                 </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class=" p-3 whitespace-nowrap">
                 <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
                 {{ p.patient|default_if_none:'' }}
                 </a>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class=" p-3 whitespace-nowrap">
                 {{ p.drug|default_if_none:'' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class=" p-3 whitespace-nowrap">
                 {{ p.quantity|default_if_none:'' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class=" p-3 whitespace-nowrap">
                 {{ p.patient.clinic|default_if_none:'' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class=" p-3 whitespace-nowrap">
                 {{ p.price|default_if_none:'' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class=" p-3 whitespace-nowrap">
                 {{ p.updated|default_if_none:'' }}
               </td>
               
-            <td class="text-center px-6 py-4 whitespace-nowrap">
+            <td class="text-center  p-3 whitespace-nowrap">
                 <span class="space-x-4">
                     <a href="{%url 'pharm:update_prescription' p.id %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-close fa-2xl"></i></a>
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class=" p-3 whitespace-nowrap">
                 <div class="bg-white rounded-xl p-2">
                   <a href="{% url 'pharm:add_dispense' p.patient.file_no %}" class="text-sm text-amber-500 hover:text-green-700 uppercase"><i class="fa-solid fa-file-prescription fa-2xl mr-2"></i>dispense</a>
                 </div>
@@ -130,7 +131,7 @@
             {% endif %}
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="px-6 py-4 text-center text-green-500">
+              <td colspan="2" class=" p-3 text-center text-green-500">
                 No patients found
               </td>
             </tr>

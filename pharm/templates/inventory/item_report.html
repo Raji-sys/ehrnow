@@ -5,14 +5,14 @@
 {% block content %}
 
 <!-- start of first grid  -->
-<div class="m-1 md:mx-20 rounded-xl p-2 shadow-black shadow-2xl bg-cyan-50">
+<div class="mt-2 mx-2 md:mx-20 rounded-xl p-2 shadow-black shadow-2xl bg-cyan-50">
                 {% if request.GET.urlencode %}
                 <div class="flex justify-center gap-1">
                     <a class="text-xl text-white focus:opacity-10 focus:border-cyan-600 bg-cyan-600 
                     px-4 py-1 rounded shadow-lg hover:shadow-xl text-center" href="{% url 'pharm:drug_pdf' %}?{{request.GET.urlencode}}">
-                    <i class="fa-solid fa-file-pdf fa-lg"></i></a>
+                    <i class="fa-solid fa-file-pdf fa-xl"></i></a>
                     <a href="?" class="text-xl text-white focus:opacity-10  focus:border-blue-600 bg-white 
-                    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-lg text-cyan-700"></i></a>
+                    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-xl text-cyan-700"></i></a>
                     </div>
                 {%endif%}
   <div class="text-cyan-900">
@@ -25,13 +25,13 @@
             <div class="flex justify-center items-start flex-col">
             <label for="{{field.id_for_label}}" class="inline">{{ field.label_tag }}</label>
             <input type="field.field.widget.input_type" name="{{field.name}}"
-            class="text-center text-sm focus:outline-none w-fit text-cyan-950 p-2
+            class="text-center text-xs focus:outline-none w-fit text-cyan-950 p-2
             rounded shadow-md shadow-cyan-900 border-cyan-900 border"
             {%if field.value%} value="{{field.value}}"{%endif%}> 
         </div>
             {% endfor %}
             <div class="mt-4 flex justify-center align-middle ">
-                <button type="submit" class="shadow-md shadow-cyan-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-cyan-900 text-white rounded hover:border-cyan-700 ">
+                <button type="submit" class="shadow-md shadow-cyan-900 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-cyan-600 bg-cyan-900 text-white rounded hover:border-cyan-700 ">
                   <i class="fa-solid fa-search fa-xl "></i>
               </button>
                 </div>
@@ -44,42 +44,42 @@
 
 <!-- end of first grid -->
     {% if request.GET.urlencode %}
-<div class="overflow-x-auto  md:px-10 p-2 mb-10">
-   <table class="table-auto min-w-full max-sm:flex flex rounded-2xl items-center justify-center">
-        <tbody class="bg-white border-1 shadow-md rounded-2xl max-sm:p-4 p-2 overflow-x-auto border-cyan-700 shadow-cyan-900">
+<div class="overflow-x-auto p-2 mb-4 mx-2 md:mx-20">
+   <table class="table-auto min-w-full flex rounded-2xl items-center justify-center">
+        <tbody class="bg-white border-1 shadow-md rounded-2xl p-2 overflow-x-auto border-cyan-700 shadow-cyan-900">
             <tr class="text-xs bg-cyan-800 text-white">
-                <th scope="col" class="border-2 border-white p-3">S/N</th>
-                <th scope="col" class="border-2 border-white p-3">DATE ADDED/UPDATED</th>
-                <th scope="col" class="border-2 border-white p-3">NAME</th>
-                <th scope="col" class="border-2 border-white p-3">GENERIC NAME</th>
-                <th scope="col" class="border-2 border-white p-3">BRAND NAME</th>
-                <th scope="col" class="border-2 border-white p-3">CLASS</th>
-                <th scope="col" class="border-2 border-white p-3">SUPPLIER</th>
-                <th scope="col" class="border-2 border-white p-3">DOSAGE FORM</th>
-                <th scope="col" class="border-2 border-white p-3">PACK SIZE</th>
-                <th scope="col" class="border-2 border-white p-3">PACK PRICE</th>
-                <th scope="col" class="border-2 border-white p-3">COST PRICE</th>
-                <th scope="col" class="border-2 border-white p-3">TOTAL DRUGS</th>
-                <th scope="col" class="border-2 border-white p-3">BALANCE</th>
-                <th scope="col" class="border-2 border-white p-3">TOTAL VALUE</th>
-                <th scope="col" class="border-2 border-white p-3">EXPIRY DATE</th>
-                <th scope="col" class="border-2 border-white p-3">ADDED BY</th>
+                <th scope="col" class="border-2 border-white p-2">S/N</th>
+                <th scope="col" class="border-2 border-white p-2">DATE ADDED/UPDATED</th>
+                <th scope="col" class="border-2 border-white p-2">NAME</th>
+                <th scope="col" class="border-2 border-white p-2">GENERIC NAME</th>
+                <th scope="col" class="border-2 border-white p-2">BRAND NAME</th>
+                <th scope="col" class="border-2 border-white p-2">CLASS</th>
+                <th scope="col" class="border-2 border-white p-2">SUPPLIER</th>
+                <th scope="col" class="border-2 border-white p-2">DOSAGE FORM</th>
+                <th scope="col" class="border-2 border-white p-2">PACK SIZE</th>
+                <th scope="col" class="border-2 border-white p-2">PACK PRICE</th>
+                <th scope="col" class="border-2 border-white p-2">COST PRICE</th>
+                <th scope="col" class="border-2 border-white p-2">TOTAL DRUGS</th>
+                <th scope="col" class="border-2 border-white p-2">BALANCE</th>
+                <th scope="col" class="border-2 border-white p-2">TOTAL VALUE</th>
+                <th scope="col" class="border-2 border-white p-2">EXPIRY DATE</th>
+                <th scope="col" class="border-2 border-white p-2">ADDED BY</th>
             </tr>
             {% for i in drugfilter.qs %}
             <tr class="text-xs {% cycle 'bg-white hover:bg-cyan-200' 'bg-cyan-100 hover:bg-cyan-200' %} border-b border-cyan-700 uppercase">
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{forloop.counter}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.updated_at|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.name|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.generic_name|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.brand_name|default_if_none:''}}
                 </td>
                 <td class="border-1 border-cyan-700 p-1 text-center">
@@ -88,31 +88,31 @@
                 <td class="border-1 border-cyan-700 p-1 text-center">
                 {{i.supplier|default_if_none:''}} 
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.dosage_form|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.pack_size|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.pack_price|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.cost_price|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                     {{i.total_purchased_quantity|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                     {{i.current_balance}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.total_value|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.expiration_date|default_if_none:''}}
                 </td>
-                <td class="border-1 border-cyan-700 p-3 text-center">
+                <td class="border-1 border-cyan-700 p-2 text-center">
                 {{i.added_by}}
                 </td>
                 </tr>
@@ -120,7 +120,7 @@
 
             {%endfor%} 
         <tr class="">
-            <td class="p-3 text-center">        
+            <td class="p-2 text-center">        
        <div class="pagination flex justify-between my-4 ">
             <span class="flex items-center">
                 {% if po.has_previous %}

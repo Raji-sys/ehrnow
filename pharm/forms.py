@@ -12,7 +12,7 @@ class DrugForm(forms.ModelForm):
         super(DrugForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.required=True    
-            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400  p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
 class RecordForm(forms.ModelForm):
@@ -24,7 +24,7 @@ class RecordForm(forms.ModelForm):
         self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})  # Add onchange event
         for field in self.fields.values():
             field.required=True    
-            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400  p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
     def clean(self):
         cleaned_data = super().clean()
@@ -47,7 +47,7 @@ class DispenseForm(forms.ModelForm):
         self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})  # Add onchange event
         for field in self.fields.values():
             field.required=False    
-            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400  p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
     def clean(self):
         cleaned_data = super().clean()
@@ -70,7 +70,7 @@ class PrescriptionForm(forms.ModelForm):
         self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})  # Add onchange event
         for field in self.fields.values():
             field.required=False    
-            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400  p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
     def clean(self):
         cleaned_data = super().clean()
@@ -92,5 +92,5 @@ class PrescriptionUpdateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.required=False    
-            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400  p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 

@@ -4,7 +4,7 @@
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'pharm:list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>ADD NEW DRUG</div>{%endblock%}
 {% block content %}
   <div class="mt-2 mb-6">
-    <div class="font-semibold uppercase text-xs shadow-md shadow-cyan-900 md:w-fit md:mx-auto md:p-8 p-4 rounded-2xl bg-white mx-2">
+    <div class=" uppercase text-xs shadow-md shadow-cyan-900 md:w-fit md:mx-auto md:p-8 p-4 rounded-2xl bg-white mx-2">
       <section class="text-center p-2 m-2">
                   {% if form.non_field_errors %}
           <div class="text-red-600 text-sm">
@@ -12,7 +12,7 @@
           </div>
         {% endif %}
       </section>
-      <p class="text-sm md:text-lg font-bold border-b-2 border-cyan-800  text-cyan-800 text-center">add a new drug to the store</p>
+      <p class="text-sm border-b-2 border-cyan-800  text-cyan-800 text-center">add a new drug to the store</p>
       <form action="" method="POST" enctype="multipart/form-data" class="">
         {% csrf_token %}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-16 text-center">

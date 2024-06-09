@@ -7,7 +7,7 @@
 <!-- <div class="flex justify-start items-start mt-14 relative"> -->
     <!-- start of first grid  -->
     <div class="">
-        <div class="md:mx-auto md:max-w-7xl rounded-xl shadow-black shadow-sm m-1">
+        <div class="md:mx-20 mx-2 rounded-xl shadow-black shadow-sm m-1">
             <!-- Add your styling for the fixed div here -->
         <div class="sm:flex sm:flex-col justify-center items-center rounded-2xl shadow-2xl bg-amber-500 p-2 text-white">
             {% if request.GET.urlencode%}
@@ -23,7 +23,7 @@
                 {% for field in recordfilter.form %}
                 {{field.errors}}
                 {% endfor %}
-                <div class="text-center flex flex-row flex-wrap gap-1 justify-center">
+                <div class="text-center flex flex-row flex-wrap m-1 justify-center">
                     {% for field in recordfilter.form %}
                     <div class="flex justify-center items-start flex-col">
 
@@ -46,59 +46,59 @@
         <!-- end of first grid -->
         
     {% if request.GET.urlencode %}
-<div class="rounded-xl mx-2 md:mx-auto max-w-screen-xl">
+<div class="rounded-xl mx-2 md:mx-20 p-4">
    <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
-        <tbody class="bg-white border-1 shadow-2xl rounded-2xl max-sm:p-4 p-2 overflow-x-auto border-amber-600">
+        <tbody class="bg-white border-1 shadow-2xl rounded-2xl p-2 overflow-x-auto border-amber-600">
             <tr class="text-xs bg-amber-500 text-white">
-                <th scope="col" class="border-2 border-white p-3">S/N</th>
-                <th scope="col" class="border-2 border-white p-3">DATE ISSUED</th>
-                <th scope="col" class="border-2 border-white p-3">DRUG</th>
-                <th scope="col" class="border-2 border-white p-3">CATEGORY</th>
-                <th scope="col" class="border-2 border-white p-3">BRAND</th>
-                <th scope="col" class="border-2 border-white p-3">SUPPLIER</th>
-                <th scope="col" class="border-2 border-white p-3">UNIT ISSUED TO</th>
-                <th scope="col" class="border-2 border-white p-3">ISSUED BY</th>
-                <th scope="col" class="border-2 border-white p-3">PACK PRICE</th>
-                <th scope="col" class="border-2 border-white p-3">QUANITITY</th>
-                <th scope="col" class="border-2 border-white p-3">BALANCE</th>
-                <th scope="col" class="border-2 border-white p-3">REMARK</th>
+                <th scope="col" class="border-2 border-white p-2">S/N</th>
+                <th scope="col" class="border-2 border-white p-2">DATE ISSUED</th>
+                <th scope="col" class="border-2 border-white p-2">DRUG</th>
+                <th scope="col" class="border-2 border-white p-2">CATEGORY</th>
+                <th scope="col" class="border-2 border-white p-2">BRAND</th>
+                <th scope="col" class="border-2 border-white p-2">SUPPLIER</th>
+                <th scope="col" class="border-2 border-white p-2">UNIT ISSUED TO</th>
+                <th scope="col" class="border-2 border-white p-2">ISSUED BY</th>
+                <th scope="col" class="border-2 border-white p-2">PACK PRICE</th>
+                <th scope="col" class="border-2 border-white p-2">QUANITITY</th>
+                <th scope="col" class="border-2 border-white p-2">BALANCE</th>
+                <th scope="col" class="border-2 border-white p-2">REMARK</th>
             </tr>
             {% for r in recordfilter.qs %}
         <tr class="uppercase text-xs {% cycle 'bg-white hover:bg-amber-200' 'bg-amber-100 hover:bg-amber-200' %} border-b border-amber-700">
             <td class="border-1 border-amber-700 p-1 text-center">
                 {{forloop.counter}}
             </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
                 {{r.updated_at|default_if_none:''}}
             </td>    
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
                 {{r.drug|default_if_none:''}}
             </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
                 {{r.drug.category|default_if_none:''}}
             </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
                 {{r.drug.brand_name|default_if_none:''}}
             </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
                 {{r.drug.supplier|default_if_none:''}}
             </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
             {{r.unit_issued_to|default_if_none:''}}
             </td>
             <td class="border-1 border-amber-700 p-1 text-center">
             {{r.issued_by|default_if_none:''}}
             </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
             {{r.drug.pack_price|default_if_none:''}}
             </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
             {{r.quantity|default_if_none:''}}
             </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
             {{r.balance|default_if_none:''}}
             </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
+            <td class="border-1 border-amber-700 p-2 text-center">
             {{r.remarks|default_if_none:''}}
             </td>
 
@@ -106,13 +106,13 @@
             {% empty %}
 
             {%endfor%}
-                <tr class="text-xl uppercase border-b border-amber-700">
-                    <td colspan="9" class="text-right border-1 border-amber-700 p-3 text-green-700 font-semibold">
+                <tr class="text-sm uppercase border-b border-amber-700">
+                    <td colspan="8" class="text-right border-1 border-amber-700 p-2 text-green-700 font-semibold">
                       issued: {{ total_appearance }} times - quantity: {{ total_quantity }} - worth: &#x20A6;{{ total_price }}
                     </td>
                 </tr>
                 <tr class="">
-                    <td class="p-3 text-center">        
+                    <td class="p-2 text-center">        
            <div class="pagination flex justify-between my-4 ">
             <span class="flex items-center">
                 {% if po.has_previous %}

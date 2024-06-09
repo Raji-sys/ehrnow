@@ -262,7 +262,7 @@ def create_prescription(request, file_no):
                 if form.has_changed():
                     instance = form.save(commit=False)
                     instance.patient = patient
-                    instance.dispensed_by = request.user
+                    instance.prescribed_by = request.user
 
                     # paypoint = Paypoint.objects.create(
                     #     user=request.user,
@@ -273,7 +273,7 @@ def create_prescription(request, file_no):
                     # )
                     # instance.payment = paypoint
                     instance.save()
-            
+            messages.success(request,'drugs prescribed')
             return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
         else:
             formset = PrescriptionFormSet(queryset=Prescription.objects.none())
@@ -318,9 +318,9 @@ class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_presscription = self.get_queryset().count()
+        total_prescription = self.get_queryset().count()
         context['PrescriptionFilter'] = PrescriptionFilter(self.request.GET, queryset=self.get_queryset())
-        context['total_prescription'] = total_presscription
+        context['total_prescription'] = total_prescription
         return context
 
 
