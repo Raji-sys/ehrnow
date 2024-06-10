@@ -115,7 +115,7 @@ class DocumentationView(UpdateView):
     model = User
     template_name = 'doc.html'
     form_class = UserForm
-    success_url = reverse_lazy('get_started')
+    success_url = reverse_lazy('stafflist')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -171,7 +171,7 @@ class UpdateProfileView(UpdateView):
 
     def get_success_url(self):
         messages.success(self.request, 'Staff Information Updated Successfully')
-        return self.object.profile.get_absolute_url()
+        return self.object.get_absolute_url()
     
     def form_valid(self, form):
         if form.is_valid():

@@ -2,11 +2,11 @@
 {% block title %}microbiology report{% endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'pathology:micro' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>MICROBIOLOGY REPORT</div>{%endblock%}
 {% block content %}
-<div class="mt-2 p-1">
+<div class="mt-2">
 <div class="grid grid-rows-2 mt-0 relative">
     <div class="center-2 h-full overflow-y-auto ">
-        <div class="flex flex-row justify-center items-center max-w-6xl mx-auto rounded-xl p-4 shadow-2xl bg-purple-50 text-black m-2">
-          <form method="get" class="text-xs text-center">
+        <div class="flex flex-row justify-center items-center md:mx-20 mx-2 rounded-xl p-4 shadow-2xl bg-purple-50 text-black m-2">
+          <form method="get" class="text-xs text-center uppercase">
             {% for field in micro_filter.form %}
                 {{field.errors}}
                 {% endfor %}

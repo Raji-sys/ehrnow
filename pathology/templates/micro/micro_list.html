@@ -32,7 +32,7 @@
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
       {% for result in micro_results %}
-      <tr class="bg-gray-50 hover:bg-gray-200 transition-colors duration-300">
+      <tr class="text-xs bg-gray-50 hover:bg-gray-200 transition-colors duration-300">
         <td class="p-3 whitespace-nowrap">
           {{forloop.counter}}
       </td>
@@ -49,8 +49,7 @@
           {{ result.patient }}
         </td>
         <td class="p-3 whitespace-nowrap">
-          <span class="text-sm">{{ result.result|default_if_none:'' }}</span>
-          <span class="text-xs">{{ result.unit|default_if_none:'' }}</span>
+          {{ result.result|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
           {{ result.updated }}

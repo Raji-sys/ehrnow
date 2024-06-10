@@ -2,8 +2,8 @@
 {%load static%}
 {% block title %}personal details update form{% endblock%}
 {% block content %}
-<div class="uk-background-cover uk-background-fixed uk-height-viewport uk-panel uk-flex uk-flex-center uk-flex-middle">
-  <div class="uk-overlay rounded-3xl bg-white uk-position-center">
+<div class="mt-4 p-1">
+  <div class="rounded-xl bg-white md:mx-20 mx-2">
       <section class="text-center border-cyan-700 p-4 m-2">
           {% for message in messages %}
         <div class="mt-2">
@@ -20,7 +20,7 @@
           <p>{{form.errors}}</p>
       </div>
           {% endif %}
-<form method="post" enctype="multipart/form-data" >
+<form method="post" enctype="multipart/form-data" class="text-xs">
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
     <div class="grid grid-cols-3 p-2 gap-4">
@@ -37,11 +37,11 @@
     {%endfor%}
   </div>
   </div>
-  <div class="flex justify-center align-middle">
+  <div class="flex justify-center align-middle gap-4 p-4">
     <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
     <a href="{{ profile.get_absolute_url }}" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-    bg-rose-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">cancel</a>
+    bg-rose-700 text-white p-4 rounded shadow-lg hover:shadow-xl">cancel</a>
   </div>
   </form>
   </div>

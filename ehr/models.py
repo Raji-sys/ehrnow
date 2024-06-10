@@ -22,6 +22,7 @@ class SerialNumberField(models.CharField):
         del kwargs["unique"]
         return name, path, args, kwargs
     
+
 class Department(models.Model):
     name = models.CharField(null=True, blank=True, max_length=200)
     
@@ -40,8 +41,6 @@ class Unit(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    middle_name = models.CharField(max_length=300, blank=True, null=True)
-    title = models.CharField(max_length=300, null=True, blank=True)
     department = models.ForeignKey(Department, blank=True, max_length=300, null=True, on_delete=models.CASCADE)
     unit = models.ForeignKey(Unit, blank=True, max_length=300, null=True, on_delete=models.CASCADE)
     phone = models.CharField(max_length=300, null=True, blank=True, unique=True)
