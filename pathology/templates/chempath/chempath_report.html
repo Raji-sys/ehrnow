@@ -38,31 +38,31 @@
     <!-- end of first grid -->
 
     {% if request.GET.urlencode %}
-  <div class="md:max-w-6xl md:mx-auto rounded-xl p-6 bg-blue-50 m-1">
+  <div class="md:mx-20 mx-2 rounded-xl p-4 bg-blue-50 m-1">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-blue-500">
           <thead class="bg-blue-100">
-            <tr class="text-sm">
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">S/N</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+            <tr class="text-xs">
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">S/N</th>
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                 Test
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                 Code
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                 Patient
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                 Phone
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                 Result
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                 Date Reported
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                 Report By
               </th>
             </tr>
@@ -70,35 +70,35 @@
           <tbody class="bg-white divide-y divide-blue-200">
             {% for i in patient %}
             <tr class="bg-blue-50 hover:bg-blue-200 transition-colors duration-300 text-xs">
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{forloop.counter}}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.test|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.result_code|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.patient|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.patient.phone|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 <span class="text-sm">{{ i.result|default_if_none:''|upper }}</span>
                 <span class="text-xs">{{ i.unit|default_if_none:''|upper }}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.reported|default_if_none:'' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.approved_by }}
               </td>
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="px-6 py-4 text-center text-emerald-500">
+              <td colspan="2" class="p-3 text-center text-emerald-500">
                 Not found
               </td>
             </tr>

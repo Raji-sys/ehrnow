@@ -3,19 +3,19 @@
 {%block title%}FEMALE WARD DASHBOARD{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'ward_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>FEMALE WARD DASHBOARD</div>{%endblock%}
 {% block content %}
-    <div class="md:max-w-7xl  bg-white rounded-md shadow-black h-fit shadow-2xl mx-auto mt-2">
+    <div class="md:mx-20 mx-2  bg-zinc-200 rounded-md shadow-black h-fit shadow-2xl mt-2">
         <div class=" grid grid-cols-2 gap-6 uppercase text-center rounded-xl p-8 md:p-6 ">
             <div>
                 <a href="{% url 'female_ward_wait_list' %}">
-            <div class="hover:bg-slate-300 hover:text-white bg-zinc-600 text-white rounded-2xl shadow-2xl p-2 md:p-16 border-2 border-white-400 transition duration-300">
-              <div class="font-semibold text-xs md:text-sm">PATIENT ON WAITING LIST</div>
+            <div class="hover:bg-white hover:text-gray-800 bg-zinc-600 text-white rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
+              <div class=" text-xs">PATIENT ON WAITING LIST</div>
             </div>
           </a> 
         </div>
             <div>
                 <a href="{% url 'female_ward_list' %}">
-            <div class="hover:bg-pink-300 hover:text-white bg-pink-500 text-white rounded-2xl shadow-2xl p-2 md:p-16 border-2 border-white-400 transition duration-300">
-              <div class="font-semibold text-xs md:text-sm">ADMITTED PATIENTS</div>
+            <div class="hover:bg-white hover:text-pink-600 bg-pink-600 text-white rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
+              <div class=" text-xs">PATIENTS ON ADMISSION</div>
             </div>
           </a> 
         </div>

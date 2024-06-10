@@ -236,7 +236,6 @@ class GetStartedView(TemplateView):
 class StaffDashboardView(TemplateView):
     template_name = "staff.html"
 
-
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class MedicalRecordView(TemplateView):
     template_name = "ehr/dashboard/medical_record.html"
@@ -332,7 +331,6 @@ class AEClinicDetailView(TemplateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class SOPDClinicDetailView(TemplateView):
     template_name = 'ehr/clinic/sopd_details.html'
-
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class MaleWardDetailView(TemplateView):
@@ -569,9 +567,7 @@ class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
 
     def get_queryset(self):
         follow_up_visits = FollowUpVisit.objects.filter(patient__handovers__status='waiting_for_payment')
-
         clinic_choices = follow_up_visits.values_list('clinic', flat=True).distinct()
-
         return PatientHandover.objects.filter(
             status='waiting_for_payment', 
             clinic__in=clinic_choices

@@ -2,10 +2,10 @@
 {% block title %}HEMATOLOGY REPORT{% endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'pathology:hematology' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>HEMATOLOGY REPORT</div>{%endblock%}
 {% block content %}
-<div class="mt-1 p-1">
+<div class="mt-2">
 <div class="grid grid-rows-2 mt-0 relative ">
     <div class="center-2 h-full overflow-y-auto ">
-        <div class="flex flex-row justify-center items-center max-w-6xl mx-auto rounded-xl p-4 shadow-2xl bg-green-50 text-black m-2">
+        <div class="flex flex-row justify-center items-center md:mx-20 mx-2 rounded-xl p-4 shadow-2xl bg-green-50 text-black m-2">
           <form method="get" class="text-xs text-center uppercase">
             {% for field in hema_filter.form %}
                 {{field.errors}}
@@ -20,7 +20,7 @@
                       </div>
                       {% endfor %}
                       <div class="mt-4 flex justify-center align-middle ">
-                        <button type="submit" class="text-md bg-green-700 text-white w-fit p-2 focus:opacity-10 rounded">
+                        <button type="submit" class="text-xs bg-green-700 text-white w-fit p-2 focus:opacity-10 rounded">
                             <i class="fa-solid fa-search fa-xl"></i>
                           </button>                     
                         </div>
@@ -38,34 +38,34 @@
     <!-- end of first grid -->
 
     {% if request.GET.urlencode %}
-  <div class="md:max-w-6xl md:mx-auto rounded-xl p-6 bg-green-50">
+  <div class="md:mx-20 mx-2 rounded-xl p-4 bg-green-50">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-green-500">
           <thead class="bg-green-100">
-      <tr class="text-sm bg-emerald-100 text-center">
-              <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">#</th>
-              <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">
+      <tr class="text-xs bg-emerald-100 text-center">
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">#</th>
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Test
               </th>
-              <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Code
               </th>
-              <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Patient
               </th>
-              <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Phone
               </th>
-              <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Result
               </th>
-              <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Date Reported
               </th>
-              <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Collected By
               </th>
-              <th class="px-6 py-3 font-medium text-green-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Report By
               </th>
             </tr>
@@ -74,22 +74,22 @@
             {% for i in patient %}
             <tr class="text-center text-xs bg-green-50 hover:bg-green-200 transition-colors duration-300 uppercase">
 
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{forloop.counter}}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.test|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.result_code|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.patient|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.patient.phone|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.result.html|safe|default_if_none:'' }}
                 <span class="text-sm">
                   {% for parameter in i.hema_parameters.all %}
@@ -98,19 +98,19 @@
               {% endfor %}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.collected|default_if_none:'' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.collected_by|default_if_none:'' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.updated_by|default_if_none:'' }}
               </td>
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="px-6 py-4 text-center text-emerald-500">
+              <td colspan="2" class="p-3 text-center text-emerald-500">
                 Not found
               </td>
             </tr>

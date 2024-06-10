@@ -12,34 +12,34 @@
 </div>
   {% endfor %}
 </section>
-<div class="p-1">
-  <div class="md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
+<div class="">
+  <div class="mt-2 mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
   <div class="overflow-x-auto uppercase">
   <table class="min-w-full divide-y divide-gray-500">
     <thead class="bg-gray-100">
-      <tr class="text-sm bg-emerald-100 text-center">
-        <th class="px-6 py-3  font-medium text-gray-500 uppercase tracking-wider">#</th>
-        <th class="px-6 py-3  font-medium text-gray-500 uppercase tracking-wider">Code</th>
-        <th class="px-6 py-3  font-medium text-rose-500 uppercase tracking-wider">
+      <tr class="text-xs bg-emerald-100 text-center">
+        <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">#</th>
+        <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">Code</th>
+        <th class="p-3  font-medium text-rose-500 uppercase tracking-wider">
           Test
         </th>
-        <th class="px-6 py-3  font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">
           Price
         </th>
         </th>
-        <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Payment Status
         </th>
-        <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Patient
         </th>
-        <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Date Collected
         </th>
-        <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Requested By
         </th>
-        <th class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           INPUT RESULT
         </th>
       </tr>
@@ -47,34 +47,34 @@
     <tbody class="bg-white divide-y divide-gray-200">
       {% for r in hematology_request %}
       <tr class="text-center text-xs bg-gray-50 hover:bg-gray-200 transition-colors duration-300 uppercase">
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
           {{forloop.counter}}
       </td>
-      <td class="px-6 py-4 whitespace-nowrap">
+      <td class="p-3 whitespace-nowrap">
         {{ r.result_code|default_if_none:'' }}
       </td>
-        <td class="px-6 py-4 whitespace-nowrap text-rose-400">
+        <td class="p-3 whitespace-nowrap text-rose-400">
           {{ r.test|default_if_none:'' }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
           &#x20A6;{{ r.test.price|default_if_none:'' }}
         </td>
         {% if r.payment.status == False %}
-            <td class="px-6 py-4 whitespace-nowrap text-red-700">
+            <td class="p-3 whitespace-nowrap text-red-700">
           <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
             </td>
         {% else %}
-            <td class="px-6 py-4 whitespace-nowrap text-green-700">
+            <td class="p-3 whitespace-nowrap text-green-700">
              <i class="fa-solid fa-thumbs-up fa-2xl"></i>
            </td>
         {% endif %}
-        <td class="px-6 py-4 whitespace-nowrap text-blue-500">
+        <td class="p-3 whitespace-nowrap text-blue-500">
                 {{ r.patient|default_if_none:'' }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
           {{ r.created|default_if_none:'' }}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
+        <td class="p-3 whitespace-nowrap">
           {{ r.collected_by|default_if_none:'' }}
         </td>
         <td>

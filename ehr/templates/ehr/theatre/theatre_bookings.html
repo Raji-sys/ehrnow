@@ -14,8 +14,8 @@
         </div>
         {% endfor %}
         <div class="">
-          <span class="shadow-sm shadow-amber-900 gap-4 bg-amber-900 text-white uppercase text-xs border-b-2 border-amber-900 py-2 px-4 rounded-xl mx-2 w-fit">
-            <span class=" shadow-white text-xs p-1 rounded-full bg-amber-800 text-white">{{total_bookings}}</span>&nbsp; patients booked
+          <span class="shadow-sm shadow-amber-900 gap-4 bg-amber-600 text-white uppercase text-xs border-b-2 border-amber-900 py-2 px-4 rounded-xl mx-2 w-fit">
+            <span class=" shadow-white text-xs p-1 rounded-full bg-white text-amber-600">{{total_bookings}}</span>&nbsp; patients booked
           {% if request.GET.urlencode %}
         <span>
           <a href="?" class=" p-2 focus:opacity-10  focus:border-amber-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
@@ -37,13 +37,13 @@
               <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
                 <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
                 {%if field.value%} value="{{field.value}}"{%endif%}
-                class="text-center text-xs focus:outline-none w-fit text-amber-950 p-2
+                class="text-center text-xs focus:outline-none w-fit text-amber-700 p-2
                 rounded shadow-sm shadow-amber-900 border-amber-900 border">
                 <span class="form-error">{{ field.errors }}</span>
                 </div>
                 {% endfor %}
                 <div class="mt-4 flex justify-center align-middle ">
-                <button type="submit" class="shadow-sm shadow-amber-900 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-amber-600 bg-amber-900 text-white rounded hover:border-amber-700 ">
+                <button type="submit" class="shadow-sm shadow-amber-900 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-amber-600 bg-amber-600 text-white rounded hover:border-amber-700 ">
                     <i class="fa-solid fa-search fa-xl "></i>
                 </button>
                 </div>
