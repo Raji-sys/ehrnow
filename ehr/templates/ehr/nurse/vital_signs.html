@@ -1,10 +1,10 @@
 {%extends "base.html" %}
 {% load static %}
 {% block title %}VITAL SIGNS{% endblock%}
-{%block page_title%}<div class="enom flex justify-center">VITAL SIGNS</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center">VITAL SIGNS</div>{%endblock%}
 {% block content %}
 <div class="">
-  <div class="uk-overlay rounded-3xl bg-white uk-position-center">
+  <div class="mt-4  mx-2 md:mx-20 rounded-xl bg-white">
       <section class="text-center border-cyan-700 p-4 m-2">
           {% for message in messages %}
         <div class="mt-2">
@@ -21,25 +21,25 @@
           <p>{{form.errors}}</p>
       </div>
           {% endif %}
-<form method="post" enctype="multipart/form-data" >
+<form method="post" enctype="multipart/form-data" class="text-xs">
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
-    <div class="grid grid-cols-3 p-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
     {% for field in form %}
     <div>
     <div class="flex justify-center">
       <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
     </div>
-    <div class="flex justify-center mb-6">
+    <div class="flex justify-center mb-2">
       {{ field }}
     </div>
   </div>
   {%endfor%}
 </div>
   </div>
-  <div class="gap-4 flex justify-center align-middle">
+  <div class="gap-2 flex justify-center align-middle p-2">
     <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
   </div>
   </form>
   </div>

@@ -1,9 +1,9 @@
 {%extends "base.html" %}
 {% block title %}CLINICAL NOTE{% endblock%}
-{%block page_title%}<div class="enom flex justify-center">CLINICAL NOTE</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center">CLINICAL NOTE</div>{%endblock%}
 {% block content %}
 <div class="">
-  <div class="mt-8 uk-overlay rounded-3xl bg-white uk-position-center">
+  <div class="mt-4 mx-2 md:mx-auto w-fit rounded-xl bg-white">
       <section class="text-center border-cyan-700 p-4 m-2">
           {% for message in messages %}
         <div class="mt-2">
@@ -20,25 +20,25 @@
           <p>{{form.errors}}</p>
       </div>
           {% endif %}
-<form method="post" enctype="multipart/form-data" >
+<form method="post" enctype="multipart/form-data"class="text-xs" >
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-6">
     {% for field in form %}
     <div class="flex justify-center">
-     <label for="{{field.id_for_label}}" class="block m-4">{{ field.label_tag }}</label>
+     <label for="{{field.id_for_label}}" class="block m-1">{{ field.label_tag }}</label>
      </div>
-<div class="flex justify-center mb-6 gap-10">
+<div class="flex justify-center gap-4">
                     {% if field.name == 'note' %}
-                        {{ field|safe }}
+                    <span class="mb-2">{{ field|safe }}</span>
                     {% else %}
-                        {{ field|safe }}
+                        <span class="">{{ field|safe }}</span>
                     {% endif %}
                 </div>
                 {% endfor %}
             </div>
-  <div class="gap-4 flex justify-center align-middle">
+  <div class="flex justify-center align-middle p-2">
     <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
   </div>
   </form>
   </div>

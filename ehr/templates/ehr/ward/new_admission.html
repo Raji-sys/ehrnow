@@ -2,8 +2,8 @@
 {% load static %}
 {%block title%}ADMISSION FORM{%endblock%}
 {%block content %}
-<div class="">
-    <div class="uk-overlay rounded-3xl bg-white uk-position-center mt-4">
+<div class="mx-2">
+    <div class="rounded-xl bg-white mt-4">
         <section class="text-center border-cyan-700 p-4 m-2">
             {% for message in messages %}
           <div class="mt-2">
@@ -24,9 +24,9 @@
     {% csrf_token %}
     <div class="mb-2 uppercase text-cyan-900 px-10">
         <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">ADMIT PATIENT</p>
-        <div class="grid grid-cols-1 p-2 gap-4">
+        <div class="grid grid-cols-1 p-2 gap-8">
       {% for field in form %}
-        <div>
+        <div class="flex justify-start text-center gap-4">
             <div class="">
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
             </div>
@@ -37,9 +37,9 @@
             {%endfor%}
         </div>
     </div>
-    <div class="gap-4 flex justify-center align-middle">
+    <div class="gap-4 flex justify-center align-middle p-4">
       <input type="submit" value="admit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-  bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+  bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
     </div>
     </form>
     </div>

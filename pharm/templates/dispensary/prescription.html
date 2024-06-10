@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}DRUG PRESCRIPTION{% endblock %}
 {% block content %}
-  <div class="flex justify-center mt-1 p-1 mb-4">
+  <div class="flex justify-center mx-2 p-1 mb-4">
     <div class="justify-center items-center uppercase text-xs shadow-sm shadow-green-500 mx-auto rounded-2xl bg-green-50 mt-2 p-2">
       <form id="recordForm" action="" method="POST" enctype="multipart/form-data" class="text-center text-xs">
           <p class="text-sm text-center border-b-2 border-green-500  text-green-600">PRESCRIPTION FORM</p>
         {% csrf_token %}
         {{ formset.management_form }}
         {% for form in formset %}
-          <div class="md:flex md:flex-row justify-center grid grid-cols-4 md:gap-6 p-4">
+          <div class="md:flex md:flex-row  justify-center grid grid-cols-3 md:gap-6 p-4 gap-2">
             {% if form.non_field_errors %}
               <div class="text-red-600 text-lg">
                 {{ form.non_field_errors.0 }}
