@@ -35,7 +35,7 @@
 
     </ul>
 
-  
+
   <ul class="uk-switcher uk-margin-medium-top">
     <!-- bio data start -->
     <li class="">
@@ -44,34 +44,16 @@
       <h1 class="text-teal-800 text-xs text-center">PERSONAL INFORMATION</h1>
 <tbody class="shadow-2xl shadow-black text-center text-gray-800 rounded-lg p-4 border-t border-cyan-800 overflow-x-auto  uppercase bg-white">
   <tr class="text-xs bg-teal-800 text-white">
-  <th scope="col" class="border border-cyan-800 p-2">FILE NUMBER</th>
   <th scope="col" class="border border-cyan-800 p-2 ">SEX</th>
   <th scope="col" class="border border-cyan-800 p-2 ">DATE OF BIRTH</th>
   <th scope="col" class="border border-cyan-800 p-2 ">PHONE NUMBER</th>
-  <th scope="col" class="border border-cyan-800 p-2 ">MARITAL STATUS</th>
-  <th scope="col" class="border border-cyan-800 p-2 ">STATE OF ORIGIN</th>
-  <th scope="col" class="border border-cyan-800 p-2 ">LGA</th>
-  <th scope="col" class="border border-cyan-800 p-2 ">SENATORIAL DISTRICT</th>
-  <th scope="col" class="border border-cyan-800 p-2 ">RELIGION</th>
-  <th scope="col" class="border border-cyan-800 p-2 ">RESIDENTIAL ADDRESS</th>
-  <th scope="col" class="border border-cyan-800 p-2 ">PERMANENT HOME ADDRESS</th>
-  <th scope="col" class="border border-cyan-800 p-2 ">GEO-POLITICAL ZONE</th>
-  <th scope="col" class="border border-cyan-800 p-2 ">UPDATE</th>  
+m  <th scope="col" class="border border-cyan-800 p-2 ">UPDATE</th>
 </tr>
 <tr class="text-xs text-gray-800">
-<td scope="col" class="border border-cyan-800 p-2">{{profile.file_no|default_if_none:''|upper}}</td>
 <td class="border p-2 border-cyan-800 text-center">{{profile.gender|default_if_none:''|upper}}</td>
 <td class="border p-2 border-cyan-800 text-center">{{profile.dob|date:'d-M-Y'|default_if_none:''|upper}}</td>
 <td class="border p-2 border-cyan-800 text-center">{{profile.phone|default_if_none:''|upper}}</td>
-<td class="border p-2 border-cyan-800 text-center">{{profile.marital_status|default_if_none:''|upper}}</td>
-<td class="border p-2 border-cyan-800 text-center">{{profile.state|default_if_none:''|upper}}</td>
-<td class="border p-2 border-cyan-800 text-center">{{profile.lga|default_if_none:''|upper}}</td>
-<td class="border p-2 border-cyan-800 text-center">{{profile.sen_dist|default_if_none:''|upper}}</td>
-<td class="border p-2 border-cyan-800 text-center">{{profile.religion|default_if_none:''|upper}}</td>
-<td class="border p-2 border-cyan-800 text-center">{{profile.res_add|default_if_none:''|upper}}</td>
-<td class="border p-2 border-cyan-800 text-center">{{profile.per_res_addr|default_if_none:''|upper}}</td>
-<td class="border p-2 border-cyan-800 text-center">{{profile.zone|default_if_none:''|upper}}</td>
-<td class="border border-cyan-800 border-b  p-2 gap-2"> 
+<td class="border border-cyan-800 border-b  p-2 gap-2">
   <a class="justify-center text-cyan-900 " href ="{% url 'update_profile' profile.pk %}"><i class="fa-solid fa-square-pen fa-2xl"></i></a>
   <a class="justify-center text-blue-800 " href="{%url 'update_user' profile.user.pk %}"><i class="fa-solid fa-user-circle fa-2xl"></i></a>
 </td>

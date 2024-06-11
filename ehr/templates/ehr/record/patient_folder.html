@@ -260,7 +260,7 @@
                         <td class=" p-3 whitespace-nowrap">{{ h.test|default_if_none:''}}</td>
                         <td class=" p-3 whitespace-nowrap">{{ h.collected|default_if_none:'' }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ h.result.html|safe }}</td>
-                        <td class=" p-3 whitespace-nowrap">{{ h.comment|default_if_none:'' }}</td>
+                        <td class=" p-3 whitespace-nowrap">{{ h.comments|default_if_none:'' }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ h.reported|default_if_none:'' }}</td>
                         <!-- <td class=" p-3 whitespace-nowrap">
                           <a href="{% url 'pathology:hematology_result' h.patient.file_no h.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
@@ -499,7 +499,7 @@
             <tbody class="bg-white divide-y divide-cyan-200">
               
               <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
+                <td class=" p-3 whitespace-nowrap"></td>
                 <td class=" p-3 whitespace-nowrap">
 
                   {% for study in radiology_files %}
@@ -532,7 +532,7 @@
             <tbody class="bg-white divide-y divide-cyan-200">
               
               <tr class="text-xs uppercase bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
+                <td class=" p-3 whitespace-nowrap"></td>
               </tr>
 
             </tbody>

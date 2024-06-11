@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "cornerstone-tools": "^6.0.10",
-    "dicom-web-viewer": "^0.1.2"
+    "dicom-web-viewer": "^0.1.2",
+    "quill": "^2.0.2"
   }
 }
