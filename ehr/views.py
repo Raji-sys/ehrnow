@@ -79,7 +79,7 @@ class CustomLoginView(LoginView):
         if self.request.user.is_superuser:
             return reverse_lazy('index')
         else:
-            return reverse_lazy('profile_folder', args=[self.request.user.profile.unit])
+            return reverse_lazy('profile_details', args=[self.request.user.username])
 
 
 def reg_anonymous_required(view_function, redirect_to=None):
