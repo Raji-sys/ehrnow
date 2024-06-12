@@ -68,9 +68,6 @@
                 QUANTITY
               </th>
               <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
-                CLINIC
-              </th>
-              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 PRICE
               </th>
               
@@ -106,9 +103,6 @@
               </td>
               <td class=" p-3 whitespace-nowrap">
                 {{ p.quantity|default_if_none:'' }}
-              </td>
-              <td class=" p-3 whitespace-nowrap">
-                {{ p.patient.clinic|default_if_none:'' }}
               </td>
               <td class=" p-3 whitespace-nowrap">
                 {{ p.price|default_if_none:'' }}
