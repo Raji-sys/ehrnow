@@ -88,11 +88,10 @@
                     {{forloop.counter}}
                 </td>
                 <td class="p-3 whitespace-nowrap">
-                  {{ s.user.username}}
                   {{request.user}}
                 </td>
               <td class="p-3 whitespace-nowrap">
-                <a href="{{a.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+                <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
                 {{ p.patient}}
                 </a>
               </td>
