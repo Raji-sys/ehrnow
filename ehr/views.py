@@ -124,8 +124,7 @@ class DocumentationView(UpdateView):
 
     def form_valid(self, form):
         userform = UserForm(self.request.POST, instance=self.object)
-        profileform = ProfileForm(
-            self.request.POST, instance=self.object.profile)
+        profileform = ProfileForm(self.request.POST, instance=self.object.profile)
 
         if userform.is_valid() and profileform.is_valid():
             userform.save()
@@ -391,7 +390,7 @@ class PatientListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        patients = super().get_queryset().order_by('file_no')
+        patients = super().get_queryset().order_by('-file_no')
         patient_filter = PatientFilter(self.request.GET, queryset=patients)
         return patient_filter.qs
 

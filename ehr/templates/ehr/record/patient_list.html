@@ -3,8 +3,8 @@
 {%block title%}patient list{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT LIST</div>{%endblock%}
 {%block content %}
-<div class="p-1 mt-2">
-    <!-- <section class="text-center border-emerald-700 p-4 m-2">
+<div class="p-1 ">
+    <section class="text-center border-emerald-700 p-1 m-2">
         {% for message in messages %}
         <div class="mt-2 ">
           <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
@@ -13,7 +13,7 @@
           </div>
       </div>
         {% endfor %}
-      </section> -->
+      </section>
     <div class="mx-2 md:mx-20 rounded-xl p-2 shadow-black shadow-sm bg-emerald-50">
         <div class="m-2 md:m-2 text-center">
             <span class="shadow-sm shadow-emerald-700 gap-4 bg-emerald-700 text-white uppercase text-xs md:text:md border-b-2 border-emerald-900 py-2 px-2 rounded-xl mx-2 w-fit">
@@ -42,7 +42,7 @@
             </div>
         </form>
     </div>
-      <div class="overflow-x-auto p-3 m-4 uppercase">
+      <div class="overflow-x-auto p-2 m-1 uppercase">
         <table class="min-w-full divide-y divide-emerald-200">
           <thead class="bg-emerald-50">
             <tr class="text-xs">
@@ -86,6 +86,7 @@
                 </span>
               </td>
             </tr>
+            
             {% empty %}
             <tr class="bg-white">
               <td colspan="2" class="p-3 text-center text-emerald-500">
@@ -93,6 +94,28 @@
               </td>
             </tr>
             {% endfor %}
+            <tr class="">
+              <td></td>
+              <td></td>
+              <td class="p-1 text-left">        
+          <div class="pagination flex justify-center">
+              <span class="flex items-center">
+                  {% if page_obj.has_previous %}
+                  <a href="?page=1" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                  <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                  {% endif %}
+              </span>
+                  <span class="flex item-center">
+                      {% if page_obj.has_next %}
+                      <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                      <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                      {% endif %}
+                  </span>
+              </div>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
           </tbody>
         </table>
       </div>
