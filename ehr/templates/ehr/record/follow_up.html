@@ -24,7 +24,6 @@
 <form method="post" enctype="multipart/form-data" >
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
-    <p>{{patient.full_name}}</p>
     {% for field in form %}
     <div class="flex justify-center text-xs">
      <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
