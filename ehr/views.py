@@ -366,14 +366,12 @@ class UpdatePatientView(UpdateView):
     model = PatientData
     template_name = 'ehr/record/update_patient.html'
     form_class = PatientForm
-
-    def get_success_url(self):
-        messages.success(self.request, 'Patient Information Updated Successfully')
-        return self.object.get_absolute_url()
-
+    success_url =reverse_lazy('patient_list')
+    
     def form_valid(self, form):
         if form.is_valid():
             form.save()
+            messages.success(self.request, 'Patient Information Updated Successfully')
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
