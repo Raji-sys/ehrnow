@@ -161,9 +161,9 @@ class PatientData(models.Model):
 
             if last_instance:
                 last_file_no = int(last_instance.file_no)
-                new_file_no = f"{last_file_no + 1:07d}"  # 07 for 7 leading zeros
+                new_file_no = f"{last_file_no + 1:06d}"  # 06 for 6 leading zeros
             else:
-                new_file_no = "0000001"
+                new_file_no = "000001"
 
             self.file_no = new_file_no
 
@@ -173,8 +173,14 @@ class PatientData(models.Model):
         return reverse('patient_details', args=[self.file_no])
 
     def full_name(self):
-        return f"{self.title} {self.last_name} {self.first_name} {self.other_name}"
-
+        name_parts=[
+            self.title or "",
+            self.first_name or "",
+            self.last_name or "",
+            self.other_name or "",
+        ]
+        return " ".join(filter(None,name_parts))
+    
     def __str__(self):
         return self.full_name()
     
