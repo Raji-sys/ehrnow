@@ -72,6 +72,16 @@ class PayFilter(django_filters.FilterSet):
         fields = ['user','patient','service']
 
 
+class RadioFilter(django_filters.FilterSet):
+    updated1 = django_filters.DateFilter(label="date1", field_name="updated",lookup_expr='lte', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    updated2 = django_filters.DateFilter(label="date2", field_name="updated",lookup_expr='gte', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    patient_no=django_filters.NumberFilter(label='pn', field_name="patient__file_no",lookup_expr='exact')
+    test=django_filters.CharFilter(label='test',field_name="test__name",lookup_expr='iexact')                                                                                                     
+
+    class Meta:
+        model=RadiologyResult
+        fields=['patient_no','test']
+
 class AdmissionFilter(django_filters.FilterSet):
     patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
     patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')            

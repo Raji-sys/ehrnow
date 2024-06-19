@@ -485,36 +485,38 @@
       <!-- break -->
 
       <div> 
-        <div>
-        <a href="{%url 'radiology_create' patient.file_no %}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-x-ray fa-2xl"></i></a>
-      </div>     
-        <div class="overflow-x-auto p-2">
-          <table class="min-w-full divide-y divide-cyan-200 mb-4">
-            <thead class="bg-cyan-50">
-              <tr class="text-xs">
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">FILE</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-cyan-200">
-              
-              <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                <td class=" p-3 whitespace-nowrap"></td>
-                <td class=" p-3 whitespace-nowrap">
-
-                  {% for study in radiology_files %}
-                  <h3>Study: {{ study.id }}</h3>
-                  <div id="dicom-viewer-{{ study.id }}"></div>
-                  {% endfor %}
-                  
-                  <script src="https://cdn.jsdelivr.net/npm/dicom-web-viewer@2.7.0/dist/dicom-web-viewer.min.js"></script>
-                </td>
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
-     </div>
+        <div >
+          <a href="{% url 'radiology_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-x-ray fa-2xl"></i></a>
+          </div>
+       
+          <div class="overflow-x-auto p-2">
+            <table class="min-w-full divide-y divide-cyan-200 mb-4">
+              <thead class="bg-cyan-50">
+                <tr class="text-xs">
+                  <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                  <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Test</th>
+                  <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
+                  <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Reported</th>
+                </tr>
+      
+              </thead>
+              <tbody class="bg-white divide-y divide-cyan-200">
+                {% for r in radiology_results %}
+                <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                  <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
+                  <td class=" p-3 whitespace-nowrap">{{ r.test|default_if_none:''}}</td>
+                  <td class=" p-3 whitespace-nowrap">{{ r.comments|default_if_none:'' }}</td>
+                  <td class=" p-3 whitespace-nowrap">{{ r.updated|default_if_none:'' }}</td>
+                </tr>
+                {%empty%}
+                <div class="p-2">
+                    <p>No hematology test and result yet</p>
+                </div>
+               {%endfor%}
+              </tbody>
+            </table>
+          </div>
+       </div>
     <!-- break -->
       <!-- break -->
       <div> 

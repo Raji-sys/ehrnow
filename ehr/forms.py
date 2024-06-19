@@ -204,7 +204,7 @@ class PayUpdateForm(forms.ModelForm):
 
 class DicomUploadForm(forms.ModelForm):
     class Meta:
-        model = Radiology
+        model = RadiologyResult
         fields = ['dicom_file']
     def __init__(self, *args, **kwargs):
         super(DicomUploadForm, self).__init__(*args, **kwargs)
@@ -333,3 +333,27 @@ class DicomFileForm(forms.ModelForm):
     class Meta:
         model = DicomFile
         fields = ['file']
+
+class RadiologyTestForm(forms.ModelForm):
+    class Meta:
+        model = RadiologyResult
+        fields = ['test']
+    def __init__(self, *args, **kwargs):
+        super(RadiologyTestForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+
+
+class RadiologyResultForm(forms.ModelForm):
+    class Meta:
+        model = RadiologyResult
+        fields = ['test', 'comments','cleared']
+    def __init__(self, *args, **kwargs):
+        super(RadiologyResultForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })

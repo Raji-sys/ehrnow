@@ -73,6 +73,7 @@ urlpatterns = [
 
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
     path('revenue/hema-list/', HematologyPayListView.as_view(), name='hema_pay_list'),
+    path('revenue/radiology-list/', RadiologyPayListView.as_view(), name='radiology_pay_list'),
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
@@ -146,4 +147,9 @@ urlpatterns = [
 
     path('theatre/operated-patient-list', TheatreNotesListView.as_view(), name="operated_list"),
 
+    path('radiology-list/', RadiologyListView.as_view(), name='radiology_list'),
+    path('radiology-request/', RadiologyRequestListView.as_view(), name='radiology_request'),
+    path('radiology-test/create/<str:file_no>/', RadiologyTestCreateView.as_view(), name='radiology_test'),
+    path('radiology-result/create/<str:file_no>/<int:pk>/', RadiologyResultCreateView.as_view(), name='radiology_result'),
+    path('radiology-report/', RadioReportView.as_view(), name='radiology_report'),
 ]

@@ -103,11 +103,11 @@ class TheatreItemAdmin(admin.ModelAdmin):
     list_filter = ('name','price','quantity')
 
 
-@admin.register(Radiology)
-class RadiologyAdmin(admin.ModelAdmin):
-    list_display = ('patient','dicom_file','updated')
-    search_fields = ('patient','updated')
-    list_filter = ('patient','updated')
+@admin.register(RadiologyTest)
+class RadiologyTestAdmin(admin.ModelAdmin):
+    list_display = ('name','price','updated')
+    search_fields = ('name','updated')
+    list_filter = ('name','updated')
 
 
 @admin.register(Admission)

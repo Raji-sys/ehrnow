@@ -78,6 +78,7 @@ class GeneralView(TemplateView):
 class ReportView(TemplateView):
     template_name = "report.html"
 
+
 class HematologyRequestListView(ListView):
     model=HematologyResult
     template_name='hema/hematology_request.html'

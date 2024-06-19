@@ -478,6 +478,7 @@ class PatientFolderView(DetailView):
         context['serology_results']=patient.serology_results.all().order_by('-created')
         context['general_results']=patient.general_results.all().order_by('-created')
         context['radiology_files'] = patient.radiology_files.all().order_by('-updated')
+        context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
         context['admission_info'] = patient.admission_info.all().order_by('-updated')
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
         context['ward_medication'] = patient.ward_medication.all().order_by('-updated')
@@ -1002,8 +1003,6 @@ class PayUpdateView(UpdateView):
     
     def form_valid(self, form):
         paypoint = form.save()
-        hematology_result = paypoint.hematology_result_payment
-        # Update hematology_result instance if needed
         messages.success(self.request, 'Payment Successfully')
         return super().form_valid(form)
 
@@ -1043,6 +1042,28 @@ class HematologyPayListView(ListView):
 
     def get_queryset(self):
         return Paypoint.objects.filter(hematology_result_payment__isnull=False).order_by('-updated')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pay_total = self.get_queryset().count()
+
+        # Calculate total worth only for paid transactions
+        paid_transactions = self.get_queryset().filter(status=True)
+        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        return context  
+
+
+class RadiologyPayListView(ListView):
+    model = Paypoint
+    template_name = 'ehr/revenue/radiology_pay_list.html'
+    context_object_name = 'radiology_pays'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Paypoint.objects.filter(radiology_result_payment__isnull=False).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1427,7 +1448,7 @@ def view_file(request, pk):
 
 
 class RadiologyCreateView(CreateView):
-    model = Radiology
+    model = RadiologyResult
     form_class = DicomUploadForm
     template_name = 'ehr/radiology/radiology_form.html'
 
@@ -1462,4 +1483,90 @@ class RadiologyCreateView(CreateView):
         kwargs = super().get_form_kwargs()
         kwargs['initial'] = self.get_initial()
         return kwargs
+    
 
+    
+class RadiologyTestCreateView(LoginRequiredMixin, CreateView):
+    model = RadiologyResult
+    form_class = RadiologyTestForm
+    template_name = 'ehr/radiology/radiology_result.html'
+        
+    def form_valid(self, form):
+        patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient
+        form.instance.user = self.request.user
+
+        radiology_result = form.save(commit=False)
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status=False,
+            service=radiology_result.test, 
+            price=radiology_result.test.price,
+        )
+        radiology_result.payment = payment 
+        radiology_result.save()
+        messages.success(self.request, 'Radiology test created successfully')
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
+
+
+class RadiologyListView(ListView):
+    model=RadiologyResult
+    template_name='ehr/radiology/radiology_list.html'
+    context_object_name='radiology_results'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(result__isnull=False,payment__status=True).order_by('-updated')
+        return queryset
+    
+
+class RadiologyResultCreateView(LoginRequiredMixin, UpdateView):
+    model = RadiologyResult
+    form_class = RadiologyResultForm
+    template_name = 'ehr/radiology/radiology_result.html'
+    success_url=reverse_lazy('pathology:radiology_request')
+
+    def get_object(self, queryset=None):
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        return get_object_or_404(RadiologyResult, patient=patient, pk=self.kwargs['pk'])
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        radiology_result = form.save(commit=False)
+        radiology_result.result = form.cleaned_data['result']
+        radiology_result.save()
+        messages.success(self.request, 'Radiology result updated successfully')
+        return super().form_valid(form)
+
+
+class RadiologyRequestListView(ListView):
+    model=RadiologyResult
+    template_name='ehr/radiology/radiology_request.html'
+    context_object_name='radiology_request'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(cleared=False)
+        return queryset
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class RadioReportView(ListView):
+    model = RadiologyResult
+    template_name = 'ehr/radiology/radiology_report.html'
+    paginate_by = 10
+    context_object_name = 'patient'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        radio_filter = RadioFilter(self.request.GET, queryset=queryset)
+        patient = radio_filter.qs.order_by('-created')
+        return patient
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['radio_filter'] = RadioFilter(self.request.GET, queryset=self.get_queryset())
+        return context
