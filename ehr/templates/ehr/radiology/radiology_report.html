@@ -1,17 +1,17 @@
 {%extends "base.html" %}
 {% block title %}HEMATOLOGY REPORT{% endblock%}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'pathology:hematology' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>HEMATOLOGY REPORT</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'radiology' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>RADIOLOGY REPORT</div>{%endblock%}
 {% block content %}
 <div class="mt-2">
 <div class="grid grid-rows-2 mt-0 relative ">
     <div class="center-2 h-full overflow-y-auto ">
         <div class="flex flex-row justify-center items-center md:mx-20 mx-2 rounded-xl p-4 shadow-2xl bg-green-50 text-black m-2">
           <form method="get" class="text-xs text-center uppercase">
-            {% for field in hema_filter.form %}
+            {% for field in radio_filter.form %}
                 {{field.errors}}
                 {% endfor %}
                 <div class="flex flex-wrap flex-row gap-1 justify-center items-center text-center">
-                    {% for field in hema_filter.form %}
+                    {% for field in radio_filter.form %}
                     <div class="flex justify-center items-start flex-col">
                         <label class="form-label">{{ field.label_tag }}</label>
                         <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"
@@ -28,8 +28,7 @@
                 {% if request.GET.urlencode %}
                 <div class="m-3">
                   <a href="?" class="text-md p-2 focus:opacity-10 bg-orange-500 text-white rounded w-fit"><i class="fa-solid fa-rotate fa-xl"></i></a>
-                  <a class="text-md text-white focus:opacity-10  bg-green-600 m-1 p-2 rounded w-fit" href="{% url 'pathology:report_pdf' %}?{{request.GET.urlencode}}">
-                    <i class="fa-solid fa-print fa-xl"></i></a>
+
                         </div>
             {%endif%}
           </form>
@@ -48,25 +47,16 @@
                 Test
               </th>
               <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
-                Code
-              </th>
-              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Patient
               </th>
               <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Phone
               </th>
               <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
-                Result
+                Result By
               </th>
               <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
-                Date Reported
-              </th>
-              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
-                Collected By
-              </th>
-              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
-                Report By
+                Date
               </th>
             </tr>
           </thead>
@@ -81,25 +71,16 @@
                 {{ i.test|default_if_none:''|upper }}
               </td>
               <td class="p-3 whitespace-nowrap">
-                {{ i.result_code|default_if_none:''|upper }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
                 {{ i.patient|default_if_none:''|upper }}
               </td>
               <td class="p-3 whitespace-nowrap">
                 {{ i.patient.phone|default_if_none:''|upper }}
               </td>
               <td class="p-3 whitespace-nowrap">
-                {{ i.result.html|safe|default_if_none:'' }}
+                {{ i.user|default_if_none:'' }}
               </td>
               <td class="p-3 whitespace-nowrap">
-                {{ i.collected|default_if_none:'' }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
-                {{ i.collected_by|default_if_none:'' }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
-                {{ i.updated_by|default_if_none:'' }}
+                {{ i.updated|default_if_none:'' }}
               </td>
             </tr>
             {% empty %}

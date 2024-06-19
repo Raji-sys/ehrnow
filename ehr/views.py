@@ -477,7 +477,7 @@ class PatientFolderView(DetailView):
         context['micro_results']=patient.microbiology_results.all().order_by('-created')
         context['serology_results']=patient.serology_results.all().order_by('-created')
         context['general_results']=patient.general_results.all().order_by('-created')
-        context['radiology_files'] = patient.radiology_files.all().order_by('-updated')
+        # context['radiology_files'] = patient.radiology_files.all().order_by('-updated')
         context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
         context['admission_info'] = patient.admission_info.all().order_by('-updated')
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
@@ -1519,7 +1519,7 @@ class RadiologyListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(result__isnull=False,payment__status=True).order_by('-updated')
+        queryset = queryset.filter(payment__status__isnull=False,payment__status=True).order_by('-updated')
         return queryset
     
 
@@ -1527,7 +1527,7 @@ class RadiologyResultCreateView(LoginRequiredMixin, UpdateView):
     model = RadiologyResult
     form_class = RadiologyResultForm
     template_name = 'ehr/radiology/radiology_result.html'
-    success_url=reverse_lazy('pathology:radiology_request')
+    success_url=reverse_lazy('radiology_request')
 
     def get_object(self, queryset=None):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
@@ -1536,7 +1536,7 @@ class RadiologyResultCreateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.updated_by = self.request.user
         radiology_result = form.save(commit=False)
-        radiology_result.result = form.cleaned_data['result']
+        radiology_result.comments = form.cleaned_data['comments']
         radiology_result.save()
         messages.success(self.request, 'Radiology result updated successfully')
         return super().form_valid(form)
@@ -1563,7 +1563,7 @@ class RadioReportView(ListView):
         queryset = super().get_queryset()
 
         radio_filter = RadioFilter(self.request.GET, queryset=queryset)
-        patient = radio_filter.qs.order_by('-created')
+        patient = radio_filter.qs.order_by('-updated')
         return patient
 
     def get_context_data(self, **kwargs):
