@@ -1,5 +1,6 @@
 from ehr.views import DoctorRequiredMixin
 from .filters import *
+from ehr.filters import *
 from django.shortcuts import render, redirect
 from .forms import *
 from django.contrib.auth.views import LoginView
@@ -20,12 +21,12 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.forms import modelformset_factory,inlineformset_factory
 from django.db.models import Sum
-
 from django.urls import reverse
 from django.views.generic import CreateView, FormView, ListView, DetailView, UpdateView, View
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.views.generic.base import TemplateView
+
 
 class PharmacyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
@@ -224,14 +225,14 @@ def create_dispensary(request, file_no):
                     instance = form.save(commit=False)
                     instance.patient = patient
                     instance.dispensed_by = request.user
-                    paypoint = Paypoint.objects.create(
-                        user=request.user,
-                        patient=patient,
-                        service=instance.drug.name,
-                        price=instance.drug.cost_price * instance.quantity,
-                        status=False
-                    )
-                    instance.payment = paypoint
+                    # paypoint = Paypoint.objects.create(
+                    #     user=request.user,
+                    #     patient=patient,
+                    #     service=instance.drug.name,
+                    #     price=instance.drug.cost_price * instance.quantity,
+                    #     status=False
+                    # )
+                    # instance.payment = paypoint
                     instance.save()
             return redirect(reverse_lazy('pharm:dispensed_list'))
         else:
@@ -264,14 +265,14 @@ def create_prescription(request, file_no):
                     instance.patient = patient
                     instance.prescribed_by = request.user
 
-                    # paypoint = Paypoint.objects.create(
-                    #     user=request.user,
-                    #     patient=patient,
-                    #     service=instance.drug.name,
-                    #     price=instance.drug.cost_price * instance.quantity,
-                    #     status=False
-                    # )
-                    # instance.payment = paypoint
+                    paypoint = Paypoint.objects.create(
+                        user=request.user,
+                        patient=patient,
+                        service=instance.drug.name,
+                        price=instance.drug.cost_price * instance.quantity,
+                        status=False
+                    )
+                    instance.payment = paypoint
                     instance.save()
             messages.success(request,'drugs prescribed')
             return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
@@ -349,7 +350,10 @@ class PharmPayListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Paypoint.objects.filter(pharm_payment__isnull=False).order_by('-updated')
+        updated = super().get_queryset().filter(pharm_payment__isnull=False).order_by('-updated')
+        pay_filter = PayFilter(self.request.GET, queryset=updated)
+        return pay_filter.qs
+        # return Paypoint.objects.filter(pharm_payment__isnull=False).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -359,6 +363,7 @@ class PharmPayListView(ListView):
         paid_transactions = self.get_queryset().filter(status=True)
         total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
 
+        context['payFilter'] = PayFilter(self.request.GET, queryset=self.get_queryset())
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         return context  

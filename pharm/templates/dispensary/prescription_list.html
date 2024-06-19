@@ -75,10 +75,10 @@
                 DATE
               </th>
               <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
-                clear PRESCRIPTION
+                Dispense
               </th>
               <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
-                Dispense
+                clear
               </th>
             </tr>
           </thead>
@@ -111,15 +111,20 @@
                 {{ p.updated|default_if_none:'' }}
               </td>
               
-            <td class="text-center  p-3 whitespace-nowrap">
+
+              <td class=" p-3 whitespace-nowrap">
+                <div class="rounded-xl p-2">
+                  {%if p.payment.status == True %}
+                  <a href="{% url 'pharm:add_dispense' p.patient.file_no %}" class="text-xs text-amber-500 hover:text-green-700 uppercase"><i class="fa-solid fa-file-prescription fa-2xl"></i></a>
+                  {%else%}
+                  <i class="fa-solid fa-xmark-square text-red-700 fa-2xl"></i>
+                  {%endif%}
+                </div>
+              </td>
+              <td class="text-center  p-3 whitespace-nowrap">
                 <span class="space-x-4">
                     <a href="{%url 'pharm:update_prescription' p.id %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-close fa-2xl"></i></a>
                 </span>
-              </td>
-              <td class=" p-3 whitespace-nowrap">
-                <div class="bg-white rounded-xl p-2">
-                  <a href="{% url 'pharm:add_dispense' p.patient.file_no %}" class="text-sm text-amber-500 hover:text-green-700 uppercase"><i class="fa-solid fa-file-prescription fa-2xl mr-2"></i>dispense</a>
-                </div>
               </td>
             </tr>
             {% endif %}

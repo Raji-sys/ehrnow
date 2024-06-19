@@ -68,15 +68,6 @@
                 QUANTITY
               </th>
               <th class=" p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
-                CLINIC
-              </th>
-              <th class=" p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
-                PRICE
-              </th>
-              <th class=" p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
-                PAYMENT STATUS
-              </th>
-              <th class=" p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 DATE
               </th>
               <!-- <th class=" p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
@@ -105,21 +96,6 @@
               <td class=" p-3 whitespace-nowrap">
                 {{ d.quantity|default_if_none:'' }}
               </td>
-              <td class=" p-3 whitespace-nowrap">
-                {{ d.patient.clinic|default_if_none:'' }}
-              </td>
-              <td class=" p-3 whitespace-nowrap">
-                &#x20A6;{{ d.payment.price|default_if_none:'' }}
-              </td>
-              {% if d.payment.status == False %}
-              <td class=" p-3 whitespace-nowrap text-red-700">
-            <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-              </td>
-          {% else %}
-              <td class=" p-3 whitespace-nowrap text-green-700">
-               <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-             </td>
-          {% endif %}
               <td class=" p-3 whitespace-nowrap">
                 {{ d.dispensed_date|default_if_none:'' }}
               </td>
