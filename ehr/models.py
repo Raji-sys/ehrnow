@@ -523,10 +523,11 @@ class CartItem(models.Model):
     def total_item_price(self):
         return self.item.price * self.quantity
         
+        
 class Physio(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="physio_payment")
 
     def __str__(self):
         return self.patient
