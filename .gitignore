@@ -11,6 +11,8 @@ share/
 *.pyd
 __pycache__/
 db.sqlite3
-static
-theme/static/
+theme/
+.vscode/
+package-lock.json/
+package/
 node_modules/
