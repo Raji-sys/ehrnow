@@ -11,6 +11,6 @@ share/
 *.pyd
 __pycache__/
 db.sqlite3
-static/
-theme/static
-node_modules
+static
+theme/static/
+node_modules/
