@@ -50,6 +50,10 @@ class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.groups.filter(name='doctor').exists()
 
+class DoctorNurseRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='doctor').exists() or self.request.user.groups.filter(name='nurse').exists() 
+
 class PathologyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.groups.filter(name='pathologist').exists()
@@ -57,6 +61,18 @@ class PathologyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 class PharmacyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.groups.filter(name='pharmacist').exists()
+
+class RadiologyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='radiologist').exists()
+
+class PhysioRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='physiotherapist').exists()
+
+class AuditorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='auditor').exists()
 # @login_required
 # def fetch_resources(uri, rel):
 #     """
@@ -79,7 +95,7 @@ class CustomLoginView(LoginView):
         if self.request.user.is_superuser:
             return reverse_lazy('index')
         else:
-            return reverse_lazy('profile_folder', args=[self.request.user.profile.unit])
+            return reverse_lazy('profile_details', args=[self.request.user.username])
 
 
 def reg_anonymous_required(view_function, redirect_to=None):
@@ -236,7 +252,7 @@ class StaffDashboardView(TemplateView):
     template_name = "staff.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class MedicalRecordView(TemplateView):
+class MedicalRecordView(RecordRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/medical_record.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -248,7 +264,7 @@ class AppointmentDashboardView(TemplateView):
     template_name = "ehr/record/appt_dashboard.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class RevenueView(TemplateView):
+class RevenueView(RevenueRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/revenue.html"
 
 
@@ -258,12 +274,12 @@ class RevenueRecordView(TemplateView):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class NursingView(TemplateView):
+class NursingView(NurseRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/nursing.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class ClinicDashView(TemplateView):
+class ClinicDashView(DoctorRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/clinic_list.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -279,42 +295,37 @@ class ClinicBaseView(TemplateView):
     template_name = "ehr/record/clinic.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class RadiologyView(TemplateView):
+class RadiologyView(RadiologyRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/radiology.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class PhatologyView(TemplateView):
+class PhatologyView(PathologyRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/phatology.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class PharmacyView(TemplateView):
+class PharmacyView(PharmacyRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/pharmacy.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class PhysioView(TemplateView):
+class PhysioView(PhysioRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/physio.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class TheatreView(TemplateView):
+class TheatreView(DoctorNurseRequiredMixin, TemplateView):
     template_name = "ehr/dashboard/theatre.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class WardView(TemplateView):
+class WardView(DoctorNurseRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/ward_list.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class ICUView(TemplateView):
-    template_name = "ehr/dashboard/icu.html"
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class AuditView(TemplateView):
+class AuditView(AuditorRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/audit.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
