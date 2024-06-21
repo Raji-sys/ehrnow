@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'django_quill',
     'pathology',
     'pharm',
-    'compressor',
 ]
 
 MIDDLEWARE = [

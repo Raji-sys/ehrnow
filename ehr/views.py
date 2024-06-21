@@ -1,4 +1,3 @@
-import pydicom
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from django.forms import inlineformset_factory
