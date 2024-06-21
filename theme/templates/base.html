@@ -1,0 +1,93 @@
+{% load static %}
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+{% tailwind_css %} 
+<title>	
+	{%block title%}{%endblock%}
+
+</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" sizes="180x180" href="{%static 'favicon/apple-touch-icon.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{%static 'favicon/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{%static 'favicon/favicon-16x16.png' %}">
+<link rel="manifest" href="{%static 'favicon/site.webmanifest' %}">
+<link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
+<!-- UIkit CSS -->
+<link rel="stylesheet" href="{% static 'uikit/css/uikit.min.css' %}" type="text/css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/css/uikit.min.css" />
+
+<!-- UIkit JS -->
+	<script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit-icons.min.js"></script>
+<script src="{% static 'uikit/js/uikit.min.js' %}"></script>
+<script src="{% static 'uikit/js/uikit-icons.js' %}"></script>
+
+<link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+
+<script src="{% static 'js/_hyperscript.js' %}"></script>
+<script src="{% static 'js/htmx.min.js'%}"></script>
+
+<link rel="stylesheet" href="{% static 'css/darcula.min.css' %}">
+<script src="{% static 'js/highlight.min.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/quill.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.min.css" rel="stylesheet">
+<link href="{% static 'css/quill.snow.css' %}" rel="stylesheet">
+<script src="{% static 'js/quill.min.js' %}"></script>
+
+<script src="{% static 'js/quill.imageCompressor.min.js' %}"></script>
+<script src="{% static 'js/quill-resize-module.min.js' %}"></script>
+<script src="{%static 'js/jquery-3.6.0.min.js'%}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'cornerstoneTools.min.js' %}"></script>
+{% include 'django_quill/media.html' %}
+</head>
+
+<body class="h-screen">
+	{{ form.media }}
+  <style>
+	a{
+		text-decoration: none;
+	}
+	a:hover{
+		text-decoration: none;
+	}	
+  body {
+        font-family: 'Lato', sans-serif;
+		background-image: url('{% static "images/4.jpg" %}');
+		background-repeat: no-repeat;
+		background-size: cover;
+        }
+
+  </style>
+		{% if request.user.is_authenticated %}
+	<header class="bg-emerald-500 p-1 shadow-md md:mx-20 mx-2 rounded-t">
+		<nav class="flex flex-row flex-wrap justify-between">
+			  <div class="border-4 border-white bg-green-800 rounded-xl p-1 text-xs text-white text-center flex justify-center items-center align-middle">
+				<a href="{% url 'get_started' %}" class="focus:opacity-10 text-white text-center"> 
+					<i class="fa-solid fa-home-user fa-xl p-3 rounded-lg text-white"></i>
+				</a>
+			</div> 
+			<div class="flex align-middle">
+			<span class="text-white m-4 uppercase text-sm"><span class="text-xs mr-2">logged-in as:</span>{{request.user}}</span>
+		            <form method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="border-4 border-white rounded-lg focus:opacity-10 bg-rose-700">
+                            <i class="fa-solid fa-x p-3 rounded-lg text-white"></i>
+                        </button>
+                    </form>
+			</div>
+		</nav>
+	</header>
+	<div class="text-center font-medium text-xs md:text-sm text-green-700 shadow-sm md:mx-20 mx-2 rounded-b bg-white p-2 ">
+		{% block page_title%}{%endblock%}
+	</div>
+	{% endif %}
+{% block content %}
+{% endblock %}
+</body>
+</html>
