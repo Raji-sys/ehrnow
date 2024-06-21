@@ -24,7 +24,6 @@ urlpatterns = [
  
     path('get-started/clinic-dashboard/', ClinicDashView.as_view(), name='clinic_list'),
     path('get-started/radiology', RadiologyView.as_view(), name='radiology'),
-    path('get-started/phatology', PhatologyView.as_view(), name='phatology'),
  
     path('get-started/pharmacy', PharmacyView.as_view(), name='pharmacy'),
     path('get-started/physio', PhysioView.as_view(), name='physio'),

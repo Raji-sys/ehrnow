@@ -54,9 +54,6 @@ class DoctorNurseRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.groups.filter(name='doctor').exists() or self.request.user.groups.filter(name='nurse').exists() 
 
-class PathologyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.groups.filter(name='pathologist').exists()
 
 class PharmacyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
@@ -297,11 +294,6 @@ class ClinicBaseView(TemplateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class RadiologyView(RadiologyRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/radiology.html"
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class PhatologyView(PathologyRequiredMixin,TemplateView):
-    template_name = "ehr/dashboard/phatology.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

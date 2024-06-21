@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from .models import *
 from ehr.models import PatientData, Paypoint
@@ -45,13 +46,17 @@ def fetch_resources(uri, rel):
         path = os.path.join(settings.MEDIA_ROOT,uri.replace(settings.MEDIA_URL, ""))
     return path
 
+class PathologyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='pathologist').exists()
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class IndexView(TemplateView):
     template_name = "index.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class DashboardView(TemplateView):
+class DashboardView(PathologyRequiredMixin,TemplateView):
     template_name = "dashboard.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
