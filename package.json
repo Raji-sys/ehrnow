@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "cornerstone-tools": "^6.0.10",
+    "dicom-web-viewer": "^0.1.2"
+  }
+}

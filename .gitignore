@@ -10,9 +10,6 @@ share/
 *.pyo
 *.pyd
 **/__pycache__/
-db.sqlite3
-theme/
+theme
 .vscode/
-package-lock.json
-package.json
 node_modules/
