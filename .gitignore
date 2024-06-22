@@ -9,7 +9,7 @@ share/
 *.pyc
 *.pyo
 *.pyd
-sqlite.db
+db.sqlite3
 **/__pycache__/
 .vscode/
 node_modules/
