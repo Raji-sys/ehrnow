@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'tailwind',
     'theme',
-    'django_browser_reload',
+    # 'django_browser_reload',
     'django_filters',
     'django_fastdev',
     'import_export',
@@ -46,7 +46,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_browser_reload.middleware.BrowserReloadMiddleware',
+    # 'django_browser_reload.middleware.BrowserReloadMiddleware',
 
 ]
 
@@ -135,9 +135,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'node_modules', 'cornerstone-tools', 'dist'),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'node_modules', 'cornerstone-tools', 'dist'),
+# ]
 
 # STATICFILES_FINDERS = [
 #     'compressor.finders.CompressorFinder',
