@@ -2,16 +2,7 @@
 {% load static %}
 {%block title%}get started{%endblock%}
 {%block content %}
-<section class="text-center border-cyan-700 p-2">
-  {% for message in messages %}
-  <div class="">
-      <div class="uk-alert-success rounded-2xl text-xs md:text-sm w-fit mx-auto" uk-alert>
-        <a href class="uk-alert-close font-bold" uk-close></a>
-        <p class="text-green-700 font-semibold uppercase p-2 text-xs md:text-sm md:p-4">{{ message }}</p>
-        </div>
-        </div>
-        {% endfor %}
-        </section>
+
         {% if form.errors %}
         <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
           <a href class="uk-alert-close font-bold" uk-close></a>
@@ -19,6 +10,16 @@
           </div>
           {% endif %}
               <div class="rounded-2xl bg-white p-3 mt-32 md:p-6 mx-auto w-fit">
+                <section class="text-center border-cyan-700 p-2">
+                  {% for message in messages %}
+                  <div class="">
+                      <div class="uk-alert-success rounded-2xl text-xs md:text-sm w-fit mx-auto" uk-alert>
+                        <a href class="uk-alert-close font-bold" uk-close></a>
+                        <p class="text-green-700 font-semibold uppercase p-2 text-xs md:text-sm md:p-4">{{ message }}</p>
+                        </div>
+                        </div>
+                        {% endfor %}
+                        </section>
           <form action="" method="POST" class="text-center text-xs">
             {% csrf_token %}
             <div class="mb-2 uppercase text-cyan-900 px-8">
