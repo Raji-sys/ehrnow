@@ -119,7 +119,7 @@ def create_drug(request):
             new_drug=form.save(commit=False)
             new_drug.added_by=request.user
             new_drug.save()
-            return redirect('list')  # Redirect to the drug list view after successful creation
+            return redirect('pharm:list')  # Redirect to the drug list view after successful creation
     else:
         form = DrugForm()
     return render(request, 'inventory/create_item.html', {'form': form})

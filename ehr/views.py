@@ -282,9 +282,6 @@ class ClinicDashView(DoctorRequiredMixin,TemplateView):
 class ClinicView(TemplateView):
     template_name = "ehr/record/clinic.html"
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class RoomView(TemplateView):
-    template_name = "ehr/record/room.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicBaseView(TemplateView):

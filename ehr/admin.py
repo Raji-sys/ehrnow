@@ -42,12 +42,6 @@ class ServicesAdmin(admin.ModelAdmin):
     list_filter = ('type','name')
 
 
-@admin.register(Room)
-class RoomAdmin(admin.ModelAdmin):
-    list_display = ('clinic','name',)
-    search_fields = ('clinic','name')
-    list_filter = ('clinic','name')
-
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('name',)

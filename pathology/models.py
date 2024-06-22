@@ -37,7 +37,7 @@ class HematologyResult(models.Model):
     test = models.ForeignKey(HematologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="results")
     cleared=models.BooleanField(default=False)
     result = QuillField(null=True, blank=True)
-    comments=QuillField(null=True, blank=True)
+    comments=models.TextField(null=True, blank=True)
     natured_of_specimen = models.CharField(max_length=1-0, null=True, blank=True)
     collected = models.DateField(auto_now=True, null=True,blank=True)
     reported = models.DateField(auto_now=True, null=True, blank=True)

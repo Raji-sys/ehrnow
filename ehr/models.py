@@ -193,35 +193,6 @@ class PatientData(models.Model):
                 age -= 1
             return age
 
-    # def is_birthday(self):
-    #     today = date.today()
-    #     if self.dob:
-    #         return today.month == self.dob.month and today.day == self.dob.day
-    #     return False
-
-class Room(models.Model):
-    CLINIC_CHOICES = [
-        ('A & E', 'A & E'),
-        ('SOPD', 'SOPD'),]    
-    ROOM_CHOICES = [
-        ('ROOM 1', 'ROOM 1'),
-        ('ROOM 2', 'ROOM 2'),
-        ('ROOM 3', 'ROOM 3')
-    ]
-    # patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='rooms')
-    name = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
-    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
-    waiting_since = models.DateTimeField(auto_now_add=True,null=True,blank=True)
-
-    class Meta:
-        verbose_name_plural = 'virtual room'
-    
-    def get_absolute_url(self):
-        return reverse('room_details', args=[self.pk])
-
-    def __str__(self):
-        return self.name
-
 
 class Services(models.Model):
     type=models.CharField(max_length=100, null=True, blank=True)
