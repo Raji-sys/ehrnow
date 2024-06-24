@@ -23,12 +23,18 @@ class PatientReportFilter(django_filters.FilterSet):
     file_no = django_filters.CharFilter(label='FILE NUMBER', field_name='file_no')
     dob_start = django_filters.DateFilter(label="DOB R1", field_name="dob", lookup_expr='lte',widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     dob_end = django_filters.DateFilter(label="DOB R2", field_name="dob", lookup_expr='gte',widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
-    gender = django_filters.CharFilter(label="GENDER", field_name="gender", lookup_expr='iexact')
-    marital_status = django_filters.CharFilter(label="MARITAL STATUS", field_name="marital_status", lookup_expr='iexact')
-    religion = django_filters.CharFilter(label="RELIGION", field_name="religion", lookup_expr='iexact')
+    gender = django_filters.ChoiceFilter(label="GENDER",choices=PatientData.sex,empty_label="ALL",
+                                         widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
+    marital_status = django_filters.ChoiceFilter(label="MARITAL STATUS",choices=PatientData.m_status, 
+                                                 widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
+    religion = django_filters.ChoiceFilter(label="RELIGION",choices=PatientData.faith,
+                                           widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
     occupation = django_filters.CharFilter(label="OCCUPATION", field_name="occupation", lookup_expr='iexact')
-    nationality = django_filters.CharFilter(label="NATIONALITY", field_name="nationality", lookup_expr='iexact')
-    zone = django_filters.CharFilter(label="ZONE", field_name="zone", lookup_expr='iexact')
+    
+    nationality = django_filters.ChoiceFilter(label="NATIONALITY",choices=PatientData.ns,
+                                              widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
+    zone = django_filters.ChoiceFilter(label="GEO ZONE",choices=PatientData.geo_political_zone,
+                                       widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
     state = django_filters.CharFilter(label="STATE", field_name="state", lookup_expr='iexact')
     lga = django_filters.CharFilter(label="LGA", field_name="lga", lookup_expr='iexact')
     address = django_filters.CharFilter(label="ADDRESS", field_name="address", lookup_expr='icontains')

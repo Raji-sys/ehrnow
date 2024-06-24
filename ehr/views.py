@@ -400,21 +400,21 @@ class PatientListView(ListView):
 
 
 class PatientReportView(ListView):
-    model=PatientData
-    template_name='ehr/report/patient_report.html'
-    context_object_name='patients'
+    model = PatientData
+    template_name = 'ehr/report/patient_report.html'
+    context_object_name = 'patients'
     paginate_by = 10
 
     def get_queryset(self):
-        patients = super().get_queryset().order_by('-updated')
-        patient_report_filter = PatientReportFilter(self.request.GET, queryset=patients)
-        return patient_report_filter.qs
+        queryset = super().get_queryset().order_by('-updated')
+        self.filterset = PatientReportFilter(self.request.GET, queryset=queryset)
+        return self.filterset.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_patient = self.get_queryset().count()
-        context['patientReportFilter'] = PatientReportFilter(self.request.GET, queryset=self.get_queryset())
-        context['total_patient'] = total_patient
+        context['patientReportFilter'] = self.filterset
+        context['total_patient'] = PatientData.objects.count()
+        context['filtered_count'] = self.filterset.qs.count()
         return context
     
 

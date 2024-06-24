@@ -1,9 +1,19 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}PATEINT REPORT{%endblock%}
+{%block title%}PATIENT REPORT{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT REPORT</div>{%endblock%}
 {%block content %}
 <div class="p-1">
+  <div class="m-2 flex justify-center items-center space-x-4 text-sm font-medium">
+    <span class="uppercase bg-blue-100 text-blue-800 text-xs py-1 px-3 rounded">
+      Total patients: <span class=" shadow-white text-white text-sm p-1 rounded-full bg-blue-800 ">{{ total_patient }}</span>
+    </span>
+    {% if request.GET %}
+      <span class="uppercase text-xs bg-white text-green-800 py-1 px-3 rounded">
+        Filtered results: <span class=" shadow-white text-white text-sm p-1 rounded-full bg-green-800 ">{{ filtered_count }}</span>
+      </span>
+    {% endif %}
+  </div>
     <div class="mx-2 md:mx-20 rounded-xl p-2 shadow-black shadow-sm bg-indigo-100">
       <div class="text-indigo-900">
         <form method="get" class="text-xs">
@@ -11,15 +21,17 @@
                 {% for field in patientReportFilter.form %}
                 <div class="sm:flex sm:justify-center sm:items-start sm:flex-col">
                   <div class="">
-                    <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
-                  </div>  
-                    <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
-                    {%if field.value%} value="{{field.value}}"{%endif%}
-                    class="text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800
-                    rounded shadow-sm shadow-indigo-600 border-indigo-600 border">
-                    <span class="form-error">{{ field.errors }}</span>
+                      <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
                   </div>
-                {% endfor %}
+                  {% if field.field.widget.input_type == 'select' %}
+                      {{ field }}
+                  {% else %}
+                      <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
+                             class="text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800
+                                    rounded shadow-sm shadow-indigo-600 border-indigo-600 border">
+                  {% endif %}
+                  <span class="form-error">{{ field.errors }}</span>
+              </div>                {% endfor %}
                 <div class="mt-4 flex justify-center align-middle ">
                     <button type="submit" class="shadow-sm shadow-indigo-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-indigo-600 bg-indigo-600 text-white rounded hover:border-indigo-700 ">
                       <i class="fa-solid fa-search fa-xl "></i>
