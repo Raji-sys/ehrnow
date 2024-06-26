@@ -89,6 +89,7 @@ class PatientData(models.Model):
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True, blank=True)
     dob = models.DateField('date of birth', null=True, blank=True)
+    age=models.PositiveIntegerField(blank=True,null=True)
     m_status = (('MARRIED', 'MARRIED'), ('SINGLE', 'SINGLE'), ('DIVORCED', 'DIVORCED'),('DIVORCEE', 'DIVORCEE'), ('WIDOW', 'WIDOW'), ('WIDOWER', 'WIDOWER'))
     marital_status = models.CharField(choices=m_status, max_length=100, null=True, blank=True)
     ns = (('NIGERIAN', 'NIGERIAN'), ('NON-CITIZEN', 'NON-CITIZEN'))
@@ -158,20 +159,27 @@ class PatientData(models.Model):
     def save(self, *args, **kwargs):
         if not self.file_no:
             last_instance = self.__class__.objects.order_by('file_no').last()
-
             if last_instance:
                 last_file_no = int(last_instance.file_no)
                 new_file_no = f"{last_file_no + 1:06d}"  # 06 for 6 leading zeros
             else:
                 new_file_no = "000001"
-
             self.file_no = new_file_no
 
+            # Calculate age based on dob
+        if self.dob:
+            today = date.today()
+            self.age = today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+        else:
+            self.age = None
+            
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('patient_details', args=[self.file_no])
 
+
+    
     def full_name(self):
         name_parts=[
             self.title or "",
@@ -182,18 +190,10 @@ class PatientData(models.Model):
         return " ".join(filter(None,name_parts))
     
     def __str__(self):
-        return self.full_name()
+        # return self.full_name()
+        return f"{self.last_name}"
+
     
-        
-    def age(self):
-        today = date.today()
-        if self.dob:
-            age = today.year - self.dob.year
-            if today.month < self.dob.month or (today.month == self.dob.month and today.day < self.dob.day):
-                age -= 1
-            return age
-
-
 class Services(models.Model):
     type=models.CharField(max_length=100, null=True, blank=True)
     name=models.CharField(max_length=100, null=True, blank=True)
@@ -253,19 +253,19 @@ class PatientHandover(models.Model):
         ('ROOM 2', 'ROOM 2'),
         ('ROOM 3', 'ROOM 3')
     ]
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
-    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
-    room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
-    status = models.CharField(max_length=30, null=True, choices=[
+    STATUS=[
         ('waiting_for_payment', 'Waiting for Payment'),
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
         ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
         ('waiting_for_consultation', 'Waiting for Consultation'),
         ('complete','complete'),
         ('await_review','await review'),
-    ])
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    ]
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
+    room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
+    status = models.CharField(max_length=30, null=True,choices=STATUS)
+    updated = models.DateField(auto_now=True)
 
     def str(self):
         f"Handover for {self.patient.file_no} in {self.clinic} with {self.room} room"

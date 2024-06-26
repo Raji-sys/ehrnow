@@ -416,6 +416,25 @@ class PatientReportView(ListView):
         context['total_patient'] = PatientData.objects.count()
         context['filtered_count'] = self.filterset.qs.count()
         return context
+
+
+class PatientHandoverReportView(ListView):
+    model = PatientHandover
+    template_name = 'ehr/clinic/report.html'
+    context_object_name = 'handovers'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset().order_by('-updated')
+        self.filterset = PatientHandoverFilter(self.request.GET, queryset=queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patientHandoverFilter'] = self.filterset
+        context['total_patient'] = PatientData.objects.count()
+        context['filtered_count'] = self.filterset.qs.count()
+        return context
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

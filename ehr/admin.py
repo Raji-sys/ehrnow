@@ -15,8 +15,8 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(PatientData)
 class PatientAdmin(admin.ModelAdmin):
-    list_display = ('last_name', 'first_name', 'gender', 'dob', 'phone',)
-    search_fields = ('file_no',)
+    list_display = ('full_name', 'gender', 'age', 'phone','dob','age')
+    search_fields = ('file_no','phone')
     list_filter = ('gender',)
 
 
@@ -65,9 +65,9 @@ class ClinicNoteAdmin(admin.ModelAdmin):
 
 @admin.register(PatientHandover)
 class HandoverAdmin(admin.ModelAdmin):
-    list_display = ('patient','status','clinic','room')
-    search_fields = ('patient',)
-    list_filter = ('patient',)
+    list_display = ('patient','status','clinic','room','updated')
+    search_fields = ('patient','updated')
+    list_filter = ('patient','updated')
 
 
 @admin.register(VitalSigns)
