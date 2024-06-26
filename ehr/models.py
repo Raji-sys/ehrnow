@@ -66,45 +66,12 @@ class Profile(models.Model):
         if self.user:
             return f"{self.full_name()}"
 
-
-class Team(models.Model):
-    name = models.CharField(null=True, blank=True, max_length=200)
-    
-    def get_absolute_url(self):
-        return reverse('team_details', args=[self.name])
-
-    def __str__(self):
-        if self.name:
-            return f"{self.name}"
-
-
-class Clinic(models.Model):
-    name = models.CharField(null=True, blank=True, max_length=200)
-    
-    def get_absolute_url(self):
-        return reverse('clinic_details', args=[self.name])
-
-    def __str__(self):
-        if self.name:
-            return f"{self.name}"
-
-
-class Theatre(models.Model):
-    name = models.CharField(null=True, blank=True, max_length=200)
-    
-    def get_absolute_url(self):
-        return reverse('theatre_details', args=[self.name])
-
-    def __str__(self):
-        if self.name:
-            return f"{self.name}"
         
     
 class PatientData(models.Model):
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
-    clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
-    types = (('Regular','Regular'),('NHIS','NHIS'),('Other','Other'))
-    type = models.CharField(choices=types, max_length=10, null=True, blank=True)
+    types = (('REGULAR', 'REGULAR'), ('NHIS', 'NHIS'),('RETAINER','RETAINER'))
+    patient_type = models.CharField(choices=types, max_length=100, null=True, blank=True)
     titles = (('Mr.','Mr.'),('Mrs.','Mrs.'),('Miss','Miss'),('Alhaji','Alhaji'),('Mallam','Mallam'),('Chief','Chief'),('Prof.','Prof.'),('Dr.','Dr.'),('Engr.','Engr.'),('Ach.','Ach.'))
     title = models.CharField(choices=titles, max_length=10, null=True, blank=True)
     last_name = models.CharField('SURNAME', max_length=300, blank=True, null=True)
@@ -114,8 +81,8 @@ class PatientData(models.Model):
     # photo = models.ImageField(null=True, blank=True)
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True, blank=True)
-    dob = models.DateField('date of birth', null=True, blank=True)
     age=models.PositiveIntegerField(blank=True,null=True)
+    dob = models.DateField('date of birth', null=True, blank=True)
     m_status = (('MARRIED', 'MARRIED'), ('SINGLE', 'SINGLE'), ('DIVORCED', 'DIVORCED'),('DIVORCEE', 'DIVORCEE'), ('WIDOW', 'WIDOW'), ('WIDOWER', 'WIDOWER'))
     marital_status = models.CharField(choices=m_status, max_length=100, null=True, blank=True)
     ns = (('NIGERIAN', 'NIGERIAN'), ('NON-CITIZEN', 'NON-CITIZEN'))
@@ -170,7 +137,7 @@ class PatientData(models.Model):
     occupation = models.CharField(max_length=300, null=True, blank=True)
     role_in_occupation = models.CharField(max_length=300, null=True, blank=True)
     nok_name = models.CharField('next of kin name', max_length=300, null=True, blank=True)
-    nok_phone = models.CharField('next of kin phone', max_length=11, null=True, blank=True)
+    nok_phone = models.CharField('next of kin phone', max_length=300, null=True, blank=True)
     nok_addr = models.CharField('next of kin address', max_length=300, null=True, blank=True)
     rel = (('FATHER', 'FATHER'), ('MOTHER', 'MOTHER'),('SON', 'SON'),('DAUGHTER','DAUGHTER'),('BROTHER','BROTHER'),('SISTER','SISTER'),
            ('UNCLE','UNCLE'),('AUNT','AUNT'),('NEPHEW','NEPHEW'),('NIECE','NIECE'),('GRANDFATHER','GRANDFATHER'),('GRANDMOTHER','GRANDMOTHTER'),
@@ -179,21 +146,20 @@ class PatientData(models.Model):
     # nok_photo = models.ImageField('first next of kin photo', null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
-
     class Meta:
         verbose_name_plural = 'patients data'
     
     def save(self, *args, **kwargs):
         if not self.file_no:
             last_instance = self.__class__.objects.order_by('file_no').last()
+
             if last_instance:
                 last_file_no = int(last_instance.file_no)
                 new_file_no = f"{last_file_no + 1:06d}"  # 06 for 6 leading zeros
             else:
                 new_file_no = "000001"
-            self.file_no = new_file_no
 
-            # Calculate age based on dob
+            self.file_no = new_file_no
         if self.dob:
             today = date.today()
             self.age = today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
@@ -205,8 +171,6 @@ class PatientData(models.Model):
     def get_absolute_url(self):
         return reverse('patient_details', args=[self.file_no])
 
-
-    
     def full_name(self):
         name_parts=[
             self.title or "",
@@ -243,8 +207,13 @@ class Paypoint(models.Model):
    
 
 class FollowUpVisit(models.Model):
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+    ]
+
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE,related_name='follow_up')
-    clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
 
@@ -253,7 +222,7 @@ class MedicalRecord(models.Model):
     services=(('new registration','new registration'),('follow up','follow up'),('card replacement','card replacement'))
     name = models.CharField(choices=services,max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
-    # payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='medical_record_payment',blank=True)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='medical_record_payment',blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -264,21 +233,27 @@ class MedicalRecord(models.Model):
 
 
 class PatientHandover(models.Model):
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+    ]
+
+    ROOM_CHOICES = [
+        ('ROOM 1', 'ROOM 1'),
+        ('ROOM 2', 'ROOM 2'),
+        ('ROOM 3', 'ROOM 3')
+    ]
     STATUS=[
         ('waiting_for_payment', 'Waiting for Payment'),
+        ('f_waiting_for_payment', 'F Waiting for Payment'),
         ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
         ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
         ('waiting_for_consultation', 'Waiting for Consultation'),
         ('complete','complete'),
         ('await_review','await review'),
     ]
-    ROOM_CHOICES = [
-        ('ROOM 1', 'ROOM 1'),
-        ('ROOM 2', 'ROOM 2'),
-        ('ROOM 3', 'ROOM 3')
-    ]
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
-    clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
     status = models.CharField(max_length=30, null=True,choices=STATUS)
     updated = models.DateField(auto_now=True)
@@ -287,9 +262,20 @@ class PatientHandover(models.Model):
         f"Handover for {self.patient.file_no} in {self.clinic} with {self.room} room"
 
 class Appointment(models.Model):
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+    ]
+    TEAM_CHOICES = [
+        ('WHITE', 'WHITE'),
+        ('GREEN', 'GREEN'),
+        ('BLUE', 'BLUE'),
+        ('YELLOW', 'YELLOW')
+    ]
+
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
-    clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team,max_length=30, null=True, on_delete=models.CASCADE)
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
+    team = models.CharField(max_length=30, null=True, choices=TEAM_CHOICES)
     date = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -303,10 +289,14 @@ class VitalSigns(models.Model):
         ('ROOM 2', 'ROOM 2'),
         ('ROOM 3', 'ROOM 3')
     ]
+    CLINIC_CHOICES = [
+        ('A & E', 'A & E'),
+        ('SOPD', 'SOPD'),
+    ]
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vital_signs')
-    clinic=models.ForeignKey(Clinic, null=True, on_delete=models.CASCADE)
+    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     body_temperature=models.CharField(max_length=10, null=True, blank=True)
     pulse_rate=models.CharField(max_length=10, null=True, blank=True)
     respiration_rate=models.CharField(max_length=10, null=True, blank=True)
@@ -427,10 +417,20 @@ class WardClinicalNote(models.Model):
         return self.patient
 
 class TheatreBooking(models.Model):
+    THEATRES = [
+        ('MAIN THEATRE', 'MAIN THEATRE'),
+        ('SPINE THEATRE', 'SPINE THEATRE'),
+    ]
+    TEAMS = [
+        ('WHITE', 'WHITE'),
+        ('GREEN', 'GREEN'),
+        ('BLUE', 'BLUE'),
+        ('YELLOW', 'YELLOW')
+    ]
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_bookings')
-    theatre=models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team,max_length=30, null=True, on_delete=models.CASCADE)
+    theatre = models.CharField(max_length=30, null=True, choices=THEATRES)
+    team = models.CharField(max_length=30, null=True, choices=TEAMS)
     date = models.DateField(null=True)
     updated = models.DateTimeField(auto_now=True)
     
@@ -448,10 +448,8 @@ class TheatreNotes(models.Model):
     type_of_anaesthesia=models.CharField(choices=anaesthesia, max_length=300,null=True,blank=True)
     findings=models.CharField(max_length=300,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
-    
     class Meta:
-        verbose_name_plural='theare notes'
-
+        verbose_name_plural='theatre notes'
     def __str__(self):
         return self.patient
 

@@ -356,7 +356,7 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
 
     def form_valid(self, form):
         patient = form.save()
-        PatientHandover.objects.create(patient=patient, clinic=patient.clinic, status='waiting_for_payment')
+        PatientHandover.objects.create(patient=patient, clinic='A & E', status='waiting_for_payment')
         messages.success(self.request, 'Patient registered successfully')
         return super().form_valid(form)
 
@@ -523,28 +523,25 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
     template_name = 'ehr/record/follow_up.html'
     success_url = reverse_lazy("medical_record")
 
-    def get_object(self, queryset=None):
+    def get_patient(self):
         file_no = self.kwargs.get('file_no')
         return PatientData.objects.get(file_no=file_no)
 
     def form_valid(self, form):
-        patient = self.get_object()
+        patient = self.get_patient()
         visit = form.save(commit=False)
         visit.patient = patient
         visit.save()
-
         clinic = form.cleaned_data['clinic']
 
-        # Check if a PatientHandover object exists for the patient and clinic
-        patient_handover, _ = PatientHandover.objects.get_or_create(
+        # Create or update PatientHandover
+        PatientHandover.objects.update_or_create(
             patient=patient,
             clinic=clinic,
-            defaults={'status': 'waiting_for_payment'}
+            defaults={'status': 'waiting_for_payment','room':None}
         )
-
         messages.success(self.request, 'Follow-up visit created successfully')
         return redirect(self.success_url)
-
 
 class FollowUpListView(ListView):
     model=PatientData
@@ -582,12 +579,10 @@ class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
     context_object_name = 'handovers'
 
     def get_queryset(self):
-        follow_up_visits = FollowUpVisit.objects.filter(patient__handovers__status='waiting_for_payment')
-        clinic_choices = follow_up_visits.values_list('clinic', flat=True).distinct()
         return PatientHandover.objects.filter(
-            status='waiting_for_payment', 
-            clinic__in=clinic_choices
-        )
+            status='waiting_for_payment',
+            patient__follow_up__isnull=False
+        ).distinct()
 
     
 class PaypointView(RevenueRequiredMixin, CreateView):
@@ -600,7 +595,7 @@ class PaypointView(RevenueRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
-        handover = patient.handovers.filter(clinic=patient.clinic, status='waiting_for_payment').first()
+        handover = patient.handovers.filter(clinic='A & E', status='waiting_for_payment').first()
 
         if handover:
             context['patient'] = patient
@@ -616,7 +611,7 @@ class PaypointView(RevenueRequiredMixin, CreateView):
     def form_valid(self, form):
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
-        handover = patient.handovers.filter(clinic=patient.clinic, status='waiting_for_payment').first()
+        handover = patient.handovers.filter(clinic='A & E', status='waiting_for_payment').first()
         if handover:
             payment = form.save(commit=False)
             payment.patient = patient
@@ -711,7 +706,7 @@ class ClinicListView(DoctorRequiredMixin, ListView):
         queryset = super().get_queryset()
         filters = {
             'status': self.status_filter,
-            'clinic__name': self.clinic_filter,
+            'clinic': self.clinic_filter,
             'updated__gte': timezone.now() - timedelta(days=1), 
             # 'updated_at__gte': timezone.now() - timedelta(hours=12)
         }
@@ -739,7 +734,6 @@ class AEConsultationWaitRoomView(ClinicListView):
     status_filter = 'waiting_for_consultation'
     clinic_filter = "A & E"
     room_filter = None
-
 
 class AERoom1View(ClinicListView):
     template_name = 'ehr/clinic/ae_room1.html'

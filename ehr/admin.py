@@ -1,12 +1,6 @@
 from .models import *
 from django.contrib import admin
 
-
-# admin.site.site_header="EHR NOW CONTROL PANEL"
-# admin.site.index_title="EHR NOW"
-# admin.site.site_title="EHR NOW"
-
-
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user','full_name','department','unit','phone')
@@ -15,7 +9,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(PatientData)
 class PatientAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'gender', 'age', 'phone','dob','age')
+    list_display = ('full_name', 'gender', 'age', 'phone',)
     search_fields = ('file_no','phone')
     list_filter = ('gender',)
 
@@ -41,28 +35,6 @@ class ServicesAdmin(admin.ModelAdmin):
     list_filter = ('type','name')
 
 
-@admin.register(Team)
-class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
-    list_filter = ('name',)
-
-
-@admin.register(Clinic)
-class ClinicAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
-    list_filter = ('name',)
-
-
-
-@admin.register(Theatre)
-class TheatreAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
-    list_filter = ('name',)
-
-
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ('name',)
@@ -77,7 +49,6 @@ class ClinicNoteAdmin(admin.ModelAdmin):
     list_display = ('patient','user','note','diagnosis','needs_review','appointment')
     search_fields = ('patient','diagnosis','needs_review','appointment')
     list_filter = ('patient','diagnosis','needs_review','appointment')
-
 
 @admin.register(PatientHandover)
 class HandoverAdmin(admin.ModelAdmin):
@@ -139,3 +110,5 @@ class TheatreNotesAdmin(admin.ModelAdmin):
     list_display = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
     search_fields = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
     list_filter = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
+
+
