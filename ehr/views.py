@@ -356,7 +356,7 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
 
     def form_valid(self, form):
         patient = form.save()
-        PatientHandover.objects.create(patient=patient, clinic='A & E', status='waiting_for_payment')
+        PatientHandover.objects.create(patient=patient, clinic=patient.clinic, status='waiting_for_payment')
         messages.success(self.request, 'Patient registered successfully')
         return super().form_valid(form)
 
@@ -600,7 +600,7 @@ class PaypointView(RevenueRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
-        handover = patient.handovers.filter(clinic='A & E', status='waiting_for_payment').first()
+        handover = patient.handovers.filter(clinic=patient.clinic, status='waiting_for_payment').first()
 
         if handover:
             context['patient'] = patient
@@ -616,7 +616,7 @@ class PaypointView(RevenueRequiredMixin, CreateView):
     def form_valid(self, form):
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
-        handover = patient.handovers.filter(clinic='A & E', status='waiting_for_payment').first()
+        handover = patient.handovers.filter(clinic=patient.clinic, status='waiting_for_payment').first()
         if handover:
             payment = form.save(commit=False)
             payment.patient = patient
@@ -711,14 +711,14 @@ class ClinicListView(DoctorRequiredMixin, ListView):
         queryset = super().get_queryset()
         filters = {
             'status': self.status_filter,
-            'clinic': self.clinic_filter,
-            'created_at__gte': timezone.now() - timedelta(days=1), 
+            'clinic__name': self.clinic_filter,
+            'updated__gte': timezone.now() - timedelta(days=1), 
             # 'updated_at__gte': timezone.now() - timedelta(hours=12)
         }
         if self.room_filter is not None:
             filters['room'] = self.room_filter
         filtered_queryset = queryset.filter(**filters)
-        return filtered_queryset.order_by('-created_at')
+        return filtered_queryset.order_by('-updated')
 
 
 class AENursingDeskView(ClinicListView):
@@ -739,6 +739,7 @@ class AEConsultationWaitRoomView(ClinicListView):
     status_filter = 'waiting_for_consultation'
     clinic_filter = "A & E"
     room_filter = None
+
 
 class AERoom1View(ClinicListView):
     template_name = 'ehr/clinic/ae_room1.html'

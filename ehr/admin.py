@@ -34,7 +34,6 @@ class PaypointAdmin(admin.ModelAdmin):
     list_filter = ('status','service')
 
 
-
 @admin.register(Services)
 class ServicesAdmin(admin.ModelAdmin):
     list_display = ('type', 'name', 'price')
@@ -47,6 +46,22 @@ class TeamAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     list_filter = ('name',)
+
+
+@admin.register(Clinic)
+class ClinicAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+
+
+
+@admin.register(Theatre)
+class TheatreAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
@@ -62,6 +77,7 @@ class ClinicNoteAdmin(admin.ModelAdmin):
     list_display = ('patient','user','note','diagnosis','needs_review','appointment')
     search_fields = ('patient','diagnosis','needs_review','appointment')
     list_filter = ('patient','diagnosis','needs_review','appointment')
+
 
 @admin.register(PatientHandover)
 class HandoverAdmin(admin.ModelAdmin):
@@ -123,5 +139,3 @@ class TheatreNotesAdmin(admin.ModelAdmin):
     list_display = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
     search_fields = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
     list_filter = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
-
-

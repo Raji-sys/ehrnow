@@ -50,7 +50,7 @@ class ProfileForm(forms.ModelForm):
 class PatientForm(forms.ModelForm):
     class Meta:
         model = PatientData
-        exclude = ['file_no','user','updated']
+        exclude = ['file_no','age','user','updated']
         widgets = {
             'zone': forms.Select(attrs={'id': 'id_zone'}),
             'state': forms.Select(attrs={'id': 'id_state'}),
@@ -66,8 +66,6 @@ class PatientForm(forms.ModelForm):
 
 
 class VisitForm(forms.ModelForm):
-    clinic = forms.ChoiceField(choices=PatientHandover.CLINIC_CHOICES, required=False)
-
     class Meta:
         model = FollowUpVisit
         fields = ['clinic']

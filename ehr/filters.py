@@ -47,7 +47,7 @@ class PatientReportFilter(django_filters.FilterSet):
 
 class PatientHandoverFilter(django_filters.FilterSet):
     patient=django_filters.CharFilter(label='FILE NUMBER', field_name="patient__file_no",lookup_expr='exact')
-    clinic=django_filters.ChoiceFilter(label='CLINIC',choices=PatientHandover.CLINIC_CHOICES)
+    clinic=django_filters.ChoiceFilter(label='CLINIC',file_name='clinic__name',lookup_expr='ixact')
     status=django_filters.ChoiceFilter(label='STATUS',choices=PatientHandover.STATUS)
     updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     class Meta:
