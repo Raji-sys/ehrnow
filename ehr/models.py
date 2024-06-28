@@ -244,13 +244,13 @@ class PatientHandover(models.Model):
         ('ROOM 3', 'ROOM 3')
     ]
     STATUS=[
-        ('waiting_for_payment', 'Waiting for Payment'),
-        ('f_waiting_for_payment', 'F Waiting for Payment'),
-        ('waiting_for_clinic_assignment', 'Waiting for Clinic Assignment'),
-        ('waiting_for_vital_signs', 'Waiting for Vital Signs'),
-        ('waiting_for_consultation', 'Waiting for Consultation'),
-        ('complete','complete'),
-        ('await_review','await review'),
+        ('waiting for payment', 'Waiting for Payment'),
+        ('f waiting for payment', 'F Waiting for Payment'),
+        ('waiting for clinic assignment', 'Waiting for Clinic Assignment'),
+        ('waiting for vital signs', 'Waiting for Vital Signs'),
+        ('waiting for consultation', 'Waiting for Consultation'),
+        ('Seen','Seen'),
+        ('Awaiting Review','Awaiting Review'),
     ]
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
     clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
@@ -258,8 +258,8 @@ class PatientHandover(models.Model):
     status = models.CharField(max_length=30, null=True,choices=STATUS)
     updated = models.DateField(auto_now=True)
 
-    def str(self):
-        f"Handover for {self.patient.file_no} in {self.clinic} with {self.room} room"
+    def __str__(self):
+        return f"Handover for {self.patient.file_no} in {self.clinic} with {self.room} room"
 
 class Appointment(models.Model):
     CLINIC_CHOICES = [

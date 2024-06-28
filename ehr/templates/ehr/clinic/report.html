@@ -63,6 +63,12 @@
               <th class="p-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                 PHONE
               </th>
+              <th class="p-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                AGE
+              </th>
+              <th class="p-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                STATUS
+              </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-zinc-200">
@@ -81,6 +87,12 @@
               </td>
               <td class="p-3 whitespace-nowrap">
                 {{ p.patient.phone }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ p.patient.age }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ p.status }}
               </td>
             </tr>
             {% empty %}

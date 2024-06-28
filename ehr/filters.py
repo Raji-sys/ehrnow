@@ -22,8 +22,8 @@ class PatientFilter(django_filters.FilterSet):
 
 class PatientReportFilter(django_filters.FilterSet):
     file_no = django_filters.CharFilter(label='FILE NUMBER', field_name='file_no')
-    age_start = django_filters.NumberFilter(label="AGE R1", field_name="age", lookup_expr='lte',)
-    agw_end = django_filters.NumberFilter(label="AGE R2", field_name="age", lookup_expr='gte',)
+    age_start = django_filters.NumberFilter(label="AGE R1", field_name="age", lookup_expr='gte',)
+    age_end = django_filters.NumberFilter(label="AGE R2", field_name="age", lookup_expr='lte',)
     gender = django_filters.ChoiceFilter(label="GENDER",choices=PatientData.sex,empty_label="ALL",
                                          widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
     marital_status = django_filters.ChoiceFilter(label="MARITAL STATUS",choices=PatientData.m_status, 
@@ -46,13 +46,17 @@ class PatientReportFilter(django_filters.FilterSet):
 
 
 class PatientHandoverFilter(django_filters.FilterSet):
-    patient=django_filters.CharFilter(label='FILE NUMBER', field_name="patient__file_no",lookup_expr='exact')
-    clinic=django_filters.ChoiceFilter(label='CLINIC',file_name='clinic__name',lookup_expr='ixact')
-    status=django_filters.ChoiceFilter(label='STATUS',choices=PatientHandover.STATUS)
+    dob=django_filters.CharFilter(label='DATE OF BIRTH', field_name="patient__dob",lookup_expr='exact',widget=forms.DateInput(attrs={'type': 'date'}))
+    age_start = django_filters.NumberFilter(label="AGE R1", field_name="patient__age", lookup_expr='gte',)  
+    age_end = django_filters.NumberFilter(label="AGE R2", field_name="patient__age", lookup_expr='lte',)
+    clinic = django_filters.ChoiceFilter(label='CLINIC', field_name='clinic', lookup_expr='iexact', choices=PatientHandover.CLINIC_CHOICES)
+    status = django_filters.ChoiceFilter(label='STATUS', choices=PatientHandover.STATUS)
     updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+ 
     class Meta:
         model=PatientHandover
-        fields=['patient','clinic','status','updated']
+        fields=['clinic','status','updated']
+
 
 class AppointmentFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(label="DATE", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])

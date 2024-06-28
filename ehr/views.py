@@ -356,7 +356,7 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
 
     def form_valid(self, form):
         patient = form.save()
-        PatientHandover.objects.create(patient=patient, clinic='A & E', status='waiting_for_payment')
+        PatientHandover.objects.create(patient=patient, clinic='A & E', status='waiting for payment')
         messages.success(self.request, 'Patient registered successfully')
         return super().form_valid(form)
 
@@ -538,7 +538,7 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
         PatientHandover.objects.update_or_create(
             patient=patient,
             clinic=clinic,
-            defaults={'status': 'waiting_for_payment','room':None}
+            defaults={'status': 'waiting for payment','room':None}
         )
         messages.success(self.request, 'Follow-up visit created successfully')
         return redirect(self.success_url)
@@ -566,7 +566,7 @@ class PaypointDashboardView(RevenueRequiredMixin, ListView):
     context_object_name = 'handovers'
 
     def get_queryset(self):
-        return PatientHandover.objects.filter(status__in=['waiting_for_payment'])
+        return PatientHandover.objects.filter(status__in=['waiting for payment'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -580,7 +580,7 @@ class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
 
     def get_queryset(self):
         return PatientHandover.objects.filter(
-            status='waiting_for_payment',
+            status='waiting for payment',
             patient__follow_up__isnull=False
         ).distinct()
 
@@ -595,7 +595,7 @@ class PaypointView(RevenueRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
-        handover = patient.handovers.filter(clinic='A & E', status='waiting_for_payment').first()
+        handover = patient.handovers.filter(clinic='A & E', status='waiting for payment').first()
 
         if handover:
             context['patient'] = patient
@@ -611,7 +611,7 @@ class PaypointView(RevenueRequiredMixin, CreateView):
     def form_valid(self, form):
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
-        handover = patient.handovers.filter(clinic='A & E', status='waiting_for_payment').first()
+        handover = patient.handovers.filter(clinic='A & E', status='waiting for payment').first()
         if handover:
             payment = form.save(commit=False)
             payment.patient = patient
@@ -622,7 +622,7 @@ class PaypointView(RevenueRequiredMixin, CreateView):
             payment.save()
 
             # Update handover status to 'waiting_for_vital_signs'
-            handover.status = 'waiting_for_vital_signs'
+            handover.status = 'waiting for vital signs'
             handover.save()
             messages.success(self.request, 'Payment successful. Patient handed over for vital signs.')
         return super().form_valid(form) 
@@ -649,7 +649,7 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
     def form_valid(self, form):
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)        
-        handover = patient.handovers.filter(status='waiting_for_payment').first()
+        handover = patient.handovers.filter(status='waiting for payment').first()
         if handover:
             payment = form.save(commit=False)
             payment.patient = patient
@@ -659,7 +659,7 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
             payment.price = service.price
             payment.save()
 
-            handover.status = 'waiting_for_vital_signs'
+            handover.status = 'waiting for vital signs'
             handover.save()
             messages.success(self.request, 'Payment successful. Patient handed over for vitals.')        
         return super().form_valid(form)
@@ -680,14 +680,14 @@ class VitalSignCreateView(NurseRequiredMixin,CreateView):
         # Update handover status to 'waiting_for_consultation'
         patient_handovers = PatientHandover.objects.filter(patient=patient_data)
         for patient_handover in patient_handovers:
-            patient_handover.status = 'waiting_for_consultation'
+            patient_handover.status = 'waiting for consultation'
             patient_handover.clinic = patient_handover.clinic
             patient_handover.room = form.cleaned_data['handover_room']
             patient_handover.save()
 
         # If there are no existing handovers, create a new one
         if not patient_handovers.exists():
-            PatientHandover.objects.create(patient=patient_data, status='waiting_for_consultation')
+            PatientHandover.objects.create(patient=patient_data, status='waiting for consultation')
         messages.success(self.request, 'Vitals taken, Patient handed over for consultation')
         return super().form_valid(form)
 
@@ -718,53 +718,53 @@ class ClinicListView(DoctorRequiredMixin, ListView):
 
 class AENursingDeskView(ClinicListView):
     template_name = 'ehr/nurse/ae_nursing_desk.html'
-    status_filter = 'waiting_for_vital_signs'
+    status_filter = 'waiting for vital signs'
     clinic_filter = "A & E"
     room_filter = None
 
 
 class SOPDNursingDeskView(ClinicListView):
     template_name = 'ehr/nurse/sopd_nursing_desk.html'
-    status_filter = 'waiting_for_vital_signs'
+    status_filter = 'waiting for vital signs'
     clinic_filter = "SOPD"
     room_filter = None
 
 class AEConsultationWaitRoomView(ClinicListView):
     template_name = 'ehr/clinic/ae_list.html'
-    status_filter = 'waiting_for_consultation'
+    status_filter = 'waiting for consultation'
     clinic_filter = "A & E"
     room_filter = None
 
 class AERoom1View(ClinicListView):
     template_name = 'ehr/clinic/ae_room1.html'
-    status_filter = 'waiting_for_consultation'
+    status_filter = 'waiting for consultation'
     clinic_filter = "A & E"
     room_filter = 'ROOM 1'
 
 
 class AERoom2View(ClinicListView):
     template_name = 'ehr/clinic/ae_room2.html'
-    status_filter = 'waiting_for_consultation'
+    status_filter = 'waiting for consultation'
     clinic_filter = "A & E"
     room_filter = 'ROOM 2'
 
 
 class SOPDConsultationWaitRoomView(ClinicListView):
     template_name = 'ehr/clinic/sopd_list.html'
-    status_filter = 'waiting_for_consultation'
+    status_filter = 'waiting for consultation'
     clinic_filter = "SOPD"
     room_filter = None
 
 class SOPDRoom1View(ClinicListView):
     template_name = 'ehr/clinic/sopd_room1.html'
-    status_filter = 'waiting_for_consultation'
+    status_filter = 'waiting for consultation'
     clinic_filter = "SOPD"
     room_filter = 'ROOM 1'
 
 
 class SOPDRoom2View(ClinicListView):
     template_name = 'ehr/clinic/sopd_room2.html'
-    status_filter = 'waiting_for_consultation'
+    status_filter = 'waiting for consultation'
     clinic_filter = "SOPD"
     room_filter = 'ROOM 2'
 
@@ -785,9 +785,9 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
         patient_handovers = PatientHandover.objects.filter(patient=patient_data)
         for patient_handover in patient_handovers:
             if form.instance.needs_review:
-                patient_handover.status = 'await review'
+                patient_handover.status = 'Awaiting Review'
             else:
-                patient_handover.status = 'complete'
+                patient_handover.status = 'Seen'
             patient_handover.clinic = patient_handover.clinic
             patient_handover.save()
 
@@ -795,7 +795,7 @@ class ClinicalNoteCreateView(CreateView, DoctorRequiredMixin):
         if not patient_handovers.exists():
             PatientHandover.objects.create(
                 patient=patient_data,
-                status='await review' if form.instance.needs_review else 'complete'
+                status='Awaiting Review' if form.instance.needs_review else 'Seen'
             )
 
         return super().form_valid(form)
@@ -838,27 +838,27 @@ class ClinicalNoteUpdateView(UpdateView):
 
 class AEConsultationFinishView(ClinicListView):
     template_name = 'ehr/doctor/ae_patient_seen.html'
-    status_filter = 'complete'
+    status_filter = 'Seen'
     clinic_filter = 'A & E'
     room_filter = None
 
 
 class AEAwaitingReviewView(ClinicListView):
     template_name = 'ehr/doctor/ae_review_patient.html'
-    status_filter = 'await review'
+    status_filter = 'Awaiting Review'
     clinic_filter = 'A & E'
     room_filter = None
 
 
 class SOPDConsultationFinishView(ClinicListView):
     template_name = 'ehr/doctor/sopd_patient_seen.html'
-    status_filter = 'complete'
+    status_filter = 'Seen'
     clinic_filter = 'SOPD'
     room_filter = None
 
 class SOPDAwaitingReviewView(ClinicListView):
     template_name = 'ehr/doctor/sopd_review_patient.html'
-    status_filter = 'await review'
+    status_filter = 'Awaiting Review'
     clinic_filter = 'SOPD'
     room_filter = None
     
@@ -1497,7 +1497,6 @@ class RadiologyCreateView(CreateView):
         kwargs['initial'] = self.get_initial()
         return kwargs
     
-
     
 class RadiologyTestCreateView(LoginRequiredMixin, CreateView):
     model = RadiologyResult
