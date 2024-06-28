@@ -69,18 +69,20 @@ class PhysioRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 class AuditorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.groups.filter(name='auditor').exists()
-# @login_required
-# def fetch_resources(uri, rel):
-#     """
-#     Handles fetching static and media resources when generating the PDF.
-#     """
-#     if uri.startswith(settings.STATIC_URL):
-#         path = os.path.join(settings.STATIC_ROOT,
-#                             uri.replace(settings.STATIC_URL, ""))
-#     else:
-#         path = os.path.join(settings.MEDIA_ROOT,
-#                             uri.replace(settings.MEDIA_URL, ""))
-#     return path
+
+
+@login_required
+def fetch_resources(uri, rel):
+    """
+    Handles fetching static and media resources when generating the PDF.
+    """
+    if uri.startswith(settings.STATIC_URL):
+        path = os.path.join(settings.STATIC_ROOT,
+                            uri.replace(settings.STATIC_URL, ""))
+    else:
+        path = os.path.join(settings.MEDIA_ROOT,
+                            uri.replace(settings.MEDIA_URL, ""))
+    return path
 
 
 @method_decorator(log_anonymous_required, name='dispatch')
@@ -355,6 +357,7 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
     success_url = reverse_lazy("medical_record")
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         patient = form.save()
         PatientHandover.objects.create(patient=patient, clinic='A & E', status='waiting for payment')
         messages.success(self.request, 'Patient registered successfully')
@@ -368,6 +371,7 @@ class UpdatePatientView(UpdateView):
     success_url =reverse_lazy('patient_list')
     
     def form_valid(self, form):
+        form.instance.user = self.request.user
         if form.is_valid():
             form.save()
             messages.success(self.request, 'Patient Information Updated Successfully')
@@ -528,6 +532,7 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
         return PatientData.objects.get(file_no=file_no)
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         patient = self.get_patient()
         visit = form.save(commit=False)
         visit.patient = patient
@@ -609,6 +614,7 @@ class PaypointView(RevenueRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
         handover = patient.handovers.filter(clinic='A & E', status='waiting for payment').first()
@@ -647,6 +653,7 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)        
         handover = patient.handovers.filter(status='f waiting for payment').first()
@@ -821,6 +828,7 @@ class ClinicalNoteUpdateView(UpdateView):
     form_class = ClinicalNoteUpdateForm
     
     def form_valid(self, form):
+        form.instance.user = self.request.user
         if form.is_valid():
             form.save()
             return super().form_valid(form)
@@ -885,6 +893,7 @@ class AppointmentUpdateView(UpdateView):
 
     
     def form_valid(self, form):
+        form.instance.user = self.request.user
         messages.success(self.request, 'Appointment Updated Successfully')
         if form.is_valid():
             form.save()
@@ -948,6 +957,7 @@ class ServiceCreateView(RevenueRequiredMixin, CreateView):
     success_url = reverse_lazy("hospital_services")
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         messages.success(self.request, 'SERVICE ADDED')
         return super().form_valid(form)
 
@@ -959,6 +969,7 @@ class ServiceUpdateView(UpdateView):
     success_url = reverse_lazy("service_list")
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         messages.success(self.request, 'Service Updated Successfully')
         if form.is_valid():
             form.save()
@@ -997,6 +1008,7 @@ class PayCreateView(RevenueRequiredMixin, CreateView):
         success_url = reverse_lazy("pay_list")
 
         def form_valid(self, form):
+            form.instance.user = self.request.user
             messages.success(self.request, 'PAYMENT ADDED')
             return super().form_valid(form)
 
@@ -1015,6 +1027,7 @@ class PayUpdateView(UpdateView):
         return context
     
     def form_valid(self, form):
+        form.instance.user = self.request.user
         paypoint = form.save()
         messages.success(self.request, 'Payment Successfully')
         return super().form_valid(form)
@@ -1046,7 +1059,161 @@ class PayListView(ListView):
         context['total_worth'] = total_worth
         return context    
     
+# @login_required
+# def receipt_pdf(request):
+#     ndate = datetime.datetime.now()
+#     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
+#     f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
+#     patient = f.first().patient if f.exists() else None
+#     result = ""
+#     for key, value in request.GET.items():
+#         if value:
+#             result += f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
+
+#     context = {'f': f, 'pagesize': 'A4','patient':patient,
+#                'orientation': 'landscape', 'result': result}
+#     response = HttpResponse(content_type='application/pdf',
+#                             headers={'Content-Disposition': f'filename="Receipt__{filename}"'})
+
+#     buffer = BytesIO()
+
+#     pisa_status = pisa.CreatePDF(get_template('ehr/revenue/receipt_pdf.html').render(
+#         context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+
+#     if not pisa_status.err:
+#         pdf = buffer.getvalue()
+#         buffer.close()
+#         response.write(pdf)
+#         return response
+#     return HttpResponse('Error generating PDF', status=500)
     
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.lib.colors import black, grey
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from io import BytesIO
+from django.http import HttpResponse
+from django.conf import settings
+import datetime
+import os
+
+def format_currency(amount):
+    return f"N{amount:,.2f}"
+
+@login_required
+def receipt_pdf(request):
+    # Get the queryset
+    f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
+    
+    # Get the patient from the first Paypoint object
+    patient = f.first().patient if f.exists() else None
+
+    # Create a file-like buffer to receive PDF data
+    buffer = BytesIO()
+
+    # Create the PDF object, using the buffer as its "file."
+    p = canvas.Canvas(buffer, pagesize=(3*inch, 11*inch))  # 3 inches wide, 11 inches long
+
+    # Try to register custom fonts, fall back to standard fonts if not available
+    try:
+        pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
+        pdfmetrics.registerFont(TTFont('VeraBd', 'VeraBd.ttf'))
+        font_name = 'Vera'
+        font_bold = 'VeraBd'
+    except:
+        font_name = 'Helvetica'
+        font_bold = 'Helvetica-Bold'
+
+    # Start drawing from the top of the page
+    y = 10.5*inch
+
+    # Try to draw logo if available
+    logo_path = os.path.join(settings.STATIC_ROOT, 'images', '5.png')
+    if os.path.exists(logo_path):
+        p.drawInlineImage(logo_path, 0.75*inch, y - 0.5*inch, width=1.5*inch, height=0.5*inch)
+        y -= 0.7*inch
+    else:
+        y -= 0.2*inch  # Adjust spacing if no logo
+
+    # Draw the header
+    p.setFont(font_bold, 12)
+    p.drawCentredString(1.5*inch, y, "PAYMENT RECEIPT")
+    y -= 0.3*inch
+
+    # Draw a line
+    p.setStrokeColor(grey)
+    p.line(0.25*inch, y, 2.75*inch, y)
+    y -= 0.2*inch
+
+    # Draw patient info
+    p.setFont(font_name, 8)
+    if patient:
+        p.drawString(0.25*inch, y, f"Patient: {patient}")
+        y -= 0.15*inch
+        p.drawString(0.25*inch, y, f"File No: {patient.file_no}")
+        y -= 0.2*inch
+
+    # Draw a line
+    p.line(0.25*inch, y, 2.75*inch, y)
+    y -= 0.2*inch
+
+    # Draw column headers
+    p.setFont(font_bold, 8)
+    p.drawString(0.25*inch, y, "Service")
+    p.drawString(1.75*inch, y, "Price")
+    p.drawString(2.25*inch, y, "Date")
+    y -= 0.15*inch
+
+    # Draw a line
+    p.line(0.25*inch, y, 2.75*inch, y)
+    y -= 0.1*inch
+
+    # Draw payment details
+    p.setFont(font_name, 8)
+    total = 0
+    for payment in f:
+        if y < 1*inch:  # If we're near the bottom of the page, start a new page
+            p.showPage()
+            p.setFont(font_name, 8)
+            y = 10.5*inch
+
+        p.drawString(0.25*inch, y, str(payment.service)[:20])  # Truncate long service names
+        p.drawRightString(2.15*inch, y, format_currency(payment.price))
+        p.drawString(2.25*inch, y, payment.updated.strftime("%d/%m"))
+        y -= 0.15*inch
+        total += payment.price
+
+    # Draw a line
+    y -= 0.1*inch
+    p.setStrokeColor(black)
+    p.line(0.25*inch, y, 2.75*inch, y)
+    y -= 0.2*inch
+
+    # Draw total
+    p.setFont(font_bold, 10)
+    p.drawString(0.25*inch, y, "Total:")
+    p.drawRightString(2.75*inch, y, format_currency(total))
+
+    # Draw footer
+    y -= 0.4*inch
+    p.setFont(font_name, 7)
+    p.drawCentredString(1.5*inch, y, f"Generated: {datetime.datetime.now().strftime('%d-%m-%Y %H:%M')}")
+    y -= 0.15*inch
+    p.drawCentredString(1.5*inch, y, f"By: {request.user.username.upper()}")
+
+    # Close the PDF object cleanly, and we're done.
+    p.showPage()
+    p.save()
+
+    # FileResponse sets the Content-Disposition header so that browsers
+    # present the option to save the file.
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type='application/pdf')
+
+
 class HematologyPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/hema_pay_list.html'
@@ -1136,6 +1303,7 @@ class AdmissionUpdateView(UpdateView):
     success_url = reverse_lazy("ward_list")
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         messages.success(self.request, 'PATIENT RECEIVED')
         if form.is_valid():
             form.save()
@@ -1365,6 +1533,7 @@ class TheatreBookingUpdateView(DoctorRequiredMixin,UpdateView):
     form_class = TheatreBookingForm
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         messages.success(self.request, 'Appointment Updated Successfully')
         if form.is_valid():
             form.save()
@@ -1474,6 +1643,7 @@ class RadiologyCreateView(CreateView):
         return initial
 
     def form_valid(self, form):
+        form.instance.user = self.request.user
         # Get the patient instance from the URL parameter
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)

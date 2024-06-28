@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RECEIPT</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #FBF8F6;
+            color: #1d7f25;
+            text-transform: capitalize;
+          }
+          
+          h1 {
+            text-align: center;
+            color: #18be5d;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+          }
+          
+          #sp h1 {
+            margin-top: 50px;
+          }
+          
+          table {
+            width: auto;
+            border-collapse: collapse;
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            padding: 20px;
+            text-transform: uppercase;
+          }
+          
+          table td {
+            text-transform: capitalize;
+          }
+          
+          td {
+            border: 1px solid #baf7e0;
+            word-break: break-word;
+            white-space: normal;
+            padding: 6px;
+            width: 50%;
+            text-align: center;
+          }
+          
+          tr {
+            background-color: #FFF5F7;
+            color: #000000;
+          }
+          
+          th {
+            text-align: center;
+            font-size: 18px;
+            background-color: #0bc056;
+            color: #FFFFFF;
+            padding: 10px;
+          }
+          
+          td:first-child {
+            font-weight: bold;
+            background-color: #e1fdf2;
+            border-radius: 5px;
+            text-transform: uppercase;
+            text-transform: capitalize;
+            
+          }
+          
+          .divider {
+            border-bottom: 1px solid #cdfed1;
+            margin: 30px 0;
+          }
+          
+          #sp {
+            margin-top: 6rem;
+            font-size: 1.5rem;
+            text-align: center; /* Center the heading */
+          }
+          #sp h1 {
+            margin-top: 180px; /* Adjust the value as needed */
+          }
+          .value {
+            background-color: white;
+          }
+          .uppercase {
+            text-transform: uppercase;
+          }
+        </style>
+        </head>
+        <body>
+          <div id="sp">
+            <h1>PAYMENT RECEIPT</h1>
+        </div>
+        {% if patient %}
+        <table>
+            <tr>
+                <th colspan="2">PATIENT INFORMATION</th>
+            </tr>
+            <tr>
+                <td>NAME</td>
+                <td>{{ patient|default:"N/A"|upper }}</td>
+            </tr>
+            <tr>
+                <td>FILE NUMBER</td>
+                <td>{{ patient.file_no|default:"N/A"|upper }}</td>
+            </tr>
+            <!-- Add more patient information fields as needed -->
+        </table>
+        {% endif %}
+        <table>
+            <tr>
+                <th colspan="5">PAYMENT DETAILS</th>
+            </tr>
+            <tr>
+                <td><span class="variable">SERVICE</span></td>
+                <td><span class="variable">PRICE</span></td>
+                <td><span class="variable">STATUS</span></td>
+                <td><span class="variable">REVENUE OFFICER</span></td>
+                <td><span class="variable">DATE REPORT</span></td>
+            </tr>
+            {% for i in f %}
+            <tr>
+                <td class="value">{{ i.service|upper }}</td>
+                <td class="value">{{ i.price|default_if_none:'' }}</td>
+                <td class="value">{{i.status|upper}}</td>
+                <td class="value">{{i.user|default:"N/A"|upper }}</td>
+                <td class="value">{{ i.updated }}</td>
+            </tr>
+            {% endfor %}
+        </table>        
+
+</body>
+</html>

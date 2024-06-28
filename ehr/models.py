@@ -69,6 +69,7 @@ class Profile(models.Model):
         
     
 class PatientData(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     types = (('REGULAR', 'REGULAR'), ('NHIS', 'NHIS'),('RETAINER','RETAINER'))
     patient_type = models.CharField(choices=types, max_length=100, null=True, blank=True)
@@ -185,6 +186,7 @@ class PatientData(models.Model):
 
     
 class Services(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     type=models.CharField(max_length=100, null=True, blank=True)
     name=models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
@@ -211,7 +213,7 @@ class FollowUpVisit(models.Model):
         ('A & E', 'A & E'),
         ('SOPD', 'SOPD'),
     ]
-
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE,related_name='follow_up')
     clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
