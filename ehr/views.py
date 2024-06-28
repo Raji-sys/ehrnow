@@ -538,7 +538,7 @@ class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
         PatientHandover.objects.update_or_create(
             patient=patient,
             clinic=clinic,
-            defaults={'status': 'waiting for payment','room':None}
+            defaults={'status': 'f waiting for payment','room':None}
         )
         messages.success(self.request, 'Follow-up visit created successfully')
         return redirect(self.success_url)
@@ -580,7 +580,7 @@ class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
 
     def get_queryset(self):
         return PatientHandover.objects.filter(
-            status='waiting for payment',
+            status='f waiting for payment',
             patient__follow_up__isnull=False
         ).distinct()
 
@@ -649,7 +649,7 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
     def form_valid(self, form):
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)        
-        handover = patient.handovers.filter(status='waiting for payment').first()
+        handover = patient.handovers.filter(status='f waiting for payment').first()
         if handover:
             payment = form.save(commit=False)
             payment.patient = patient
