@@ -229,6 +229,16 @@ class ChempathTestCreateView(LoginRequiredMixin, CreateView):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
         form.instance.collected_by = self.request.user
+        
+        chempath_result = form.save(commit=False)
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status=False,
+            service=chempath_result.test, 
+            price=chempath_result.test.price,
+        )
+        chempath_result.payment = payment 
+        chempath_result.save()
         messages.success(self.request, 'Chemical pathology result created successfully')
         return super().form_valid(form)
     
@@ -240,6 +250,7 @@ class ChempathResultCreateView(LoginRequiredMixin, UpdateView):
     model = ChemicalPathologyResult
     form_class = ChempathResultForm
     template_name = 'chempath/chempath_update.html'
+    success_url=reverse_lazy('pathology:chempath_request')
 
 
     def get_object(self, queryset=None):
@@ -248,11 +259,11 @@ class ChempathResultCreateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.updated_by = self.request.user
+        chempath_result = form.save(commit=False)
+        chempath_result.result = form.cleaned_data['result']
+        chempath_result.save()
         messages.success(self.request, 'Chemical Pathology result updated successfully')
         return super().form_valid(form)
-
-    def get_success_url(self):
-        return self.object.patient.get_absolute_url()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -264,6 +275,7 @@ class ChempathReportView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        
         chem_filter = ChemFilter(self.request.GET, queryset=queryset)
         patient = chem_filter.qs.order_by('-created')
         return patient

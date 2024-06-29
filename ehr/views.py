@@ -1017,19 +1017,25 @@ class PayUpdateView(UpdateView):
     model = Paypoint
     template_name = 'ehr/revenue/update_pay.html'
     form_class = PayUpdateForm
-    success_url = reverse_lazy("pay_list")
-    
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         paypoint = self.get_object()
         context['patient'] = paypoint.patient
         context['service'] = paypoint.service
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context
-    
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         paypoint = form.save()
-        messages.success(self.request, 'Payment Successfully')
+        messages.success(self.request, 'Payment Successfully Updated')
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -1214,25 +1220,47 @@ def receipt_pdf(request):
     return HttpResponse(buffer, content_type='application/pdf')
 
 
-class HematologyPayListView(ListView):
+class PathologyPayListView(ListView):
     model = Paypoint
-    template_name = 'ehr/revenue/hema_pay_list.html'
-    context_object_name = 'hematology_pays'
+    template_name = 'ehr/revenue/pathology_pay_list.html'
+    # context_object_name = 'hematology_pays'
     paginate_by = 10
 
     def get_queryset(self):
-        return Paypoint.objects.filter(hematology_result_payment__isnull=False).order_by('-updated')
+        # We'll handle this in get_context_data
+        return Paypoint.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        pay_total = self.get_queryset().count()
 
-        # Calculate total worth only for paid transactions
-        paid_transactions = self.get_queryset().filter(status=True)
-        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+        # Hematology queryset
+        hematology_pays = Paypoint.objects.filter(hematology_result_payment__isnull=False).order_by('-updated')
+        
+        # Chempath queryset
+        chempath_pays = Paypoint.objects.filter(chempath_result_payment__isnull=False).order_by('-updated')
 
-        context['pay_total'] = pay_total
-        context['total_worth'] = total_worth
+        # Calculate totals and worth for hematology
+        hema_pay_total = hematology_pays.count()
+        hema_paid_transactions = hematology_pays.filter(status=True)
+        hema_total_worth = hema_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        # Calculate totals and worth for chempath
+        chem_pay_total = chempath_pays.count()
+        chem_paid_transactions = chempath_pays.filter(status=True)
+        chem_total_worth = chem_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        # Combined total worth
+        combined_total_worth = hema_total_worth + chem_total_worth
+
+        # Add to context
+        context['hematology_pays'] = hematology_pays
+        context['chempath_pays'] = chempath_pays
+        context['hema_pay_total'] = hema_pay_total
+        context['hema_total_worth'] = hema_total_worth
+        context['chem_pay_total'] = chem_pay_total
+        context['chem_total_worth'] = chem_total_worth
+        context['combined_total_worth'] = combined_total_worth
+
         return context  
 
 

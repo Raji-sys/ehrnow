@@ -71,7 +71,7 @@ urlpatterns = [
     path('revenue/hospital-services/', HospitalServicesListView.as_view(), name='hospital_services'),
 
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
-    path('revenue/hema-list/', HematologyPayListView.as_view(), name='hema_pay_list'),
+    path('revenue/pathology-list/', PathologyPayListView.as_view(), name='pathology_pay_list'),
     path('revenue/radiology-list/', RadiologyPayListView.as_view(), name='radiology_pay_list'),
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
