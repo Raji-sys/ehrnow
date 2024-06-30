@@ -46,7 +46,7 @@ class ChempathTestForm(forms.ModelForm):
 class ChempathResultForm(forms.ModelForm):
     class Meta:
         model = ChemicalPathologyResult
-        fields = ['test', 'result']
+        fields = ['test', 'result','cleared']
     def __init__(self, *args, **kwargs):
         super(ChempathResultForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
@@ -69,7 +69,7 @@ class MicroTestForm(forms.ModelForm):
 class MicroResultForm(forms.ModelForm):
     class Meta:
         model = MicrobiologyResult
-        fields = ['test', 'result']
+        fields = ['test', 'result','cleared']
     def __init__(self, *args, **kwargs):
         super(MicroResultForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
@@ -92,7 +92,7 @@ class SerologyTestForm(forms.ModelForm):
 class SerologyResultForm(forms.ModelForm):
     class Meta:
         model = SerologyResult
-        fields = ['test','result']
+        fields = ['test','result','cleared']
     def __init__(self, *args, **kwargs):
         super(SerologyResultForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
@@ -116,7 +116,7 @@ class GeneralTestForm(forms.ModelForm):
 class GeneralTestResultForm(forms.ModelForm):
     class Meta:
         model=GeneralTestResult
-        fields=['result','comments']
+        fields=['result','comments','cleared']
     def __init__(self, *args, **kwargs):
         super(GeneralTestResultForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():

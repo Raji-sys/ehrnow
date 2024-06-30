@@ -1233,34 +1233,54 @@ class PathologyPayListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Hematology queryset
         hematology_pays = Paypoint.objects.filter(hematology_result_payment__isnull=False).order_by('-updated')
-        
-        # Chempath queryset
         chempath_pays = Paypoint.objects.filter(chempath_result_payment__isnull=False).order_by('-updated')
+        micro_pays = Paypoint.objects.filter(micro_result_payment__isnull=False).order_by('-updated')
+        serology_pays = Paypoint.objects.filter(serology_result_payment__isnull=False).order_by('-updated')
+        general_pays = Paypoint.objects.filter(general_result_payment__isnull=False).order_by('-updated')
 
-        # Calculate totals and worth for hematology
         hema_pay_total = hematology_pays.count()
         hema_paid_transactions = hematology_pays.filter(status=True)
         hema_total_worth = hema_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
 
-        # Calculate totals and worth for chempath
         chem_pay_total = chempath_pays.count()
         chem_paid_transactions = chempath_pays.filter(status=True)
         chem_total_worth = chem_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
 
-        # Combined total worth
-        combined_total_worth = hema_total_worth + chem_total_worth
+        micro_pay_total = micro_pays.count()
+        micro_paid_transactions = micro_pays.filter(status=True)
+        micro_total_worth = micro_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
 
-        # Add to context
+        serology_pay_total = serology_pays.count()
+        serology_paid_transactions = serology_pays.filter(status=True)
+        serology_total_worth = serology_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        general_pay_total = general_pays.count()
+        general_paid_transactions = general_pays.filter(status=True)
+        general_total_worth = general_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        # Combined total worth
+        combined_total_worth = hema_total_worth + chem_total_worth + micro_total_worth + serology_total_worth + general_total_worth
+
         context['hematology_pays'] = hematology_pays
         context['chempath_pays'] = chempath_pays
-        context['hema_pay_total'] = hema_pay_total
-        context['hema_total_worth'] = hema_total_worth
-        context['chem_pay_total'] = chem_pay_total
-        context['chem_total_worth'] = chem_total_worth
-        context['combined_total_worth'] = combined_total_worth
+        context['micro_pays'] = micro_pays
+        context['serology_pays'] = serology_pays
+        context['general_pays'] = general_pays
 
+        context['hema_pay_total'] = hema_pay_total
+        context['chem_pay_total'] = chem_pay_total
+        context['micro_pay_total'] = micro_pay_total
+        context['serology_pay_total'] = serology_pay_total
+        context['general_pay_total'] = general_pay_total
+
+        context['hema_total_worth'] = hema_total_worth
+        context['chem_total_worth'] = chem_total_worth
+        context['micro_total_worth'] = micro_total_worth
+        context['serology_total_worth'] = serology_total_worth
+        context['general_total_worth'] = general_total_worth
+        
+        context['combined_total_worth'] = combined_total_worth
         return context  
 
 

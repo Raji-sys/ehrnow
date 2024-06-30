@@ -199,16 +199,6 @@ def hema_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class ChempathListView(ListView):
-    model=ChemicalPathologyResult
-    template_name='chempath/chempath_list.html'
-    context_object_name='chempath_results'
-
-    def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset=queryset.filter(result__isnull=False)
-        return queryset
-
 class ChempathRequestListView(ListView):
     model=ChemicalPathologyResult
     template_name='chempath/chempath_request.html'
@@ -216,7 +206,18 @@ class ChempathRequestListView(ListView):
 
     def get_queryset(self):
         queryset=super().get_queryset()
-        queryset=queryset.filter(result__isnull=True)
+        queryset=queryset.filter(cleared=False)
+        return queryset
+    
+
+class ChempathListView(ListView):
+    model=ChemicalPathologyResult
+    template_name='chempath/chempath_list.html'
+    context_object_name='chempath_results'
+
+    def get_queryset(self):
+        queryset=super().get_queryset()
+        queryset=queryset.filter(result__isnull=False,payment__status=True).order_by('-updated')
         return queryset
 
 
@@ -249,7 +250,7 @@ class ChempathTestCreateView(LoginRequiredMixin, CreateView):
 class ChempathResultCreateView(LoginRequiredMixin, UpdateView):
     model = ChemicalPathologyResult
     form_class = ChempathResultForm
-    template_name = 'chempath/chempath_update.html'
+    template_name = 'chempath/chempath_result.html'
     success_url=reverse_lazy('pathology:chempath_request')
 
 
@@ -315,16 +316,6 @@ def chempath_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class MicroListView(ListView):
-    model=MicrobiologyResult
-    template_name='micro/micro_list.html'
-    context_object_name='micro_results'
-
-    def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset=queryset.filter(result__isnull=False)
-        return queryset
-
 class MicroRequestListView(ListView):
     model=MicrobiologyResult
     template_name='micro/micro_request.html'
@@ -332,7 +323,18 @@ class MicroRequestListView(ListView):
 
     def get_queryset(self):
         queryset=super().get_queryset()
-        queryset=queryset.filter(result__isnull=True)
+        queryset=queryset.filter(cleared=False)
+        return queryset
+
+
+class MicroListView(ListView):
+    model=MicrobiologyResult
+    template_name='micro/micro_list.html'
+    context_object_name='micro_results'
+
+    def get_queryset(self):
+        queryset=super().get_queryset()
+        queryset=queryset.filter(result__isnull=False,payment__status=True).order_by('-updated')
         return queryset
 
 
@@ -421,15 +423,6 @@ def micro_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class SerologyListView(ListView):
-    model=SerologyResult
-    template_name='serology/serology_list.html'
-    context_object_name='serology_results'
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
- 
-        return queryset
 
 class SerologyRequestListView(ListView):
     model = SerologyResult
@@ -438,8 +431,20 @@ class SerologyRequestListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = queryset.filter(cleared=False)
         return queryset
 
+
+class SerologyListView(ListView):
+    model=SerologyResult
+    template_name='serology/serology_list.html'
+    context_object_name='serology_results'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(result__isnull=False,payment__status=True).order_by('-updated')
+        return queryset
+    
 
 class SerologyTestCreateView(LoginRequiredMixin, CreateView):
     model = SerologyResult
@@ -522,16 +527,6 @@ def serology_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class GeneralListView(ListView):
-    model=GeneralTestResult
-    template_name='general/general_list.html'
-    context_object_name='general_results'
-
-    def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset=queryset.filter(result__isnull=False)
-        return queryset
-
 class GeneralRequestListView(ListView):
     model=GeneralTestResult
     template_name='general/general_request.html'
@@ -539,7 +534,17 @@ class GeneralRequestListView(ListView):
 
     def get_queryset(self):
         queryset=super().get_queryset()
-        queryset=queryset.filter(result__isnull=True)
+        queryset=queryset.filter(cleared=False)
+        return queryset
+
+class GeneralListView(ListView):
+    model=GeneralTestResult
+    template_name='general/general_list.html'
+    context_object_name='general_results'
+
+    def get_queryset(self):
+        queryset=super().get_queryset()
+        queryset = queryset.filter(result__isnull=False,payment__status=True).order_by('-updated')
         return queryset
 
 
