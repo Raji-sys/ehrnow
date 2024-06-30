@@ -229,7 +229,7 @@
               <li class=><a href="#" class="rounded-lg ">MICROBIOLOGY</a></li>
               <li><a href="#" class="rounded-lg ">CHEMICAL PATHOLOGY</a></li>
               <li><a href="#" class="rounded-lg ">SEROLOGY</a></li>
-              <li><a href="#" class="rounded-lg ">GENERAL</a></li>
+              <!-- <li><a href="#" class="rounded-lg ">GENERAL</a></li> -->
             </ul>
             
             <div class="uk-switcher uk-margin">
@@ -290,7 +290,7 @@
                         <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Result</th>
                         <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
                         <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Reported</th>
-                        <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th>
+                        <!-- <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th> -->
                       </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-cyan-200">
@@ -302,9 +302,9 @@
                         <td class=" p-3 whitespace-nowrap">{{ m.result.html|safe }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ m.comment|default_if_none:'' }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ m.reported|default_if_none:'' }}</td>
-                        <td class=" p-3 whitespace-nowrap">
+                        <!-- <td class=" p-3 whitespace-nowrap">
                           <a href="{% url 'pathology:micro_result' m.patient.file_no m.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
-                        </td>
+                        </td> -->
                       </tr>
                       {%empty%}
                       <div class="p-2">
@@ -333,7 +333,7 @@
                         <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Result</th>
                         <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
                         <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Reported</th>
-                        <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th>
+                        <!-- <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th> -->
                       </tr>
             
                     </thead>
@@ -346,9 +346,9 @@
                         <td class=" p-3 whitespace-nowrap">{{ c.result.html|safe }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ c.comment|default_if_none:'' }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ c.reported|default_if_none:'' }}</td>
-                        <td class=" p-3 whitespace-nowrap">
+                        <!-- <td class=" p-3 whitespace-nowrap">
                           <a href="{% url 'pathology:chempath_result' c.patient.file_no c.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
-                        </td>
+                        </td> -->
                       </tr>
                       {%empty%}
                       <div class="p-2">
@@ -374,7 +374,7 @@
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Result</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Reported</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th>
+                              <!-- <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th> -->
                             </tr>
                           </thead>
                           <tbody class="bg-white divide-y divide-cyan-200">
@@ -386,9 +386,9 @@
                               <td class=" p-3 whitespace-nowrap">{{ s.result.html|safe }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ s.comments|default_if_none:'' }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ s.reported|default_if_none:'' }}</td>
-                              <td class=" p-3 whitespace-nowrap">
-                                <a href="{% url 'pathology:serology_result' s.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
-                                </td>
+                              <!-- <td class=" p-3 whitespace-nowrap">
+                                <a href="{% url 'pathology:serology_result' s.patient.file_no s.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+                                </td> -->
                             </tr>
                             {%empty%}
                             <div class="p-2">
@@ -400,11 +400,10 @@
                       </div>          
               </div>
             
-            
+<!--             
               <div>
                 <div>
-                  <a href="{% url 'pathology:general_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
-                  </div>
+=                  </div>
                   <div class="overflow-x-auto p-2">
                     <table class="min-w-full divide-y divide-cyan-200 mb-4">
                       <thead class="bg-cyan-50">
@@ -427,9 +426,6 @@
                           <td class=" p-3 whitespace-nowrap">{{ g.result.html|safe }}</td>
                           <td class=" p-3 whitespace-nowrap">{{ g.comment|default_if_none:'' }}</td>
                           <td class=" p-3 whitespace-nowrap">{{ g.reported|default_if_none:'' }}</td>
-                          <td class=" p-3 whitespace-nowrap">
-                            <a href="{% url 'pathology:general_result' g.patient.file_no g.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
-                          </td>
                         </tr>
                         {%empty%}
                         <div class="p-2">
@@ -439,9 +435,9 @@
                       </tbody>
                     </table>
                   </div>
-              </div>        
+              </div>         -->
+            
             </div>
-      
       </div>
     </div>
     <!-- break -->

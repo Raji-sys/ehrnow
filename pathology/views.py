@@ -488,7 +488,7 @@ class SerologyTestCreateView(LoginRequiredMixin, CreateView):
 class SerologyResultCreateView(LoginRequiredMixin, UpdateView):
     model = SerologyResult
     form_class = SerologyResultForm
-    template_name = 'serology/serology_update.html'
+    template_name = 'serology/serology_result.html'
     success_url=reverse_lazy('pathology:serology_request')
 
 
@@ -554,119 +554,119 @@ def serology_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class GeneralRequestListView(ListView):
-    model=GeneralTestResult
-    template_name='general/general_request.html'
-    context_object_name='general_request'
+# class GeneralRequestListView(ListView):
+#     model=GeneralTestResult
+#     template_name='general/general_request.html'
+#     context_object_name='general_request'
 
-    def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset=queryset.filter(cleared=False)
-        return queryset
+#     def get_queryset(self):
+#         queryset=super().get_queryset()
+#         queryset=queryset.filter(cleared=False)
+#         return queryset
 
-class GeneralListView(ListView):
-    model=GeneralTestResult
-    template_name='general/general_list.html'
-    context_object_name='general_results'
+# class GeneralListView(ListView):
+#     model=GeneralTestResult
+#     template_name='general/general_list.html'
+#     context_object_name='general_results'
 
-    def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset = queryset.filter(result__isnull=False,payment__status=True).order_by('-updated')
-        return queryset
+#     def get_queryset(self):
+#         queryset=super().get_queryset()
+#         queryset = queryset.filter(result__isnull=False,payment__status=True).order_by('-updated')
+#         return queryset
 
 
-class GeneralTestCreateView(LoginRequiredMixin, CreateView):
-    model=GeneralTestResult
-    form_class = GeneralTestForm
-    template_name = 'general/general_result.html'
+# class GeneralTestCreateView(LoginRequiredMixin, CreateView):
+#     model=GeneralTestResult
+#     form_class = GeneralTestForm
+#     template_name = 'general/general_result.html'
 
-    def form_valid(self, form):
-        patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        form.instance.patient = patient
-        form.instance.collected_by = self.request.user
+#     def form_valid(self, form):
+#         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+#         form.instance.patient = patient
+#         form.instance.collected_by = self.request.user
 
-        general_result = form.save(commit=False)
-        payment = Paypoint.objects.create(
-            patient=patient,
-            status=False,
-            service=general_result.test, 
-            price=general_result.test.price,
-        )
-        general_result.payment = payment 
-        general_result.save()
+#         general_result = form.save(commit=False)
+#         payment = Paypoint.objects.create(
+#             patient=patient,
+#             status=False,
+#             service=general_result.name, 
+#             price=general_result.price,
+#         )
+#         general_result.payment = payment 
+#         general_result.save()
 
-        messages.success(self.request, 'general result created successfully')
-        return super().form_valid(form)
+#         messages.success(self.request, 'general result created successfully')
+#         return super().form_valid(form)
     
-    def get_success_url(self):
-        return self.object.patient.get_absolute_url()
+#     def get_success_url(self):
+#         return self.object.patient.get_absolute_url()
 
 
-class GeneralResultCreateView(LoginRequiredMixin, UpdateView):
-    model=GeneralTestResult
-    form_class = GeneralTestResultForm
-    template_name = 'general/general_update.html'
-    context_object_name = 'result'
+# class GeneralResultCreateView(LoginRequiredMixin, UpdateView):
+#     model=GeneralTestResult
+#     form_class = GeneralTestResultForm
+#     template_name = 'general/general_result.html'
+#     context_object_name = 'result'
 
 
-    def get_object(self, queryset=None):
-        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        return get_object_or_404(GeneralTestResult, patient=patient, pk=self.kwargs['pk'])
+#     def get_object(self, queryset=None):
+#         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+#         return get_object_or_404(GeneralTestResult, patient=patient, pk=self.kwargs['pk'])
 
-    def form_valid(self, form):
-        form.instance.updated_by = self.request.user
-        general_result = form.save(commit=False)
-        general_result.result = form.cleaned_data['result']
-        general_result.save()
-        messages.success(self.request, 'General Test result updated successfully')
-        return super().form_valid(form)
+#     def form_valid(self, form):
+#         form.instance.updated_by = self.request.user
+#         general_result = form.save(commit=False)
+#         general_result.result = form.cleaned_data['result']
+#         general_result.save()
+#         messages.success(self.request, 'General Test result updated successfully')
+#         return super().form_valid(form)
 
-    def get_success_url(self):
-        return self.object.patient.get_absolute_url()
+#     def get_success_url(self):
+#         return self.object.patient.get_absolute_url()
 
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class GeneralReportView(ListView):
-    model=GeneralTestResult
-    template_name = 'general/general_report.html'
-    paginate_by = 10
-    context_object_name = 'patient'
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class GeneralReportView(ListView):
+#     model=GeneralTestResult
+#     template_name = 'general/general_report.html'
+#     paginate_by = 10
+#     context_object_name = 'patient'
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
 
-        gen_filter = GenFilter(self.request.GET, queryset=queryset)
-        patient = gen_filter.qs.order_by('-created')
-        return patient
+#         gen_filter = GenFilter(self.request.GET, queryset=queryset)
+#         patient = gen_filter.qs.order_by('-created')
+#         return patient
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['gen_filter'] = GenFilter(self.request.GET, queryset=self.get_queryset())
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['gen_filter'] = GenFilter(self.request.GET, queryset=self.get_queryset())
+#         return context
 
-@login_required
-def general_report_pdf(request):
-    ndate = datetime.datetime.now()
-    filename = ndate.strftime('on_%d/%m/%Y_at_%I.%M%p.pdf')
-    f = GenFilter(request.GET, queryset=GeneralTestResult.objects.all()).qs
-    result = ""
-    for key, value in request.GET.items():
-        if value:
-            result += f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
+# @login_required
+# def general_report_pdf(request):
+#     ndate = datetime.datetime.now()
+#     filename = ndate.strftime('on_%d/%m/%Y_at_%I.%M%p.pdf')
+#     f = GenFilter(request.GET, queryset=GeneralTestResult.objects.all()).qs
+#     result = ""
+#     for key, value in request.GET.items():
+#         if value:
+#             result += f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
 
-    context = {'f': f, 'pagesize': 'A4',
-               'orientation': 'landscape', 'result': result}
-    response = HttpResponse(content_type='application/pdf',
-                            headers={'Content-Disposition': f'filename="Report__{filename}"'})
+#     context = {'f': f, 'pagesize': 'A4',
+#                'orientation': 'landscape', 'result': result}
+#     response = HttpResponse(content_type='application/pdf',
+#                             headers={'Content-Disposition': f'filename="Report__{filename}"'})
 
-    buffer = BytesIO()
+#     buffer = BytesIO()
 
-    pisa_status = pisa.CreatePDF(get_template('report_pdf.html').render(
-        context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+#     pisa_status = pisa.CreatePDF(get_template('report_pdf.html').render(
+#         context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
 
-    if not pisa_status.err:
-        pdf = buffer.getvalue()
-        buffer.close()
-        response.write(pdf)
-        return response
-    return HttpResponse('Error generating PDF', status=500)
+#     if not pisa_status.err:
+#         pdf = buffer.getvalue()
+#         buffer.close()
+#         response.write(pdf)
+#         return response
+#     return HttpResponse('Error generating PDF', status=500)

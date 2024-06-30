@@ -12,8 +12,8 @@ class HematologyResultAdmin(admin.ModelAdmin):
     list_display = ('patient', 'test', 'result',  'created','updated',)
 
 
-@admin.register(ChempathTestName)
-class ChempathTestNameAdmin(admin.ModelAdmin):
+@admin.register(ChempathTest)
+class ChempathTestAdmin(admin.ModelAdmin):
     list_display = ('name', 'reference_range', 'price',)
 
 
@@ -38,6 +38,11 @@ class SerologyTestResultAdmin(admin.ModelAdmin):
     list_filter = ('test', 'patient')
 
 
-@admin.register(SerologyTestName)
+@admin.register(SerologyTest)
 class SerologyTestNameAdmin(admin.ModelAdmin):
     list_display = ('name', 'reference_range','price')
+
+
+# @admin.register(GeneralTestResult)
+# class GeneralTestResultAdmin(admin.ModelAdmin):
+#     list_display = ('name','price')

@@ -69,7 +69,7 @@ class HematologyResult(models.Model):
             return f"{self.patient.full_name()} - {self.test} - {self.result}"
         
 
-class ChempathTestName(models.Model):
+class ChempathTest(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     reference_range = models.CharField(max_length=200, null=True, blank=True)
@@ -85,7 +85,7 @@ class ChemicalPathologyResult(models.Model):
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='chemical_pathology_results',null=True, blank=True)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='chempath_result_payment')
     result_code = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
-    test = models.ForeignKey(ChempathTestName, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="results")
+    test = models.ForeignKey(ChempathTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="results")
     cleared=models.BooleanField(default=False)
     result = QuillField(null=True, blank=True)
     comments=models.TextField(null=True, blank=True)
@@ -163,7 +163,7 @@ class MicrobiologyResult(models.Model):
             return f"{self.patient} -{self.test} - {self.result}"
 
 
-class SerologyTestName(models.Model):
+class SerologyTest(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     reference_range = models.CharField(max_length=200, null=True, blank=True)
@@ -178,7 +178,7 @@ class SerologyResult(models.Model):
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='serology_results', null=True, blank=True)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='serology_result_payment')
     result_code = SerialNumberField(max_length=20, unique=True, editable=False, default="")
-    test = models.ForeignKey(SerologyTestName, on_delete=models.CASCADE, null=True, blank=True, related_name='results')
+    test = models.ForeignKey(SerologyTest, on_delete=models.CASCADE, null=True, blank=True, related_name='results')
     cleared=models.BooleanField(default=False)
     result = QuillField(null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
@@ -218,41 +218,41 @@ class SerologyResult(models.Model):
             return f"{self.test} - {self.result}"
 
 
-class GeneralTestResult(models.Model):
-    name = models.CharField(max_length=100, null=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='general_result_payment')
-    price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='general_results', null=True, blank=True)
-    result_code = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
-    cleared=models.BooleanField(default=False)
-    result = QuillField(null=True, blank=True)
-    comments = models.TextField(null=True, blank=True)
-    nature_of_specimen = models.CharField(max_length=100, null=True, blank=True)
-    collected = models.DateField(auto_now_add=True, null=True, blank=True)
-    reported = models.DateField(auto_now=True, null=True, blank=True)
-    collected_by = models.ForeignKey(User, null=True, blank=True, related_name='general_results_collected', on_delete=models.SET_NULL)
-    updated_by = models.ForeignKey(User, null=True, blank=True, related_name='general_results_reported', on_delete=models.SET_NULL)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+# class GeneralTestResult(models.Model):
+#     name = models.CharField(max_length=100, null=True)
+#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='general_result_payment')
+#     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+#     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='general_results', null=True, blank=True)
+#     result_code = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
+#     cleared=models.BooleanField(default=False)
+#     result = QuillField(null=True, blank=True)
+#     comments = models.TextField(null=True, blank=True)
+#     nature_of_specimen = models.CharField(max_length=100, null=True, blank=True)
+#     collected = models.DateField(auto_now_add=True, null=True, blank=True)
+#     reported = models.DateField(auto_now=True, null=True, blank=True)
+#     collected_by = models.ForeignKey(User, null=True, blank=True, related_name='general_results_collected', on_delete=models.SET_NULL)
+#     updated_by = models.ForeignKey(User, null=True, blank=True, related_name='general_results_reported', on_delete=models.SET_NULL)
+#     created = models.DateTimeField(auto_now_add=True)
+#     updated = models.DateTimeField(auto_now=True)
  
-    def __str__(self):
-        if self.patient:
-            return f"{self.patient} -{self.test} - {self.result}"
+#     def __str__(self):
+#         if self.patient:
+#             return f"{self.patient} -{self.test} - {self.result}"
 
-    def save(self, *args, **kwargs):
-        if not self.result_code:
-            last_instance = self.__class__.objects.order_by('result_code').last()
+#     def save(self, *args, **kwargs):
+#         if not self.result_code:
+#             last_instance = self.__class__.objects.order_by('result_code').last()
 
-            if last_instance:
-                last_result_code = int(last_instance.result_code.removeprefix('GEN'))
-                new_result_code = f"GEN{last_result_code + 1:03d}"
-            else:
-                new_result_code = "GEN001"
+#             if last_instance:
+#                 last_result_code = int(last_instance.result_code.removeprefix('GEN'))
+#                 new_result_code = f"GEN{last_result_code + 1:03d}"
+#             else:
+#                 new_result_code = "GEN001"
 
-            self.result_code = new_result_code
+#             self.result_code = new_result_code
 
-        super().save(*args, **kwargs)
+#         super().save(*args, **kwargs)
 
-    def __str__(self):
-        if self.patient:
-            return f"{self.patient} - {self.test} - {self.result}"
+#     def __str__(self):
+#         if self.patient:
+#             return f"{self.patient} - {self.name} - {self.result}"

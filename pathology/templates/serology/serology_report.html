@@ -42,62 +42,59 @@
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-amber-500">
           <thead class="bg-amber-100">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">S/N</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+            <tr class="text-xs bg-amber-100 text-center">
+              <th class="p-3 font-medium text-amber-500 uppercase tracking-wider">S/N</th>
+              <th class="p-3 font-medium text-amber-500 uppercase tracking-wider">
                 Test
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-amber-500 uppercase tracking-wider">
                 Code
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-amber-500 uppercase tracking-wider">
                 Patient
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-amber-500 uppercase tracking-wider">
                 Phone
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-amber-500 uppercase tracking-wider">
                 Result
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-amber-500 uppercase tracking-wider">
                 Date Reported
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 font-medium text-amber-500 uppercase tracking-wider">
                 Report By
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-amber-200">
             {% for i in patient %}
-            <tr class="bg-amber-50 hover:bg-amber-200 transition-colors duration-300">
+            <tr class="bg-amber-50 hover:bg-amber-200 transition-colors duration-300 text-xs text-center uppercase">
               <td class="px-6 py-4 whitespace-nowrap">
                 {{forloop.counter}}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.test|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.result_code|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.patient|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.patient.phone|default_if_none:''|upper }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span>{{i.result}}</span>
-                {% for parameter in i.parameters.all %}
-                <p>{{ parameter.name }}: {{ parameter.value }}</p>
-            {% endfor %}
+              <td class="p-3 whitespace-nowrap">
+               {{ i.result.html|safe}}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap">
                 {{ i.reported|default_if_none:'' }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{ request.user }}
-              </td>
-            </tr>
+              <td class="p-3 whitespace-nowrap">
+                {{ i.updated_by }}
+              </td>      
+              </tr>
             {% empty %}
             <tr class="bg-white">
               <td colspan="2" class="px-6 py-4 text-center text-emerald-500">
