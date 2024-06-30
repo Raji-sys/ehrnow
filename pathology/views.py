@@ -240,6 +240,7 @@ class ChempathTestCreateView(LoginRequiredMixin, CreateView):
         )
         chempath_result.payment = payment 
         chempath_result.save()
+
         messages.success(self.request, 'Chemical pathology result created successfully')
         return super().form_valid(form)
     
@@ -347,6 +348,17 @@ class MicroTestCreateView(LoginRequiredMixin, CreateView):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
         form.instance.collected_by = self.request.user
+
+        micro_result = form.save(commit=False)
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status=False,
+            service=micro_result.test, 
+            price=micro_result.test.price,
+        )
+        micro_result.payment = payment 
+        micro_result.save()
+
         messages.success(self.request, 'Microbiology result created successfully')
         return super().form_valid(form)
     
@@ -357,7 +369,9 @@ class MicroTestCreateView(LoginRequiredMixin, CreateView):
 class MicroResultCreateView(LoginRequiredMixin, UpdateView):
     model=MicrobiologyResult
     form_class = MicroResultForm
-    template_name = 'micro/micro_update.html'
+    template_name = 'micro/micro_result.html'
+    success_url=reverse_lazy('pathology:micro_request')
+
 
     def get_object(self, queryset=None):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
@@ -365,11 +379,11 @@ class MicroResultCreateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.updated_by = self.request.user
+        micro_result = form.save(commit=False)
+        micro_result.result = form.cleaned_data['result']
+        micro_result.save()
         messages.success(self.request, 'Microbiology result updated successfully')
         return super().form_valid(form)
-
-    def get_success_url(self):
-        return self.object.patient.get_absolute_url()
 
 
 
@@ -385,7 +399,6 @@ class MicroReportView(ListView):
 
         micro_filter = MicroFilter(self.request.GET, queryset=queryset)
         patient = micro_filter.qs.order_by('-created')
-
         return patient
 
     def get_context_data(self, **kwargs):
@@ -423,7 +436,6 @@ def micro_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-
 class SerologyRequestListView(ListView):
     model = SerologyResult
     template_name = 'serology/serology_request.html'
@@ -455,6 +467,17 @@ class SerologyTestCreateView(LoginRequiredMixin, CreateView):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
         form.instance.collected_by = self.request.user
+
+        serology_result = form.save(commit=False)
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status=False,
+            service=serology_result.test, 
+            price=serology_result.test.price,
+        )
+        serology_result.payment = payment 
+        serology_result.save()
+
         messages.success(self.request, 'Serology result created successfully')
         return super().form_valid(form)
 
@@ -466,6 +489,8 @@ class SerologyResultCreateView(LoginRequiredMixin, UpdateView):
     model = SerologyResult
     form_class = SerologyResultForm
     template_name = 'serology/serology_update.html'
+    success_url=reverse_lazy('pathology:serology_request')
+
 
     def get_object(self, queryset=None):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
@@ -473,6 +498,9 @@ class SerologyResultCreateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.updated_by = self.request.user
+        serology_result = form.save(commit=False)
+        serology_result.result = form.cleaned_data['result']
+        serology_result.save()
         messages.success(self.request, 'Serology result updated successfully')
         return super().form_valid(form)
 
@@ -489,7 +517,6 @@ class SerologyReportView(ListView):
 
         serology_filter = SerologyFilter(self.request.GET, queryset=queryset)
         patient = serology_filter.qs.order_by('-created')
-
         return patient
 
     def get_context_data(self, **kwargs):
@@ -557,6 +584,17 @@ class GeneralTestCreateView(LoginRequiredMixin, CreateView):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
         form.instance.collected_by = self.request.user
+
+        general_result = form.save(commit=False)
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status=False,
+            service=general_result.test, 
+            price=general_result.test.price,
+        )
+        general_result.payment = payment 
+        general_result.save()
+
         messages.success(self.request, 'general result created successfully')
         return super().form_valid(form)
     
@@ -577,6 +615,9 @@ class GeneralResultCreateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.updated_by = self.request.user
+        general_result = form.save(commit=False)
+        general_result.result = form.cleaned_data['result']
+        general_result.save()
         messages.success(self.request, 'General Test result updated successfully')
         return super().form_valid(form)
 
@@ -596,7 +637,6 @@ class GeneralReportView(ListView):
 
         gen_filter = GenFilter(self.request.GET, queryset=queryset)
         patient = gen_filter.qs.order_by('-created')
-
         return patient
 
     def get_context_data(self, **kwargs):

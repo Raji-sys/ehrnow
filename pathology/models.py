@@ -135,7 +135,6 @@ class MicrobiologyResult(models.Model):
     test = models.ForeignKey(MicrobiologyTest, on_delete=models.CASCADE, null=True, blank=True)
     cleared=models.BooleanField(default=False)
     result = QuillField(null=True, blank=True)
-    unit = models.CharField(max_length=50, null=True, blank=True)
     comments=models.TextField(null=True, blank=True)
     natured_of_specimen = models.CharField(max_length=1-0, null=True, blank=True)
     collected = models.DateField(auto_now=True, null=True,blank=True)
@@ -163,9 +162,6 @@ class MicrobiologyResult(models.Model):
         if self.patient:
             return f"{self.patient} -{self.test} - {self.result}"
 
-    def __str__(self):
-        return f"{self.name}: {self.value}"
-    
 
 class SerologyTestName(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
@@ -185,7 +181,6 @@ class SerologyResult(models.Model):
     test = models.ForeignKey(SerologyTestName, on_delete=models.CASCADE, null=True, blank=True, related_name='results')
     cleared=models.BooleanField(default=False)
     result = QuillField(null=True, blank=True)
-    unit = models.CharField(max_length=50, null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
     nature_of_specimen = models.CharField(max_length=100, null=True, blank=True)
     collected = models.DateField(auto_now_add=True, null=True, blank=True)
@@ -231,7 +226,6 @@ class GeneralTestResult(models.Model):
     result_code = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     cleared=models.BooleanField(default=False)
     result = QuillField(null=True, blank=True)
-    unit = models.CharField(max_length=50, null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
     nature_of_specimen = models.CharField(max_length=100, null=True, blank=True)
     collected = models.DateField(auto_now_add=True, null=True, blank=True)

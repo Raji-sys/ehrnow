@@ -299,7 +299,7 @@
                         <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ m.test|default_if_none:''}}</td>
                         <td class=" p-3 whitespace-nowrap">{{ m.collected|default_if_none:'' }}</td>
-                        <td class=" p-3 whitespace-nowrap">{{ m.result|default_if_none:'' }}</td>
+                        <td class=" p-3 whitespace-nowrap">{{ m.result.html|safe }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ m.comment|default_if_none:'' }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ m.reported|default_if_none:'' }}</td>
                         <td class=" p-3 whitespace-nowrap">
@@ -343,7 +343,7 @@
                         <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ c.test|default_if_none:''}}</td>
                         <td class=" p-3 whitespace-nowrap">{{ c.collected|default_if_none:'' }}</td>
-                        <td class=" p-3 whitespace-nowrap">{{ c.result|default_if_none:'' }}</td>
+                        <td class=" p-3 whitespace-nowrap">{{ c.result.html|safe }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ c.comment|default_if_none:'' }}</td>
                         <td class=" p-3 whitespace-nowrap">{{ c.reported|default_if_none:'' }}</td>
                         <td class=" p-3 whitespace-nowrap">
@@ -370,7 +370,6 @@
                             <tr class="text-xs">
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Test</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Reference Range</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Collected</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Result</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
@@ -383,9 +382,8 @@
                             <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                               <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ s.test.name|default_if_none:''}}</td>
-                              <td class=" p-3 whitespace-nowrap">{{ s.test.reference_range|default_if_none:''}}</td>
                               <td class=" p-3 whitespace-nowrap">{{ s.collected|default_if_none:'' }}</td>
-                              <td class=" p-3 whitespace-nowrap">{{ s.result|default_if_none:'' }}</td>
+                              <td class=" p-3 whitespace-nowrap">{{ s.result.html|safe }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ s.comments|default_if_none:'' }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ s.reported|default_if_none:'' }}</td>
                               <td class=" p-3 whitespace-nowrap">
@@ -426,7 +424,7 @@
                           <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                           <td class=" p-3 whitespace-nowrap">{{ g.name|default_if_none:''}}</td>
                           <td class=" p-3 whitespace-nowrap">{{ g.collected|default_if_none:'' }}</td>
-                          <td class=" p-3 whitespace-nowrap">{{ g.result|default_if_none:'' }}</td>
+                          <td class=" p-3 whitespace-nowrap">{{ g.result.html|safe }}</td>
                           <td class=" p-3 whitespace-nowrap">{{ g.comment|default_if_none:'' }}</td>
                           <td class=" p-3 whitespace-nowrap">{{ g.reported|default_if_none:'' }}</td>
                           <td class=" p-3 whitespace-nowrap">
