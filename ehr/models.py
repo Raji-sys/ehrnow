@@ -251,8 +251,8 @@ class PatientHandover(models.Model):
         ('waiting for clinic assignment', 'Waiting for Clinic Assignment'),
         ('waiting for vital signs', 'Waiting for Vital Signs'),
         ('waiting for consultation', 'Waiting for Consultation'),
-        ('Seen','Seen'),
-        ('Awaiting Review','Awaiting Review'),
+        ('seen','Seen'),
+        ('awaiting review','Awaiting Review'),
     ]
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
     clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
