@@ -36,16 +36,16 @@
         <table class="min-w-full divide-y divide-purple-200">
           <thead class="bg-purple-50">
             <tr class="text-xs text-center">
-                <th class="p-3   text-purple-500 uppercase tracking-wider">
+                <th class="p-1 text-purple-500 uppercase tracking-wider">
                   #
                 </th>
-              <th class="p-3   text-purple-500 uppercase tracking-wider">
+              <th class="p-1   text-purple-500 uppercase tracking-wider">
               REVENUE OFFICER
               </th>
-              <th class="p-3   text-purple-500 uppercase tracking-wider">
+              <th class="p-1   text-purple-500 uppercase tracking-wider">
                 DETAILS
               </th>
-              <th class="p-3   text-purple-500 uppercase tracking-wider">
+              <th class="p-1   text-purple-500 uppercase tracking-wider">
                 PAYMENT STATUS
               </th>
             </tr>
@@ -53,13 +53,13 @@
           <tbody class="bg-white divide-y divide-purple-200">
             {% for p in hematology_pays %}
             <tr class="text-xs text-center bg-purple-100 hover:bg-purple-200 transition-colors duration-300 uppercase">
-                <td class="p-3 whitespace-nowrap">
+                <td class="p-1 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
-                <td class="p-3 whitespace-nowrap">
+                <td class="p-1 whitespace-nowrap">
                   {{request.user}}
                 </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
                 <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
                   {{ p.patient}}
                 </a> <br>
@@ -68,21 +68,21 @@
                 {{ p.updated }}
               </td>
               {% if p.status == False %}
-              <td class="p-3 whitespace-nowrap text-red-700">
+              <td class="p-1 whitespace-nowrap text-red-700">
             <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
             <span class="space-x-4">
               <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-600"></i></a>
           </span>
               </td>
           {% else %}
-              <td class="p-3 whitespace-nowrap text-green-700">
+              <td class="p-1 whitespace-nowrap text-green-700">
                <i class="fa-solid fa-thumbs-up fa-2xl"></i>
              </td>
           {% endif %}
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="p-3 text-center text-purple-500">
+              <td colspan="2" class="p-1 text-center text-purple-500">
                 No hematology transactions found
               </td>
             </tr>
@@ -104,16 +104,16 @@
         <table class="min-w-full divide-y divide-orange-200">
           <thead class="bg-orange-50">
             <tr class="text-xs text-center">
-                <th class="p-3   text-orange-600 uppercase tracking-wider">
+                <th class="p-1   text-orange-600 uppercase tracking-wider">
                   #
                 </th>
-              <th class="p-3   text-orange-600 uppercase tracking-wider">
+              <th class="p-1   text-orange-600 uppercase tracking-wider">
               REVENUE OFFICER
               </th>
-              <th class="p-3   text-orange-600 uppercase tracking-wider">
+              <th class="p-1   text-orange-600 uppercase tracking-wider">
                 DETAILS
               </th>
-              <th class="p-3   text-orange-600 uppercase tracking-wider">
+              <th class="p-1   text-orange-600 uppercase tracking-wider">
                 PAYMENT
               </th>
             </tr>
@@ -121,13 +121,13 @@
             <tbody class="bg-white divide-y divide-orange-200">
             {% for p in chempath_pays %}
             <tr class="text-xs text-center bg-orange-100 hover:bg-orange-200 transition-colors duration-300 uppercase">
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
                   {{forloop.counter}}
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
                 {{request.user}}
               </td>
-            <td class="p-3 whitespace-nowrap">
+            <td class="p-1 whitespace-nowrap">
               <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
               {{ p.patient}}
               </a> <br>
@@ -136,21 +136,21 @@
               {{ p.updated }}
             </td>
             {% if p.status == False %}
-            <td class="p-3 whitespace-nowrap text-red-700">
+            <td class="p-1 whitespace-nowrap text-red-700">
           <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
           <span class="space-x-4">
             <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-600"></i></a>                  
         </span>
             </td>
         {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
+            <td class="p-1 whitespace-nowrap text-green-700">
              <i class="fa-solid fa-thumbs-up fa-2xl"></i>
            </td>
         {% endif %}
           </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="8" class="p-3 text-center text-orange-600">
+              <td colspan="8" class="p-1 text-center text-orange-600">
                 No chempath transactions found
               </td>
             </tr>
@@ -173,16 +173,16 @@
         <table class="min-w-full divide-y divide-cyan-200">
           <thead class="bg-cyan-50">
             <tr class="text-xs text-center">
-                <th class="p-3   text-cyan-600 uppercase tracking-wider">
+                <th class="p-1   text-cyan-600 uppercase tracking-wider">
                   #
                 </th>
-              <th class="p-3   text-cyan-600 uppercase tracking-wider">
+              <th class="p-1   text-cyan-600 uppercase tracking-wider">
               REVENUE OFFICER
               </th>
-              <th class="p-3   text-cyan-600 uppercase tracking-wider">
+              <th class="p-1   text-cyan-600 uppercase tracking-wider">
                 DETAILS
               </th>
-              <th class="p-3   text-cyan-600 uppercase tracking-wider">
+              <th class="p-1   text-cyan-600 uppercase tracking-wider">
                 PAYMENT STATUS
               </th>
             </tr>
@@ -190,13 +190,13 @@
             <tbody class="bg-white divide-y divide-cyan-200">
             {% for p in micro_pays %}
             <tr class="text-xs text-center bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 uppercase">
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
                   {{forloop.counter}}
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
                 {{request.user}}
               </td>
-            <td class="p-3 whitespace-nowrap">
+            <td class="p-1 whitespace-nowrap">
               <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
               {{ p.patient}}
               </a> <br>
@@ -205,21 +205,21 @@
               {{ p.updated }}
             </td>
             {% if p.status == False %}
-            <td class="p-3 whitespace-nowrap text-red-700">
+            <td class="p-1 whitespace-nowrap text-red-700">
           <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
           <span class="space-x-4">
             <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-600"></i></a>
         </span>
             </td>
         {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
+            <td class="p-1 whitespace-nowrap text-green-700">
              <i class="fa-solid fa-thumbs-up fa-2xl"></i>
            </td>
         {% endif %}
         </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="8" class="p-3 text-center text-cyan-600">
+              <td colspan="8" class="p-1 text-center text-cyan-600">
                 No microbiology transactions found
               </td>
             </tr>
@@ -241,16 +241,16 @@
         <table class="min-w-full divide-y divide-fuchsia-200">
           <thead class="bg-fuchsia-50">
             <tr class="text-xs text-center">
-                <th class="p-3   text-fuchsia-600 uppercase tracking-wider">
+                <th class="p-1   text-fuchsia-600 uppercase tracking-wider">
                   #
                 </th>
-              <th class="p-3   text-fuchsia-600 uppercase tracking-wider">
+              <th class="p-1   text-fuchsia-600 uppercase tracking-wider">
               REVENUE OFFICER
               </th>
-              <th class="p-3   text-fuchsia-600 uppercase tracking-wider">
+              <th class="p-1   text-fuchsia-600 uppercase tracking-wider">
                 DETAILS
               </th>
-              <th class="p-3   text-fuchsia-600 uppercase tracking-wider">
+              <th class="p-1   text-fuchsia-600 uppercase tracking-wider">
                 PAYMENT STATUS
               </th>
             </tr>
@@ -258,13 +258,13 @@
             <tbody class="bg-white divide-y divide-fuchsia-200">
             {% for p in serology_pays %}
             <tr class="text-xs text-center bg-fuchsia-100 hover:bg-fuchsia-200 transition-colors duration-300 uppercase">
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
                   {{forloop.counter}}
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
                 {{request.user}}
               </td>
-            <td class="p-3 whitespace-nowrap">
+            <td class="p-1 whitespace-nowrap">
               <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
               {{ p.patient}}
               </a> <br>
@@ -273,21 +273,21 @@
               {{ p.updated }}
             </td>
             {% if p.status == False %}
-            <td class="p-3 whitespace-nowrap text-red-700">
+            <td class="p-1 whitespace-nowrap text-red-700">
           <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
           <span class="space-x-4">
             <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-600"></i></a>                  
         </span>
             </td>
         {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
+            <td class="p-1 whitespace-nowrap text-green-700">
              <i class="fa-solid fa-thumbs-up fa-2xl"></i>
            </td>
         {% endif %}            
           </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="8" class="p-3 text-center text-fuchsia-600">
+              <td colspan="8" class="p-1 text-center text-fuchsia-600">
                 No serology transactions found
               </td>
             </tr>
@@ -305,28 +305,28 @@
         <table class="min-w-full divide-y divide-stone-200">
           <thead class="bg-stone-50">
             <tr class="text-xs text-center">
-                <th class="p-3   text-stone-600 uppercase tracking-wider">
+                <th class="p-1   text-stone-600 uppercase tracking-wider">
                   #
                 </th>
-              <th class="p-3   text-stone-600 uppercase tracking-wider">
+              <th class="p-1   text-stone-600 uppercase tracking-wider">
               REVENUE OFFICER
               </th>
-              <th class="p-3   text-stone-600 uppercase tracking-wider">
+              <th class="p-1   text-stone-600 uppercase tracking-wider">
                 PATIENT
               </th>
-              <th class="p-3   text-stone-600 uppercase tracking-wider">
+              <th class="p-1   text-stone-600 uppercase tracking-wider">
                 SERVICE
               </th>
-              <th class="p-3   text-stone-600 uppercase tracking-wider">
+              <th class="p-1   text-stone-600 uppercase tracking-wider">
                 PRICE
               </th>
-              <th class="p-3   text-stone-600 uppercase tracking-wider">
+              <th class="p-1   text-stone-600 uppercase tracking-wider">
                 PAYMENT STATUS
               </th>
-              <th class="p-3   text-stone-600 uppercase tracking-wider">
+              <th class="p-1   text-stone-600 uppercase tracking-wider">
                 date 
               </th>
-              <th class="p-3   text-stone-600 uppercase tracking-wider">
+              <th class="p-1   text-stone-600 uppercase tracking-wider">
                 PROCESS
               </th>
             </tr>
@@ -334,37 +334,37 @@
             <tbody class="bg-white divide-y divide-stone-200">
             {% for p in general_pays %}
             <tr class="text-xs text-center bg-stone-100 hover:bg-stone-200 transition-colors duration-300 uppercase">
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
                   {{forloop.counter}}
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
                 {{request.user}}
               </td>
-            <td class="p-3 whitespace-nowrap">
+            <td class="p-1 whitespace-nowrap">
               <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
               {{ p.patient}}
               </a>
             </td>
-            <td class="p-3 whitespace-nowrap">
+            <td class="p-1 whitespace-nowrap">
               {{ p.service }}
             </td>
-            <td class="p-3 whitespace-nowrap">
+            <td class="p-1 whitespace-nowrap">
               &#x20A6;{{p.price}}
             </td>
 
             {% if p.status == False %}
-            <td class="p-3 whitespace-nowrap text-red-700">
+            <td class="p-1 whitespace-nowrap text-red-700">
           <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
             </td>
         {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
+            <td class="p-1 whitespace-nowrap text-green-700">
              <i class="fa-solid fa-thumbs-up fa-2xl"></i>
            </td>
         {% endif %}
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-1 whitespace-nowrap">
               {{ p.updated }}
             </td>
-          <td class="p-3 whitespace-nowrap">
+          <td class="p-1 whitespace-nowrap">
             
               <span class="space-x-4">
                   <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-600"></i></a>
@@ -377,7 +377,7 @@
           </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="8" class="p-3 text-center text-stone-600">
+              <td colspan="8" class="p-1 text-center text-stone-600">
                 No general transactions found
               </td>
             </tr>

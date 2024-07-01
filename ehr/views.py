@@ -25,6 +25,14 @@ from django.conf import settings
 import os
 # import matplotlib.pyplot as plt
 from io import BytesIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.lib.colors import black, grey
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from django.conf import settings
+import datetime
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -1094,19 +1102,9 @@ class PayListView(ListView):
 #     return HttpResponse('Error generating PDF', status=500)
     
 
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from reportlab.lib.colors import black, grey
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from io import BytesIO
-from django.http import HttpResponse
-from django.conf import settings
-import datetime
-import os
-
 def format_currency(amount):
+    if amount is None:
+        return "N0.00"
     return f"N{amount:,.2f}"
 
 @login_required
@@ -1190,7 +1188,7 @@ def receipt_pdf(request):
         p.drawRightString(2.15*inch, y, format_currency(payment.price))
         p.drawString(2.25*inch, y, payment.updated.strftime("%d/%m"))
         y -= 0.15*inch
-        total += payment.price
+        total += payment.price or 0  # Use 0 if price is None
 
     # Draw a line
     y -= 0.1*inch
