@@ -234,7 +234,7 @@ def create_dispensary(request, file_no):
                     # )
                     # instance.payment = paypoint
                     instance.save()
-            return redirect(reverse_lazy('pharm:dispensed_list'))
+            return redirect(reverse_lazy('pharm:prescription_list'))
         else:
             # If formset is not valid, it will automatically contain the errors.
             pass
@@ -311,7 +311,13 @@ class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
     template_name='dispensary/prescription_list.html'
     context_object_name='prescribed'
     paginate_by = 10
-
+    
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+    
     def get_queryset(self):
         updated = super().get_queryset().order_by('-updated')
         prescribe_filter = PrescriptionFilter(self.request.GET, queryset=updated)
@@ -322,6 +328,7 @@ class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
         total_prescription = self.get_queryset().count()
         context['PrescriptionFilter'] = PrescriptionFilter(self.request.GET, queryset=self.get_queryset())
         context['total_prescription'] = total_prescription
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context
 
 

@@ -602,13 +602,20 @@ class PaypointView(RevenueRequiredMixin, CreateView):
     model=Paypoint
     template_name = 'ehr/revenue/paypoint.html'
     form_class = PayForm
-    success_url = reverse_lazy("revenue")
 
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         file_no = self.kwargs.get('file_no')
         patient = get_object_or_404(PatientData, file_no=file_no)
         handover = patient.handovers.filter(clinic='A & E', status='waiting for payment').first()
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+
 
         if handover:
             context['patient'] = patient
@@ -646,7 +653,12 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
     model=Paypoint
     template_name = 'ehr/revenue/paypoint_follow_up.html'
     form_class = PayForm
-    success_url = reverse_lazy("revenue")
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -657,7 +669,7 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
         service = MedicalRecord.objects.get(name=service_name)
         context['service_name'] = service.name
         context['service_price'] = service.price
-
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context
 
     def form_valid(self, form):
@@ -1288,6 +1300,12 @@ class RadiologyPayListView(ListView):
     context_object_name = 'radiology_pays'
     paginate_by = 10
 
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+    
     def get_queryset(self):
         return Paypoint.objects.filter(radiology_result_payment__isnull=False).order_by('-updated')
 
@@ -1301,6 +1319,7 @@ class RadiologyPayListView(ListView):
 
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context  
 
 

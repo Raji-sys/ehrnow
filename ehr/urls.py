@@ -146,7 +146,6 @@ urlpatterns = [
     path('theatre/theatre-bill/<str:file_no>/', TheatreBillCreateView.as_view(), name='surgery_bill'),
     
     path('theatre/theatre-notes/<str:file_no>/', TheatreNotesCreateView.as_view(), name='theatre_note'),
-
     path('theatre/operated-patient-list', TheatreNotesListView.as_view(), name="operated_list"),
 
     path('radiology-list/', RadiologyListView.as_view(), name='radiology_list'),
