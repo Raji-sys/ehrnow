@@ -430,6 +430,38 @@ class PatientReportView(ListView):
         return context
 
 
+@login_required
+def patient_report_pdf(request):
+    ndate = datetime.datetime.now()
+    filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
+    f = PatientReportFilter(request.GET, queryset=PatientData.objects.all()).qs
+    result = ""
+    result2 = ""
+    result3 = ""
+    for key, value in request.GET.items():
+        if value:
+            result += f"{value.upper()} "
+            result2 += f"Generated on: {ndate.strftime('%d-%B-%Y : %I:%M %p')}" 
+            result3 += f"By: {request.user.username.upper()}"
+
+    context = {'f': f, 'pagesize': 'A4',
+               'orientation': 'landscape', 'result': result,'result2':result2,'result3':result3}
+    response = HttpResponse(content_type='application/pdf',
+                            headers={'Content-Disposition': f'filename="Report__{filename}"'})
+
+    buffer = BytesIO()
+
+    pisa_status = pisa.CreatePDF(get_template('ehr/record/patient_report_pdf.html').render(
+        context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+
+    if not pisa_status.err:
+        pdf = buffer.getvalue()
+        buffer.close()
+        response.write(pdf)
+        return response
+    return HttpResponse('Error generating PDF', status=500)
+
+
 class PatientHandoverReportView(ListView):
     model = PatientHandover
     template_name = 'ehr/clinic/report.html'
@@ -448,6 +480,39 @@ class PatientHandoverReportView(ListView):
         context['filtered_count'] = self.filterset.qs.count()
         return context
     
+
+@login_required
+def clinic_handover_pdf(request):
+    ndate = datetime.datetime.now()
+    filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
+    f = PatientHandoverFilter(request.GET, queryset=PatientHandover.objects.all()).qs
+    patient = f.first().patient if f.exists() else None
+    result = ""
+    result2 = ""
+    result3 = ""
+    for key, value in request.GET.items():
+        if value:
+            result += f"{value.upper()} "
+            result2 += f"Generated on: {ndate.strftime('%d-%B-%Y : %I:%M %p')}" 
+            result3 += f"By: {request.user.username.upper()}"
+
+    context = {'f': f, 'pagesize': 'A4','patient':patient,
+               'orientation': 'landscape', 'result': result,'result2':result2,'result3':result3}
+    response = HttpResponse(content_type='application/pdf',
+                            headers={'Content-Disposition': f'filename="Report__{filename}"'})
+
+    buffer = BytesIO()
+
+    pisa_status = pisa.CreatePDF(get_template('ehr/clinic/clinic_handover_pdf.html').render(
+        context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+
+    if not pisa_status.err:
+        pdf = buffer.getvalue()
+        buffer.close()
+        response.write(pdf)
+        return response
+    return HttpResponse('Error generating PDF', status=500)
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientStatsView(TemplateView):

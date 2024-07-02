@@ -15,8 +15,49 @@ class Unit(models.TextChoices):
     SOPD = 'SOPD', 'SOPD'
     THEATRE = 'THEATRE', 'THEATRE'
 
+from django.db import models
+
 class Category(models.Model):
-    name = models.CharField('CLASS OF DRUG',max_length=200)
+    DRUG_CLASSES = [
+        ('ANALGESICS', 'Analgesics'),
+        ('ANESTHETICS', 'Anesthetics'),
+        ('ANTIBIOTICS', 'Antibiotics'),
+        ('ANTICOAGULANTS', 'Anticoagulants'),
+        ('ANTICONVULSANTS', 'Anticonvulsants'),
+        ('ANTIDEPRESSANTS', 'Antidepressants'),
+        ('ANTIDIABETICS', 'Antidiabetics'),
+        ('ANTIEMETICS', 'Antiemetics'),
+        ('ANTIFUNGALS', 'Antifungals'),
+        ('ANTIHISTAMINES', 'Antihistamines'),
+        ('ANTIHYPERTENSIVES', 'Antihypertensives'),
+        ('ANTI_INFLAMMATORIES', 'Anti-inflammatories'),
+        ('ANTINEOPLASTICS', 'Antineoplastics'),
+        ('ANTIPARASITICS', 'Antiparasitics'),
+        ('ANTIPSYCHOTICS', 'Antipsychotics'),
+        ('ANTIVIRALS', 'Antivirals'),
+        ('BRONCHODILATORS', 'Bronchodilators'),
+        ('CARDIOVASCULAR', 'Cardiovascular'),
+        ('CNS_STIMULANTS', 'CNS Stimulants'),
+        ('CORTICOSTEROIDS', 'Corticosteroids'),
+        ('DERMATOLOGICALS', 'Dermatologicals'),
+        ('DIURETICS', 'Diuretics'),
+        ('GASTROINTESTINAL', 'Gastrointestinal'),
+        ('HORMONES', 'Hormones'),
+        ('IMMUNOSUPPRESSANTS', 'Immunosuppressants'),
+        ('LIPID_LOWERING', 'Lipid-lowering'),
+        ('MUSCLE_RELAXANTS', 'Muscle Relaxants'),
+        ('NSAIDS', 'NSAIDs'),
+        ('OPIOIDS', 'Opioids'),
+        ('OPHTHALMICS', 'Ophthalmics'),
+        ('PSYCHOTROPICS', 'Psychotropics'),
+        ('SEDATIVES_HYPNOTICS', 'Sedatives/Hypnotics'),
+        ('THYROID_PREPARATIONS', 'Thyroid Preparations'),
+        ('VACCINES', 'Vaccines'),
+        ('VITAMINS_MINERALS', 'Vitamins and Minerals'),
+        ('OTHER', 'Other'),
+    ]
+
+    name = models.CharField('CLASS OF DRUG', max_length=200, choices=DRUG_CLASSES)
 
     def __str__(self):
         return self.name

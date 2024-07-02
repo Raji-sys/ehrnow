@@ -46,6 +46,7 @@ urlpatterns = [
     path('record/patient/follow-up/<str:file_no>/', FollowUpVisitCreateView.as_view(), name='follow_up'),
 
     path('record/patient-report/', PatientReportView.as_view(), name='patient_report'),
+    path('record/report/pdf', views.patient_report_pdf, name='patient_report_pdf'),
     path('record/statistics/', PatientStatsView.as_view(), name='patient_stats'),
 
     path('record/create-appointment/<str:file_no>/', AppointmentCreateView.as_view(), name='new_appointment'),
@@ -106,6 +107,8 @@ urlpatterns = [
     path('clinic/sopd/sopd-awaiting-review/', SOPDAwaitingReviewView.as_view(), name="waiting_for_review_sopd"),
 
     path('clinic/report/', PatientHandoverReportView.as_view(), name='handover_report'),
+    path('clinic/report/pdf', views.clinic_handover_pdf, name='clinic_handover_pdf'),
+
 
     #radiology
     path('patient/<str:file_no>/radiology/create/', RadiologyCreateView.as_view(), name='radiology_create'),

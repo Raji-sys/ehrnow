@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLINICAL REPORT</title>
+    <style>
+
+body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #FBF8F6;
+            color: #1d7f25;
+            text-transform: capitalize;
+          }
+          
+          h1 {
+            text-align: center;
+            color: #18be5d;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+          }
+          
+          #sp h1 {
+            margin-top: 50px;
+          }
+          
+          table {
+            width: auto;
+            border-collapse: collapse;
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            padding: 20px;
+            text-transform: uppercase;
+          }
+          
+          table td {
+            text-transform: capitalize;
+          }
+          
+          td {
+            border: 1px solid #baf7e0;
+            word-break: break-word;
+            white-space: normal;
+            padding: 3px;
+            width: 50%;
+            text-align: center;
+          }
+          
+          tr {
+            background-color: #FFF5F7;
+            color: #000000;
+          }
+          
+          th {
+            text-align: center;
+            font-size: 10px;
+            background-color: #0bc056;
+            color: #FFFFFF;
+            padding: 4px;
+          }
+          
+          td:first-child {
+            font-weight: bold;
+            background-color: #e1fdf2;
+            border-radius: 5px;
+            text-transform: uppercase;
+            text-transform: capitalize;
+            
+          }
+          
+          .divider {
+            border-bottom: 1px solid #cdfed1;
+            margin: 30px 0;
+          }
+          
+          #sp {
+            margin-top: 6rem;
+            font-size: 1.5rem;
+            text-align: center; /* Center the heading */
+          }
+          #sp h1 {
+            margin-top: 180px; /* Adjust the value as needed */
+          }
+          .value {
+            background-color: white;
+          }
+          .uppercase {
+            text-transform: uppercase;
+          }
+    </style>
+</head>
+<body>
+    <h1 class="queryset-data"><b>CLINICAL REPORT</b></h1>
+        <th >{{ result2|upper }}</th>     
+        <th >{{ result3|upper }}</th>     
+    <hr>
+        <table >
+            <tr>
+        <th colspan="7">FILTERED BY:&nbsp;{{ result|upper }}</th>
+    </tr>
+        <tbody >
+            <tr>
+                <td><span class="variable">S/N</span></td>
+                <td><span class="variable">FILE NUMBER</span></td>
+                <td><span class="variable">PHONE</span></td>
+                <td><span class="variable">NAME</span></td>
+                <td><span class="variable">AGE</span></td>
+                <td><span class="variable">STATUS</span></td>
+                <td><span class="variable">DATE</span></td>
+            </tr>
+              {% for i in f %}        
+        <tr >
+            <td class="value">
+                {{forloop.counter}}
+            </td>    
+            <td class="value">
+                {{i.patient.file_no|default_if_none:''|upper}}
+            </td>    
+            <td class="value">
+                {{i.patient.phone|default_if_none:''|upper}}
+            </td>
+            <td class="value">
+                {{i.patient.full_name|default_if_none:''|upper}}
+            </td>
+            <td class="value">
+                {{i.patient.age|default_if_none:''|upper}}
+            </td>
+            <td class="value">
+            {{i.status|default_if_none:''|upper}}
+            </td>
+            <td class="value">
+            {{i.updated}}
+            </td>
+          </tr>
+          {%endfor%}
+        </tbody>
+</table>
+
+</body>
+</html>

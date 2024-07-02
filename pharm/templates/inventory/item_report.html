@@ -22,12 +22,16 @@
         {% endfor %}
         <div class="text-center flex flex-row flex-wrap gap-1 justify-center">
             {% for field in drugfilter.form %}
-            <div class="flex justify-center items-start flex-col">
-            <label for="{{field.id_for_label}}" class="inline">{{ field.label_tag }}</label>
+            <div class="flex justify-center items-start flex-col">         
+                <label for="{{field.id_for_label}}" class="inline">{{ field.label_tag }}</label>
+                {% if field.field.widget.input_type == 'select' %}
+                {{ field }}
+            {% else %}
             <input type="field.field.widget.input_type" name="{{field.name}}"
             class="text-center text-xs focus:outline-none w-fit text-cyan-950 p-2
             rounded shadow-md shadow-cyan-900 border-cyan-900 border"
             {%if field.value%} value="{{field.value}}"{%endif%}> 
+            {%endif%}
         </div>
             {% endfor %}
             <div class="mt-4 flex justify-center align-middle ">

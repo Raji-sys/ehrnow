@@ -4,7 +4,7 @@
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT LIST</div>{%endblock%}
 {%block content %}
 <div class="p-1 ">
-    <section class="text-center border-emerald-700 p-1 m-2">
+    <section class="text-center border-emerald-700 p-1 m-1">
         {% for message in messages %}
         <div class="mt-2 ">
           <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
@@ -46,19 +46,34 @@
         <table class="min-w-full divide-y divide-emerald-200">
           <thead class="bg-emerald-50">
             <tr class="text-xs">
-                <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+                <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
                     #
                 </th>
-              <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
                 FILE NUMBER
               </th>
-              <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
                 NAME
               </th>
-              <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
                 PHONE
               </th>
-              <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+                AGE
+              </th>
+              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+                NEXT OF KIN
+              </th>
+              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+                NEXT OF KIN PHONE
+              </th>
+              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+                RELATIONSHIP
+              </th>
+              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+                DATE REGISTERED
+              </th>
+              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
                 EDIT
               </th>
             </tr>
@@ -80,6 +95,21 @@
               <td class="p-3 whitespace-nowrap">
                 {{ p.phone }}
               </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ p.age }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ p.nok_name }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ p.nok_phone }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ p.nok_rel }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ p.updated }}
+              </td>
             <td class="p-3 whitespace-nowrap">
                 <span class="space-x-4">
                     <a href="{% url 'update_patient' p.pk %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib "></i></a>
@@ -95,6 +125,8 @@
             </tr>
             {% endfor %}
             <tr class="">
+              <td></td>
+              <td></td>
               <td></td>
               <td></td>
               <td class="p-1 text-left">        

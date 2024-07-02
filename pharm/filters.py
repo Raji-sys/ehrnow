@@ -1,6 +1,6 @@
 from tabnanny import verbose
 import django_filters
-from .models import Dispensary, Drug, Record, Prescription
+from .models import Dispensary, Drug, Category, Record, Prescription
 from django import forms
 
 
@@ -10,7 +10,7 @@ class DrugFilter(django_filters.FilterSet):
     date_added2 = django_filters.DateFilter(label="DATE ADDED R2",field_name='date_added',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     generic_name = django_filters.CharFilter(label="GENERIC NAME",field_name='generic_name', lookup_expr='iexact')
     brand_name = django_filters.CharFilter(label="BRAND NAME",field_name='brand_name', lookup_expr='iexact')
-    category = django_filters.CharFilter(label="CLASS",field_name='category__name', lookup_expr='iexact')
+    category = django_filters.ChoiceFilter(label="CLASS", field_name='category__name', lookup_expr='iexact', choices=Category.DRUG_CLASSES,widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
     supplier = django_filters.CharFilter(label="SUPPLIER",field_name='supplier', lookup_expr='iexact')
     dosage_form = django_filters.CharFilter(label="DOSAGE FORM",field_name='dosage_form', lookup_expr='iexact')
     pack_size = django_filters.CharFilter(label="PACK SIZE",field_name='pack_size', lookup_expr='iexact')
