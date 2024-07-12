@@ -469,7 +469,11 @@ class Bill(models.Model):
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='surgery_bill',null=True)
     created = models.DateTimeField(auto_now_add=True,null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
-
+    
+    @property
+    def items(self):
+        return self.billing_set.all()  #
+    
     def __str__(self):
         return f"Bill for {self.patient}"
 
@@ -485,16 +489,16 @@ class TheatreItemCategory(models.Model):
 class TheatreItem(models.Model):
     category = models.ForeignKey(TheatreItemCategory, on_delete=models.CASCADE,null=True,blank=True)
     name=models.CharField(max_length=200,null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
 
     def __str__(self):
-        return f"{self.category} - {self.name}"
+        return f"{self.category} - {self.name} - {self.price}"
 
 class Billing(models.Model):
     bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='items',null=True)
-    category = models.ForeignKey(TheatreItemCategory, on_delete=models.CASCADE,null=True,blank=True)
+    category = models.ForeignKey(TheatreItemCategory, on_delete=models.CASCADE, null=True, blank=True)
     item = models.ForeignKey(TheatreItem, on_delete=models.CASCADE,null=True,blank=True)
     quantity = models.PositiveIntegerField(default=1,null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="bill_payment")
 
     def __str__(self):
@@ -502,7 +506,7 @@ class Billing(models.Model):
 
     @property
     def total_item_price(self):
-        return self.price * self.quantity
+        return self.item.price * self.quantity
        
         
 class Physio(models.Model):

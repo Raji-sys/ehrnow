@@ -584,7 +584,7 @@ class PatientFolderView(DetailView):
         context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
         context['theatre_notes'] = patient.theatre_notes.all().order_by('-updated')
         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
-        
+        context['bills'] = Bill.objects.filter(patient=self.object).order_by('-created')
         radiology_results = patient.radiology_results.all().order_by('-updated')
         context['radiology_results'] = radiology_results
         # Calculate total worth only for paid transactions
@@ -1606,8 +1606,8 @@ class WardNotesCreateView(NurseRequiredMixin,CreateView):
         return context
 
 
-class BillingCreateView(DoctorRequiredMixin, LoginRequiredMixin, CreateView):
-    model = Billing
+class BillingCreateView(DoctorRequiredMixin, LoginRequiredMixin, FormView):
+    model = Bill
     template_name = 'ehr/revenue/billing.html'
     
     def get_form(self):
@@ -1625,11 +1625,25 @@ class BillingCreateView(DoctorRequiredMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, formset):
         if formset.is_valid():
+            patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+            bill = Bill.objects.create(user=self.request.user, patient=patient)
             instances = formset.save(commit=False)
-            patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+            total_amount = 0
             for instance in instances:
-                instance.bill.patient = patient
-                instance.bill.user = self.request.user
+                instance.bill = bill
+                total_amount +=instance.total_item_price
+                instance.save()
+            bill.total_amount = total_amount
+            bill.save()
+            paypoint = Paypoint.objects.create(
+                user=self.request.user,
+                patient=patient,
+                service=bill,
+                price=total_amount,
+                status=False
+            )
+            for instance in instances:
+                instance.payment = paypoint
                 instance.save()
             return super().form_valid(formset)
         else:
@@ -1637,13 +1651,18 @@ class BillingCreateView(DoctorRequiredMixin, LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         messages.success(self.request, 'BILL ADDED')
-        return self.object.patient.get_absolute_url()
+        return reverse('patient_details', kwargs={'file_no': self.kwargs['file_no']})
+        # return self.object.patient.get_absolute_url()
     
+# def get_category(request, category_id):
+#     items = TheatreItem.objects.filter(category_id=category_id)
+#     item_list = [{'id': item.id, 'name': item.name} for item in items]
+#     return JsonResponse({'items': item_list})
+
 def get_category(request, category_id):
     items = TheatreItem.objects.filter(category_id=category_id)
-    item_list = [{'id': item.id, 'name': item.name} for item in items]
+    item_list = [{'id': item.id, 'name': item.name, 'price': float(item.price)} for item in items]
     return JsonResponse({'items': item_list})
-
 
 class TheatreBookingCreateView(DoctorRequiredMixin, CreateView):
         model = TheatreBooking
@@ -1830,3 +1849,21 @@ class RadioReportView(ListView):
         context = super().get_context_data(**kwargs)
         context['radio_filter'] = RadioFilter(self.request.GET, queryset=self.get_queryset())
         return context
+    
+# In your views.py
+from django.views.generic import DetailView
+from .models import Bill
+
+class BillDetailView(DetailView):
+    model = Bill
+    template_name = 'ehr/revenue/bill_detail.html'
+    context_object_name = 'bill'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add billing items to the context
+        context['billing_items'] = Billing.objects.filter(bill=self.object).select_related('item', 'item__category')
+        return context
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('items__item__category')

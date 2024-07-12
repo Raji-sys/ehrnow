@@ -80,16 +80,16 @@ class BillItemAdmin(admin.ModelAdmin):
 
 @admin.register(Billing)
 class BillingAdmin(admin.ModelAdmin):
-    list_display = ('bill','category','item','price','quantity')
-    search_fields = ('category','item','price','quantity')
-    list_filter = ('category','item','price','quantity')
+    list_display = ('bill','category','item','quantity')
+    search_fields = ('category','item','quantity')
+    list_filter = ('category','item','quantity')
 
 
 @admin.register(TheatreItem)
 class TheatreItemAdmin(admin.ModelAdmin):
-    list_display = ('__str__',)
-    search_fields = ('cateogry','name',)
-    list_filter = ('category','name',)
+    list_display = ('category','name','price')
+    search_fields = ('cateogry','name','price')
+    list_filter = ('category','name','price')
 
 
 @admin.register(TheatreItemCategory)

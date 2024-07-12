@@ -152,4 +152,6 @@ urlpatterns = [
     path('radiology-test/create/<str:file_no>/', RadiologyTestCreateView.as_view(), name='radiology_test'),
     path('radiology-result/create/<str:file_no>/<int:pk>/', RadiologyResultCreateView.as_view(), name='radiology_result'),
     path('radiology-report/', RadioReportView.as_view(), name='radiology_report'),
+    # In your urls.py
+    path('bill/<int:pk>/', BillDetailView.as_view(), name='bill_detail'),
 ]
