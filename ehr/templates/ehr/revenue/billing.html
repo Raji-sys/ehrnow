@@ -45,7 +45,7 @@ function initializePage() {
                 data.items.forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.id;
-                    option.text = `${item.name} - $${item.price.toFixed(2)}`;
+                    option.text = `${item.name} - ${item.price.toFixed(2)}`;
                     itemSelect.add(option);
                 });
             })

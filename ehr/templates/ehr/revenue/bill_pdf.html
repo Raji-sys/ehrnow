@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bill Detail</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .info p {
+            margin: 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 4px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 2px;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .sn-column, .quantity-column {
+            width: 8%;
+            text-align: center;
+        }
+        .category-column, .item-column {
+            width: 22%;
+        }
+        .price-column, .total-column {
+            width: 20%;
+            text-align: right;
+        }
+        .total {
+            text-align: right;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #06701d;
+        }
+        .status {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .paid {
+            color: #27ae60;
+        }
+        .unpaid {
+            color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bill Detail</h1>
+        </div>
+
+        <div class="info">
+            <p><strong>Patient:</strong> {{ bill.patient }}&nbsp;
+            <strong>Billed by:</strong> {{ bill.user }}&nbsp;
+            <strong>Status:</strong>&nbsp;
+                <span class="status {% if bill.items.first.payment.status %}paid{% else %}unpaid{% endif %}">
+                    {% if bill.items.first.payment.status %}Paid{% else %}Unpaid{% endif %}
+                </span>&nbsp;
+                <strong>Date:</strong>{{ bill.created }}
+            </p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="sn-column">S/N</th>
+                    <th class="category-column">Category</th>
+                    <th class="item-column">Item</th>
+                    <th class="quantity-column">Qty</th>
+                    <th class="price-column">Price (N)</th>
+                    <th class="total-column">Total (N)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for billing in billing_items %}
+                <tr>
+                    <td class="sn-column">{{ forloop.counter }}</td>
+                    <td class="category-column">{{ billing.item.category.name }}</td>
+                    <td class="item-column">{{ billing.item.name }}</td>
+                    <td class="quantity-column">{{ billing.quantity }}</td>
+                    <td class="price-column">{{ billing.item.price|floatformat:2 }}</td>
+                    <td class="total-column">{{ billing.total_item_price|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total ">
+            <p>Total Amount: N{{ bill.total_amount|floatformat:2 }}</p>
+        </div>
+    </div>
+</body>
+</html>

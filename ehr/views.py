@@ -36,6 +36,7 @@ import datetime
 from xhtml2pdf import pisa
 from django.forms import modelformset_factory
 from django.http import JsonResponse
+from django.db import transaction
 
 
 
@@ -1383,7 +1384,6 @@ class RadiologyPayListView(ListView):
         context = super().get_context_data(**kwargs)
         pay_total = self.get_queryset().count()
 
-        # Calculate total worth only for paid transactions
         paid_transactions = self.get_queryset().filter(status=True)
         total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
 
@@ -1606,64 +1606,6 @@ class WardNotesCreateView(NurseRequiredMixin,CreateView):
         return context
 
 
-class BillingCreateView(DoctorRequiredMixin, LoginRequiredMixin, FormView):
-    model = Bill
-    template_name = 'ehr/revenue/billing.html'
-    
-    def get_form(self):
-        BillingFormSet = modelformset_factory(Billing,form=BillingForm,extra=5)
-        if self.request.method == 'POST':
-            return BillingFormSet(self.request.POST)
-        else:
-            return BillingFormSet(queryset=Billing.objects.none())
-        
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['formset'] = self.get_form()
-        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        return context
-
-    def form_valid(self, formset):
-        if formset.is_valid():
-            patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-            bill = Bill.objects.create(user=self.request.user, patient=patient)
-            instances = formset.save(commit=False)
-            total_amount = 0
-            for instance in instances:
-                instance.bill = bill
-                total_amount +=instance.total_item_price
-                instance.save()
-            bill.total_amount = total_amount
-            bill.save()
-            paypoint = Paypoint.objects.create(
-                user=self.request.user,
-                patient=patient,
-                service=bill,
-                price=total_amount,
-                status=False
-            )
-            for instance in instances:
-                instance.payment = paypoint
-                instance.save()
-            return super().form_valid(formset)
-        else:
-            return self.form_invalid(formset)
-
-    def get_success_url(self):
-        messages.success(self.request, 'BILL ADDED')
-        return reverse('patient_details', kwargs={'file_no': self.kwargs['file_no']})
-        # return self.object.patient.get_absolute_url()
-    
-# def get_category(request, category_id):
-#     items = TheatreItem.objects.filter(category_id=category_id)
-#     item_list = [{'id': item.id, 'name': item.name} for item in items]
-#     return JsonResponse({'items': item_list})
-
-def get_category(request, category_id):
-    items = TheatreItem.objects.filter(category_id=category_id)
-    item_list = [{'id': item.id, 'name': item.name, 'price': float(item.price)} for item in items]
-    return JsonResponse({'items': item_list})
-
 class TheatreBookingCreateView(DoctorRequiredMixin, CreateView):
         model = TheatreBooking
         form_class = TheatreBookingForm
@@ -1850,9 +1792,76 @@ class RadioReportView(ListView):
         context['radio_filter'] = RadioFilter(self.request.GET, queryset=self.get_queryset())
         return context
     
-# In your views.py
-from django.views.generic import DetailView
-from .models import Bill
+
+class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
+    template_name = 'ehr/revenue/billing.html'
+    
+    def get_form(self):
+        BillingFormSet = modelformset_factory(Billing, form=BillingForm, extra=5)
+        if self.request.method == 'POST':
+            return BillingFormSet(self.request.POST)
+        else:
+            return BillingFormSet(queryset=Billing.objects.none())
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = self.get_form()
+        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        return context
+
+    def form_valid(self, form):
+        formset = self.get_form()
+        if formset.is_valid():
+            return self.formset_valid(formset)
+        else:
+            return self.form_invalid(form)
+
+    @transaction.atomic
+    def formset_valid(self, formset):
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        bill = Bill.objects.create(user=self.request.user, patient=patient)
+        
+        total_amount = 0
+        instances = formset.save(commit=False)
+        
+        for instance in instances:
+            if instance.total_item_price:  # Only process non-empty forms
+                instance.bill = bill
+                total_amount += instance.total_item_price
+                instance.save()
+        
+        # Update the bill with the total amount
+        bill.total_amount = total_amount
+        bill.save()
+
+        # Create a single paypoint for the entire bill
+        paypoint = Paypoint.objects.create(
+            user=self.request.user,
+            patient=patient,
+            service=f"Surgery Bill-{bill.id}",
+            price=total_amount,
+            status=False
+        )
+
+        # Update all billing instances with the same paypoint
+        Billing.objects.filter(bill=bill).update(payment=paypoint)
+
+        return super().form_valid(formset)
+
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def get_success_url(self):
+        messages.success(self.request, 'BILL ADDED')
+        return reverse('patient_details', kwargs={'file_no': self.kwargs['file_no']})
+
+
+def get_category(request, category_id):
+    items = TheatreItem.objects.filter(category_id=category_id)
+    item_list = [{'id': item.id, 'name': item.name, 'price': float(item.price)} for item in items]
+    return JsonResponse({'items': item_list})
+
 
 class BillDetailView(DetailView):
     model = Bill
@@ -1867,3 +1876,153 @@ class BillDetailView(DetailView):
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related('items__item__category')
+
+
+from django.db.models import Sum, Count
+
+class BillingPayListView(ListView):
+    model = Paypoint
+    template_name = 'ehr/revenue/bill_pay_list.html'
+    context_object_name = 'bill_pays'
+    paginate_by = 10
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+    
+    def get_queryset(self):
+        return Paypoint.objects.filter(service__startswith='Surgery Bill-').order_by('-updated')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        
+        pay_total = queryset.count()
+        total_worth = queryset.filter(status=True).aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        return context
+
+
+class BillListView(DoctorRequiredMixin, LoginRequiredMixin, ListView):
+    model = Bill
+    template_name = 'ehr/revenue/bill_list.html'
+    context_object_name = 'bills'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Bill.objects.filter(user=self.request.user).prefetch_related('items').order_by('-created')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_bills'] = self.get_queryset().count()
+        return context
+
+
+class BillDeleteView(DoctorRequiredMixin, LoginRequiredMixin, DeleteView):
+    model = Bill
+    template_name = 'ehr/revenue/bill_confirm_delete.html'
+    
+    def get_success_url(self):
+        messages.success(self.request, 'Bill deleted successfully.')
+        return reverse_lazy('bill_list')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        
+        # Delete associated Paypoint
+        Paypoint.objects.filter(service=self.object).delete()
+        
+        # Delete the Bill
+        self.object.delete()
+        
+        return HttpResponseRedirect(success_url)
+
+
+class BillUpdateView(DoctorRequiredMixin, LoginRequiredMixin, UpdateView):
+    model = Bill
+    template_name = 'ehr/revenue/bill_update.html'
+    
+    def get_form(self):
+        BillingFormSet = modelformset_factory(Billing, form=BillingForm, extra=0, can_delete=True)
+        if self.request.method == 'POST':
+            return BillingFormSet(self.request.POST, queryset=self.object.items.all())
+        else:
+            return BillingFormSet(queryset=self.object.items.all())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = self.get_form()
+        context['bill'] = self.object
+        context['patient'] = self.object.patient
+        return context
+
+    def form_valid(self, formset):
+        if formset.is_valid():
+            with transaction.atomic():
+                instances = formset.save(commit=False)
+                for obj in formset.deleted_objects:
+                    obj.delete()
+                total_amount = 0
+                for instance in instances:
+                    instance.bill = self.object
+                    total_amount += instance.total_item_price
+                    instance.save()
+                self.object.total_amount = total_amount
+                self.object.save()
+                
+                # Update associated Paypoint
+                paypoint = Paypoint.objects.filter(service=self.object).first()
+                if paypoint:
+                    paypoint.price = total_amount
+                    paypoint.save()
+                
+            messages.success(self.request, 'Bill updated successfully.')
+            return super().form_valid(formset)
+        else:
+            return self.form_invalid(formset)
+
+    def form_invalid(self, formset):
+        messages.error(self.request, 'There was an error updating the bill. Please check the form.')
+        return super().form_invalid(formset)
+
+    def get_success_url(self):
+        return reverse('patient_details', kwargs={'file_no': self.object.patient.file_no})
+    
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+class BillPDFView(DetailView):
+    model = Bill
+    template_name = 'ehr/revenue/bill_pdf.html'
+
+    def get(self, request, *args, **kwargs):
+        bill = self.get_object()
+        billing_items = Billing.objects.filter(bill=bill).select_related('item', 'item__category')
+        
+        context = {
+            'bill': bill,
+            'billing_items': billing_items,
+        }
+        
+        pdf = render_to_pdf('ehr/revenue/bill_pdf.html', context)
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            if 'download' in request.GET:
+                filename = f"Bill_{bill.id}.pdf"
+                content = f"attachment; filename={filename}"
+                response['Content-Disposition'] = content
+            return response
+        return HttpResponse("Error generating PDF", status=400)

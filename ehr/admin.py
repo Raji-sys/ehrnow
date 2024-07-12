@@ -78,11 +78,11 @@ class BillItemAdmin(admin.ModelAdmin):
     list_filter = ('patient','created')
 
 
-@admin.register(Billing)
-class BillingAdmin(admin.ModelAdmin):
-    list_display = ('bill','category','item','quantity')
-    search_fields = ('category','item','quantity')
-    list_filter = ('category','item','quantity')
+# @admin.register(Billing)
+# class BillingAdmin(admin.ModelAdmin):
+#     list_display = ('bill','category','item','quantity')
+#     search_fields = ('category','item','quantity')
+#     list_filter = ('category','item','quantity')
 
 
 @admin.register(TheatreItem)

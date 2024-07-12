@@ -1,49 +1,74 @@
 {% extends 'base.html' %}
 {% block title %}Bill Detail{% endblock %}
+{% block page_title %}
+<div class="flex justify-center items-center">
+    <span>BILL DETAILS</span>
+</div>
 
+{% endblock %}
 {% block content %}
-<div class="container mx-auto px-4">
-    <h1 class="text-2xl font-bold mb-4">Bill Detail</h1>
-    
-    <div class="mb-4">
-        <p><strong>Patient:</strong> {{ bill.patient.name }}</p>
-        <p><strong>Date:</strong> {{ bill.created|date:"Y-m-d H:i" }}</p>
-        <p><strong>Total Amount:</strong> ${{ bill.total_amount }}</p>
-        <p><strong>Status:</strong> 
-            {% if bill.items.first.payment.status %}
-                <span class="text-green-500">Paid</span>
-            {% else %}
-                <span class="text-red-500">Unpaid</span>
-            {% endif %}
-        </p>
-    </div>
+<div class=" min-h-screen p-2">
+    <div class="max-w-6xl mx-auto bg-gray-100 rounded-lg shadow-md p-2">
+ 
+        <div class="bg-gray-200 rounded-md p-2 text-xs uppercase text-center">
+            <h1 class="text-sm font-bold text-blue-600">Bill Detail</h1>
+            <p class="text-sm"><span class="font-semibold">Patient:</span> {{ bill.patient}} &nbsp;
+            </p>
+                <a href="{% url 'bill_pdf' bill.id %}" class="text-green-600 hover:text-green-800 m-2" target="_blank">
+                    <i class="fas fa-file-pdf fa-2xl"></i>
+                </a>
+                <!-- <a href="{% url 'bill_pdf' bill.id %}?download=1" class="text-blue-600 hover:text-blue-800">
+                    <i class="fas fa-download fa-xl"></i>
+                </a> -->
+        </div>
+        {% if billing_items %}
+        <div class="overflow-x-auto">
+            <table class="w-full table-auto">
+                <thead class="bg-blue-600 text-white">
+                    <tr class="text-xs text-center uppercase">
+                        <th class="px-4 py-2 ">#</th>
+                        <th class="px-4 py-2 ">Category</th>
+                        <th class="px-4 py-2 ">Item</th>
+                        <th class="px-4 py-2 ">Quantity</th>
+                        <th class="px-4 py-2 ">Price</th>
+                        <th class="px-4 py-2 ">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for billing in billing_items %}
+                    <tr class="{% cycle 'bg-white' 'bg-gray-50' %} text-xs text-center">
+                        <td class="px-4 py-2">{{ forloop.counter }}</td>
+                        <td class="px-4 py-2">{{ billing.item.category.name }}</td>
+                        <td class="px-4 py-2">{{ billing.item.name }}</td>
+                        <td class="px-4 py-2">{{ billing.quantity }}</td>
+                        <td class="px-4 py-2">&#x20A6;{{ billing.item.price }}</td>
+                        <td class="px-4 py-2">&#x20A6;{{ billing.total_item_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-gray-600">No items associated with this bill.</p>
+        {% endif %}
+        <div class="text-sm m-4 gap-4">
+            <span class="">Total Amount:</span> <span class="text-green-600 font-semibold">
+                &#x20A6;{{ bill.total_amount }}&nbsp;
+            </span>
+            <span class="">Date:</span>
+            <span class="text-gray-600 font-semibold">
+                {{ bill.created|date:"d-M-Y" }}&nbsp;
+            </span>
+            <span class="">Billed by:</span>
+            <span class="text-gray-600 font-semibold uppercase">
+             {{ bill.user }}&nbsp;
+             </span>
+            <span class="">Status:</span>
+            <span class="{% if bill.items.first.payment.status %}text-green-600{% else %}text-red-600{% endif %} font-bold uppercase">
+                {% if bill.items.first.payment.status %}Paid{% else %}Unpaid{% endif %}
+            </span>
+        </div>
 
-    <h2 class="text-xl font-semibold mb-2">Bill Items</h2>
-    {% if billing_items %}
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-300 px-4 py-2">Item</th>
-                    <th class="border border-gray-300 px-4 py-2">Category</th>
-                    <th class="border border-gray-300 px-4 py-2">Quantity</th>
-                    <th class="border border-gray-300 px-4 py-2">Price</th>
-                    <th class="border border-gray-300 px-4 py-2">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for billing in billing_items %}
-                <tr>
-                    <td class="border border-gray-300 px-4 py-2">{{ billing.item.name }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ billing.item.category.name }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ billing.quantity }}</td>
-                    <td class="border border-gray-300 px-4 py-2">${{ billing.item.price }}</td>
-                    <td class="border border-gray-300 px-4 py-2">${{ billing.total_item_price }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No items associated with this bill.</p>
-    {% endif %}
+    </div>
 </div>
 {% endblock %}

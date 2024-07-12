@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Bill List{% endblock %}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>THEATRE BILLING LIST</div>{%endblock%}
+{% block content %}
+<div class="min-h-screen mx-20">
+    <div class="max-w-6xl mx-auto">
+    
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mt-2">
+            {% if bills %}
+            <p class="text-xs text-center font-semibold text-blue-700 m-2">Total Bills: {{ total_bills }}</p>            
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-blue-100 text-blue-600 uppercase text-xs leading-normal">
+                        <th class="py-3 px-6 text-left">S/N</th>
+                        <th class="py-3 px-6 text-left">Patient</th>
+                        <th class="py-3 px-6 text-left">Date</th>
+                        <th class="py-3 px-6 text-right">Total Amount</th>
+                        <th class="py-3 px-6 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-600 text-sm font-light">
+                    {% for bill in bills %}
+                    <tr class="border-b border-gray-200 hover:bg-blue-50 text-xs">
+                        <td class="py-3 px-6 text-left whitespace-nowrap">
+                        {{forloop.counter}}    
+                        </td>
+                        <td class="py-3 px-6 text-left whitespace-nowrap">
+                            <div class="flex items-center">
+                                <span class="font-medium">{{ bill.patient }}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-6 text-left">
+                            {{ bill.created}}
+                        </td>
+                        <td class="py-3 px-6 text-right">
+                            &#x20A6;{{ bill.total_amount }}
+                        </td>
+                        <td class="py-3 px-6 text-center">
+                            <div class="flex item-center justify-center">
+                                <a href="{% url 'bill_detail' bill.id %}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'bill_update' bill.id %}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'bill_delete' bill.id %}" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="p-4 text-gray-600">No bills found.</p>
+            {% endif %}
+        </div>
+        
+        {% if is_paginated %}
+        <div class="flex justify-center mt-6">
+            <nav class="inline-flex rounded-md shadow">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 rounded-l-md border border-blue-300 bg-white text-sm font-medium text-blue-500 hover:bg-blue-50">
+                    Previous
+                </a>
+                {% endif %}
+                
+                <span class="px-3 py-2 border-t border-b border-blue-300 bg-white text-sm font-medium text-blue-700">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 rounded-r-md border border-blue-300 bg-white text-sm font-medium text-blue-500 hover:bg-blue-50">
+                    Next
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

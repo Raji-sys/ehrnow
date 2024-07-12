@@ -684,16 +684,16 @@ document.addEventListener('DOMContentLoaded', function() {
                   {% for s in bills %}
                   <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                     <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                    <td class=" p-3 whitespace-nowrap">{{ s.total_amount }}</td>
+                    <td class=" p-3 whitespace-nowrap">&#x20A6;{{ s.total_amount }}</td>
                     <td class=" p-3 whitespace-nowrap">
-                      {% if bill.items.first.payment.status %}
+                      {% if s.items.first.payment.status %}
                       <span class="text-green-500">Paid</span>
                   {% else %}
                       <span class="text-red-500">Unpaid</span>
                   {% endif %}
                     </td>
                     <td class=" p-3 whitespace-nowrap">{{ s.user }}</td>
-                    <td class=" p-3 whitespace-nowrap">{{ s.created|date:"Y-m-d H:i"  }}</td>
+                    <td class=" p-3 whitespace-nowrap">{{ s.created }}</td>
                     <td class=" p-3 whitespace-nowrap"> <a href="{% url 'bill_detail' s.id %}" class="text-blue-500 hover:underline">View Details</a></td>
                       </tr>
                   {%empty%}

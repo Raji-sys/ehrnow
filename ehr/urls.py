@@ -74,6 +74,7 @@ urlpatterns = [
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
     path('revenue/pathology-list/', PathologyPayListView.as_view(), name='pathology_pay_list'),
     path('revenue/radiology-list/', RadiologyPayListView.as_view(), name='radiology_pay_list'),
+    path('revenue/billing-list/', BillingPayListView.as_view(), name='bill_pay_list'),
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
@@ -141,7 +142,6 @@ urlpatterns = [
     path('clinic/theatre-booking/surgery-wait-list', TheatreBookingListView.as_view(), name="surgery_wait_list"),
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
 
-    path('theatre/theatre-bill/<str:file_no>/', BillingCreateView.as_view(), name='surgery_bill'),   
     path('theatre/theatre-notes/<str:file_no>/', TheatreNotesCreateView.as_view(), name='theatre_note'),
     path('theatre/operated-patient-list', TheatreNotesListView.as_view(), name="operated_list"),
     path('get_category/<int:category_id>/', views.get_category, name='get_category'),
@@ -152,6 +152,13 @@ urlpatterns = [
     path('radiology-test/create/<str:file_no>/', RadiologyTestCreateView.as_view(), name='radiology_test'),
     path('radiology-result/create/<str:file_no>/<int:pk>/', RadiologyResultCreateView.as_view(), name='radiology_result'),
     path('radiology-report/', RadioReportView.as_view(), name='radiology_report'),
-    # In your urls.py
+
+    #billing
+    path('theatre/theatre-bill/<str:file_no>/', BillingCreateView.as_view(), name='surgery_bill'),   
     path('bill/<int:pk>/', BillDetailView.as_view(), name='bill_detail'),
+    path('bills/', BillListView.as_view(), name='bill_list'),
+    path('bill/update/<int:pk>/', BillUpdateView.as_view(), name='bill_update'),
+    path('bill/delete/<int:pk>/', BillDeleteView.as_view(), name='bill_delete'),
+    path('bill/pdf/<int:pk>/', BillPDFView.as_view(), name='bill_pdf'),
+
 ]
