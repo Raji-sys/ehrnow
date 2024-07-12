@@ -132,9 +132,12 @@ LOGIN_URL="/login/"
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+# Base directory of the project
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+DICOM_FILES_DIR = os.path.join(MEDIA_ROOT, 'dicom_files')
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, 'node_modules', 'cornerstone-tools', 'dist'),
 # ]
@@ -171,4 +174,7 @@ QUILL_CONFIGS = {
             ]
         }
     }
+}
+MIME_TYPES = {
+    'dcm': 'application/dicom',
 }

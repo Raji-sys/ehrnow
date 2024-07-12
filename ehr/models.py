@@ -8,7 +8,7 @@ from django.utils import timezone
 from django_quill.fields import QuillField
 # from pathology.models import HematologyResult
 from django.core.exceptions import ValidationError
-
+import os
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -330,9 +330,6 @@ class ClinicalNote(models.Model):
     def __str__(self):
         return f"notes for: {self.patient.file_no}"
 
-class DicomFile(models.Model):
-    file = models.FileField(upload_to='dicom_files/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
 
 class RadiologyTest(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
@@ -342,21 +339,32 @@ class RadiologyTest(models.Model):
     def __str__(self):
         return f"{self.name}"
     
+def dicom_file_upload_path(instance, filename):
+    # File will be uploaded to MEDIA_ROOT/dicom_files/<filename>
+    return os.path.join('dicom_files', filename)
+
+
 class RadiologyResult(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    test = models.ForeignKey(RadiologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE,related_name="results")
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="radiology_results")
-    dicom_file = models.FileField(upload_to='dicom_files/')
-    cleared=models.BooleanField(default=False)
-    comments=models.CharField(max_length=200,null=True, blank=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="radiology_result_payment")
+    test = models.ForeignKey(RadiologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="results")
+    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="radiology_results")
+    dicom_file = models.FileField(upload_to='dicom_files/', null=True, blank=True)
+    local_file_path = models.CharField(max_length=255, null=True, blank=True)    
+    cleared = models.BooleanField(default=False)
+    comments = models.CharField(max_length=200, null=True, blank=True)
+    payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="radiology_result_payment")
     updated = models.DateTimeField(auto_now=True)
+    
+    def save(self, *args, **kwargs):
+        if self.dicom_file:
+            self.local_file_path = f"C:/DicomFiles/Patient_{self.patient.id}/{self.dicom_file.name}"
+        super().save(*args, **kwargs)
     class Meta:
         verbose_name_plural = 'radiology results'
 
     def __str__(self):
-        return self.patient
-    
+        return str(self.patient)
+
 
 class Admission(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -466,28 +474,36 @@ class Bill(models.Model):
         return f"Bill for {self.patient}"
 
 
-class TheatreItem(models.Model):
-    bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='items',null=True)
-    name = models.CharField(max_length=100,null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    quantity = models.PositiveIntegerField(default=1,null=True)
+class TheatreItemCategory(models.Model):
+    name=models.CharField(max_length=200,null=True, blank=True)
+    class Meta:
+        verbose_name_plural = 'theatre item categories'
 
     def __str__(self):
-        return f"{self.name} (x{self.quantity})"
+        return f"{self.name}"
+    
+class TheatreItem(models.Model):
+    category = models.ForeignKey(TheatreItemCategory, on_delete=models.CASCADE,null=True,blank=True)
+    name=models.CharField(max_length=200,null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.category} - {self.name}"
+
+class Billing(models.Model):
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='items',null=True)
+    category = models.ForeignKey(TheatreItemCategory, on_delete=models.CASCADE,null=True,blank=True)
+    item = models.ForeignKey(TheatreItem, on_delete=models.CASCADE,null=True,blank=True)
+    quantity = models.PositiveIntegerField(default=1,null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="bill_payment")
+
+    def __str__(self):
+        return f"{self.item.name} (x{self.quantity})"
 
     @property
     def total_item_price(self):
         return self.price * self.quantity
-
-class CartItem(models.Model):
-    bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='cart_items')
-    item = models.ForeignKey(TheatreItem, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-
-    @property
-    def total_item_price(self):
-        return self.item.price * self.quantity
-        
+       
         
 class Physio(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)

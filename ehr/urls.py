@@ -3,9 +3,9 @@ from .views import *
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
-    path('', IndexView.as_view(), name='index'),
- 
+    path('', IndexView.as_view(), name='index'), 
     path('login/', CustomLoginView.as_view(), name='login'),
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('get-started/', GetStartedView.as_view(), name='get_started'),
@@ -110,11 +110,6 @@ urlpatterns = [
     path('clinic/report/pdf', views.clinic_handover_pdf, name='clinic_handover_pdf'),
 
 
-    #radiology
-    path('patient/<str:file_no>/radiology/create/', RadiologyCreateView.as_view(), name='radiology_create'),
-    path('dicom/list/', views.file_list, name='file_list'),
-    path('upload/', views.upload_file, name='upload_file'),
-    path('view/<int:pk>/', views.view_file, name='view_file'),
     #admission
     path('clinic/admit-patient/<str:file_no>/', AdmissionCreateView.as_view(), name='admit_patient'),
     path('clinic/admission-list/', AdmissionListView.as_view(), name='admission_list'),
@@ -146,11 +141,12 @@ urlpatterns = [
     path('clinic/theatre-booking/surgery-wait-list', TheatreBookingListView.as_view(), name="surgery_wait_list"),
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
 
-    path('theatre/theatre-bill/<str:file_no>/', TheatreBillCreateView.as_view(), name='surgery_bill'),
-    
+    path('theatre/theatre-bill/<str:file_no>/', BillingCreateView.as_view(), name='surgery_bill'),   
     path('theatre/theatre-notes/<str:file_no>/', TheatreNotesCreateView.as_view(), name='theatre_note'),
     path('theatre/operated-patient-list', TheatreNotesListView.as_view(), name="operated_list"),
+    path('get_category/<int:category_id>/', views.get_category, name='get_category'),
 
+    #radiology
     path('radiology-list/', RadiologyListView.as_view(), name='radiology_list'),
     path('radiology-request/', RadiologyRequestListView.as_view(), name='radiology_request'),
     path('radiology-test/create/<str:file_no>/', RadiologyTestCreateView.as_view(), name='radiology_test'),

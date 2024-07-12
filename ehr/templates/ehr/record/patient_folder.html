@@ -2,6 +2,87 @@
 {%load static%}
 {% block title %}PATIENT FOLDER{% endblock%}
 {%block page_title%}<div class="flex justify-center uppercase">{{patient.full_name}}</div>{%endblock%}
+{% block extra_js %}
+<script>
+  function viewDICOM(dicomId) {
+    fetch(`/get-dicom-path/${dicomId}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.file_path) {
+                // Use the file:// protocol to open the local file
+                window.open(`file://${data.file_path}`, '_blank');
+            } else {
+                console.error('Local file path not available');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching DICOM file path:', error);
+        });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Cornerstone
+    cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+    cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
+    cornerstoneWADOImageLoader.configure({
+    useWebWorkers: false,
+    decodeConfig: {
+        usePDFJS: false,
+    },});
+
+    const viewLinks = document.querySelectorAll('.view-dicom');
+    viewLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dicomId = this.getAttribute('data-dicom-id');
+            viewDICOM(dicomId);
+        });
+    });
+
+    function viewDICOM(dicomId) {
+    console.log("Attempting to view DICOM file with ID:", dicomId);
+    const element = document.getElementById('dicomViewer');
+    if (!element) {
+        console.error("DICOM viewer element not found");
+        return;
+    }
+    cornerstone.enable(element);
+
+    fetch(`/get-dicom/${dicomId}/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.arrayBuffer();
+        })
+        .then(arrayBuffer => {
+            const byteArray = new Uint8Array(arrayBuffer);
+            const blob = new Blob([byteArray], { type: 'application/dicom' });
+            const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(blob);
+            return cornerstone.loadImage(imageId);
+        })
+        .then(image => {
+            console.log("DICOM image loaded successfully:", image);
+            cornerstone.displayImage(element, image);
+            document.getElementById('dicomViewerModal').style.display = 'block';
+        })
+        .catch(error => {
+            console.error("Detailed error:", error);
+            if (error.stack) {
+                console.error("Error stack:", error.stack);
+            } else {
+                console.error("No error stack available");
+            }
+        });
+}
+
+    function closeDICOMViewer() {
+        document.getElementById('dicomViewerModal').style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
+
+
 {% block content %}
 
 <div class="">
@@ -478,39 +559,43 @@
     <!-- break -->
       <!-- break -->
 
-      <div> 
-        <div >
-          <a href="{% url 'radiology_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-x-ray fa-2xl"></i></a>
+      <div>
+        <div>
+            <a href="{% url 'radiology_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-x-ray fa-2xl"></i></a>
           </div>
-       
-          <div class="overflow-x-auto p-2">
+        <div class="overflow-x-auto p-2">
             <table class="min-w-full divide-y divide-cyan-200 mb-4">
-              <thead class="bg-cyan-50">
-                <tr class="text-xs">
-                  <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                  <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Test</th>
-                  <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
-                  <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Reported</th>
-                </tr>
-      
-              </thead>
-              <tbody class="bg-white divide-y divide-cyan-200">
-                {% for r in radiology_results %}
-                <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                  <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                  <td class=" p-3 whitespace-nowrap">{{ r.test|default_if_none:''}}</td>
-                  <td class=" p-3 whitespace-nowrap">{{ r.comments|default_if_none:'' }}</td>
-                  <td class=" p-3 whitespace-nowrap">{{ r.updated|default_if_none:'' }}</td>
-                </tr>
-                {%empty%}
-                <div class="p-2">
-                    <p>No hematology test and result yet</p>
-                </div>
-               {%endfor%}
-              </tbody>
+                <thead class="bg-cyan-50">
+                    <tr class="text-xs">
+                        <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                        <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Test</th>
+                        <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
+                        <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Reported</th>
+                        <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">DICOM File</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-cyan-200">
+                    {% for r in radiology_results %}
+                    <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                        <td class="p-3 whitespace-nowrap">{{ forloop.counter }}</td>
+                        <td class="p-3 whitespace-nowrap">{{ r.test|default_if_none:'' }}</td>
+                        <td class="p-3 whitespace-nowrap">{{ r.comments|default_if_none:'' }}</td>
+                        <td class="p-3 whitespace-nowrap">{{ r.updated|default_if_none:'' }}</td>
+                        <td class="p-3 whitespace-nowrap">
+                        <a href="{{ result.dicom_file.url }}" download>Download DICOM File</a>
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="p-3">
+                            <p>No radiology test and result yet</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
-          </div>
-       </div>
+        </div>
+    </div>
     <!-- break -->
       <!-- break -->
       <div> 
@@ -847,6 +932,14 @@
 
     <!-- break -->
 <!-- end  -->
+  </div>
+</div>
+
+<!-- DICOM Viewer Modal -->
+<div id="dicomViewerModal" class="modal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+  <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
+      <span class="close" onclick="closeDICOMViewer()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+      <div id="dicomViewer" style="width: 512px; height: 512px;"></div>
   </div>
 </div>
 {% endblock %}

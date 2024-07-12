@@ -43,6 +43,7 @@
 <script src="{% static 'js/quill-resize-module.min.js' %}"></script>
 <script src="{%static 'js/jquery-3.6.0.min.js'%}"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 {% include 'django_quill/media.html' %}
 </head>
 
@@ -83,6 +84,7 @@
 	</header>
 	<div class="text-center font-medium text-xs md:text-sm text-green-700 shadow-sm md:mx-20 mx-2 rounded-b bg-white p-2 ">
 		{% block page_title%}{%endblock%}
+		{% block extra_js%}{%endblock%}
 	</div>
 	{% endif %}
 {% block content %}

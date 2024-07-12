@@ -278,27 +278,18 @@ class WardNotesForm(forms.ModelForm):
             })
 
 
-class TheatreItemForm(forms.ModelForm):
+class BillingForm(forms.ModelForm):
     class Meta:
-        model = TheatreItem
-        fields = ['name','price','quantity']
+        model = Billing
+        fields = ['category','item','quantity']
 
     def __init__(self, *args, **kwargs):
-        super(TheatreItemForm, self).__init__(*args, **kwargs)
+        super(BillingForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
-
-class CartItemForm(forms.ModelForm):
-    class Meta:
-        model = CartItem
-        fields = ['item', 'quantity']
-        widgets = {
-            'item': forms.Select(attrs={'class': 'form-control'}),
-            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
-        }
 
 class TheatreBookingForm(forms.ModelForm):
     class Meta:
@@ -327,10 +318,6 @@ class TheatreNotesForm(forms.ModelForm):
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
-class DicomFileForm(forms.ModelForm):
-    class Meta:
-        model = DicomFile
-        fields = ['file']
 
 class RadiologyTestForm(forms.ModelForm):
     class Meta:
@@ -355,3 +342,8 @@ class RadiologyResultForm(forms.ModelForm):
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
+
+class DICOMFileUploadForm(forms.ModelForm):
+    class Meta:
+        model = RadiologyResult
+        fields = ['dicom_file', 'comments']

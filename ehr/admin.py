@@ -39,6 +39,7 @@ class ServicesAdmin(admin.ModelAdmin):
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
+
 @admin.register(Unit)
 class UnitAdmin(admin.ModelAdmin):
     list_display = ('name',)
@@ -77,11 +78,25 @@ class BillItemAdmin(admin.ModelAdmin):
     list_filter = ('patient','created')
 
 
+@admin.register(Billing)
+class BillingAdmin(admin.ModelAdmin):
+    list_display = ('bill','category','item','price','quantity')
+    search_fields = ('category','item','price','quantity')
+    list_filter = ('category','item','price','quantity')
+
+
 @admin.register(TheatreItem)
 class TheatreItemAdmin(admin.ModelAdmin):
-    list_display = ('bill','name','price','quantity')
-    search_fields = ('name','price','quantity')
-    list_filter = ('name','price','quantity')
+    list_display = ('__str__',)
+    search_fields = ('cateogry','name',)
+    list_filter = ('category','name',)
+
+
+@admin.register(TheatreItemCategory)
+class TheatreItemCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
 
 
 @admin.register(RadiologyTest)

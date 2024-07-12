@@ -33,6 +33,10 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from django.conf import settings
 import datetime
+from xhtml2pdf import pisa
+from django.forms import modelformset_factory
+from django.http import JsonResponse
+
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -572,7 +576,6 @@ class PatientFolderView(DetailView):
         context['micro_results']=patient.microbiology_results.all().order_by('-created')
         context['serology_results']=patient.serology_results.all().order_by('-created')
             # context['general_results']=patient.general_results.all().order_by('-created')
-        # context['radiology_files'] = patient.radiology_files.all().order_by('-updated')
         context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
         context['admission_info'] = patient.admission_info.all().order_by('-updated')
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
@@ -581,7 +584,9 @@ class PatientFolderView(DetailView):
         context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
         context['theatre_notes'] = patient.theatre_notes.all().order_by('-updated')
         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
-
+        
+        radiology_results = patient.radiology_results.all().order_by('-updated')
+        context['radiology_results'] = radiology_results
         # Calculate total worth only for paid transactions
         paid_transactions = patient.patient_payments.filter(status=True)
         paid_transactions_count = paid_transactions.count()
@@ -1601,45 +1606,44 @@ class WardNotesCreateView(NurseRequiredMixin,CreateView):
         return context
 
 
-from django.forms import modelformset_factory
-
-class TheatreBillCreateView(DoctorRequiredMixin, LoginRequiredMixin, CreateView):
-    model = Bill
+class BillingCreateView(DoctorRequiredMixin, LoginRequiredMixin, CreateView):
+    model = Billing
     template_name = 'ehr/revenue/billing.html'
-    fields = []
-
+    
+    def get_form(self):
+        BillingFormSet = modelformset_factory(Billing,form=BillingForm,extra=5)
+        if self.request.method == 'POST':
+            return BillingFormSet(self.request.POST)
+        else:
+            return BillingFormSet(queryset=Billing.objects.none())
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        items = TheatreItem.objects.all()
-        CartItemFormSet = modelformset_factory(CartItem, form=CartItemForm, extra=1)
-        if self.request.POST:
-            formset = CartItemFormSet(self.request.POST)
-            context['formset'] = formset
-        else:
-            formset = CartItemFormSet(queryset=CartItem.objects.none())
-            context['formset'] = formset
-        context['items'] = items
+        context['formset'] = self.get_form()
+        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         return context
 
-    def form_valid(self, form):
-        formset = self.get_context_data()['formset']
+    def form_valid(self, formset):
         if formset.is_valid():
-            bill = form.save(commit=False)
-            bill.user = self.request.user
-            patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
-            form.instance.patient = patient_data
-            bill.save()
             instances = formset.save(commit=False)
+            patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
             for instance in instances:
-                instance.bill = bill
+                instance.bill.patient = patient
+                instance.bill.user = self.request.user
                 instance.save()
-            return super().form_valid(form)
+            return super().form_valid(formset)
         else:
-            return self.render_to_response(self.get_context_data(form=form))
+            return self.form_invalid(formset)
 
     def get_success_url(self):
         messages.success(self.request, 'BILL ADDED')
         return self.object.patient.get_absolute_url()
+    
+def get_category(request, category_id):
+    items = TheatreItem.objects.filter(category_id=category_id)
+    item_list = [{'id': item.id, 'name': item.name} for item in items]
+    return JsonResponse({'items': item_list})
+
 
 class TheatreBookingCreateView(DoctorRequiredMixin, CreateView):
         model = TheatreBooking
@@ -1740,62 +1744,6 @@ class TheatreNotesListView(DoctorRequiredMixin,ListView):
         context['theatreFilter'] = TheatreNotesFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
-def upload_file(request):
-    if request.method == 'POST':
-        form = DicomFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('dicom_app:file_list')
-    else:
-        form = DicomFileForm()
-    return render(request, 'dicom_app/upload.html', {'form': form})
-
-def file_list(request):
-    files = DicomFile.objects.all()
-    return render(request, 'dicom_app/file_list.html', {'files': files})
-
-def view_file(request, pk):
-    dicom_file = DicomFile.objects.get(pk=pk)
-    return render(request, 'dicom_app/view_file.html', {'dicom_file': dicom_file})
-
-
-class RadiologyCreateView(CreateView):
-    model = RadiologyResult
-    form_class = DicomUploadForm
-    template_name = 'ehr/radiology/radiology_form.html'
-
-    def get_initial(self):
-        initial = super().get_initial()
-        file_no = self.kwargs.get('file_no')
-        if file_no:
-            patient = get_object_or_404(PatientData, file_no=file_no)
-            initial['patient'] = patient.file_no
-        return initial
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        # Get the patient instance from the URL parameter
-        file_no = self.kwargs.get('file_no')
-        patient = get_object_or_404(PatientData, file_no=file_no)
-
-        # Create the Radiology instance
-        radiology = form.save(commit=False)
-        radiology.patient = patient
-        radiology.user = self.request.user
-
-        # Save the DICOM file
-        dicom_file = form.cleaned_data.get('dicom_file')
-        radiology.dicom_file = dicom_file
-
-        radiology.save()
-
-        messages.success(self.request, 'DICOM file uploaded successfully.')
-        return redirect(patient.get_absolute_url())
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['initial'] = self.get_initial()
-        return kwargs
     
     
 class RadiologyTestCreateView(LoginRequiredMixin, CreateView):
