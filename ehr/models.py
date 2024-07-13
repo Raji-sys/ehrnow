@@ -417,7 +417,7 @@ class WardMedication(models.Model):
 
 
 class WardClinicalNote(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='ward_clinical_notes')
     note=QuillField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
@@ -426,6 +426,17 @@ class WardClinicalNote(models.Model):
     
     def __str__(self):
         return self.patient
+
+
+class WardShiftSUmmaryNote(models.Model):
+    nurse = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    note=QuillField(null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'ward shift summary notes'
+    
+    def __str__(self):
+        return self.nurse
 
 class TheatreBooking(models.Model):
     THEATRES = [
@@ -440,32 +451,56 @@ class TheatreBooking(models.Model):
         ('BLUE', 'BLUE'),
         ('YELLOW', 'YELLOW')
     ]
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_bookings')
-    theatre = models.CharField(max_length=30, null=True, choices=THEATRES)
     team = models.CharField(max_length=30, null=True, choices=TEAMS)
+    diagnosis=models.CharField(max_length=200,null=True,blank=True)
+    operation_planned=models.CharField(max_length=200,null=True,blank=True)
     date = models.DateField(null=True)
+    blood_requirement=models.CharField(max_length=200,null=True,blank=True)
+    theatre = models.CharField(max_length=30, null=True, choices=THEATRES)
+    note=QuillField(null=True, blank=True)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.patient
 
 
-class TheatreNotes(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="theatre_notes")
+class OperationNotes(models.Model):
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="operation_notes")
     operated=models.BooleanField(default=False)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    operation_notes=QuillField(null=True,blank=True)
+    notes=QuillField(null=True,blank=True)
     anaesthesia=(('GENERAL ANAESTHESIA','GENERAL ANAESTHESIA'),('SPINE ANAESTHESIA','SPINE ANAESTHESIA'))
     type_of_anaesthesia=models.CharField(choices=anaesthesia, max_length=300,null=True,blank=True)
     findings=models.CharField(max_length=300,null=True,blank=True)
+    post_op_order=models.CharField('post-op order',max_length=300,null=True,blank=True)
+    prescription=QuillField(null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name_plural='theatre notes'
+        verbose_name_plural='operation notes'
     def __str__(self):
         return self.patient
 
+class PeriOPNurse(models.Model):
+    nurse = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="peri_op_nurse")
+    updated = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'peri-op nurses'
+    
+    def __str__(self):
+        return self.patient
+
+
+class AnaesthisiaChecklist(models.Model):
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="anaesthesia_checklist")
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.patient
 
 class Bill(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)

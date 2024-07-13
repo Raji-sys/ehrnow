@@ -935,6 +935,10 @@ select {
   margin-top: 2rem;
 }
 
+.ml-10 {
+  margin-left: 2.5rem;
+}
+
 .block {
   display: block;
 }
@@ -984,12 +988,20 @@ select {
   height: 100vh;
 }
 
+.max-h-\[50vh\] {
+  max-height: 50vh;
+}
+
 .max-h-\[70vh\] {
   max-height: 70vh;
 }
 
-.min-h-screen {
-  min-height: 100vh;
+.max-h-\[60vh\] {
+  max-height: 60vh;
+}
+
+.max-h-\[65vh\] {
+  max-height: 65vh;
 }
 
 .w-1\/2 {
@@ -1096,6 +1108,10 @@ select {
 
 .justify-start {
   justify-content: flex-start;
+}
+
+.justify-end {
+  justify-content: flex-end;
 }
 
 .justify-center {

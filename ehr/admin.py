@@ -126,15 +126,36 @@ class AdmissionAdmin(admin.ModelAdmin):
 
 @admin.register(TheatreBooking)
 class TheatreBookingAdmin(admin.ModelAdmin):
-    list_display = ('patient','theatre','team','date','updated')
-    search_fields = ('patient','theatre','team','date','updated')
-    list_filter = ('patient','theatre','team','date','updated')
+    list_display = ('patient','theatre','team','date','blooad_requirement','updated')
+    search_fields = ('patient','theatre','team','date','blooad_requirement','updated')
+    list_filter = ('patient','theatre','team','date','blooad_requirement','updated')
 
 
-@admin.register(TheatreNotes)
-class TheatreNotesAdmin(admin.ModelAdmin):
-    list_display = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
-    search_fields = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
-    list_filter = ('patient','operation_notes','type_of_anaesthesia','findings','operated','updated')
+@admin.register(OperationNotes)
+class OperationNotesAdmin(admin.ModelAdmin):
+    list_display = ('patient','notes','type_of_anaesthesia','findings','post_op_order','operated','updated')
+    search_fields = ('patient','notes','type_of_anaesthesia','findings','post_op_order','operated','updated')
+    list_filter = ('patient','notes','type_of_anaesthesia','findings','post_op_order','operated','updated')
+
+
+@admin.register(PeriOPNurse)
+class PeriOpNurseAdmin(admin.ModelAdmin):
+    list_display = ('patient','nurse','updated')
+    search_fields = ('nurse','updated')
+    list_filter = ('nurse','updated')
+
+
+@admin.register(AnaesthisiaChecklist)
+class AnaesthisiaChecklistAdmin(admin.ModelAdmin):
+    list_display = ('patient','doctor','updated')
+    search_fields = ('doctor','updated')
+    list_filter = ('doctor','updated')
+
+
+@admin.register(WardShiftSUmmaryNote)
+class WardShiftSUmmaryNoteAdmin(admin.ModelAdmin):
+    list_display = ('nurse','updated',)
+    search_fields = ('nurse','updated')
+    list_filter = ('nurse','updated')
 
 

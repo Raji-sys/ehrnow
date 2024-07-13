@@ -7,21 +7,31 @@
 
 {% endblock %}
 {% block content %}
-<div class=" min-h-screen p-2">
+<div class="p-2">
     <div class="max-w-6xl mx-auto bg-gray-100 rounded-lg shadow-md p-2">
  
         <div class="bg-gray-200 rounded-md p-2 text-xs uppercase text-center">
-            <h1 class="text-sm font-bold text-blue-600">Bill Detail</h1>
             <p class="text-sm"><span class="font-semibold">Patient:</span> {{ bill.patient}} &nbsp;
             </p>
-                <a href="{% url 'bill_pdf' bill.id %}" class="text-green-600 hover:text-green-800 m-2" target="_blank">
-                    <i class="fas fa-file-pdf fa-2xl"></i>
-                </a>
-                <!-- <a href="{% url 'bill_pdf' bill.id %}?download=1" class="text-blue-600 hover:text-blue-800">
-                    <i class="fas fa-download fa-xl"></i>
-                </a> -->
+            <div class="flex justify-between">
+                <div>
+                    <a href="{% url 'bill_pdf' bill.id %}" class="text-green-600 hover:text-green-800" target="_blank">
+                        <i class="fas fa-file-pdf fa-2xl"></i>
+                            print bill
+                    </a>
+                </div>
+                <div>
+                    <span class="ml-10 text-black text-xs">Total Amount:</span> <span class=" text-green-600 text-sm font-semibold">
+                        &#x20A6;{{ bill.total_amount }}&nbsp;
+                    </span>
+                    <!-- <a href="{% url 'bill_pdf' bill.id %}?download=1" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-download fa-xl"></i>
+                    </a> -->
+                </div>
+            </div>
         </div>
         {% if billing_items %}
+        <div class="max-h-[60vh] overflow-y-auto p-2"> <!-- Added this container -->
         <div class="overflow-x-auto">
             <table class="w-full table-auto">
                 <thead class="bg-blue-600 text-white">
@@ -52,9 +62,7 @@
         <p class="text-gray-600">No items associated with this bill.</p>
         {% endif %}
         <div class="text-sm m-4 gap-4">
-            <span class="">Total Amount:</span> <span class="text-green-600 font-semibold">
-                &#x20A6;{{ bill.total_amount }}&nbsp;
-            </span>
+         
             <span class="">Date:</span>
             <span class="text-gray-600 font-semibold">
                 {{ bill.created|date:"d-M-Y" }}&nbsp;
@@ -70,5 +78,6 @@
         </div>
 
     </div>
+</div>
 </div>
 {% endblock %}

@@ -1664,9 +1664,9 @@ class TheatreBookingListView(DoctorRequiredMixin,ListView):
         return context
 
 
-class TheatreNotesCreateView(DoctorRequiredMixin,CreateView):
-    model = TheatreNotes
-    form_class = TheatreNotesForm
+class OperationNotesCreateView(DoctorRequiredMixin,CreateView):
+    model = OperationNotes
+    form_class = OperationNotesForm
     template_name = 'ehr/theatre/theatre_notes.html'
 
     def form_valid(self, form):
@@ -1687,22 +1687,22 @@ class TheatreNotesCreateView(DoctorRequiredMixin,CreateView):
         return self.object.patient.get_absolute_url()
 
 
-class TheatreNotesListView(DoctorRequiredMixin,ListView):
-    model=TheatreNotes
+class OperationNotesListView(DoctorRequiredMixin,ListView):
+    model=OperationNotes
     template_name='ehr/theatre/operated_list.html'
     context_object_name='operated'
     paginate_by = 10
 
     def get_queryset(self):
         theatre = super().get_queryset().order_by('-updated')
-        theatre_filter = TheatreNotesFilter(self.request.GET, queryset=theatre)
+        theatre_filter = OperationNotesFilter(self.request.GET, queryset=theatre)
         return theatre_filter.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         total_operations = self.get_queryset().count()
         context['total_operations'] = total_operations
-        context['theatreFilter'] = TheatreNotesFilter(self.request.GET, queryset=self.get_queryset())
+        context['theatreFilter'] = OperationNotesFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
     

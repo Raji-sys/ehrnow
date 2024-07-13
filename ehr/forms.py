@@ -306,13 +306,13 @@ class TheatreBookingForm(forms.ModelForm):
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
-class TheatreNotesForm(forms.ModelForm):
+class OperationNotesForm(forms.ModelForm):
     class Meta:
-        model = TheatreNotes
+        model = OperationNotes
         fields = ['operated','operation_notes','type_of_anaesthesia','findings']
 
     def __init__(self, *args, **kwargs):
-        super(TheatreNotesForm, self).__init__(*args, **kwargs)
+        super(OperationNotesForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
