@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.base import TemplateView
-from django.forms import inlineformset_factory
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -37,6 +36,7 @@ from xhtml2pdf import pisa
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.db import transaction
+from django.db.models import Sum, Count
 
 
 
@@ -1797,7 +1797,7 @@ class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
     template_name = 'ehr/revenue/billing.html'
     
     def get_form(self):
-        BillingFormSet = modelformset_factory(Billing, form=BillingForm, extra=5)
+        BillingFormSet = modelformset_factory(Billing, form=BillingForm, extra=26)
         if self.request.method == 'POST':
             return BillingFormSet(self.request.POST)
         else:
@@ -1878,7 +1878,6 @@ class BillDetailView(DetailView):
         return super().get_queryset().prefetch_related('items__item__category')
 
 
-from django.db.models import Sum, Count
 
 class BillingPayListView(ListView):
     model = Paypoint
@@ -1921,78 +1920,6 @@ class BillListView(DoctorRequiredMixin, LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['total_bills'] = self.get_queryset().count()
         return context
-
-
-class BillDeleteView(DoctorRequiredMixin, LoginRequiredMixin, DeleteView):
-    model = Bill
-    template_name = 'ehr/revenue/bill_confirm_delete.html'
-    
-    def get_success_url(self):
-        messages.success(self.request, 'Bill deleted successfully.')
-        return reverse_lazy('bill_list')
-
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        success_url = self.get_success_url()
-        
-        # Delete associated Paypoint
-        Paypoint.objects.filter(service=self.object).delete()
-        
-        # Delete the Bill
-        self.object.delete()
-        
-        return HttpResponseRedirect(success_url)
-
-
-class BillUpdateView(DoctorRequiredMixin, LoginRequiredMixin, UpdateView):
-    model = Bill
-    template_name = 'ehr/revenue/bill_update.html'
-    
-    def get_form(self):
-        BillingFormSet = modelformset_factory(Billing, form=BillingForm, extra=0, can_delete=True)
-        if self.request.method == 'POST':
-            return BillingFormSet(self.request.POST, queryset=self.object.items.all())
-        else:
-            return BillingFormSet(queryset=self.object.items.all())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['formset'] = self.get_form()
-        context['bill'] = self.object
-        context['patient'] = self.object.patient
-        return context
-
-    def form_valid(self, formset):
-        if formset.is_valid():
-            with transaction.atomic():
-                instances = formset.save(commit=False)
-                for obj in formset.deleted_objects:
-                    obj.delete()
-                total_amount = 0
-                for instance in instances:
-                    instance.bill = self.object
-                    total_amount += instance.total_item_price
-                    instance.save()
-                self.object.total_amount = total_amount
-                self.object.save()
-                
-                # Update associated Paypoint
-                paypoint = Paypoint.objects.filter(service=self.object).first()
-                if paypoint:
-                    paypoint.price = total_amount
-                    paypoint.save()
-                
-            messages.success(self.request, 'Bill updated successfully.')
-            return super().form_valid(formset)
-        else:
-            return self.form_invalid(formset)
-
-    def form_invalid(self, formset):
-        messages.error(self.request, 'There was an error updating the bill. Please check the form.')
-        return super().form_invalid(formset)
-
-    def get_success_url(self):
-        return reverse('patient_details', kwargs={'file_no': self.object.patient.file_no})
     
 
 def render_to_pdf(template_src, context_dict):

@@ -206,7 +206,8 @@ class Paypoint(models.Model):
     status=models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateField(auto_now=True)
-   
+    def __str__(self):
+        return f"{self.status}"
 
 class FollowUpVisit(models.Model):
     CLINIC_CHOICES = [
@@ -428,6 +429,8 @@ class WardClinicalNote(models.Model):
 
 class TheatreBooking(models.Model):
     THEATRES = [
+        ('A & E THEATRE', 'A & E THEATRE'),
+        ('o & G THEATRE', 'O & G THEATRE'),
         ('MAIN THEATRE', 'MAIN THEATRE'),
         ('SPINE THEATRE', 'SPINE THEATRE'),
     ]

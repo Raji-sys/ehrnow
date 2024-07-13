@@ -2,7 +2,7 @@
 {% block title %}Bill List{% endblock %}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>THEATRE BILLING LIST</div>{%endblock%}
 {% block content %}
-<div class="min-h-screen mx-20">
+<div class="mx-20">
     <div class="max-w-6xl mx-auto">
     
         <div class="bg-white shadow-md rounded-lg overflow-hidden mt-2">
@@ -40,12 +40,7 @@
                                 <a href="{% url 'bill_detail' bill.id %}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{% url 'bill_update' bill.id %}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'bill_delete' bill.id %}" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
+                       
                             </div>
                         </td>
                     </tr>

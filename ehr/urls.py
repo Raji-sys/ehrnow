@@ -157,8 +157,6 @@ urlpatterns = [
     path('theatre/theatre-bill/<str:file_no>/', BillingCreateView.as_view(), name='surgery_bill'),   
     path('bill/<int:pk>/', BillDetailView.as_view(), name='bill_detail'),
     path('bills/', BillListView.as_view(), name='bill_list'),
-    path('bill/update/<int:pk>/', BillUpdateView.as_view(), name='bill_update'),
-    path('bill/delete/<int:pk>/', BillDeleteView.as_view(), name='bill_delete'),
     path('bill/pdf/<int:pk>/', BillPDFView.as_view(), name='bill_pdf'),
 
 ]

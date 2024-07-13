@@ -72,17 +72,28 @@ class MedicalRecordAdmin(admin.ModelAdmin):
 
 
 @admin.register(Bill)
-class BillItemAdmin(admin.ModelAdmin):
-    list_display = ('patient','total_amount','created')
-    search_fields = ('patient','created')
-    list_filter = ('patient','created')
+class BillAdmin(admin.ModelAdmin):
+    list_display = ('patient', 'user', 'total_amount', 'get_payment', 'created',)
+    list_filter = ('created',)
+    search_fields = ('patient__name', 'user__username')
+    readonly_fields=('patient','user','total_amount',)
 
+    def get_payment(self, obj):
+        billing = obj.items.first()  # Assuming 'items' is the related_name in Billing model
+        return billing.payment if billing else None
+    get_payment.short_description = 'Payment'
+    get_payment.admin_order_field = 'items__payment'
 
-# @admin.register(Billing)
 # class BillingAdmin(admin.ModelAdmin):
-#     list_display = ('bill','category','item','quantity')
-#     search_fields = ('category','item','quantity')
-#     list_filter = ('category','item','quantity')
+#     list_display = ('id', 'bill', 'get_patient', 'category', 'item', 'quantity', 'payment', 'updated')
+#     list_filter = ('updated', 'category')
+#     search_fields = ('bill__patient__name', 'item__name')
+#     readonly_fields=('payment','bill',)
+
+#     def get_patient(self, obj):
+#         return obj.bill.patient if obj.bill else None
+#     get_patient.short_description = 'Patient'  # Sets column name in admin
+#     get_patient.admin_order_field = 'bill__patient'  # Allows column to be sortable
 
 
 @admin.register(TheatreItem)

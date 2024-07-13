@@ -46,7 +46,6 @@
 
 {% include 'django_quill/media.html' %}
 </head>
-
 <body class="h-screen">
   <style>
 	a{
@@ -61,6 +60,25 @@
 		background-repeat: no-repeat;
 		background-size: cover;
         }
+/* For WebKit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4a90e2;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: auto;
+    scrollbar-color: #4a90e2 #f1f1f1;
+}
 
   </style>
 		{% if request.user.is_authenticated %}
