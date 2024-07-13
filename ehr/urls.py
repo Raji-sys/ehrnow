@@ -142,8 +142,8 @@ urlpatterns = [
     path('clinic/theatre-booking/surgery-wait-list', TheatreBookingListView.as_view(), name="surgery_wait_list"),
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
 
-    path('theatre/theatre-notes/<str:file_no>/', TheatreNotesCreateView.as_view(), name='theatre_note'),
-    path('theatre/operated-patient-list', TheatreNotesListView.as_view(), name="operated_list"),
+    path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='theatre_note'),
+    path('theatre/operated-patient-list', OperationNotesListView.as_view(), name="operated_list"),
     path('get_category/<int:category_id>/', views.get_category, name='get_category'),
 
     #radiology

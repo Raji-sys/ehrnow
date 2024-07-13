@@ -126,9 +126,9 @@ class AdmissionAdmin(admin.ModelAdmin):
 
 @admin.register(TheatreBooking)
 class TheatreBookingAdmin(admin.ModelAdmin):
-    list_display = ('patient','theatre','team','date','blooad_requirement','updated')
-    search_fields = ('patient','theatre','team','date','blooad_requirement','updated')
-    list_filter = ('patient','theatre','team','date','blooad_requirement','updated')
+    list_display = ('patient','theatre','team','date','blood_requirement','updated')
+    search_fields = ('patient','theatre','team','date','blood_requirement','updated')
+    list_filter = ('patient','theatre','team','date','blood_requirement','updated')
 
 
 @admin.register(OperationNotes)
