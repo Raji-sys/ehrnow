@@ -438,70 +438,6 @@ class WardShiftSUmmaryNote(models.Model):
     def __str__(self):
         return self.nurse
 
-class TheatreBooking(models.Model):
-    THEATRES = [
-        ('A & E THEATRE', 'A & E THEATRE'),
-        ('o & G THEATRE', 'O & G THEATRE'),
-        ('MAIN THEATRE', 'MAIN THEATRE'),
-        ('SPINE THEATRE', 'SPINE THEATRE'),
-    ]
-    TEAMS = [
-        ('WHITE', 'WHITE'),
-        ('GREEN', 'GREEN'),
-        ('BLUE', 'BLUE'),
-        ('YELLOW', 'YELLOW')
-    ]
-    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_bookings')
-    team = models.CharField(max_length=30, null=True, choices=TEAMS)
-    diagnosis=models.CharField(max_length=200,null=True,blank=True)
-    operation_planned=models.CharField(max_length=200,null=True,blank=True)
-    date = models.DateField(null=True)
-    blood_requirement=models.CharField(max_length=200,null=True,blank=True)
-    theatre = models.CharField(max_length=30, null=True, choices=THEATRES)
-    note=QuillField(null=True, blank=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return self.patient
-
-
-class OperationNotes(models.Model):
-    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="operation_notes")
-    operated=models.BooleanField(default=False)
-    notes=QuillField(null=True,blank=True)
-    anaesthesia=(('GENERAL ANAESTHESIA','GENERAL ANAESTHESIA'),('SPINE ANAESTHESIA','SPINE ANAESTHESIA'))
-    type_of_anaesthesia=models.CharField(choices=anaesthesia, max_length=300,null=True,blank=True)
-    findings=models.CharField(max_length=300,null=True,blank=True)
-    post_op_order=models.CharField('post-op order',max_length=300,null=True,blank=True)
-    prescription=QuillField(null=True,blank=True)
-    updated = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural='operation notes'
-    def __str__(self):
-        return self.patient
-
-class PeriOPNurse(models.Model):
-    nurse = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="peri_op_nurse")
-    updated = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'peri-op nurses'
-    
-    def __str__(self):
-        return self.patient
-
-
-class AnaesthisiaChecklist(models.Model):
-    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="anaesthesia_checklist")
-    updated = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return self.patient
-
 class Bill(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='surgery_bill',null=True)
@@ -550,7 +486,150 @@ class Billing(models.Model):
     def total_item_price(self):
         return self.item.price * self.quantity
        
-        
+
+class TheatreBooking(models.Model):
+    THEATRES = [
+        ('A & E THEATRE', 'A & E THEATRE'),
+        ('o & G THEATRE', 'O & G THEATRE'),
+        ('MAIN THEATRE', 'MAIN THEATRE'),
+        ('SPINE THEATRE', 'SPINE THEATRE'),
+    ]
+    TEAMS = [
+        ('WHITE', 'WHITE'),
+        ('GREEN', 'GREEN'),
+        ('BLUE', 'BLUE'),
+        ('YELLOW', 'YELLOW')
+    ]
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_bookings')
+    team = models.CharField(max_length=30, null=True, choices=TEAMS)
+    diagnosis=models.CharField(max_length=200,null=True,blank=True)
+    operation_planned=models.CharField(max_length=200,null=True,blank=True)
+    date = models.DateField(null=True)
+    blood_requirement=models.CharField(max_length=200,null=True,blank=True)
+    theatre = models.CharField(max_length=30, null=True, choices=THEATRES)
+    note=QuillField(null=True, blank=True)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.patient
+
+
+class PeriOPNurse(models.Model):
+    nurse = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="peri_op_nurse")
+    updated = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'peri-op nurses'
+    
+    def __str__(self):
+        return self.patient
+
+
+class AnaesthisiaChecklist(models.Model):
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="anaesthesia_checklist")
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.patient
+
+
+class TheatreOperationRecord(models.Model):
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    info=models.ForeignKey(TheatreBooking,on_delete=models.CASCADE,null=True)    
+    operation=models.CharField(max_length=300,null=True,blank=True)
+    surgeons=models.TextField(null=True,blank=True)
+    assistant=models.TextField(null=True,blank=True)
+    instrument_nurse=models.CharField(max_length=300,null=True,blank=True)
+    anaesthetist=models.CharField(max_length=300,null=True,blank=True)
+    anaesthetic=models.CharField(max_length=300,null=True,blank=True)
+    circulation=models.CharField(max_length=300,null=True,blank=True)
+    comments=models.TextField(null=True,blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+class InstrumentCount(models.Model):
+    ITEM_CHOICES = [
+        ('SWABS', 'Swabs & Instrument Count'),
+        ('TOWEL', 'Towel Clips'),
+        ('GAUZE', 'Pack Gauze Small'),
+        ('ARTERY', 'Artery Forceps'),
+        ('NEEDLES', 'Needles'),
+        ('LARGE_SWABS', 'Large Swabs'),
+    ]    
+    STAGE_CHOICES = [
+        ('BEFORE', 'Before Operation'),
+        ('DURING', 'During Operation'),
+        ('TOTAL', 'Total at the End'),
+    ]
+    operation_record = models.ForeignKey(TheatreOperationRecord, on_delete=models.CASCADE, related_name='instrument_counts')
+    item = models.CharField(max_length=20, choices=ITEM_CHOICES)
+    stage = models.CharField(max_length=10, choices=STAGE_CHOICES)
+    count = models.IntegerField()
+
+    class Meta:
+        unique_together = ['operation_record', 'item', 'stage']
+
+    def __str__(self):
+        return f"{self.get_item_display()} - {self.get_stage_display()}: {self.count}"
+    
+
+class OperatingTheatre(models.Model):
+    patient = models.ForeignKey('PatientData', on_delete=models.CASCADE)
+    wards=(('MALE WARD','MALE WARD'),('FEMALE WARD','FEMALE WARD'),('CHILDRENS WARD','CHILDRENS WARD'),('ICU','ICU'))
+    ward=models.CharField(choices=wards,max_length=300,null=True, blank=True)
+    date = models.DateField()
+    diagnosis = models.CharField(max_length=300, blank=True, null=True)
+    operation = models.CharField(max_length=300, blank=True, null=True)
+    surgeon = models.CharField(max_length=100, blank=True, null=True)
+    asst_1 = models.CharField(max_length=100, blank=True, null=True)
+    asst_2 = models.CharField(max_length=100, blank=True, null=True)
+    asst_3 = models.CharField(max_length=100, blank=True, null=True)
+    scrub_nurse = models.CharField(max_length=100, blank=True, null=True)
+    circulating_nurse = models.CharField(max_length=100, blank=True, null=True)
+    anaesthetist = models.CharField(max_length=100, blank=True, null=True)
+    scrub_nurse_signature = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"Operation for {self.patient} on {self.date}"
+
+class SurgicalConsumable(models.Model):
+    operation = models.ForeignKey(OperatingTheatre, related_name='surgical_consumables', on_delete=models.CASCADE)
+    item_description = models.CharField(max_length=300)
+    quantity = models.IntegerField()
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.item_description} for {self.operation}"
+
+class Implant(models.Model):
+    operation = models.ForeignKey(OperatingTheatre, related_name='implants', on_delete=models.CASCADE)
+    type_of_implant = models.CharField(max_length=300)
+    quantity = models.IntegerField()
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.type_of_implant} for {self.operation}"
+
+
+class OperationNotes(models.Model):
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="operation_notes")
+    operated=models.BooleanField(default=False)
+    notes=QuillField(null=True,blank=True)
+    anaesthesia=(('GENERAL ANAESTHESIA','GENERAL ANAESTHESIA'),('SPINE ANAESTHESIA','SPINE ANAESTHESIA'))
+    type_of_anaesthesia=models.CharField(choices=anaesthesia, max_length=300,null=True,blank=True)
+    findings=models.CharField(max_length=300,null=True,blank=True)
+    post_op_order=models.CharField('post-op order',max_length=300,null=True,blank=True)
+    prescription=QuillField(null=True,blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural='operation notes'
+    def __str__(self):
+        return self.patient
+
+
 class Physio(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)

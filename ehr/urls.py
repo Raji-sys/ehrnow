@@ -141,7 +141,9 @@ urlpatterns = [
     path('clinic/theatre-booking/book-for-surgery/<str:file_no>/', TheatreBookingCreateView.as_view(), name='book_for_surgery'),
     path('clinic/theatre-booking/surgery-wait-list', TheatreBookingListView.as_view(), name="surgery_wait_list"),
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
-
+    path('clinic/theatre-operation-record/create/', TheatreOperationRecordCreateView.as_view(), name='theatre_op_record'),
+    path('clinic/theatre/operating-theatre/create/', OperatingTheatreFormView.as_view(), name='operating_theatre'),
+  
     path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='theatre_note'),
     path('theatre/operated-patient-list', OperationNotesListView.as_view(), name="operated_list"),
     path('get_category/<int:category_id>/', views.get_category, name='get_category'),
@@ -158,5 +160,6 @@ urlpatterns = [
     path('bill/<int:pk>/', BillDetailView.as_view(), name='bill_detail'),
     path('bills/', BillListView.as_view(), name='bill_list'),
     path('bill/pdf/<int:pk>/', BillPDFView.as_view(), name='bill_pdf'),
+
 
 ]

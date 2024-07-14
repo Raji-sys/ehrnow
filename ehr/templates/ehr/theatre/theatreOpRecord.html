@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    {% csrf_token %}
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">
+      <i class="fas fa-theater-masks mr-2"></i>Theatre Operation Record
+    </h2>
+    <div class="mb-6">
+      {{ form.as_p|safe }}
+    </div>
+    <h3 class="text-xl font-semibold mb-4 text-gray-700">
+      <i class="fas fa-clipboard-list mr-2"></i>Instrument Counts
+    </h3>
+    {{ instrument_counts.management_form }}
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">Item</th>
+            <th scope="col" class="px-6 py-3">Before Operation</th>
+            <th scope="col" class="px-6 py-3">During Operation</th>
+            <th scope="col" class="px-6 py-3">Total at the End</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in instrument_counts.forms|dictsort:"initial.item"|slice:":5" %}
+          <tr class="bg-white border-b hover:bg-gray-50">
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+              <i class="fas fa-tools mr-2"></i>{{ item.item.value }}
+            </td>
+            {% for subform in instrument_counts.forms|dictsort:"initial.stage"|slice:forloop.counter0|slice:forloop.counter %}
+            <td class="px-6 py-4">
+              {{ subform.id }}
+              {{ subform.item }}
+              {{ subform.stage }}
+              {{ subform.count }}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-6">
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        <i class="fas fa-save mr-2"></i>Save
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

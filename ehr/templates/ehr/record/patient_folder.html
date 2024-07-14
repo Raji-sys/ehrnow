@@ -843,7 +843,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="text-center rounded-xl p-2 m-4  md:p-10 bg-gray-50">
           <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-2 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
             <li ><a href="#" class="rounded-lg ">THEATRE BOOKINGS</a></li>
-            <li><a href="#" class="rounded-lg ">THEATRE NOTES</a></li>
+            <li><a href="#" class="rounded-lg ">OPERATION NOTES</a></li>
           </ul>
           
           <div class="uk-switcher uk-margin">
@@ -888,7 +888,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
             <div>
               <div>
-                <a href="{% url 'theatre_note' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
+                <a href="{% url 'operation_note' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
               <div class="overflow-x-auto p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -898,6 +898,8 @@ document.addEventListener('DOMContentLoaded', function() {
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">anaesthesia used</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">findings</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">post op-order</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">prescription</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Note</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">By</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
@@ -905,21 +907,23 @@ document.addEventListener('DOMContentLoaded', function() {
           
                   </thead>
                   <tbody class="bg-white divide-y divide-cyan-200">
-                    {% for t in theatre_notes %}
+                    {% for o in operation_notes %}
                     <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                       <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.type_of_anaesthesia }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.findings }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ o.type_of_anaesthesia }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ o.findings }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ o.post_op_order }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ o.prescription }}</td>
                       <td class=" p-3 whitespace-nowrap">
                         <details>
                           <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
                           <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto rounded-md m-4">
-                            <p class="text-xs text-center">{{ t.operation_notes }}</p>
+                            <p class="text-xs text-center">{{ o.notes }}</p>
                           </div>
                         </details>    
                       </td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.user|default_if_none:'' }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.updated|default_if_none:'' }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ o.user|default_if_none:'' }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ o.updated|default_if_none:'' }}</td>
                     </tr>
                     {%empty%}
                     <div class="p-2">

@@ -2,6 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django import forms
 from .models import *
+from django.forms import inlineformset_factory
 
 class CustomUserCreationForm(UserCreationForm):
     middle_name = forms.CharField(max_length=30, required=False)
@@ -343,7 +344,33 @@ class RadiologyResultForm(forms.ModelForm):
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
-class DICOMFileUploadForm(forms.ModelForm):
+class TheatreOperationRecordForm(forms.ModelForm):
     class Meta:
-        model = RadiologyResult
-        fields = ['dicom_file', 'comments']
+        model = TheatreOperationRecord
+        exclude = ['patient']
+
+InstrumentCountFormSet = inlineformset_factory(
+    TheatreOperationRecord, 
+    InstrumentCount, 
+    fields=('item', 'stage', 'count'),
+    extra=15,  # 5 items * 3 stages
+    can_delete=False
+)
+
+
+class OperatingTheatreForm(forms.ModelForm):
+    class Meta:
+        model = OperatingTheatre
+        exclude = ['patient']
+
+SurgicalConsumableFormSet = inlineformset_factory(
+    OperatingTheatre, SurgicalConsumable, 
+    fields=('item_description', 'quantity', 'cost'), 
+    extra=3, can_delete=True
+)
+
+ImplantFormSet = inlineformset_factory(
+    OperatingTheatre, Implant, 
+    fields=('type_of_implant', 'quantity', 'cost'), 
+    extra=3, can_delete=True
+)

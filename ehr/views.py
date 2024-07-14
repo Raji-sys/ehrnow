@@ -1952,3 +1952,118 @@ class BillPDFView(DetailView):
                 response['Content-Disposition'] = content
             return response
         return HttpResponse("Error generating PDF", status=400)
+    
+
+class TheatreOperationRecordCreateView(CreateView):
+    model = TheatreOperationRecord
+    form_class = TheatreOperationRecordForm
+    template_name = 'ehr/theatre/theatreOpRecord.html'
+    success_url = reverse_lazy('theatre') 
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['instrument_counts'] = InstrumentCountFormSet(self.request.POST)
+        else:
+            data['instrument_counts'] = InstrumentCountFormSet()
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        instrument_counts = context['instrument_counts']
+        with transaction.atomic():
+            self.object = form.save()
+            if instrument_counts.is_valid():
+                instrument_counts.instance = self.object
+                instrument_counts.save()
+        return super().form_valid(form)
+
+
+class OperatingTheatreFormView(CreateView):
+    model = OperatingTheatre
+    form_class = OperatingTheatreForm
+    template_name = 'ehr/theatre/operating_theatre.html'
+    success_url = reverse_lazy('theatre')  # Adjust as needed
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['surgical_consumables'] = SurgicalConsumableFormSet(self.request.POST, instance=self.object)
+            context['implants'] = ImplantFormSet(self.request.POST, instance=self.object)
+        else:
+            context['surgical_consumables'] = SurgicalConsumableFormSet(instance=self.object)
+            context['implants'] = ImplantFormSet(instance=self.object)
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        surgical_consumables = context['surgical_consumables']
+        implants = context['implants']
+        
+        with transaction.atomic():
+            self.object = form.save()
+            
+            if surgical_consumables.is_valid():
+                surgical_consumables.instance = self.object
+                surgical_consumables.save()
+            else:
+                return self.form_invalid(form)
+            
+            if implants.is_valid():
+                implants.instance = self.object
+                implants.save()
+            else:
+                return self.form_invalid(form)
+        
+        messages.success(self.request, "Operating Theatre record created successfully.")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        context = self.get_context_data()
+        messages.error(self.request, "There was an error in your form. Please correct it and try again.")
+        return self.render_to_response(context)
+
+
+# class OperatingTheatreUpdateView(UpdateView):
+#     model = OperatingTheatre
+#     form_class = OperatingTheatreForm
+#     template_name = 'operating_theatre_form.html'
+#     success_url = reverse_lazy('operating_theatre_list')  # Adjust as needed
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         if self.request.POST:
+#             context['surgical_consumables'] = SurgicalConsumableFormSet(self.request.POST, instance=self.object)
+#             context['implants'] = ImplantFormSet(self.request.POST, instance=self.object)
+#         else:
+#             context['surgical_consumables'] = SurgicalConsumableFormSet(instance=self.object)
+#             context['implants'] = ImplantFormSet(instance=self.object)
+#         return context
+
+#     def form_valid(self, form):
+#         context = self.get_context_data()
+#         surgical_consumables = context['surgical_consumables']
+#         implants = context['implants']
+        
+#         with transaction.atomic():
+#             self.object = form.save()
+            
+#             if surgical_consumables.is_valid():
+#                 surgical_consumables.instance = self.object
+#                 surgical_consumables.save()
+#             else:
+#                 return self.form_invalid(form)
+            
+#             if implants.is_valid():
+#                 implants.instance = self.object
+#                 implants.save()
+#             else:
+#                 return self.form_invalid(form)
+        
+#         messages.success(self.request, "Operating Theatre record updated successfully.")
+#         return super().form_valid(form)
+
+#     def form_invalid(self, form):
+#         context = self.get_context_data()
+#         messages.error(self.request, "There was an error in your form. Please correct it and try again.")
+#         return self.render_to_response(context)

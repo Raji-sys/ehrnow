@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">
+    <i class="fas fa-hospital-user mr-2"></i>Operating Theatre Record
+  </h2>
+  <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    {% csrf_token %}
+    
+    <div class="main-info mb-8">
+      <h3 class="text-xl font-semibold mb-4 text-gray-700">
+        <i class="fas fa-user-injured mr-2"></i>Patient Information
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>{{ form.patient.label_tag }} {{ form.patient|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.hosp_no.label_tag }} {{ form.hosp_no|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.ward.label_tag }} {{ form.ward|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.date.label_tag }} {{ form.date|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.sex.label_tag }} {{ form.sex|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+      </div>
+    </div>
+    
+    <div class="operation-info mb-8">
+      <h3 class="text-xl font-semibold mb-4 text-gray-700">
+        <i class="fas fa-procedures mr-2"></i>Operation Details
+      </h3>
+      <div class="grid grid-cols-1 gap-4">
+        <div>{{ form.diagnosis.label_tag }} {{ form.diagnosis|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.operation.label_tag }} {{ form.operation|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+      </div>
+    </div>
+    
+    <div class="staff-info mb-8">
+      <h3 class="text-xl font-semibold mb-4 text-gray-700">
+        <i class="fas fa-user-md mr-2"></i>Staff Information
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>{{ form.surgeon.label_tag }} {{ form.surgeon|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.asst_1.label_tag }} {{ form.asst_1|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.asst_2.label_tag }} {{ form.asst_2|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.asst_3.label_tag }} {{ form.asst_3|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.scrub_nurse.label_tag }} {{ form.scrub_nurse|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.circulating_nurse.label_tag }} {{ form.circulating_nurse|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+        <div>{{ form.anaesthetist.label_tag }} {{ form.anaesthetist|attr:"class:w-full px-3 py-2 text-gray-700 border rounded" }}</div>
+      </div>
+    </div>
+    
+    <div class="surgical-consumables mb-8">
+      <h3 class="text-xl font-semibold mb-4 text-gray-700">
+        <i class="fas fa-toolbox mr-2"></i>Surgical Consumables
+      </h3>
+      {{ surgical_consumables.management_form }}
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">Item Description</th>
+            <th scope="col" class="px-6 py-3">Quantity</th>
+            <th scope="col" class="px-6 py-3">Cost</th>
+            <th scope="col" class="px-6 py-3">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in surgical_consumables.forms %}
+          <tr class="bg-white border-b">
+            <td class="px-6 py-4">{{ form.item_description }}</td>
+            <td class="px-6 py-4">{{ form.quantity }}</td>
+            <td class="px-6 py-4">{{ form.cost }}</td>
+            <td class="px-6 py-4">{{ form.DELETE }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="implants mb-8">
+      <h3 class="text-xl font-semibold mb-4 text-gray-700">
+        <i class="fas fa-bone mr-2"></i>Implants
+      </h3>
+      {{ implants.management_form }}
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">Type of Implant</th>
+            <th scope="col" class="px-6 py-3">Quantity</th>
+            <th scope="col" class="px-6 py-3">Cost</th>
+            <th scope="col" class="px-6 py-3">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in implants.forms %}
+          <tr class="bg-white border-b">
+            <td class="px-6 py-4">{{ form.type_of_implant }}</td>
+            <td class="px-6 py-4">{{ form.quantity }}</td>
+            <td class="px-6 py-4">{{ form.cost }}</td>
+            <td class="px-6 py-4">{{ form.DELETE }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="signature mb-8">
+      <div class="flex items-center">
+        <i class="fas fa-signature mr-2 text-gray-700"></i>
+        {{ form.scrub_nurse_signature.label_tag }} 
+        {{ form.scrub_nurse_signature|attr:"class:ml-2 px-3 py-2 text-gray-700 border rounded" }}
+      </div>
+    </div>
+    
+    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+      <i class="fas fa-save mr-2"></i>Save Record
+    </button>
+  </form>
+</div>
+
+<script>
+function addForm(prefix) {
+  var formCount = parseInt(document.getElementById('id_' + prefix + '-TOTAL_FORMS').value);
+  var newForm = document.getElementById(prefix + '-empty-form').cloneNode(true);
+  newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, formCount);
+  newForm.setAttribute('class', prefix + '-dynamic-form');
+  document.getElementById(prefix + '-form-list').append(newForm);
+  document.getElementById('id_' + prefix + '-TOTAL_FORMS').value = formCount + 1;
+}
+</script>
+{% endblock %}
