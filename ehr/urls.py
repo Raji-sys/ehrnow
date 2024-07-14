@@ -32,6 +32,7 @@ urlpatterns = [
     path('get-started/ward', WardView.as_view(), name='ward_list'),
     path('get-started/icu', ICUView.as_view(), name='icu'),
     path('get-started/audit', AuditView.as_view(), name='audit'),
+    path('get-started/store', StoreView.as_view(), name='store'),
 
     # Record URLs
     path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
@@ -141,12 +142,16 @@ urlpatterns = [
     path('clinic/theatre-booking/book-for-surgery/<str:file_no>/', TheatreBookingCreateView.as_view(), name='book_for_surgery'),
     path('clinic/theatre-booking/surgery-wait-list', TheatreBookingListView.as_view(), name="surgery_wait_list"),
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
-    path('clinic/theatre-operation-record/create/', TheatreOperationRecordCreateView.as_view(), name='theatre_op_record'),
-    path('clinic/theatre/operating-theatre/create/', OperatingTheatreFormView.as_view(), name='operating_theatre'),
-  
+    
+    path('theatre-operation-record/create/', TheatreOperationRecordCreateView.as_view(), name='theatre_op_record'),
+    path('theatre/theatre-operation-record-list', TheatreOperationRecordListView.as_view(), name="theatre_op_list"),
+
+    path('theatre/operating-theatre/create/', OperatingTheatreFormView.as_view(), name='operating_theatre'),
+    path('theatre/operating-theatre-list', OperatingTheatreListView.as_view(), name="operating_theatre_list"),
+
     path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='theatre_note'),
     path('theatre/operated-patient-list', OperationNotesListView.as_view(), name="operated_list"),
-    path('get_category/<int:category_id>/', views.get_category, name='get_category'),
+
 
     #radiology
     path('radiology-list/', RadiologyListView.as_view(), name='radiology_list'),
@@ -157,6 +162,7 @@ urlpatterns = [
 
     #billing
     path('theatre/theatre-bill/<str:file_no>/', BillingCreateView.as_view(), name='surgery_bill'),   
+    path('get_category/<int:category_id>/', views.get_category, name='get_category'),
     path('bill/<int:pk>/', BillDetailView.as_view(), name='bill_detail'),
     path('bills/', BillListView.as_view(), name='bill_list'),
     path('bill/pdf/<int:pk>/', BillPDFView.as_view(), name='bill_pdf'),

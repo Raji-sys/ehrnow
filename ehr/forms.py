@@ -347,8 +347,13 @@ class RadiologyResultForm(forms.ModelForm):
 class TheatreOperationRecordForm(forms.ModelForm):
     class Meta:
         model = TheatreOperationRecord
-        exclude = ['patient']
-
+        exclude = ['patient','info']
+    def __init__(self, *args, **kwargs):
+        super(TheatreOperationRecordForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
 InstrumentCountFormSet = inlineformset_factory(
     TheatreOperationRecord, 
     InstrumentCount, 
@@ -362,15 +367,21 @@ class OperatingTheatreForm(forms.ModelForm):
     class Meta:
         model = OperatingTheatre
         exclude = ['patient']
+    def __init__(self, *args, **kwargs):
+        super(OperatingTheatreForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
 
 SurgicalConsumableFormSet = inlineformset_factory(
     OperatingTheatre, SurgicalConsumable, 
     fields=('item_description', 'quantity', 'cost'), 
-    extra=3, can_delete=True
+    extra=3, can_delete=False
 )
-
+    
 ImplantFormSet = inlineformset_factory(
     OperatingTheatre, Implant, 
     fields=('type_of_implant', 'quantity', 'cost'), 
-    extra=3, can_delete=True
+    extra=3, can_delete=False
 )

@@ -256,8 +256,25 @@ class IndexView(TemplateView):
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class GetStartedView(TemplateView):
-    template_name = "get_started.html"
-
+    template_name='get_started.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['items'] = [
+        {'url': 'medical_record', 'text_color': 'text-slate-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-book', 'name': 'MEDICAL RECORD'},
+        {'url': 'revenue', 'text_color': 'text-green-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-cash-register', 'name': 'REVENUE'},
+        {'url': 'nursing', 'text_color': 'text-blue-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-stethoscope', 'name': 'NURSING'},
+        {'url': 'clinic_list', 'text_color': 'text-gray-800', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-user-doctor', 'name': 'CLINIC'},
+        {'url': 'pharmacy', 'text_color': 'text-indigo-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-prescription', 'name': 'PHARMACY'},
+        {'url': 'pathology:dashboard', 'text_color': 'text-fuchsia-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-vial', 'name': 'PATHOLOGY'},
+        {'url': 'radiology', 'text_color': 'text-amber-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-x-ray', 'name': 'RADIOLOGY'},
+        {'url': 'ward_list', 'text_color': 'text-purple-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-bed-pulse', 'name': 'WARD'},
+        {'url': 'theatre', 'text_color': 'text-pink-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-head-side-mask', 'name': 'THEATRE'},
+        {'url': 'physio', 'text_color': 'text-gray-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-wheelchair-move', 'name': 'PHYSIO'},
+        {'url': 'store', 'text_color': 'text-rose-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-warehouse', 'name': 'STORE'},
+        {'url': 'audit', 'text_color': 'text-emerald-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-calculator', 'name': 'AUDIT'},
+    ]
+        return context
+    
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class StaffDashboardView(TemplateView):
     template_name = "staff.html"
@@ -330,6 +347,10 @@ class WardView(DoctorNurseRequiredMixin,TemplateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class AuditView(AuditorRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/audit.html"
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class StoreView(TemplateView):
+    template_name = "ehr/dashboard/store.html"
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ServiceView(TemplateView):
@@ -1605,107 +1626,6 @@ class WardNotesCreateView(NurseRequiredMixin,CreateView):
         context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
         return context
 
-
-class TheatreBookingCreateView(DoctorRequiredMixin, CreateView):
-        model = TheatreBooking
-        form_class = TheatreBookingForm
-        template_name = 'ehr/theatre/book_theatre.html'
-
-        def form_valid(self, form):
-            form.instance.user = self.request.user
-            form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-            self.object = form.save()
-            return super().form_valid(form)
-        
-        def get_success_url(self):
-            messages.success(self.request, 'PATIENT BOOKED FOR SURGERY')
-            return self.object.patient.get_absolute_url()
-
-
-class TheatreBookingUpdateView(DoctorRequiredMixin,UpdateView):
-    model = TheatreBooking
-    template_name = 'ehr/theatre/update_theatre_booking.html'
-    form_class = TheatreBookingForm
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        messages.success(self.request, 'Appointment Updated Successfully')
-        if form.is_valid():
-            form.save()
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Error updating booking information')
-        return self.render_to_response(self.get_context_data(form=form))
-    
-    def get_success_url(self):
-        messages.success(self.request, 'PATIENT THEATRE BOOKING UPDATED')
-        return self.object.patient.get_absolute_url()
-    
-
-class TheatreBookingListView(DoctorRequiredMixin,ListView):
-    model=TheatreBooking
-    template_name='ehr/theatre/theatre_bookings.html'
-    context_object_name='bookings'
-    paginate_by = 10
-
-    def get_queryset(self):
-        theatrebooking = super().get_queryset().order_by('-updated')
-        theatrebooking_filter = TheatreBookingFilter(self.request.GET, queryset=theatrebooking)
-        return theatrebooking_filter.qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        total_bookings = self.get_queryset().count()
-        context['total_bookings'] = total_bookings
-        context['theatreBookingFilter'] = TheatreBookingFilter(self.request.GET, queryset=self.get_queryset())
-        return context
-
-
-class OperationNotesCreateView(DoctorRequiredMixin,CreateView):
-    model = OperationNotes
-    form_class = OperationNotesForm
-    template_name = 'ehr/theatre/theatre_notes.html'
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        form.instance.patient = patient_data
-        self.object = form.save()
-
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        return context
-
-    def get_success_url(self):
-        messages.success(self.request, 'PATIENT THEATRE NOTES ADDED')
-        return self.object.patient.get_absolute_url()
-
-
-class OperationNotesListView(DoctorRequiredMixin,ListView):
-    model=OperationNotes
-    template_name='ehr/theatre/operated_list.html'
-    context_object_name='operated'
-    paginate_by = 10
-
-    def get_queryset(self):
-        theatre = super().get_queryset().order_by('-updated')
-        theatre_filter = OperationNotesFilter(self.request.GET, queryset=theatre)
-        return theatre_filter.qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        total_operations = self.get_queryset().count()
-        context['total_operations'] = total_operations
-        context['theatreFilter'] = OperationNotesFilter(self.request.GET, queryset=self.get_queryset())
-        return context
-
-    
     
 class RadiologyTestCreateView(LoginRequiredMixin, CreateView):
     model = RadiologyResult
@@ -1876,7 +1796,6 @@ class BillDetailView(DetailView):
         return super().get_queryset().prefetch_related('items__item__category')
 
 
-
 class BillingPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/bill_pay_list.html'
@@ -1954,6 +1873,106 @@ class BillPDFView(DetailView):
         return HttpResponse("Error generating PDF", status=400)
     
 
+class TheatreBookingCreateView(DoctorRequiredMixin, CreateView):
+        model = TheatreBooking
+        form_class = TheatreBookingForm
+        template_name = 'ehr/theatre/book_theatre.html'
+
+        def form_valid(self, form):
+            form.instance.user = self.request.user
+            form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+            self.object = form.save()
+            return super().form_valid(form)
+        
+        def get_success_url(self):
+            messages.success(self.request, 'PATIENT BOOKED FOR SURGERY')
+            return self.object.patient.get_absolute_url()
+
+
+class TheatreBookingUpdateView(DoctorRequiredMixin,UpdateView):
+    model = TheatreBooking
+    template_name = 'ehr/theatre/update_theatre_booking.html'
+    form_class = TheatreBookingForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        messages.success(self.request, 'Appointment Updated Successfully')
+        if form.is_valid():
+            form.save()
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error updating booking information')
+        return self.render_to_response(self.get_context_data(form=form))
+    
+    def get_success_url(self):
+        messages.success(self.request, 'PATIENT THEATRE BOOKING UPDATED')
+        return self.object.patient.get_absolute_url()
+    
+
+class TheatreBookingListView(DoctorRequiredMixin,ListView):
+    model=TheatreBooking
+    template_name='ehr/theatre/theatre_bookings.html'
+    context_object_name='bookings'
+    paginate_by = 10
+
+    def get_queryset(self):
+        theatrebooking = super().get_queryset().order_by('-updated')
+        theatrebooking_filter = TheatreBookingFilter(self.request.GET, queryset=theatrebooking)
+        return theatrebooking_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_bookings = self.get_queryset().count()
+        context['total_bookings'] = total_bookings
+        context['theatreBookingFilter'] = TheatreBookingFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+
+
+class OperationNotesCreateView(DoctorRequiredMixin,CreateView):
+    model = OperationNotes
+    form_class = OperationNotesForm
+    template_name = 'ehr/theatre/theatre_notes.html'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
+        self.object = form.save()
+
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        return context
+
+    def get_success_url(self):
+        messages.success(self.request, 'PATIENT THEATRE NOTES ADDED')
+        return self.object.patient.get_absolute_url()
+
+
+class OperationNotesListView(DoctorRequiredMixin,ListView):
+    model=OperationNotes
+    template_name='ehr/theatre/operated_list.html'
+    context_object_name='operated'
+    paginate_by = 10
+
+    def get_queryset(self):
+        theatre = super().get_queryset().order_by('-updated')
+        theatre_filter = OperationNotesFilter(self.request.GET, queryset=theatre)
+        return theatre_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_operations = self.get_queryset().count()
+        context['total_operations'] = total_operations
+        context['theatreFilter'] = OperationNotesFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+
+
 class TheatreOperationRecordCreateView(CreateView):
     model = TheatreOperationRecord
     form_class = TheatreOperationRecordForm
@@ -1978,6 +1997,25 @@ class TheatreOperationRecordCreateView(CreateView):
                 instrument_counts.save()
         return super().form_valid(form)
 
+
+class TheatreOperationRecordListView(DoctorRequiredMixin,ListView):
+    model=TheatreOperationRecord
+    template_name='ehr/theatre/theatreOpRecord.html'
+    context_object_name='operated'
+    paginate_by = 10
+
+    def get_queryset(self):
+        theatre = super().get_queryset().order_by('-updated')
+        theatre_op_filter = TheatreOperationRecordFilter(self.request.GET, queryset=theatre)
+        return theatre_op_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_operations = self.get_queryset().count()
+        context['total_operations'] = total_operations
+        context['theatreOpFilter'] = TheatreOperationRecordFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+    
 
 class OperatingTheatreFormView(CreateView):
     model = OperatingTheatre
@@ -2024,6 +2062,24 @@ class OperatingTheatreFormView(CreateView):
         return self.render_to_response(context)
 
 
+class OperatingTheatreListView(DoctorRequiredMixin,ListView):
+    model=OperatingTheatre
+    template_name='ehr/theatre/operating_theatre.html'
+    context_object_name='operated'
+    paginate_by = 10
+
+    def get_queryset(self):
+        theatre = super().get_queryset().order_by('-updated')
+        operating_theatre_filter = OperatingTheatreFilter(self.request.GET, queryset=theatre)
+        return operating_theatre_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_operations = self.get_queryset().count()
+        context['total_operations'] = total_operations
+        context['operating_theatreFilter'] = OperatingTheatreFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+    
 # class OperatingTheatreUpdateView(UpdateView):
 #     model = OperatingTheatre
 #     form_class = OperatingTheatreForm

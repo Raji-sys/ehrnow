@@ -67,6 +67,12 @@
                 ANAESTHESIA USED
               </th>
               <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+                POST OP-ORDER
+              </th>
+              <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
+                PRESCRIPTION
+              </th>
+              <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 DATE OPERATE
               </th>
             </tr>
@@ -87,6 +93,12 @@
               </td>
               <td class="p-3 whitespace-nowrap">
                 {{ o.type_of_anaesthesia }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ o.post_op_order }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ o.prescription }}
               </td>
               <td class="p-3 whitespace-nowrap">
                 {{ o.updated }}
