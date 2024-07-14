@@ -1,42 +1,46 @@
 {% extends 'base.html' %}
 {% block title %}Bill List{% endblock %}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>THEATRE BILLING LIST</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'bill_pay_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>THEATRE BILLING LIST</div>{%endblock%}
 {% block content %}
-<div class="mx-20">
-    <div class="max-w-6xl mx-auto">
+<div class="md:mx-20 mx-2">
+    <div class="md:max-w-7xl md:mx-auto mx-2">
     
         <div class="bg-white shadow-md rounded-lg overflow-hidden mt-2">
             {% if bills %}
             <p class="text-xs text-center font-semibold text-blue-700 m-2">Total Bills: {{ total_bills }}</p>            
             <table class="w-full">
                 <thead>
-                    <tr class="bg-blue-100 text-blue-600 uppercase text-xs leading-normal">
-                        <th class="py-3 px-6 text-left">S/N</th>
-                        <th class="py-3 px-6 text-left">Patient</th>
-                        <th class="py-3 px-6 text-left">Date</th>
-                        <th class="py-3 px-6 text-right">Total Amount</th>
-                        <th class="py-3 px-6 text-center">Actions</th>
+                    <tr class="bg-blue-100 text-blue-600 uppercase text-xs text-center">
+                        <th class="p-4 text-center">S/N</th>
+                        <th class="p-4 text-center">Patient</th>
+                        <th class="p-4 text-center">File no</th>
+                        <th class="p-4 text-center">Date</th>
+                        <th class="p-4 text-center">Amount</th>
+                        <th class="p-4 text-center">Bill Details</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
                     {% for bill in bills %}
-                    <tr class="border-b border-gray-200 hover:bg-blue-50 text-xs">
-                        <td class="py-3 px-6 text-left whitespace-nowrap">
+                    <tr class="border-b border-gray-200 hover:bg-blue-50 text-xs text-center uppercase">
+                        <td class="p-4 text-center whitespace-nowrap">
                         {{forloop.counter}}    
                         </td>
-                        <td class="py-3 px-6 text-left whitespace-nowrap">
-                            <div class="flex items-center">
+                        <td class="p-4 text-center whitespace-nowrap">
+                            <div class="">
                                 <span class="font-medium">{{ bill.patient }}</span>
                             </div>
                         </td>
-                        <td class="py-3 px-6 text-left">
-                            {{ bill.created}}
+                        <td class="p-4 text-center whitespace-nowrap">
+                                {{bill.patient.file_no}}
+                            </td>
+                        <td class="p-4 text-center">
+                            {{ bill.created|date:'d-M-Y: h:m A'}}
                         </td>
-                        <td class="py-3 px-6 text-right">
+                        <td class="p-4 text-center">
                             &#x20A6;{{ bill.total_amount }}
                         </td>
-                        <td class="py-3 px-6 text-center">
-                            <div class="flex item-center justify-center">
+                        <td class="p-4 text-center">
+                            <div class="">
                                 <a href="{% url 'bill_detail' bill.id %}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
                                     <i class="fas fa-eye"></i>
                                 </a>

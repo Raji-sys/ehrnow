@@ -867,6 +867,10 @@ select {
   margin-left: 0.25rem;
 }
 
+.ml-10 {
+  margin-left: 2.5rem;
+}
+
 .ml-28 {
   margin-left: 7rem;
 }
@@ -935,10 +939,6 @@ select {
   margin-top: 2rem;
 }
 
-.ml-10 {
-  margin-left: 2.5rem;
-}
-
 .block {
   display: block;
 }
@@ -988,20 +988,12 @@ select {
   height: 100vh;
 }
 
-.max-h-\[50vh\] {
-  max-height: 50vh;
-}
-
-.max-h-\[70vh\] {
-  max-height: 70vh;
-}
-
 .max-h-\[60vh\] {
   max-height: 60vh;
 }
 
-.max-h-\[65vh\] {
-  max-height: 65vh;
+.max-h-\[70vh\] {
+  max-height: 70vh;
 }
 
 .w-1\/2 {
@@ -1044,6 +1036,10 @@ select {
 
 .max-w-xl {
   max-width: 36rem;
+}
+
+.max-w-7xl {
+  max-width: 80rem;
 }
 
 .table-auto {
@@ -1108,10 +1104,6 @@ select {
 
 .justify-start {
   justify-content: flex-start;
-}
-
-.justify-end {
-  justify-content: flex-end;
 }
 
 .justify-center {

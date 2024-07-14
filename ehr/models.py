@@ -559,55 +559,5 @@ class Physio(models.Model):
 
     def __str__(self):
         return self.patient
+    
 
-
-
-# class NHIS(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     created = models.DateTimeField('transaction date', auto_now_add=True)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
-
-
-# class PandO(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"
-
-
-# class Audit(models.Model):
-#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-#     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-#     updated = models.DateTimeField(auto_now=True)
-
-#     def get_absolute_url(self):
-#         return reverse('pay_details', args=[self.user])
-
-#     def full_name(self):
-#         return f"{self.user.profile.title} {self.user.get_full_name()} {self.profile.middle_name}"
-
-#     def __str__(self):
-#         if self.user:
-#             return f"{self.full_name}"

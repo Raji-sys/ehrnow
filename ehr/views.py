@@ -583,7 +583,7 @@ class PatientFolderView(DetailView):
         context['ward_medication'] = patient.ward_medication.all().order_by('-updated')
         context['ward_clinical_notes'] = patient.ward_clinical_notes.all().order_by('-updated')
         context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
-        context['theatre_notes'] = patient.theatre_notes.all().order_by('-updated')
+        context['operation_notes'] = patient.operation_notes.all().order_by('-updated')
         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
         context['bills'] = Bill.objects.filter(patient=self.object).order_by('-created')
         radiology_results = patient.radiology_results.all().order_by('-updated')
@@ -1842,12 +1842,10 @@ class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
             price=total_amount,
             status=False
         )
-
         # Update all billing instances with the same paypoint
         Billing.objects.filter(bill=bill).update(payment=paypoint)
 
         return super().form_valid(formset)
-
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
@@ -1897,6 +1895,7 @@ class BillingPayListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         queryset = self.get_queryset()
+
         
         pay_total = queryset.count()
         total_worth = queryset.filter(status=True).aggregate(total_worth=Sum('price'))['total_worth'] or 0
