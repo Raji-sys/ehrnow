@@ -49,7 +49,7 @@ class PatientHandoverFilter(django_filters.FilterSet):
     dob=django_filters.CharFilter(label='DATE OF BIRTH', field_name="patient__dob",lookup_expr='exact',widget=forms.DateInput(attrs={'type': 'date'}))
     age_start = django_filters.NumberFilter(label="AGE R1", field_name="patient__age", lookup_expr='gte',)  
     age_end = django_filters.NumberFilter(label="AGE R2", field_name="patient__age", lookup_expr='lte',)
-    clinic = django_filters.ChoiceFilter(label='CLINIC', field_name='clinic', lookup_expr='iexact', choices=PatientHandover.CLINIC_CHOICES)
+    clinic = django_filters.ChoiceFilter(label='CLINIC', field_name='clinic', lookup_expr='iexact')
     status = django_filters.ChoiceFilter(label='STATUS', choices=PatientHandover.STATUS)
     updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
  

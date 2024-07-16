@@ -20,17 +20,16 @@ urlpatterns = [
     
     path('get-started/medical-record', MedicalRecordView.as_view(), name='medical_record'),
     path('get-started/revenue', RevenueView.as_view(), name='revenue'),
-    path('get-started/nursing', NursingView.as_view(), name='nursing'),
  
     path('get-started/clinic-dashboard/', ClinicDashView.as_view(), name='clinic_list'),
     path('get-started/radiology', RadiologyView.as_view(), name='radiology'),
  
     path('get-started/pharmacy', PharmacyView.as_view(), name='pharmacy'),
     path('get-started/physio', PhysioView.as_view(), name='physio'),
-    path('get-started/theatre', TheatreView.as_view(), name='theatre'),
+    path('get-started/theatre', TheatreListView.as_view(), name='theatre'),
  
     path('get-started/ward', WardView.as_view(), name='ward_list'),
-    path('get-started/icu', ICUView.as_view(), name='icu'),
+
     path('get-started/audit', AuditView.as_view(), name='audit'),
     path('get-started/store', StoreView.as_view(), name='store'),
 
@@ -83,31 +82,19 @@ urlpatterns = [
     
     #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
-
+    path('nursing-desks/', NursingDeskListView.as_view(), name='nursing_desks_list'),
+    path('nursing-station/<int:pk>/', NursingStationDetailView.as_view(), name='nursing_station_detail'),
     # AE
-    path('nursing/nursing-station-ae/', AENursingDeskView.as_view(), name='nursing_station_ae'),
+    # path('nursing/nursing-station-ae/', AENursingDeskView.as_view(), name='nursing_station_ae'),
     # Consultation
-    path('clinic/ae/', AEClinicDetailView.as_view(), name='ae_details'),
-    path('clinic/ae/waiting-for-consultation/', AEConsultationWaitRoomView.as_view(), name="waiting_for_consultation_ae"),
-    path('clinic/ae/waiting-for-consultation/room-1/', AERoom1View.as_view(), name="ae_room_1"),
-    path('clinic/ae/waiting-for-consultation/room-2/', AERoom2View.as_view(), name="ae_room_2"),
+    path('clinics/', ClinicDashView.as_view(), name='clinic_list'),
+    path('clinic/<int:pk>/', ClinicDetailView.as_view(), name='clinic_details'),
+    path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room'),
+    path('clinic/<int:clinic_id>/patients/<str:status>/', views.PTListView.as_view(), name='pt_list'),
+
     path('waiting-consultation/ae/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
     path('waiting-consultation/ae/clinical_note_update/<int:pk>/', ClinicalNoteUpdateView.as_view(), name='clinical_note_update'),
-    path('clinic/ae/ae-consultation-finished/', AEConsultationFinishView.as_view(), name="consultation_finished_ae"),
-    path('clinic/ae/ae-awaiting-review/', AEAwaitingReviewView.as_view(), name="waiting_for_review_ae"),
    
-    #SOPD
-    path('nursing/nursing-station-sopd/', SOPDNursingDeskView.as_view(), name='nursing_station_sopd'),
-    # Consultation
-    path('clinic/sopd/', SOPDClinicDetailView.as_view(), name='sopd_details'),
-    path('clinic/sopd/waiting-for-consultation/', SOPDConsultationWaitRoomView.as_view(), name="waiting_for_consultation_sopd"),
-    path('clinic/sopd/waiting-for-consultation/room-1/', SOPDRoom1View.as_view(), name="sopd_room_1"),
-    path('clinic/sopd/waiting-for-consultation/room-2/', SOPDRoom2View.as_view(), name="sopd_room_2"),
-    # path('waiting-consultation/sopd/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
-    # path('waiting-consultation/sopd/clinical_note_update/<int:pk>/', ClinicalNoteUpdateView.as_view(), name='clinical_note_update'),
-    path('clinic/sopd/sopd-consultation-finished/', SOPDConsultationFinishView.as_view(), name="consultation_finished_sopd"),
-    path('clinic/sopd/sopd-awaiting-review/', SOPDAwaitingReviewView.as_view(), name="waiting_for_review_sopd"),
-
     path('clinic/report/', PatientHandoverReportView.as_view(), name='handover_report'),
     path('clinic/report/pdf', views.clinic_handover_pdf, name='clinic_handover_pdf'),
 
@@ -118,27 +105,18 @@ urlpatterns = [
     path('clinic/update-admission/<int:pk>/', AdmissionUpdateView.as_view(), name='receive_patient'),
     
     #wards    
-    path('ward/icu/', ICUDetailView.as_view(), name="icu_details"),
-    path('ward/ICU/patient-list', ICUView.as_view(), name="icu_list"),
-    path('ward/ICU-wait-list/', ICUWaitListView.as_view(), name="icu_wait_list"),
-
-    path('ward/male-ward/', MaleWardDetailView.as_view(), name="male_ward_details"),
-    path('ward/male-ward/list', MaleWardView.as_view(), name="male_ward_list"),
-    path('ward/male-ward-wait-list/', MaleWardWaitListView.as_view(), name="male_ward_wait_list"),
-
-    path('ward/female-ward/', FemaleWardDetailView.as_view(), name="female_ward_details"),
-    path('ward/female-ward/list/', FemaleWardView.as_view(), name="female_ward_list"),
-    path('ward/female-ward-wait-list/', FemaleWardWaitListView.as_view(), name="female_ward_wait_list"),
-
-    path('ward/childrens-ward/', ChildrensWardDetailView.as_view(), name="childrens_ward_details"),
-    path('ward/childrens-ward/list/', ChildrensWardView.as_view(), name="childrens_ward_list"),
-    path('ward/childrens-ward/wat-list/', ChildrensWardWaitListView.as_view(), name="childrens_ward_wait_list"),
-
+    path('wards/', views.WardView.as_view(), name='ward_list'),
+    path('ward/<int:pk>/', views.WardDetailView.as_view(), name='ward_details'),
+    path('ward/<int:pk>/waiting-list/', views.GenericWardListView.as_view(), {'admit': False, 'accept': False}, name='ward_waiting_list'),
+    path('ward/<int:pk>/admitted-list/', views.GenericWardListView.as_view(), {'admit': True, 'accept': True}, name='ward_admitted_list'),
+  
     path('ward/nursing/vital-signs/<str:file_no>/', WardVitalSignCreateView.as_view(), name='ward_vital_signs'),
     path('ward/nursing/medication/<str:file_no>/', WardMedicationCreateView.as_view(), name='ward_medication'),
     path('ward/nursing/notes/<str:file_no>/', WardNotesCreateView.as_view(), name='ward_notes'),
 
     #theatre
+    path('theatre/theatre-details/<int:pk>/', TheatreDetailView.as_view(), name='theatre_details'),
+    
     path('clinic/theatre-booking/book-for-surgery/<str:file_no>/', TheatreBookingCreateView.as_view(), name='book_for_surgery'),
     path('clinic/theatre-booking/surgery-wait-list', TheatreBookingListView.as_view(), name="surgery_wait_list"),
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
@@ -149,7 +127,7 @@ urlpatterns = [
     path('theatre/operating-theatre/create/', OperatingTheatreFormView.as_view(), name='operating_theatre'),
     path('theatre/operating-theatre-list', OperatingTheatreListView.as_view(), name="operating_theatre_list"),
 
-    path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='theatre_note'),
+    path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='operation_notes'),
     path('theatre/operated-patient-list', OperationNotesListView.as_view(), name="operated_list"),
 
 

@@ -33,6 +33,64 @@ class Department(models.Model):
         if self.name:
             return f"{self.name}"
 
+
+class Clinic(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=200)
+
+    def get_absolute_url(self):
+        return reverse('clinic_details', args=[self.name])
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            NursingDesk.objects.create(clinic=self)
+
+    def __str__(self):
+        if self.name:
+            return f"{self.name}"
+
+class NursingDesk(models.Model):
+    clinic = models.OneToOneField(Clinic, on_delete=models.CASCADE, related_name='nursing_desk')
+
+    def get_absolute_url(self):
+        return reverse('nursing_details', args=[self.clinic])
+
+    def __str__(self):
+        if self.clinic:
+            return f"{self.clinic} nursing desk"
+
+    
+class Room(models.Model):
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='consultation_rooms',null=True,blank=True)
+    name = models.CharField(null=True, blank=True, max_length=200)
+    
+    def get_absolute_url(self):
+        return reverse('room_details', args=[self.name])
+
+    def __str__(self):
+        if self.name:
+            return f"{self.name}"
+
+class Ward(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=200)
+    
+    def get_absolute_url(self):
+        return reverse('ward_details', args=[self.name])
+
+    def __str__(self):
+        if self.name:
+            return f"{self.name}"
+
+class Team(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=200)
+    
+    def get_absolute_url(self):
+        return reverse('team_details', args=[self.name])
+
+    def __str__(self):
+        if self.name:
+            return f"{self.name}"
+
 class Unit(models.Model):
     name = models.CharField(null=True, blank=True, max_length=200)
 
@@ -145,6 +203,7 @@ class PatientData(models.Model):
            ('GRANDSON','GRANDSON'),('GRANDDAUGHTER','GRANDAUGHTER'),('COUSIN','COUSIN'),('OTHER','OTHER'))
     nok_rel = models.CharField('relationship with next of kin',choices=rel, max_length=300, null=True, blank=True)
     # nok_photo = models.ImageField('first next of kin photo', null=True, blank=True)
+    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -210,13 +269,9 @@ class Paypoint(models.Model):
         return f"{self.status}"
 
 class FollowUpVisit(models.Model):
-    CLINIC_CHOICES = [
-        ('A & E', 'A & E'),
-        ('SOPD', 'SOPD'),
-    ]
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE,related_name='follow_up')
-    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
+    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True,blank=True)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     created = models.DateTimeField('date', auto_now_add=True)
 
@@ -225,7 +280,6 @@ class MedicalRecord(models.Model):
     services=(('new registration','new registration'),('follow up','follow up'),('card replacement','card replacement'))
     name = models.CharField(choices=services,max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='medical_record_payment',blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -236,16 +290,6 @@ class MedicalRecord(models.Model):
 
 
 class PatientHandover(models.Model):
-    CLINIC_CHOICES = [
-        ('A & E', 'A & E'),
-        ('SOPD', 'SOPD'),
-    ]
-
-    ROOM_CHOICES = [
-        ('ROOM 1', 'ROOM 1'),
-        ('ROOM 2', 'ROOM 2'),
-        ('ROOM 3', 'ROOM 3')
-    ]
     STATUS=[
         ('waiting for payment', 'Waiting for Payment'),
         ('f waiting for payment', 'F Waiting for Payment'),
@@ -256,8 +300,9 @@ class PatientHandover(models.Model):
         ('awaiting review','Awaiting Review'),
     ]
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
-    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
-    room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
+    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True)
+    nursing_desk = models.ForeignKey(NursingDesk, on_delete=models.SET_NULL, null=True, blank=True)
+    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=30, null=True,choices=STATUS)
     updated = models.DateField(auto_now=True)
 
@@ -265,20 +310,9 @@ class PatientHandover(models.Model):
         return f"Handover for {self.patient.file_no} in {self.clinic} with {self.room} room"
 
 class Appointment(models.Model):
-    CLINIC_CHOICES = [
-        ('A & E', 'A & E'),
-        ('SOPD', 'SOPD'),
-    ]
-    TEAM_CHOICES = [
-        ('WHITE', 'WHITE'),
-        ('GREEN', 'GREEN'),
-        ('BLUE', 'BLUE'),
-        ('YELLOW', 'YELLOW')
-    ]
-
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
-    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
-    team = models.CharField(max_length=30, null=True, choices=TEAM_CHOICES)
+    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
     date = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -287,19 +321,10 @@ class Appointment(models.Model):
         f"Appointment for {self.patient.file_no} in {self.clinic} with {self.team} team"
 
 class VitalSigns(models.Model):
-    ROOM_CHOICES = [
-        ('ROOM 1', 'ROOM 1'),
-        ('ROOM 2', 'ROOM 2'),
-        ('ROOM 3', 'ROOM 3')
-    ]
-    CLINIC_CHOICES = [
-        ('A & E', 'A & E'),
-        ('SOPD', 'SOPD'),
-    ]
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    room = models.CharField(max_length=30, null=True, choices=ROOM_CHOICES)
+    room = models.ForeignKey(Room,on_delete=models.CASCADE, null=True)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='vital_signs')
-    clinic = models.CharField(max_length=30, null=True, choices=CLINIC_CHOICES)
+    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True)
     body_temperature=models.CharField(max_length=10, null=True, blank=True)
     pulse_rate=models.CharField(max_length=10, null=True, blank=True)
     respiration_rate=models.CharField(max_length=10, null=True, blank=True)
@@ -340,10 +365,6 @@ class RadiologyTest(models.Model):
     def __str__(self):
         return f"{self.name}"
     
-def dicom_file_upload_path(instance, filename):
-    # File will be uploaded to MEDIA_ROOT/dicom_files/<filename>
-    return os.path.join('dicom_files', filename)
-
 
 class RadiologyResult(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -370,12 +391,9 @@ class RadiologyResult(models.Model):
 class Admission(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="admission_info")
-    # payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     admit=models.BooleanField(default=False)
     accept=models.BooleanField(default=False)
-    wards=(('MALE WARD','MALE WARD'),('FEMALE WARD','FEMALE WARD'),('CHILDRENS WARD','CHILDRENS WARD'),('ICU','ICU'))
-    ward=models.CharField(choices=wards,max_length=300,null=True, blank=True)
-    # room=models.CharField(max_length=300,null=True, blank=True)
+    ward = models.ForeignKey(Ward,on_delete=models.CASCADE, null=True)
     bed_number=models.CharField(max_length=300,null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -438,6 +456,16 @@ class WardShiftSUmmaryNote(models.Model):
     def __str__(self):
         return self.nurse
 
+class Theatre(models.Model):
+    name = models.CharField(max_length=200, null=True, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('theatre_details', args=[self.name])
+
+    def __str__(self):
+        return self.name
+    
+
 class Bill(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='surgery_bill',null=True)
@@ -488,26 +516,14 @@ class Billing(models.Model):
        
 
 class TheatreBooking(models.Model):
-    THEATRES = [
-        ('A & E THEATRE', 'A & E THEATRE'),
-        ('o & G THEATRE', 'O & G THEATRE'),
-        ('MAIN THEATRE', 'MAIN THEATRE'),
-        ('SPINE THEATRE', 'SPINE THEATRE'),
-    ]
-    TEAMS = [
-        ('WHITE', 'WHITE'),
-        ('GREEN', 'GREEN'),
-        ('BLUE', 'BLUE'),
-        ('YELLOW', 'YELLOW')
-    ]
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_bookings')
-    team = models.CharField(max_length=30, null=True, choices=TEAMS)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
+    theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
     diagnosis=models.CharField(max_length=200,null=True,blank=True)
     operation_planned=models.CharField(max_length=200,null=True,blank=True)
     date = models.DateField(null=True)
     blood_requirement=models.CharField(max_length=200,null=True,blank=True)
-    theatre = models.CharField(max_length=30, null=True, choices=THEATRES)
     note=QuillField(null=True, blank=True)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
@@ -525,7 +541,6 @@ class PeriOPNurse(models.Model):
     
     def __str__(self):
         return self.patient
-
 
 class AnaesthisiaChecklist(models.Model):
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -577,8 +592,7 @@ class InstrumentCount(models.Model):
 
 class OperatingTheatre(models.Model):
     patient = models.ForeignKey('PatientData', on_delete=models.CASCADE)
-    wards=(('MALE WARD','MALE WARD'),('FEMALE WARD','FEMALE WARD'),('CHILDRENS WARD','CHILDRENS WARD'),('ICU','ICU'))
-    ward=models.CharField(choices=wards,max_length=300,null=True, blank=True)
+    ward = models.ForeignKey(Ward,on_delete=models.CASCADE, null=True)
     date = models.DateField()
     diagnosis = models.CharField(max_length=300, blank=True, null=True)
     operation = models.CharField(max_length=300, blank=True, null=True)
@@ -638,5 +652,3 @@ class Physio(models.Model):
 
     def __str__(self):
         return self.patient
-    
-

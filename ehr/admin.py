@@ -38,6 +38,48 @@ class ServicesAdmin(admin.ModelAdmin):
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+
+
+@admin.register(Theatre)
+class TheatreAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+
+
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+
+
+@admin.register(Clinic)
+class ClinicAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+
+
+@admin.register(Ward)
+class WardAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+
+@admin.register(Room)
+class RoomAdmin(admin.ModelAdmin):
+    list_display = ('clinic','name',)
+    search_fields = ('clinic','name',)
+    list_filter = ('clinic','name',)
+
+@admin.register(NursingDesk)
+class NursinDeskAdmin(admin.ModelAdmin):
+    list_display = ('clinic',)
+    search_fields = ('clinic',)
+    list_filter = ('clinic',)
 
 
 @admin.register(Unit)
@@ -50,6 +92,7 @@ class ClinicNoteAdmin(admin.ModelAdmin):
     list_display = ('patient','user','note','diagnosis','needs_review','appointment')
     search_fields = ('patient','diagnosis','needs_review','appointment')
     list_filter = ('patient','diagnosis','needs_review','appointment')
+
 
 @admin.register(PatientHandover)
 class HandoverAdmin(admin.ModelAdmin):

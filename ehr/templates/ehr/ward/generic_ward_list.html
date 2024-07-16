@@ -1,0 +1,76 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block title %}{{ ward.name|upper }}{% endblock %}
+
+{% block page_title %}
+<div class="flex justify-center">
+    <a href="{% url 'ward_detail' ward.id %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>
+    {{ ward.name|upper }} {% if is_waiting_list %}WAITING LIST{% else %}PATIENT LIST{% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="{% if is_waiting_list %}p-1{% endif %}">
+  <section class="max-w-xl mx-auto text-center border-cyan-700 p-2 m-1">
+    {% for message in messages %}
+    <div class="">
+      <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
+          <a href class="uk-alert-close font-bold" uk-close></a>
+          <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+  <div class="{% if is_waiting_list %}md:mx-20 mx-2{% else %}mx-2 md:mx-20{% endif %} rounded-xl p-4 shadow-black shadow-sm bg-blue-50">
+    <div class="overflow-x-auto uppercase">
+      <table class="min-w-full divide-y divide-blue-500">
+        <thead class="bg-blue-100">
+          <tr class="text-xs">
+            <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">#</th>
+            <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">FILE NUMBER</th>
+            <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">PATIENT NAME</th>
+            <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">PHONE NUMBER</th>
+            <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">GENDER</th>
+            {% if not is_waiting_list %}
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">BED NUMBER</th>
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">TAKEN VITALS</th>
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">GIVE MEDICATION</th>
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">WARD NOTES</th>
+            {% else %}
+              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">RECEIVE</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-blue-200">
+          {% for a in admissions %}
+          <tr class="text-xs bg-blue-50 hover:bg-blue-200 transition-colors duration-300">
+            <td class="p-3 whitespace-nowrap">{{forloop.counter}}</td>
+            <td class="p-3 whitespace-nowrap">{{ a.patient.file_no|default_if_none:'' }}</td>
+            <td class="p-3 whitespace-nowrap">{{ a.patient|default_if_none:'' }}</td>
+            <td class="p-3 whitespace-nowrap">{{ a.patient.phone|default_if_none:'' }}</td>
+            <td class="p-3 whitespace-nowrap">{{ a.patient.gender|default_if_none:'' }}</td>
+            {% if not is_waiting_list %}
+              <td class="p-3 whitespace-nowrap">{{ a.bed_number|default_if_none:'' }}</td>
+              <td class="p-3 whitespace-nowrap">
+                <a href="{% url 'ward_vital_signs' a.patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700"><i class="fa-solid fa-heartbeat fa-xl"></i></a>
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                <a href="{% url 'ward_medication' a.patient.file_no %}" class="text-sm text-green-500 hover:text-green-700"><i class="fa-solid fa-file-prescription fa-xl"></i></a>
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                <a href="{% url 'ward_notes' a.patient.file_no %}" class="text-sm text-green-500 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-xl"></i></a>
+              </td>
+            {% else %}
+              <td class="p-3 whitespace-nowrap">
+                <a href="{% url 'receive_patient' a.pk %}" class="text-sm text-amber-500 hover:text-amber-700"><i class="fa-solid fa-handshake fa-2xl"></i></a>
+              </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

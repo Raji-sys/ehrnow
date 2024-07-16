@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}THEATRE DASHBOARD{%endblock%}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>THEATRE DASHBOARD</div>{%endblock%}
+{%block title%}{{theatre.name}}{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{theatre.name}} DASHBOARD</div>{%endblock%}
 {% block content %}
     <div class="mx-2 md:mx-20  bg-white rounded-md shadow-black h-fit shadow-2xl mt-4">
         <div class=" grid grid-cols-2 gap-6 uppercase text-center rounded-xl p-8 md:p-6 ">

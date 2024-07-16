@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}CLINICS{%endblock%}
+{%block title%}THEATRES{%endblock%}
 
 {%block page_title%}
 <div class="flex justify-center">
-    <a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>CLINICS
-    <a href="{%url 'handover_report' %}" class="text-xs font-medium text-green-600 "><i class="fa-solid fa-file-lines fa-2xl m-2"></i>DATA</a>
+    <a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>THEATRES
 </div>
 {%endblock%}
 {%block content %}
@@ -21,11 +20,11 @@
     </section>
     <div class="md:mx-20 mx-2 mt-2">
         <div class="md:flex md:justify-center grid grid-cols-1 gap-6 uppercase text-center rounded-xl p-12 md:p-16 bg-zinc-200">
-            {%for c in clinics %}
+            {%for t in theatres %}
             <div>
-            <a href="{%url 'clinic_details' c.id %}" class="text-xs text-slate-600">
+            <a href="{%url 'theatre_details' t.id %}" class="text-xs text-slate-600">
                 <div class="bg-white rounded-2xl shadow-2xl p-4 md:p-8 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    {{c.name}}</div>
+                    {{t.name}}</div>
                 </a>
             </div>
             {%endfor%}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ ward.name|upper }} DASHBOARD{% endblock %}
+
+{% block page_title %}
+<div class="flex justify-center">
+    <a href="{% url 'ward_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>
+    {{ ward.name|upper }} DASHBOARD
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="md:mx-20 mx-2 bg-zinc-200 rounded-md shadow-black h-fit shadow-2xl mt-2">
+    <div class="grid grid-cols-2 gap-6 uppercase text-center rounded-xl p-8 md:p-6">
+        <div>
+            <a href="{{ wait_list_url }}">
+                <div class="hover:bg-white hover:text-zinc-800 bg-zinc-600 text-white rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
+                    <div class="text-xs">PATIENT ON WAITING LIST</div>
+                </div>
+            </a> 
+        </div>
+        <div>
+            <a href="{{ admission_list_url }}">
+                <div class="hover:bg-white hover:text-fuchsia-800 bg-fuchsia-600 text-white rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
+                    <div class="text-xs">PATIENTS ON ADMISSION</div>
+                </div>
+            </a> 
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,43 +1,34 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}WARD DASHBOARD{%endblock%}
+{% block title %}WARD DASHBOARD{% endblock %}
 
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>WARDS</div>{%endblock%}
-{%block content %}
-    <section class="text-center border-cyan-700 p-2 m-1">
-        {% for message in messages %}
-        <div class="">
-            <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
-                <a href class="uk-alert-close font-bold" uk-close></a>
-                <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
-            </div>
+{% block page_title %}
+<div class="flex justify-center">
+    <a href="{% url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>WARDS
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="text-center border-cyan-700 p-2 m-1">
+    {% for message in messages %}
+    <div class="">
+        <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
+            <a href class="uk-alert-close font-bold" uk-close></a>
+            <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
         </div>
-      {% endfor %}
-    </section>
-    <div class="md:flex md:justify-center gap-10 uppercase text-center rounded-xl p-8 bg-zinc-200 md:mx-20 mx-2 grid grid-cols-2">
-        <div>
-            <a href="{%url 'male_ward_details' %}" class="text-xs  text-white">
-                <div class="bg-blue-500 rounded-2xl shadow-2xl p-4 md:p-8 border hover:border-white border-blue-400 hover:bg-white hover:text-blue-600">
-                    <i class="fa-solid fa-male fa-3x"></i><br> MALE WARD</div>
-                </a>
-            </div>
-        <div>
-            <a href="{%url 'female_ward_details' %}" class="text-xs  text-white">
-                <div class="bg-pink-500 rounded-2xl shadow-2xl p-4 md:p-8 border hover:border-white border-pink-400 hover:bg-white hover:text-pink-600">
-                    <i class="fa-solid fa-female fa-3x"></i><br> FEMALE WARD</div>
-                </a>
-            </div>
-        <div>
-            <a href="{%url 'childrens_ward_details' %}" class="text-xs  text-white">
-                <div class="bg-yellow-500 rounded-2xl shadow-2xl p-4 md:p-8 border hover:border-white border-yellow-400 hover:bg-white hover:text-yellow-500">
-                    <i class="fa-solid fa-children fa-3x"></i><br> CHILDRENS WARD</div>
-                </a>
-            </div>
-        <div>
-            <a href="{%url 'icu_details' %}" class="text-xs  text-white">
-                <div class="bg-red-600 rounded-2xl shadow-2xl p-4 md:p-8 border hover:border-white border-red-400 hover:bg-white hover:text-red-600">
-                    <i class="fa-solid fa-mask-ventilator fa-3x"></i><br> ICU</div>
-                </a>
-            </div>
     </div>
-{%endblock%}
+    {% endfor %}
+</section>
+
+<div class="md:flex md:justify-center gap-10 uppercase text-center rounded-xl p-8 bg-zinc-200 md:mx-20 mx-2 grid grid-cols-2">
+    {% for w in wards %}
+    <div>
+        <a href="{{ w.url_name }}" class="text-xs text-white">
+            <div class="bg-{{ w.color }}-{% if w.color == 'gray' %}400{% else %}500{% endif %} rounded-2xl shadow-2xl p-4 md:p-8 border hover:border-white border-{{ w.color }}-{% if w.color == 'gray' %}300{% else %}400{% endif %} hover:bg-white hover:text-{{ w.color }}-{% if w.color == 'gray' %}500{% else %}600{% endif %}">
+                <i class="fa-solid {{ w.icon }} fa-3x"></i><br> {{ w.name }}
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
