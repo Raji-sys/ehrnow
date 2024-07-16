@@ -904,6 +904,29 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
             messages.success(self.request, 'Payment successful. Patient handed over for vitals.')        
         return super().form_valid(form)
 
+class NursingStationDetailView(DetailView):
+    model = NursingDesk
+    template_name = 'ehr/nurse/nursing_station.html'
+    context_object_name = 'nursing_desk'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['handovers'] = PatientHandover.objects.filter(
+            nursing_desk=self.object,
+            status='waiting for vital signs'
+        )
+        return context
+
+class NursingDeskListView(ListView):
+    model = NursingDesk
+    template_name = 'ehr/nurse/nursing_desk.html'
+    context_object_name = 'nursing_desks'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        for desk in queryset:
+            desk.patient_count = desk.patienthandover_set.filter(status='waiting for vital signs').count()
+        return queryset
 
 class VitalSignCreateView(NurseRequiredMixin, CreateView):
     model = VitalSigns
@@ -2018,6 +2041,7 @@ class OperatingTheatreListView(DoctorRequiredMixin,ListView):
         context['operating_theatreFilter'] = OperatingTheatreFilter(self.request.GET, queryset=self.get_queryset())
         return context
     
+    
 # class OperatingTheatreUpdateView(UpdateView):
 #     model = OperatingTheatre
 #     form_class = OperatingTheatreForm
@@ -2067,29 +2091,3 @@ class TheatreDetailView(DoctorNurseRequiredMixin, DetailView):
     model=Theatre
     context_object_name='theatre'
     template_name = "ehr/theatre/theatre_detail.html"
-        
-
-class NursingStationDetailView(DetailView):
-    model = NursingDesk
-    template_name = 'ehr/nurse/nursing_station.html'
-    context_object_name = 'nursing_desk'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['handovers'] = PatientHandover.objects.filter(
-            nursing_desk=self.object,
-            status='waiting for vital signs'
-        )
-        return context
-
-
-class NursingDeskListView(ListView):
-    model = NursingDesk
-    template_name = 'ehr/nurse/nursing_desk.html'
-    context_object_name = 'nursing_desks'
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        for desk in queryset:
-            desk.patient_count = desk.patienthandover_set.filter(status='waiting for vital signs').count()
-        return queryset
