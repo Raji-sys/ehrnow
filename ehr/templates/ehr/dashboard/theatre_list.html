@@ -7,27 +7,37 @@
     <a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>THEATRES
 </div>
 {%endblock%}
-{%block content %}
-    <section class="text-center border-cyan-700 p-2 m-2">
-        {% for message in messages %}
-        <div class="">
-            <div class="uk-alert-success rounded-2xl text-xs w-fit mx-auto" uk-alert>
-                <a href class="uk-alert-close " uk-close></a>
-                <p class="text-green-700 uppercase p-4">{{ message }}</p>
-            </div>
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {% for message in messages %}
+    <div class="mb-6">
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-md" role="alert">
+            <p class="font-medium">{{ message }}</p>
+            <button type="button" class="float-right" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
-      {% endfor %}
-    </section>
-    <div class="md:mx-20 mx-2 mt-2">
-        <div class="md:flex md:justify-center grid grid-cols-1 gap-6 uppercase text-center rounded-xl p-12 md:p-16 bg-zinc-200">
-            {%for t in theatres %}
-            <div>
-            <a href="{%url 'theatre_details' t.id %}" class="text-xs text-slate-600">
-                <div class="bg-white rounded-2xl shadow-2xl p-4 md:p-8 border hover:border-white border-green-400 hover:bg-green-600 hover:text-white">
-                    {{t.name}}</div>
-                </a>
-            </div>
-            {%endfor%}
     </div>
+    {% endfor %}
+
+    <div class="bg-white rounded-lg shadow-xl overflow-hidden mt-4">
+        <div class="bg-gradient-to-r from-cyan-500 to-blue-500 p-3 text-center">
+            <span class="text-sm text-white  uppercase">Available Theatres</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
+            {% for t in theatres %}
+            <a href="{% url 'theatre_details' t.id %}" class="block">
+                <div class="bg-gray-50 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
+                    <div class="p-6 text-center">
+                        <h3 class="text-sm font-medium text-gray-900">{{ t.name }}</h3>
+                        <p class="mt-2 text-xs text-gray-500">Click to view details</p>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-400 to-blue-500 h-1"></div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
     </div>
-{%endblock%}
+</div>
+{% endblock %}

@@ -260,18 +260,18 @@ class GetStartedView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['items'] = [
-        {'url': 'medical_record', 'text_color': 'text-slate-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-book', 'name': 'MEDICAL RECORD'},
-        {'url': 'revenue', 'text_color': 'text-green-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-cash-register', 'name': 'REVENUE'},
-        {'url': 'nursing_desks_list', 'text_color': 'text-blue-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-stethoscope', 'name': 'NURSING'},
-        {'url': 'clinic_list', 'text_color': 'text-gray-800', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-user-doctor', 'name': 'CLINIC'},
-        {'url': 'pharmacy', 'text_color': 'text-indigo-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-prescription', 'name': 'PHARMACY'},
-        {'url': 'pathology:dashboard', 'text_color': 'text-fuchsia-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-vial', 'name': 'PATHOLOGY'},
-        {'url': 'radiology', 'text_color': 'text-amber-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-x-ray', 'name': 'RADIOLOGY'},
-        {'url': 'ward_list', 'text_color': 'text-purple-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-bed-pulse', 'name': 'WARD'},
-        {'url': 'theatre', 'text_color': 'text-pink-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-head-side-mask', 'name': 'THEATRE'},
-        {'url': 'physio', 'text_color': 'text-gray-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-wheelchair-move', 'name': 'PHYSIO'},
-        {'url': 'store', 'text_color': 'text-rose-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-warehouse', 'name': 'STORE'},
-        {'url': 'audit', 'text_color': 'text-emerald-600', 'border_color': 'border-green-400', 'hover_bg_color': 'green-600', 'icon': 'fa-calculator', 'name': 'AUDIT'},
+        {'url': 'medical_record', 'text_color': 'text-slate-600',  'hover_bg_color': 'green-600', 'icon': 'fa-book', 'name': 'MEDICAL RECORD'},
+        {'url': 'revenue', 'text_color': 'text-green-600',  'hover_bg_color': 'green-600', 'icon': 'fa-cash-register', 'name': 'REVENUE'},
+        {'url': 'nursing_desks_list', 'text_color': 'text-blue-600',  'hover_bg_color': 'green-600', 'icon': 'fa-stethoscope', 'name': 'NURSING'},
+        {'url': 'clinic_list', 'text_color': 'text-gray-800',  'hover_bg_color': 'green-600', 'icon': 'fa-user-doctor', 'name': 'CLINIC'},
+        {'url': 'pharmacy', 'text_color': 'text-indigo-600',  'hover_bg_color': 'green-600', 'icon': 'fa-prescription', 'name': 'PHARMACY'},
+        {'url': 'pathology:dashboard', 'text_color': 'text-fuchsia-600',  'hover_bg_color': 'green-600', 'icon': 'fa-vial', 'name': 'PATHOLOGY'},
+        {'url': 'radiology', 'text_color': 'text-amber-600',  'hover_bg_color': 'green-600', 'icon': 'fa-x-ray', 'name': 'RADIOLOGY'},
+        {'url': 'ward_list', 'text_color': 'text-purple-600',  'hover_bg_color': 'green-600', 'icon': 'fa-bed-pulse', 'name': 'WARD'},
+        {'url': 'theatre', 'text_color': 'text-pink-600',  'hover_bg_color': 'green-600', 'icon': 'fa-head-side-mask', 'name': 'THEATRE'},
+        {'url': 'physio', 'text_color': 'text-gray-600',  'hover_bg_color': 'green-600', 'icon': 'fa-wheelchair-move', 'name': 'PHYSIO'},
+        {'url': 'store', 'text_color': 'text-rose-600',  'hover_bg_color': 'green-600', 'icon': 'fa-warehouse', 'name': 'STORE'},
+        {'url': 'audit', 'text_color': 'text-emerald-600',  'hover_bg_color': 'green-600', 'icon': 'fa-calculator', 'name': 'AUDIT'},
     ]
         return context
     
