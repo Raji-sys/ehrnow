@@ -847,7 +847,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <li><a href="#" class="rounded-lg ">THEATRE OPERATION RECORD</a></li>
             <li><a href="#" class="rounded-lg ">OPERATING THEATRE</a></li>
             <li><a href="#" class="rounded-lg ">ANAESTHSIA CHECKLIST</a></li>
-            <li><a href="#" class="rounded-lg ">PERI_OP NURSE</a></li>
+            <li><a href="#" class="rounded-lg ">PERI-OP NURSE</a></li>
           </ul>
           
           <div class="uk-switcher uk-margin">
@@ -942,7 +942,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
             <div>
               <div>
-                <a href="{% url 'theatre_operation_recod' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
+                <a href="{% url 'theatre_operation_record' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
               <div class="overflow-x-auto p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -991,7 +991,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
             <div>
               <div>
-                <a href="{% url 'operation_theatre' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
+                <a href="{% url 'operating_theatre' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
               <div class="overflow-x-auto p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1101,7 +1101,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
             <div>
               <div>
-                <a href="{% url 'operation_notes' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
+                <a href="{% url 'peri_op_nurse' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
               <div class="overflow-x-auto p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">

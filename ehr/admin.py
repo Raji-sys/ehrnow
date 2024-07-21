@@ -194,6 +194,12 @@ class AnaesthisiaChecklistAdmin(admin.ModelAdmin):
     search_fields = ('doctor','updated')
     list_filter = ('doctor','updated')
 
+@admin.register(MedicalIllness)
+class MedicalIllnesstAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+    # filter_horizontal = ('concurrent_medical_illnesses',)
 
 @admin.register(WardShiftSUmmaryNote)
 class WardShiftSUmmaryNoteAdmin(admin.ModelAdmin):

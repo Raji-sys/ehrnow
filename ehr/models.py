@@ -581,7 +581,7 @@ class LastMeal(models.Model):
 class AnaesthisiaChecklist(models.Model):
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="anaesthesia_checklist")
-    concurrent_medical_illness=models.ManyToManyField(MedicalIllness,blank=True,null=True)
+    concurrent_medical_illness=models.ManyToManyField(MedicalIllness,blank=True)
     past_medical_history=models.TextField(null=True)
     past_surgical_history=models.ForeignKey(PastSurgicalHistory,on_delete=models.CASCADE,null=True)
     options=(('YES','YES'),('NO','NO'))
@@ -593,7 +593,7 @@ class AnaesthisiaChecklist(models.Model):
     temporary=models.CharField(choices=options,null=True, max_length=100)
     loose_teeth=models.CharField(choices=options,null=True, max_length=100)
     last_meal=models.ForeignKey(LastMeal,on_delete=models.CASCADE,null=True)
-    comment=models.TextField()
+    comment=models.TextField(null=True)
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):

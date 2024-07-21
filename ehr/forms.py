@@ -392,7 +392,7 @@ class AnaesthisiaChecklistForm(forms.ModelForm):
     )
     class Meta:
         model=AnaesthisiaChecklist
-        exclude=['doctor','updated']
+        exclude=['doctor','updated','concurrent_medical_illness','comment','patient']
 
     def __init__(self, *args, **kwargs):
         super(AnaesthisiaChecklistForm, self).__init__(*args, **kwargs)
@@ -401,10 +401,10 @@ class AnaesthisiaChecklistForm(forms.ModelForm):
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
-class PeriOPNurseForm(forms.ModelChoiceIterator):
+class PeriOPNurseForm(forms.ModelForm):
     class Meta:
         model = PeriOPNurse
-        exclude=['nurse','updated']
+        exclude=['patient','nurse','updated']
 
     def __init__(self, *args, **kwargs):
         super(PeriOPNurseForm, self).__init__(*args, **kwargs)
