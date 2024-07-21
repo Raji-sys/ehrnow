@@ -1,3 +1,4 @@
+from pyclbr import Class
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django import forms
@@ -287,6 +288,31 @@ class BillingForm(forms.ModelForm):
             })
 
 
+class RadiologyTestForm(forms.ModelForm):
+    class Meta:
+        model = RadiologyResult
+        fields = ['test']
+    def __init__(self, *args, **kwargs):
+        super(RadiologyTestForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+
+
+class RadiologyResultForm(forms.ModelForm):
+    class Meta:
+        model = RadiologyResult
+        fields = ['test', 'comments','cleared']
+    def __init__(self, *args, **kwargs):
+        super(RadiologyResultForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+
 class TheatreBookingForm(forms.ModelForm):
     class Meta:
         model = TheatreBooking
@@ -314,35 +340,11 @@ class OperationNotesForm(forms.ModelForm):
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
-
-class RadiologyTestForm(forms.ModelForm):
-    class Meta:
-        model = RadiologyResult
-        fields = ['test']
-    def __init__(self, *args, **kwargs):
-        super(RadiologyTestForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
-            })
-
-
-
-class RadiologyResultForm(forms.ModelForm):
-    class Meta:
-        model = RadiologyResult
-        fields = ['test', 'comments','cleared']
-    def __init__(self, *args, **kwargs):
-        super(RadiologyResultForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
-            })
-
 class TheatreOperationRecordForm(forms.ModelForm):
     class Meta:
         model = TheatreOperationRecord
         exclude = ['patient','info']
+
     def __init__(self, *args, **kwargs):
         super(TheatreOperationRecordForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
@@ -380,3 +382,33 @@ ImplantFormSet = inlineformset_factory(
     fields=('type_of_implant', 'quantity', 'cost'), 
     extra=3, can_delete=False
 )
+
+
+class AnaesthisiaChecklistForm(forms.ModelForm):
+    concurrent_medical_illnesses=forms.ModelMultipleChoiceField(
+        queryset=MedicalIllness.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    class Meta:
+        model=AnaesthisiaChecklist
+        exclude=['doctor','updated']
+
+    def __init__(self, *args, **kwargs):
+        super(AnaesthisiaChecklistForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+class PeriOPNurseForm(forms.ModelChoiceIterator):
+    class Meta:
+        model = PeriOPNurse
+        exclude=['nurse','updated']
+
+    def __init__(self, *args, **kwargs):
+        super(PeriOPNurseForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })

@@ -542,9 +542,58 @@ class PeriOPNurse(models.Model):
     def __str__(self):
         return self.patient
 
+class MedicalIllness(models.Model):
+    name=models.CharField(max_length=100,null=True)
+    def __str__(self):
+        return self.name
+
+class PastSurgicalHistory(models.Model):
+    surgery=models.CharField(max_length=100,null=True)
+    when=models.CharField(max_length=100,null=True)
+    where=models.CharField(max_length=100,null=True)
+    LA_GA=models.CharField('L.A/G.A',max_length=100,null=True)
+    outcome=models.CharField(max_length=100,null=True)
+    def __str__(self):
+        return self.surgery
+
+class DrugHistory(models.Model):
+    present_medication=models.CharField(max_length=100,null=True)
+    allergies=models.CharField(max_length=100,null=True)
+    def __str__(self):
+        return f"{self.present_medication} {self.allergies}"
+
+class SocialHistory(models.Model):
+    item=models.CharField(max_length=100,null=True)
+    qty=models.CharField(max_length=100,null=True)
+    duration=models.CharField(max_length=100,null=True)
+
+    def __str__(self):
+        return f"{self.item} {self.qty} {self.duration}"
+
+class LastMeal(models.Model):
+    when=models.CharField(max_length=100,null=True)
+    type=models.CharField(max_length=100,null=True)
+    qty=models.CharField(max_length=100,null=True)
+
+    def __str__(self):
+        return f"{self.when} {self.type} {self.qty}"
+        
 class AnaesthisiaChecklist(models.Model):
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="anaesthesia_checklist")
+    concurrent_medical_illness=models.ManyToManyField(MedicalIllness,blank=True,null=True)
+    past_medical_history=models.TextField(null=True)
+    past_surgical_history=models.ForeignKey(PastSurgicalHistory,on_delete=models.CASCADE,null=True)
+    options=(('YES','YES'),('NO','NO'))
+    transfussion=models.CharField(choices=options,null=True, max_length=100)
+    drug_history=models.ForeignKey(DrugHistory,on_delete=models.CASCADE,null=True)
+    social_history=models.ForeignKey(SocialHistory,on_delete=models.CASCADE,null=True)
+    denctures=models.CharField(choices=options,null=True, max_length=100)
+    permanent=models.CharField(choices=options,null=True, max_length=100)
+    temporary=models.CharField(choices=options,null=True, max_length=100)
+    loose_teeth=models.CharField(choices=options,null=True, max_length=100)
+    last_meal=models.ForeignKey(LastMeal,on_delete=models.CASCADE,null=True)
+    comment=models.TextField()
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):
@@ -552,7 +601,7 @@ class AnaesthisiaChecklist(models.Model):
 
 
 class TheatreOperationRecord(models.Model):
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='theatre_operation_record')
     info=models.ForeignKey(TheatreBooking,on_delete=models.CASCADE,null=True)    
     operation=models.CharField(max_length=300,null=True,blank=True)
     surgeons=models.TextField(null=True,blank=True)
@@ -591,7 +640,7 @@ class InstrumentCount(models.Model):
     
 
 class OperatingTheatre(models.Model):
-    patient = models.ForeignKey('PatientData', on_delete=models.CASCADE)
+    patient = models.ForeignKey('PatientData', on_delete=models.CASCADE,related_name='operating_theatre')
     ward = models.ForeignKey(Ward,on_delete=models.CASCADE, null=True)
     date = models.DateField()
     diagnosis = models.CharField(max_length=300, blank=True, null=True)
@@ -604,6 +653,7 @@ class OperatingTheatre(models.Model):
     circulating_nurse = models.CharField(max_length=100, blank=True, null=True)
     anaesthetist = models.CharField(max_length=100, blank=True, null=True)
     scrub_nurse_signature = models.CharField(max_length=100, blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Operation for {self.patient} on {self.date}"

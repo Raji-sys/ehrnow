@@ -118,18 +118,23 @@ urlpatterns = [
     path('theatre/theatre-details/<int:pk>/', TheatreDetailView.as_view(), name='theatre_details'),
     
     path('clinic/theatre-booking/book-for-surgery/<str:file_no>/', TheatreBookingCreateView.as_view(), name='book_for_surgery'),
-    path('clinic/theatre-booking/surgery-wait-list', TheatreBookingListView.as_view(), name="surgery_wait_list"),
+    path('clinic/theatre-booking/surgery-wait-list/', TheatreBookingListView.as_view(), name="surgery_wait_list"),
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
     
     path('theatre-operation-record/create/', TheatreOperationRecordCreateView.as_view(), name='theatre_op_record'),
-    path('theatre/theatre-operation-record-list', TheatreOperationRecordListView.as_view(), name="theatre_op_list"),
+    path('theatre/theatre-operation-record-list/', TheatreOperationRecordListView.as_view(), name="theatre_op_list"),
 
     path('theatre/operating-theatre/create/', OperatingTheatreFormView.as_view(), name='operating_theatre'),
-    path('theatre/operating-theatre-list', OperatingTheatreListView.as_view(), name="operating_theatre_list"),
+    path('theatre/operating-theatre-list/', OperatingTheatreListView.as_view(), name="operating_theatre_list"),
 
     path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='operation_notes'),
-    path('theatre/operated-patient-list', OperationNotesListView.as_view(), name="operated_list"),
+    path('theatre/operated-patient-list/', OperationNotesListView.as_view(), name="operated_list"),
 
+    path('theatre/anaesthesia-checklist/<str:file_no>/', AnaesthesiaChecklistCreateView.as_view(), name='anaesthesia-checklist'),
+    path('theatre/anaesthesia-checklist_llist/', AnaesthesiaChecklistListView.as_view(), name="anaesthesia-checklist_list"),
+
+    path('theatre/peri-op-nurse/<str:file_no>/', OperationNotesCreateView.as_view(), name='peri_op_nurse'),
+    path('theatre/peri-op-nurse-list/', OperationNotesListView.as_view(), name="peri_op_nurse_list"),
 
     #radiology
     path('radiology-list/', RadiologyListView.as_view(), name='radiology_list'),

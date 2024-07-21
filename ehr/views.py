@@ -391,6 +391,13 @@ class TheatreListView(DoctorNurseRequiredMixin, ListView):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+class TheatreDetailView(DoctorNurseRequiredMixin, DetailView):
+    model=Theatre
+    context_object_name='theatre'
+    template_name = "ehr/theatre/theatre_detail.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class WardView(DoctorNurseRequiredMixin, ListView):
     model = Ward
     context_object_name = 'wards'
@@ -713,6 +720,10 @@ class PatientFolderView(DetailView):
         context['ward_clinical_notes'] = patient.ward_clinical_notes.all().order_by('-updated')
         context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
         context['operation_notes'] = patient.operation_notes.all().order_by('-updated')
+        context['peri_op_nurse'] = patient.peri_op_nurse.all().order_by('-updated')
+        context['anaesthesia_checklist'] = patient.anaesthesia_checklist.all().order_by('-updated')
+        context['theatre_operation_record'] = patient.theatre_operation_record.all().order_by('-updated')
+        context['operating_theatre'] = patient.operating_theatre.all().order_by('-updated')
         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
         context['bills'] = Bill.objects.filter(patient=self.object).order_by('-created')
         radiology_results = patient.radiology_results.all().order_by('-updated')
@@ -2041,53 +2052,86 @@ class OperatingTheatreListView(DoctorRequiredMixin,ListView):
         context['operating_theatreFilter'] = OperatingTheatreFilter(self.request.GET, queryset=self.get_queryset())
         return context
     
-    
-# class OperatingTheatreUpdateView(UpdateView):
-#     model = OperatingTheatre
-#     form_class = OperatingTheatreForm
-#     template_name = 'operating_theatre_form.html'
-#     success_url = reverse_lazy('operating_theatre_list')  # Adjust as needed
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         if self.request.POST:
-#             context['surgical_consumables'] = SurgicalConsumableFormSet(self.request.POST, instance=self.object)
-#             context['implants'] = ImplantFormSet(self.request.POST, instance=self.object)
-#         else:
-#             context['surgical_consumables'] = SurgicalConsumableFormSet(instance=self.object)
-#             context['implants'] = ImplantFormSet(instance=self.object)
-#         return context
+class AnaesthesiaChecklistCreateView(DoctorRequiredMixin,CreateView):
+    model = AnaesthisiaChecklist
+    form_class = AnaesthisiaChecklistForm
+    template_name = 'ehr/theatre/anaesthesia_checklist.html'
 
-#     def form_valid(self, form):
-#         context = self.get_context_data()
-#         surgical_consumables = context['surgical_consumables']
-#         implants = context['implants']
-        
-#         with transaction.atomic():
-#             self.object = form.save()
-            
-#             if surgical_consumables.is_valid():
-#                 surgical_consumables.instance = self.object
-#                 surgical_consumables.save()
-#             else:
-#                 return self.form_invalid(form)
-            
-#             if implants.is_valid():
-#                 implants.instance = self.object
-#                 implants.save()
-#             else:
-#                 return self.form_invalid(form)
-        
-#         messages.success(self.request, "Operating Theatre record updated successfully.")
-#         return super().form_valid(form)
+    def form_valid(self, form):
+        form.instance.doctor = self.request.user
+        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
+        self.object = form.save()
 
-#     def form_invalid(self, form):
-#         context = self.get_context_data()
-#         messages.error(self.request, "There was an error in your form. Please correct it and try again.")
-#         return self.render_to_response(context)
+        return super().form_valid(form)
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class TheatreDetailView(DoctorNurseRequiredMixin, DetailView):
-    model=Theatre
-    context_object_name='theatre'
-    template_name = "ehr/theatre/theatre_detail.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        return context
+
+    def get_success_url(self):
+        messages.success(self.request, 'ANAESTHESIA CHECKLIST ADDED')
+        return self.object.patient.get_absolute_url()
+
+
+class AnaesthesiaChecklistListView(DoctorRequiredMixin,ListView):
+    model=AnaesthisiaChecklist
+    template_name='ehr/theatre/anaesthesia_checklist_list.html'
+    context_object_name='anaesthesia_checklist'
+    paginate_by = 10
+
+    def get_queryset(self):
+        anaesthesia_checklist = super().get_queryset().order_by('-updated')
+        anaesthesia_checklist_filter = AnaesthisiaChecklistFilter(self.request.GET, queryset=anaesthesia_checklist)
+        return anaesthesia_checklist_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_anaesthesia_checklist = self.get_queryset().count()
+        context['total_anaesthesia_checklist'] = total_anaesthesia_checklist
+        context['anaesthesia_checklistFilter'] = AnaesthisiaChecklistFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+
+
+class PeriOPNurseCreateView(DoctorRequiredMixin,CreateView):
+    model = PeriOPNurse
+    form_class = PeriOPNurseForm
+    template_name = 'ehr/theatre/peri_op_nurse.html'
+
+    def form_valid(self, form):
+        form.instance.nurse = self.request.user
+        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
+        self.object = form.save()
+
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        return context
+
+    def get_success_url(self):
+        messages.success(self.request, 'RECORD ADDED')
+        return self.object.patient.get_absolute_url()
+
+
+class PeriOPNurseListView(DoctorRequiredMixin,ListView):
+    model=PeriOPNurse
+    template_name='ehr/theatre/peri_op_nurse_list.html'
+    context_object_name='peri_op_nurse'
+    paginate_by = 10
+
+    def get_queryset(self):
+        peri_op_nurse = super().get_queryset().order_by('-updated')
+        peri_op_nurse_filter = PeriOPNurseFilter(self.request.GET, queryset=peri_op_nurse)
+        return peri_op_nurse_filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_peri_op_nurse = self.get_queryset().count()
+        context['total_peri_op_nurse'] = total_peri_op_nurse
+        context['peri_op_nurseFilter'] = PeriOPNurseFilter(self.request.GET, queryset=self.get_queryset())
+        return context
