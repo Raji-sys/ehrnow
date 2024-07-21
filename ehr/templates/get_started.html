@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="mx-4 mt-4 md:mx-20">
+<div class="mx-4 mt-2 md:mx-20">
     <section class="text-center  p-2 m-1 rounded-lg">
         {% for message in messages %}
         <div class="mt-2">
@@ -28,7 +28,7 @@
         </div>
         {% endfor %}
     </section>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 uppercase text-center rounded-xl p-4 bg-gray-200 shadow-sm">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 uppercase text-center rounded-xl p-8 bg-gray-50 shadow-sm">
         {% for item in items %}
         <div>
             <a href="{% url item.url %}" class="text-sm font-medium {{ item.text_color }} hover:text-white transition duration-300">
