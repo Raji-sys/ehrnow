@@ -3,88 +3,22 @@
 {% block title %}PATIENT MOVEMENT{% endblock %}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT MOVEMENT</div>{%endblock%}
 {% block content %}
-<div class="py-10">
-  <div class="md:mx-20 mx-2 ">
-    <div class="p-4 bg-white rounded-xl shadow-black shadow-2xl">
               <!-- start -->
-<!-- top  -->
-<ul class="text-xs text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-4" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
-    <li><a href="#" class="rounded-xl">ACCIDENT AND EMERGENCY PATIENT</a></li>
-    <li><a href="#" class="rounded-xl">SOPD PATIENT</a></li>
-</ul>
-
-<div class="uk-switcher uk-margin">
-    <div>
-        <div class=" grid md:grid-cols-4 grid-cols-2 gap-3 uppercase text-center rounded-xl p-8 bg-zinc-200">
-            <div>
-                <a href="{% url 'nursing_station_ae' %}">
-            <div class="hover:bg-cyan-600 hover:text-white bg-white text-cyan-800 rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
-              <div class="text-xs ">WAITING FOR VITAL SIGNS</div>
+              <div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden mt-4 max-w-6xl mx-auto" >
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                    {%for c in clinics %}
+                    <a href="{%url 'clinic_details' c.id %}" class="block">
+                        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
+                            <div class="p-3 text-center">
+                                <h3 class="text-lg font-medium text-gray-900">{{ c.name }}</h3>
+                                <p class="text-sm text-gray-500">clinic</p>
+                            </div>
+                            <div class="bg-gradient-to-r from-green-400 to-blue-500 h-1"></div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
-          </a> 
-        </div>
-            <div>
-                <a href="{% url 'waiting_for_consultation_ae' %}">
-            <div class="hover:bg-cyan-600 hover:text-white bg-white text-cyan-800 rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
-              <div class="text-xs ">WAITING FOR CONSULTATION</div>
-            </div>
-          </a> 
-        </div>
-        <div>
-          <a href="{%url 'consultation_finished_ae' %}">
-            <div class="hover:bg-cyan-500 hover:text-white bg-white text-cyan-700 rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
-              <div class="text-xs ">CONSULTATION FINISHED</div>
-            </div>
-          </a>
-        </div>
-        <div>
-          <a href="{%url 'waiting_for_review_ae' %}">
-            <div class="hover:bg-cyan-500 hover:text-white bg-white text-cyan-700 rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
-              <div class="text-xs ">WAITING FOR REVIEW</div>
-            </div>
-          </a>
-        </div>
-    </div>
-    </div>
-    <!-- break  -->
-    <!-- break  -->
-    <div>
-        <div class=" grid md:grid-cols-4 grid-cols-2 gap-3 uppercase text-center rounded-xl p-8 bg-zinc-200">
-            <div>
-                <a href="{% url 'nursing_station_sopd' %}">
-            <div class="hover:bg-cyan-600 hover:text-white bg-white text-cyan-800 rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
-              <div class="text-xs ">WAITING FOR VITAL SIGNS</div>
-            </div>
-          </a> 
-        </div>
-            <div>
-                <a href="{% url 'waiting_for_consultation_sopd' %}">
-            <div class="hover:bg-cyan-600 hover:text-white bg-white text-cyan-800 rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
-              <div class="text-xs ">WAITING FOR CONSULTATION</div>
-            </div>
-          </a> 
-        </div>
-        <div>
-          <a href="{%url 'consultation_finished_sopd' %}">
-            <div class="hover:bg-cyan-500 hover:text-white bg-white text-cyan-700 rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
-              <div class="text-xs ">CONSULTATION FINISHED</div>
-            </div>
-          </a>
-        </div>
-        <div>
-          <a href="{%url 'waiting_for_review_sopd' %}">
-            <div class="hover:bg-cyan-500 hover:text-white bg-white text-cyan-700 rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
-              <div class="text-xs ">WAITING FOR REVIEW</div>
-            </div>
-          </a>
-        </div>
-    </div>
-    </div>
-</div>
   <!-- break -->
     <!-- break -->
-
-    </div>
-  </div>
-</div>
 {% endblock %}

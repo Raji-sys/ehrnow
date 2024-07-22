@@ -64,7 +64,11 @@ class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 class DoctorNurseRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.groups.filter(name='doctor').exists() or self.request.user.groups.filter(name='nurse').exists() 
+        return self.request.user.groups.filter(name='doctor').exists() or self.request.user.groups.filter(name='nurse').exists()
+
+class DoctorNurseRecordRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='doctor').exists() or self.request.user.groups.filter(name='nurse').exists() or self.request.user.groups.filter(name='record')
 
 
 class PharmacyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -286,6 +290,12 @@ class MedicalRecordView(RecordRequiredMixin,TemplateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientMovementView(TemplateView):
     template_name = "ehr/record/patient_moves.html"
+ 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clinics'] = Clinic.objects.all()
+        return context
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class AppointmentDashboardView(TemplateView):
@@ -302,14 +312,14 @@ class RevenueRecordView(TemplateView):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class ClinicDashView(DoctorRequiredMixin,ListView):
+class ClinicDashView(DoctorNurseRecordRequiredMixin, ListView):
     model=Clinic
     context_object_name= 'clinics'
     template_name = "ehr/dashboard/clinic_list.html"
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class ClinicDetailView(DoctorNurseRequiredMixin, DetailView):
+class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
     model = Clinic
     context_object_name = 'clinic'
     template_name = "ehr/clinic/clinic_details.html"
@@ -333,7 +343,7 @@ class ClinicDetailView(DoctorNurseRequiredMixin, DetailView):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class PTListView(DoctorNurseRequiredMixin, ListView):
+class PTListView(DoctorNurseRecordRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'ehr/clinic/pt_list.html'
     context_object_name = 'handovers'

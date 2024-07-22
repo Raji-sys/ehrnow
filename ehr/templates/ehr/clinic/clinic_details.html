@@ -3,12 +3,13 @@
 {% block title %}{{clinic.name}}{% endblock %}
 {% block page_title %}
 <div class="flex justify-center">
-    <a href="{% url 'clinic_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{clinic.name}} DASHBOARD
+ {%if request.user.profile.department.name == 'record'%} <a href="{% url 'patient_movement' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{clinic.name}} DASHBOARD {%else%}
+  <a href="{% url 'clinic_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{clinic.name}} DASHBOARD {%endif%} 
 </div>
 {% endblock %}
 {% block content %}
 <div class="md:mt-8 mt-4 md:grid md:grid-cols-6 md:mx-20 mx-2">
-    <div class="md:col-span-5 md:max-w-7xl bg-zinc-200 rounded-md shadow-black h-fit shadow-md">
+    <div class="md:col-span-5 md:max-w-7xl bg-gray-100 rounded-md shadow-black h-fit shadow-md">
         <div class="grid md:grid-cols-3 grid-cols-1 gap-6 uppercase text-center rounded-xl p-6 md:p-12">
             <div>
                 <a href="{% url 'pt_list' clinic.id 'waiting for consultation' %}">

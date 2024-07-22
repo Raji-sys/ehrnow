@@ -5,8 +5,8 @@
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ theatre.name }} DASHBOARD
 </div>{%endblock%}
 {% block content %}
-<div class="mx-2 md:mx-20 bg-white rounded-xl mt-4 p-2">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+<div class="mx-2 md:mx-20 bg-gray-100 rounded-xl mt-4 p-2">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 p-2">
         <a href="{% url 'surgery_wait_list' %}" class="block transform hover:-translate-y-1 transition duration-300">
             <div class="bg-white rounded-xl shadow-xl overflow-hidden">
                 <div class="bg-amber-600 text-white p-6 h-40 flex items-center justify-center ">

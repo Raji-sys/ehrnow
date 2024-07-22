@@ -3,7 +3,8 @@
 {% block title %}{{ status|upper }}{% endblock %}
 {% block page_title %}
 <div class="flex justify-center">
-    <a href="{% url 'clinic_details' clinic.id %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ status|upper }} - {{ clinic.name }}
+ 
+  <a href="{% url 'clinic_details' clinic.id %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ status|upper }} - {{ clinic.name }}
 </div>
 {% endblock %}
 {% block content %}
