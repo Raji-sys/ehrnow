@@ -310,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function() {
               <li class=><a href="#" class="rounded-lg ">MICROBIOLOGY</a></li>
               <li><a href="#" class="rounded-lg ">CHEMICAL PATHOLOGY</a></li>
               <li><a href="#" class="rounded-lg ">SEROLOGY</a></li>
-              <!-- <li><a href="#" class="rounded-lg ">GENERAL</a></li> -->
             </ul>
             
             <div class="uk-switcher uk-margin">
@@ -480,43 +479,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         </table>
                       </div>          
               </div>
-            
-<!--             
-              <div>
-                <div>
-=                  </div>
-                  <div class="overflow-x-auto p-2">
-                    <table class="min-w-full divide-y divide-cyan-200 mb-4">
-                      <thead class="bg-cyan-50">
-                        <tr class="text-xs">
-                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Test</th>
-                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Collected</th>
-                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Result</th>
-                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
-                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Reported</th>
-                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody class="bg-white divide-y divide-cyan-200">
-                        {% for g in general_results %}
-                        <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                          <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                          <td class=" p-3 whitespace-nowrap">{{ g.name|default_if_none:''}}</td>
-                          <td class=" p-3 whitespace-nowrap">{{ g.collected|default_if_none:'' }}</td>
-                          <td class=" p-3 whitespace-nowrap">{{ g.result.html|safe }}</td>
-                          <td class=" p-3 whitespace-nowrap">{{ g.comment|default_if_none:'' }}</td>
-                          <td class=" p-3 whitespace-nowrap">{{ g.reported|default_if_none:'' }}</td>
-                        </tr>
-                        {%empty%}
-                        <div class="p-2">
-                            <p>No general test and result yet</p>
-                        </div>
-                       {%endfor%}
-                      </tbody>
-                    </table>
-                  </div>
-              </div>         -->
             
             </div>
       </div>
