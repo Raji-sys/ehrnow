@@ -2290,7 +2290,7 @@ def link_callback(uri, rel):
     elif uri.startswith(sUrl):
         path = os.path.join(sRoot, uri.replace(sUrl, ""))
     else:
-        return uri  # handle absolute uri (ie: http://some.tld/foo.png)
+        return uri  
 
     # make sure that file exists
     if not os.path.isfile(path):

@@ -9,7 +9,7 @@
             size: A4;
             margin: 0.8cm;
             border: 1px solid green;
-            padding: 0.3px;
+            padding: 1px;
         }
         body {
             font-family: Arial, sans-serif;
@@ -58,7 +58,8 @@
             text-align: right;
             font-weight: bold;
             font-size: 1.5em;
-            margin-top: 1px;
+            text-decoration: underline;
+            color: #000;
         }
         h3 {
             color: #190b03;
@@ -74,50 +75,46 @@
         margin-bottom: 1px;  /* Add some space below the logo and title */
     }
 
-    .logo {
-        width: 100px;  /* Increase size by 200% (assuming original was 50px) */
-        text-align: left;
-    }
-    .l{border: 1px solid green;
-    }
-    .header h1 {
-        font-size: 20px;  /* Adjust as needed */
+    h1 {
+        font-size: 3em;
         text-align: center;
+        padding-top: 1em;
     }
-    .infox{
-        text-align: left;
-        font-size: 2.5em;
-    }
+   
     tfoot td {
         text-align: right;
         font-weight: bold;
         font-size: 2em;
-        border: 0px;
+        border-bottom: 1px solid;
+        color: #29ad14;
     }
-            </style>
+    .info{
+        text-align: center;
+    }
+    </style>
 </head>
 <body>
-
-    <div class="infox">
-        <h1><span class="l"> <img class="logo" src="{{ logo_path }}" alt="logo">UHUD CLINIC - KANO</span>
-            
-        </h1>
-    </div>
+        <h1>UHUD CLINIC - KANO</h1>
         <hr>
             <h3><span class="cl">ADDRESS</span>: Behind Alaj Station, Kofar Ruwa, Kano</h3>
             <h3><span class="cl">EMAIL</span>: uhudclinic@gmail.com</h3>
             <h3><span class="cl">PHONE</span>: 0806 527 2106</h3>
-        </div>
             <div class="info">
                 <hr>
-                <p><strong>PATIENT NAME:</strong> {{ private_bill.patient|upper }}&nbsp;&nbsp;&nbsp;&nbsp;<strong>HOSPITAL NUMBER:</strong> {{ private_bill.patient.file_no }}&nbsp;&nbsp;&nbsp;&nbsp;<strong>SEX:</strong> {{ private_bill.patient.gender }}&nbsp;&nbsp;&nbsp;&nbsp;<strong>AGE:</strong> {{ private_bill.patient.age }}</p>
+                <p><strong>PATIENT:</strong> {{ private_bill.patient|upper }}&nbsp;&nbsp;<strong>NO:</strong> {{ private_bill.patient.file_no }}&nbsp;&nbsp;<strong>GENDER:</strong> {{ private_bill.patient.gender }}&nbsp;&nbsp;
+                    <strong>AGE:</strong> {{ private_bill.patient.age }}
+                </p>
                 {% if theatre_booking %}
                 <hr>
-                <p><strong>DIAGNOSIS:</strong> {{ theatre_booking.diagnosis|upper }}&nbsp;&nbsp;&nbsp;&nbsp;<strong>OPERATION PLANNED:</strong> {{ theatre_booking.operation_planned|upper }}
-                    &nbsp;&nbsp;&nbsp;&nbsp;<strong>DATE:</strong> {{ private_bill.created|date:"d/m/Y" }}</p>
+                <p><strong>DIAGNOSIS:</strong> {{ theatre_booking.diagnosis|upper }}&nbsp;&nbsp;<strong>OPERATION PLANNED:</strong> {{ theatre_booking.operation_planned|upper }} </p>
+                <p> 
+                    <strong>SURGERY DATE:</strong> {{ theatre_booking.date }}
+                    &nbsp;&nbsp;<strong>TEAM:</strong> {{theatre_booking.team}}
+                </p>
                     {% else %}
                     <p><strong>No theatre booking information available.</strong></p>
-                    {% endif %}        </div>
+                    {% endif %}
+                </div>
 
         <table>
             <thead>
@@ -135,12 +132,16 @@
                     <td class="amount-column">{{ billing.price|floatformat:2 }}</td>
                 </tr>
                 {% endfor %}
-            </tbody><tfoot>
+            </tbody>
+            <tfoot>
                 <tr>
-                    <td colspan="3">TOTAL N {{ private_bill.total_amount|floatformat:2 }}</td>
+                    <td colspan="3">TOTAL: N{{ private_bill.total_amount|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <th colspan="3"><strong>BILL GENERATED ON:</strong> {{ private_bill.created }}</th>
                 </tr>
             </tfoot>
-    
+           
         </table>
 </body>
 </html>

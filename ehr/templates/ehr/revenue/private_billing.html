@@ -9,7 +9,7 @@
     {% csrf_token %}
     
     {{ form.management_form }}
-    <div class="max-h-[70vh] overflow-y-auto p-2"> <!-- Added this container -->
+    <div class="max-h-[70vh] overflow-y-auto p-2">
         <div class="grid md:grid-cols-1 p-1 gap-1 text-center">
             {% for form in formset %}
             <div class="p-2 border rounded shadow-md w-fit">
@@ -32,7 +32,7 @@
             {% endfor %}
         </div>
     </div>
-    <div class="flex items-center justify-center mt-4"> <!-- Added margin-top -->
+    <div class="flex items-center justify-center mt-4">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
             Save
         </button>

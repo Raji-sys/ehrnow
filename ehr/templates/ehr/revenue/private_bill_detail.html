@@ -10,16 +10,19 @@
 <div class="p-2">
     <div class="max-w-6xl mx-auto bg-gray-100 rounded-lg shadow-md p-2">
  <div class="bg-gray-200 rounded-md p-2 text-xs uppercase text-center">
-    <p class="text-sm"><span class="font-semibold">Patient:</span> {{ private_bill.patient }} &nbsp;<strong>HOSPITAL NUMBER:</strong> {{ private_bill.patient.file_no }}</p>
-    <p><strong>SEX:</strong> {{ private_bill.patient.gender }}&nbsp;<strong>AGE:</strong> {{ private_bill.patient.age }}</p>
-    <p><strong>DATE:</strong> {{ private_bill.created }}&nbsp;
+    <p class="text-xs border-b border-gray-400 p-2">
+        <span class="font-semibold">Patient:</span> {{ private_bill.patient }} &nbsp;
+        <strong>NO:</strong> {{ private_bill.patient.file_no }}&nbsp;
+        <strong>GENDER:</strong> {{ private_bill.patient.gender }}&nbsp;
+        <strong>AGE:</strong> {{ private_bill.patient.age }}&nbsp;
+</p>
+        <p class="text-xs border-b border-gray-400">
     {% if theatre_booking %}
         <strong>DIAGNOSIS:</strong> {{ theatre_booking.diagnosis }}&nbsp;
-        <strong>OPERATION PLANNED:</strong> {{ theatre_booking.operation_planned }}
-    {% endif %}
-    </p>
-    {% if theatre_booking %}
-        <p><strong>TEAM:</strong> {{ theatre_booking.team }}</p>
+        <strong>OPERATION PLANNED:</strong> {{ theatre_booking.operation_planned }}&nbsp;</p>
+        <p class="text-xs border-b border-gray-400">
+        <strong>TEAM:</strong> {{ theatre_booking.team }}
+        <strong>SURGERY DATE:</strong> {{ theatre_booking.date }}</p>
     {% endif %}
             <div class="flex justify-between">
                 <div>
@@ -48,7 +51,7 @@
                 </thead>
                 <tbody>
                     {% for billing in private_billing_items %}
-                    <tr class="{% cycle 'bg-white' 'bg-gray-50' %} text-xs text-center">
+                    <tr class="{% cycle 'bg-white' 'bg-gray-50' %} text-xs text-center uppercase">
                         <td class="px-4 py-2">{{ forloop.counter }}</td>
                         <td class="px-4 py-2"> {%if billing.item.name == 'YES' %} <i class="fa fa-solid fa-check text-green-500 fa-xl"></i>{%else%} {{ billing.item.name }} {%endif%}</td>
                         <td class="px-4 py-2">&#x20A6;{{ billing.price }}</td>
@@ -60,17 +63,17 @@
         {% else %}
         <p class="text-gray-600">No items associated with this bill.</p>
         {% endif %}
-        <div class="text-sm m-4 gap-4">
+        <div class="text-xs m-4 gap-4">
          
-            <span class="">Date:</span>
+            <span class="uppercase">Bill Generated on:</span>
             <span class="text-gray-600 font-semibold">
                 {{ private_bill.created|date:"d-M-Y" }}&nbsp;
             </span>
-            <span class="">Billed by:</span>
+            <span class="uppercase">by:</span>
             <span class="text-gray-600 font-semibold uppercase">
              {{ private_bill.user }}&nbsp;
              </span>
-            <span class="">Status:</span>
+            <span class="uppercase">Status:</span>
             <span class="{% if bill.items.first.payment.status %}text-green-600{% else %}text-red-600{% endif %} font-bold uppercase">
                 {% if private_bill.items.first.payment.status %}Paid{% else %}Unpaid{% endif %}
             </span>
