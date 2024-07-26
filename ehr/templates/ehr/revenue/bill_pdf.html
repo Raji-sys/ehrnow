@@ -151,7 +151,7 @@
 
         <div>
         <p class="total">Total: N{{ bill.total_amount|floatformat:2 }}</p>
-        <p class="gen"><strong>BILL GENERATED ON:</strong> {{ bill.created }}</p>
+        <p class="gen"><strong>BILL GENERATED ON:</strong> {{ bill.created }} BY: {{ bill.user|upper }}</p>
     </div>
 
 </div>

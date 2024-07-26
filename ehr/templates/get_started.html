@@ -31,8 +31,8 @@
     <div class="grid grid-cols-2 md:grid-cols-3 gap-6 uppercase text-center rounded-xl p-6 bg-gray-50 shadow-sm">
         {% for item in items %}
         <div>
-            <a href="{% url item.url %}" class="text-sm font-medium {{ item.text_color }} hover:text-gray-800 transition duration-300">
-                <div class="bg-white rounded-lg shadow-md p-6 border hover:border-white hover:bg-{{ item.hover_bg_color }}">
+            <a href="{% url item.url %}" class=" text-sm font-medium {{ item.text_color }} hover:text-white">
+                <div class="bg-white rounded-lg shadow-md p-6 border hover:border-white hover:bg-green-600">
                     <i class="fa-solid {{ item.icon }} fa-xl mb-2"></i><br>
                     {{ item.name }}
                 </div>
