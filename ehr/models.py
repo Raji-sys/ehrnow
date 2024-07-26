@@ -1,4 +1,3 @@
-from tabnanny import verbose
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
@@ -6,9 +5,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils import timezone
 from django_quill.fields import QuillField
-# from pathology.models import HematologyResult
-from django.core.exceptions import ValidationError
-import os
+from django.db.models import Sum
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -473,9 +470,6 @@ class Bill(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
     updated = models.DateTimeField(auto_now=True)
     
-    # @property
-    # def items(self):
-    #     return self.billing_set.all()  #
     def __str__(self):
         return f"Surgery Billing"
 
@@ -702,3 +696,33 @@ class Physio(models.Model):
 
     def __str__(self):
         return self.patient
+    
+
+class PrivateBill(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='private_bill',null=True)
+    created = models.DateTimeField(auto_now_add=True,null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Private Surgery Billing"
+
+    
+class PrivateTheatreItem(models.Model):
+    name=models.CharField(max_length=200,null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    
+class PrivateBilling(models.Model):
+    private_bill = models.ForeignKey(PrivateBill, on_delete=models.CASCADE, related_name='private_items',null=True)
+    item = models.ForeignKey(PrivateTheatreItem, on_delete=models.CASCADE,null=True,blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="private_bill_payment")
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.item.name}"

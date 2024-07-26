@@ -149,6 +149,12 @@ urlpatterns = [
     path('bill/<int:pk>/', BillDetailView.as_view(), name='bill_detail'),
     path('bills/', BillListView.as_view(), name='bill_list'),
     path('bill/pdf/<int:pk>/', BillPDFView.as_view(), name='bill_pdf'),
+    
+    #private billing
+    path('theatre/theatre-private-bill/<str:file_no>/', PrivateBillingCreateView.as_view(), name='private_surgery_bill'),   
+    path('private-bill/<int:pk>/', PrivateBillDetailView.as_view(), name='private_bill_detail'),
+    path('private-bills/', PrivateBillListView.as_view(), name='private_bill_list'),
+    path('private-bill/pdf/<int:pk>/', PrivateBillPDFView.as_view(), name='private_bill_pdf'),
 
 
 ]

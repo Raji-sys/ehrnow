@@ -735,6 +735,7 @@ class PatientFolderView(DetailView):
         context['theatre_operation_record'] = patient.theatre_operation_record.all().order_by('-updated')
         context['operating_theatre'] = patient.operating_theatre.all().order_by('-updated')
         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
+        context['private_bill'] = patient.private_bill.all().order_by('-created')
         context['bills'] = Bill.objects.filter(patient=self.object).order_by('-created')
         radiology_results = patient.radiology_results.all().order_by('-updated')
         context['radiology_results'] = radiology_results
@@ -1791,7 +1792,7 @@ class BillingPayListView(ListView):
         return reverse_lazy("pay_list")
     
     def get_queryset(self):
-        return Paypoint.objects.filter(service__startswith='Surgery Bill-').order_by('-updated')
+        return Paypoint.objects.filter(service__startswith='Surgery Bill:-').order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -2145,3 +2146,196 @@ class PeriOPNurseListView(DoctorRequiredMixin,ListView):
         context['total_peri_op_nurse'] = total_peri_op_nurse
         context['peri_op_nurseFilter'] = PeriOPNurseFilter(self.request.GET, queryset=self.get_queryset())
         return context
+
+
+class PrivateBillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
+    template_name = 'ehr/revenue/private_billing.html'
+    
+    def get_form(self):
+        PrivateBillingFormSet = modelformset_factory(PrivateBilling, form=PrivateBillingForm, extra=17)
+        if self.request.method == 'POST':
+            return PrivateBillingFormSet(self.request.POST)
+        else:
+            return PrivateBillingFormSet(queryset=PrivateBilling.objects.none())
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = self.get_form()
+        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        return context
+
+    def form_valid(self, form):
+        formset = self.get_form()
+        if formset.is_valid():
+            return self.formset_valid(formset)
+        else:
+            return self.form_invalid(form)
+
+    @transaction.atomic
+    def formset_valid(self, formset):
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        private_bill = PrivateBill.objects.create(user=self.request.user, patient=patient)
+        
+        total_amount = 0
+        instances = formset.save(commit=False)
+        
+        for instance in instances:
+            if instance.price:  # Only process non-empty forms
+                instance.private_bill = private_bill
+                total_amount += instance.price
+                instance.save()
+        
+        # Update the bill with the total amount
+        private_bill.total_amount = total_amount
+        private_bill.save()
+
+        # Create a single paypoint for the entire bill
+        paypoint = Paypoint.objects.create(
+            user=self.request.user,
+            patient=patient,
+            service=f"Surgery Bill-{private_bill.id}",
+            price=total_amount,
+            status=False
+        )
+        # Update all billing instances with the same paypoint
+        PrivateBilling.objects.filter(private_bill=private_bill).update(payment=paypoint)
+
+        return super().form_valid(formset)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def get_success_url(self):
+        messages.success(self.request, 'BILL ADDED')
+        return reverse('patient_details', kwargs={'file_no': self.kwargs['file_no']})
+
+
+class PrivateBillDetailView(DetailView):
+    model = PrivateBill
+    template_name = 'ehr/revenue/private_bill_detail.html'
+    context_object_name = 'private_bill'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['private_billing_items'] = PrivateBilling.objects.filter(private_bill=self.object).select_related('item')
+        
+        # Get the latest TheatreBooking for the patient
+        theatre_booking = TheatreBooking.objects.filter(patient=self.object.patient).order_by('-date').first()
+        context['theatre_booking'] = theatre_booking
+        
+        return context
+        
+
+class PrivateBillingPayListView(ListView):
+    model = Paypoint
+    template_name = 'ehr/revenue/private_bill_pay_list.html'
+    context_object_name = 'private_bill_pays'
+    paginate_by = 10
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+    
+    def get_queryset(self):
+        return Paypoint.objects.filter(service__startswith='Private Surgery Bill:-').order_by('-updated')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        
+        pay_total = queryset.count()
+        total_worth = queryset.filter(status=True).aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        return context
+
+
+class PrivateBillListView(DoctorRequiredMixin, LoginRequiredMixin, ListView):
+    model = PrivateBill
+    template_name = 'ehr/revenue/private_bill_list.html'
+    context_object_name = 'private_bills'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return PrivateBill.objects.filter(user=self.request.user).prefetch_related('items').order_by('-created')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_bills'] = self.get_queryset().count()
+        return context
+    
+
+import os
+from django.conf import settings
+from django.contrib.staticfiles import finders
+
+def link_callback(uri, rel):
+    """
+    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+    resources
+    """
+    # use short variable names
+    sUrl = settings.STATIC_URL      # Typically /static/
+    sRoot = settings.STATIC_ROOT    # Typically /home/userX/project_static/
+    mUrl = settings.MEDIA_URL       # Typically /media/
+    mRoot = settings.MEDIA_ROOT     # Typically /home/userX/project_static/media/
+
+    # convert URIs to absolute system paths
+    if uri.startswith(mUrl):
+        path = os.path.join(mRoot, uri.replace(mUrl, ""))
+    elif uri.startswith(sUrl):
+        path = os.path.join(sRoot, uri.replace(sUrl, ""))
+    else:
+        return uri  # handle absolute uri (ie: http://some.tld/foo.png)
+
+    # make sure that file exists
+    if not os.path.isfile(path):
+        raise Exception(
+            'media URI must start with %s or %s' % (sUrl, mUrl)
+        )
+    return path
+
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result, link_callback=link_callback)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+from django.contrib.staticfiles.storage import staticfiles_storage
+
+class PrivateBillPDFView(DetailView):
+    model = PrivateBill
+    template_name = 'ehr/revenue/private_bill_pdf.html'
+
+    def get(self, request, *args, **kwargs):
+        private_bill = self.get_object()
+        private_billing_items = PrivateBilling.objects.filter(private_bill=private_bill).select_related('item')
+        theatre_booking = TheatreBooking.objects.filter(patient=private_bill.patient).order_by('-date').first()
+        
+        # Get the full path to the logo
+        logo_path = staticfiles_storage.path('images/logo.jpg')
+        
+        context = {
+            'private_bill': private_bill,
+            'private_billing_items': private_billing_items,
+            'theatre_booking': theatre_booking,
+            'logo_path': logo_path,
+        }
+        
+        pdf = render_to_pdf('ehr/revenue/private_bill_pdf.html', context)
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            if 'download' in request.GET:
+                filename = f"Bill_{private_bill.id}.pdf"
+                content = f"attachment; filename={filename}"
+                response['Content-Disposition'] = content
+            return response
+        return HttpResponse("Error generating PDF", status=400) 

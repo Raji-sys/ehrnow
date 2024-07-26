@@ -2,87 +2,6 @@
 {%load static%}
 {% block title %}PATIENT FOLDER{% endblock%}
 {%block page_title%}<div class="flex justify-center uppercase">{{patient.full_name}}</div>{%endblock%}
-{% block extra_js %}
-<script>
-  function viewDICOM(dicomId) {
-    fetch(`/get-dicom-path/${dicomId}/`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.file_path) {
-                // Use the file:// protocol to open the local file
-                window.open(`file://${data.file_path}`, '_blank');
-            } else {
-                console.error('Local file path not available');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching DICOM file path:', error);
-        });
-}
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Cornerstone
-    cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
-    cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
-    cornerstoneWADOImageLoader.configure({
-    useWebWorkers: false,
-    decodeConfig: {
-        usePDFJS: false,
-    },});
-
-    const viewLinks = document.querySelectorAll('.view-dicom');
-    viewLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const dicomId = this.getAttribute('data-dicom-id');
-            viewDICOM(dicomId);
-        });
-    });
-
-    function viewDICOM(dicomId) {
-    console.log("Attempting to view DICOM file with ID:", dicomId);
-    const element = document.getElementById('dicomViewer');
-    if (!element) {
-        console.error("DICOM viewer element not found");
-        return;
-    }
-    cornerstone.enable(element);
-
-    fetch(`/get-dicom/${dicomId}/`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.arrayBuffer();
-        })
-        .then(arrayBuffer => {
-            const byteArray = new Uint8Array(arrayBuffer);
-            const blob = new Blob([byteArray], { type: 'application/dicom' });
-            const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(blob);
-            return cornerstone.loadImage(imageId);
-        })
-        .then(image => {
-            console.log("DICOM image loaded successfully:", image);
-            cornerstone.displayImage(element, image);
-            document.getElementById('dicomViewerModal').style.display = 'block';
-        })
-        .catch(error => {
-            console.error("Detailed error:", error);
-            if (error.stack) {
-                console.error("Error stack:", error.stack);
-            } else {
-                console.error("No error stack available");
-            }
-        });
-}
-
-    function closeDICOMViewer() {
-        document.getElementById('dicomViewerModal').style.display = 'none';
-    }
-});
-</script>
-{% endblock %}
-
-
 {% block content %}
 
 <div class="">
@@ -617,6 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <div> 
       <div class="text-center rounded-xl p-2 md:p-10 bg-gray-50">
         <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-2 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+          <li ><a href="#" class="rounded-lg ">PRIVATE SURGERY BILL</a></li>
           <li ><a href="#" class="rounded-lg ">SURGERY BILL</a></li>
           <li ><a href="#" class="rounded-lg ">IN-PATIENT VITAL SIGNS</a></li>
           <li class=><a href="#" class="rounded-lg ">IN-PATIENT MEDICATION</a></li>
@@ -625,6 +545,50 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div class="uk-switcher uk-margin">
           <div> 
+            <div >
+            <a href="{% url 'private_surgery_bill' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-money-check fa-2xl"></i></a>
+            </div>
+         
+            <div class="overflow-x-auto p-2">
+              <table class="min-w-full divide-y divide-cyan-200 mb-4">
+                <thead class="bg-cyan-50">
+                  <tr class="text-xs">
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">price</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">payment</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">billed by</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">details</th>
+                      </tr>
+        
+                </thead>
+                <tbody class="bg-white divide-y divide-cyan-200">
+                  {% for s in private_bill %}
+                  <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                    <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
+                    <td class=" p-3 whitespace-nowrap">&#x20A6;{{ s.total_amount }}</td>
+                    <td class=" p-3 whitespace-nowrap">
+                      {% if s.items.first.payment.status %}
+                      <span class="text-green-500">Paid</span>
+                  {% else %}
+                      <span class="text-red-500">Unpaid</span>
+                  {% endif %}
+                    </td>
+                    <td class=" p-3 whitespace-nowrap">{{ s.user }}</td>
+                    <td class=" p-3 whitespace-nowrap">{{ s.created }}</td>
+                    <td class=" p-3 whitespace-nowrap"> <a href="{% url 'private_bill_detail' s.id %}" class="text-blue-500 hover:underline">View Details</a></td>
+                      </tr>
+                  {%empty%}
+                  <div class="p-2">
+                      <p>No surgery bill yet</p>
+                  </div>
+                 {%endfor%}
+                </tbody>
+              </table>
+            </div>
+         </div>
+
+         <div> 
             <div >
             <a href="{% url 'surgery_bill' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-money-check fa-2xl"></i></a>
             </div>
@@ -825,6 +789,8 @@ document.addEventListener('DOMContentLoaded', function() {
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Theatre</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Team</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DIAGNOSIS</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">OPERATION PLANNED</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">operation date</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Booked By</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Booked</th>
@@ -836,8 +802,10 @@ document.addEventListener('DOMContentLoaded', function() {
                       <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.theatre|default_if_none:''}}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.team|default_if_none:'' }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.diagnosis|default_if_none:'' }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.operation_planned|default_if_none:'' }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.date|default_if_none:'' }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.user|default_if_none:'' }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.doctor|default_if_none:'' }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.updated|default_if_none:'' }}</td>
                  
                     </tr>

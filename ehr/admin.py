@@ -122,7 +122,7 @@ class BillAdmin(admin.ModelAdmin):
     readonly_fields=('patient','user','total_amount',)
 
     def get_payment(self, obj):
-        billing = obj.items.first()  # Assuming 'items' is the related_name in Billing model
+        billing = obj.items.first()  
         return billing.payment if billing else None
     get_payment.short_description = 'Payment'
     get_payment.admin_order_field = 'items__payment'
@@ -208,3 +208,16 @@ class WardShiftSUmmaryNoteAdmin(admin.ModelAdmin):
     list_filter = ('nurse','updated')
 
 
+@admin.register(PrivateBill)
+class PrivateBillAdmin(admin.ModelAdmin):
+    list_display = ('patient', 'user', 'total_amount', 'created',)
+    list_filter = ('created',)
+    search_fields = ('patient__name', 'user__username')
+    readonly_fields=('patient','user','total_amount',)
+
+
+@admin.register(PrivateTheatreItem)
+class PrivateTheatreItemAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)

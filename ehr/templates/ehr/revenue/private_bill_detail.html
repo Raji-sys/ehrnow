@@ -9,28 +9,33 @@
 {% block content %}
 <div class="p-2">
     <div class="max-w-6xl mx-auto bg-gray-100 rounded-lg shadow-md p-2">
- 
-        <div class="bg-gray-200 rounded-md p-2 text-xs uppercase text-center">
-            <p class="text-sm"><span class="font-semibold">Patient:</span> {{ bill.patient}} &nbsp;
-            </p>
+ <div class="bg-gray-200 rounded-md p-2 text-xs uppercase text-center">
+    <p class="text-sm"><span class="font-semibold">Patient:</span> {{ private_bill.patient }} &nbsp;<strong>HOSPITAL NUMBER:</strong> {{ private_bill.patient.file_no }}</p>
+    <p><strong>SEX:</strong> {{ private_bill.patient.gender }}&nbsp;<strong>AGE:</strong> {{ private_bill.patient.age }}</p>
+    <p><strong>DATE:</strong> {{ private_bill.created }}&nbsp;
+    {% if theatre_booking %}
+        <strong>DIAGNOSIS:</strong> {{ theatre_booking.diagnosis }}&nbsp;
+        <strong>OPERATION PLANNED:</strong> {{ theatre_booking.operation_planned }}
+    {% endif %}
+    </p>
+    {% if theatre_booking %}
+        <p><strong>TEAM:</strong> {{ theatre_booking.team }}</p>
+    {% endif %}
             <div class="flex justify-between">
                 <div>
-                    <a href="{% url 'bill_pdf' bill.id %}" class="text-green-600 hover:text-green-800" target="_blank">
+                    <a href="{% url 'private_bill_pdf' private_bill.id %}" class="text-green-600 hover:text-green-800" target="_blank">
                         <i class="fas fa-file-pdf fa-2xl"></i>
                             print bill
                     </a>
                 </div>
                 <div>
                     <span class="ml-10 text-black text-xs">Total Amount:</span> <span class=" text-green-600 text-sm font-semibold">
-                        &#x20A6;{{ bill.total_amount }}&nbsp;
+                        &#x20A6;{{ private_bill.total_amount }}&nbsp;
                     </span>
-                    <!-- <a href="{% url 'bill_pdf' bill.id %}?download=1" class="text-blue-600 hover:text-blue-800">
-                        <i class="fas fa-download fa-xl"></i>
-                    </a> -->
                 </div>
             </div>
         </div>
-        {% if billing_items %}
+        {% if private_billing_items %}
         <div class="max-h-[50vh] overflow-y-auto p-2"> <!-- Added this container -->
         <div class="overflow-x-auto">
             <table class="w-full table-auto">
@@ -38,21 +43,15 @@
                     <tr class="text-xs text-center uppercase">
                         <th class="px-4 py-2 ">#</th>
                         <th class="px-4 py-2 ">Item</th>
-                        <th class="px-4 py-2 ">Category</th>
-                        <th class="px-4 py-2 ">Quantity</th>
                         <th class="px-4 py-2 ">Price</th>
-                        <th class="px-4 py-2 ">Total</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for billing in billing_items %}
+                    {% for billing in private_billing_items %}
                     <tr class="{% cycle 'bg-white' 'bg-gray-50' %} text-xs text-center">
                         <td class="px-4 py-2">{{ forloop.counter }}</td>
-                        <td class="px-4 py-2">{{ billing.item.category.name }}</td>
                         <td class="px-4 py-2"> {%if billing.item.name == 'YES' %} <i class="fa fa-solid fa-check text-green-500 fa-xl"></i>{%else%} {{ billing.item.name }} {%endif%}</td>
-                        <td class="px-4 py-2">{{ billing.quantity }}</td>
-                        <td class="px-4 py-2">&#x20A6;{{ billing.item.price }}</td>
-                        <td class="px-4 py-2">&#x20A6;{{ billing.total_item_price }}</td>
+                        <td class="px-4 py-2">&#x20A6;{{ billing.price }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -65,15 +64,15 @@
          
             <span class="">Date:</span>
             <span class="text-gray-600 font-semibold">
-                {{ bill.created|date:"d-M-Y" }}&nbsp;
+                {{ private_bill.created|date:"d-M-Y" }}&nbsp;
             </span>
             <span class="">Billed by:</span>
             <span class="text-gray-600 font-semibold uppercase">
-             {{ bill.user }}&nbsp;
+             {{ private_bill.user }}&nbsp;
              </span>
             <span class="">Status:</span>
             <span class="{% if bill.items.first.payment.status %}text-green-600{% else %}text-red-600{% endif %} font-bold uppercase">
-                {% if bill.items.first.payment.status %}Paid{% else %}Unpaid{% endif %}
+                {% if private_bill.items.first.payment.status %}Paid{% else %}Unpaid{% endif %}
             </span>
         </div>
 
