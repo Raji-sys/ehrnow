@@ -1182,27 +1182,12 @@ class PayCreateView(RevenueRequiredMixin, CreateView):
     template_name = 'ehr/revenue/new_pay.html'
     success_url = reverse_lazy("pay_list")
 
-    @transaction.atomic
     def form_valid(self, form):
         form.instance.user = self.request.user
-        try:
-            paypoint = form.save(commit=False)
-            
-            if paypoint.status and paypoint.payment_method == 'WALLET':
-                wallet = paypoint.patient.wallet
-                if wallet.balance() < paypoint.price:
-                    raise ValidationError("Insufficient funds in wallet")
-                wallet.deduct_funds(paypoint.price)
-                messages.success(self.request, 'Payment created and funds deducted from wallet.')
-            else:
-                messages.success(self.request, 'Payment created successfully.')
-            
-            paypoint.save()
-            return super().form_valid(form)
-        except ValidationError as e:
-            messages.error(self.request, str(e))
-            return self.form_invalid(form)
-
+        paypoint = form.save(commit=False)
+        paypoint.save()
+        return super().form_valid(form)
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
@@ -1234,27 +1219,13 @@ class PayUpdateView(UpdateView):
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context
 
-    @transaction.atomic
     def form_valid(self, form):
         form.instance.user = self.request.user
-        old_instance = self.get_object()
-        try:
-            paypoint = form.save(commit=False)
+        paypoint = form.save(commit=False)
             
-            # Check if status is changing from False to True
-            if not old_instance.status and paypoint.status:
-                if paypoint.payment_method == 'WALLET':
-                    wallet = paypoint.patient.wallet
-                    wallet.deduct_funds(paypoint.price)
-                    messages.success(self.request, 'Payment completed and funds deducted from wallet.')
-                else:
-                    messages.success(self.request, 'Payment marked as completed.')
-            
-            paypoint.save()
-            return super().form_valid(form)
-        except ValidationError as e:
-            messages.error(self.request, str(e))
-            return self.form_invalid(form)
+        paypoint.save()
+        return super().form_valid(form)
+
 
 class PayListView(ListView):
     model=Paypoint

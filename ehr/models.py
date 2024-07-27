@@ -274,8 +274,8 @@ class Paypoint(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateField(auto_now=True)
     PAYMENT_METHODS = [
-        ('CASH', 'Cash'),
-        ('WALLET', 'Wallet'),
+        ('CASH', 'CASH'),
+        ('WALLET', 'WALLET'),
     ]
     payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS, default='CASH',null=True,blank=True)
     
@@ -287,11 +287,10 @@ class Paypoint(models.Model):
                 if self.payment_method == 'WALLET':
                     wallet = self.patient.wallet
                     try:
-                        wallet.deduct_funds(self.price)
+                        wallet.deduct_funds(self.price, self.service)  # Pass service as description
                     except ValidationError as e:
                         raise ValidationError(f"Wallet error: {str(e)}")
         super().save(*args, **kwargs)
-
 
     def __str__(self):
         return f"{self.status}"
@@ -776,12 +775,12 @@ class Wallet(models.Model):
             raise ValidationError("Amount must be positive")
         WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='CREDIT')
 
-    def deduct_funds(self, amount):
+    def deduct_funds(self, amount, description):
         if amount <= 0:
             raise ValidationError("Amount must be positive")
         if self.balance() < amount:
             raise ValidationError("Insufficient funds")
-        WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='DEBIT')
+        WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='DEBIT', description=description)
 
     def __str__(self):
         return f"Wallet for {self.patient}"
