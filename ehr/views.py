@@ -736,6 +736,14 @@ class PatientFolderView(DetailView):
         context['operating_theatre'] = patient.operating_theatre.all().order_by('-updated')
         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
         context['private_bill'] = patient.private_bill.all().order_by('-created')
+
+ # Check if the patient has a wallet
+        if hasattr(patient, 'wallet'):
+            # Retrieve wallet transactions
+            context['wallet'] = patient.wallet.transactions.all().order_by('-created_at')
+        else:
+            context['wallet'] = []
+
         context['bills'] = Bill.objects.filter(patient=self.object).order_by('-created')
         radiology_results = patient.radiology_results.all().order_by('-updated')
         context['radiology_results'] = radiology_results
@@ -1169,17 +1177,44 @@ class ServiceListView(ListView):
 
 
 class PayCreateView(RevenueRequiredMixin, CreateView):
-        model = Paypoint
-        form_class = PayForm
-        template_name = 'ehr/revenue/new_pay.html'
-        success_url = reverse_lazy("pay_list")
+    model = Paypoint
+    form_class = PayForm
+    template_name = 'ehr/revenue/new_pay.html'
+    success_url = reverse_lazy("pay_list")
 
-        def form_valid(self, form):
-            form.instance.user = self.request.user
-            messages.success(self.request, 'PAYMENT ADDED')
+    @transaction.atomic
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        try:
+            paypoint = form.save(commit=False)
+            
+            if paypoint.status and paypoint.payment_method == 'WALLET':
+                wallet = paypoint.patient.wallet
+                if wallet.balance() < paypoint.price:
+                    raise ValidationError("Insufficient funds in wallet")
+                wallet.deduct_funds(paypoint.price)
+                messages.success(self.request, 'Payment created and funds deducted from wallet.')
+            else:
+                messages.success(self.request, 'Payment created successfully.')
+            
+            paypoint.save()
             return super().form_valid(form)
+        except ValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
 
- 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        return context
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
+
+
 class PayUpdateView(UpdateView):
     model = Paypoint
     template_name = 'ehr/revenue/update_pay.html'
@@ -1199,16 +1234,27 @@ class PayUpdateView(UpdateView):
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context
 
+    @transaction.atomic
     def form_valid(self, form):
         form.instance.user = self.request.user
-        paypoint = form.save()
-        messages.success(self.request, 'Payment Successfully Updated')
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Error updating payment information')
-        return self.render_to_response(self.get_context_data(form=form))
-
+        old_instance = self.get_object()
+        try:
+            paypoint = form.save(commit=False)
+            
+            # Check if status is changing from False to True
+            if not old_instance.status and paypoint.status:
+                if paypoint.payment_method == 'WALLET':
+                    wallet = paypoint.patient.wallet
+                    wallet.deduct_funds(paypoint.price)
+                    messages.success(self.request, 'Payment completed and funds deducted from wallet.')
+                else:
+                    messages.success(self.request, 'Payment marked as completed.')
+            
+            paypoint.save()
+            return super().form_valid(form)
+        except ValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
 
 class PayListView(ListView):
     model=Paypoint
@@ -1741,7 +1787,7 @@ class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
         paypoint = Paypoint.objects.create(
             user=self.request.user,
             patient=patient,
-            service=f"Surgery Bill-{bill.id}",
+            service=f"Surgery Bill:-{bill.id}",
             price=total_amount,
             status=False
         )
@@ -2271,7 +2317,6 @@ class PrivateBillListView(DoctorRequiredMixin, LoginRequiredMixin, ListView):
 
 import os
 from django.conf import settings
-from django.contrib.staticfiles import finders
 
 def link_callback(uri, rel):
     """
@@ -2339,3 +2384,42 @@ class PrivateBillPDFView(DetailView):
                 response['Content-Disposition'] = content
             return response
         return HttpResponse("Error generating PDF", status=400) 
+
+
+class FundWalletView(CreateView):
+    model = WalletTransaction
+    fields = ['amount']
+    template_name = 'ehr/revenue/fund_wallet.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = PatientData.objects.get(pk=self.kwargs['patient_pk'])
+        return context
+    
+    def get_success_url(self):
+        return reverse_lazy('patient_details', kwargs={'file_no': self.object.wallet.patient.file_no})
+
+    def form_valid(self, form):
+        patient = PatientData.objects.get(pk=self.kwargs['patient_pk'])
+        form.instance.wallet = patient.wallet
+        form.instance.transaction_type = 'CREDIT'
+        form.instance.description = 'Wallet funding'
+        messages.success(self.request, f'Successfully added {form.instance.amount} to wallet')
+        return super().form_valid(form)
+
+
+class AllTransactionsListView(LoginRequiredMixin, ListView):
+    model = WalletTransaction
+    template_name = 'ehr/revenue/wallet_transaction_list.html'
+    context_object_name = 'transactions'
+    paginate_by = 20  # Adjust as needed
+
+    def get_queryset(self):
+        return WalletTransaction.objects.all().order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_credit'] = WalletTransaction.objects.filter(transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
+        context['total_debit'] = WalletTransaction.objects.filter(transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
+        context['net_balance'] = context['total_credit'] - context['total_debit']
+        return context

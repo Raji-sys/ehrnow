@@ -1,7 +1,18 @@
 {%extends "base.html" %}
 {%load static%}
 {% block title %}PATIENT FOLDER{% endblock%}
-{%block page_title%}<div class="flex justify-center uppercase">{{patient.full_name}}</div>{%endblock%}
+{%block page_title%}
+<div class="text-xs  text-amber-800 flex justify-start uppercase">
+  <span class="p-3">
+    Wallet Balance: ₦{{ patient.wallet.balance|floatformat:2 }}
+  </span>  
+  <a href="{% url 'fund_wallet' patient.id %}" class="bg-green-500 hover:bg-green-600 text-white rounded text-xs py-3 px-1">
+    Fund&nbsp;<i class="fa fa-solid fa-wallet fa-xl"></i>
+  </a>
+</div>
+<div class="text-sm uppercase">{{patient.full_name}}</div>
+
+{%endblock%}
 {% block content %}
 
 <div class="">
@@ -16,13 +27,16 @@
       {% endfor %}
     </section>
 
-<div class="md:mx-20  rounded-xl shadow-black shadow-lg mx-2 text-xs">
-  <div class="text-center rounded-xl md:p-8 p-2 bg-gray-50 uppercase">
+<div class="md:mx-20  rounded-xl shadow-black shadow-lg mx-2 text-xs ">
+  <div class="text-center rounded-xl md:p-8 p-2 bg-gray-50 uppercase max-h[40vh]">
+     <!-- Wallet Actions -->
+
 <!-- start -->
 <!-- top  -->
     <ul class="text-xs text-cyan-700 uk-subnav uk-subnav-pill uppercase flex justify-center gap-2 border-b-2 mb-3" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
       <li><a href="#" class="rounded-lg ">BIODATA</a></li>
-      <li><a href="#" class="rounded-lg ">PAYMENT</a></li>
+      <li><a href="#" class="rounded-lg ">WALLET TRANSACTION HISTORY</a></li>
+      <li><a href="#" class="rounded-lg ">PAYMENT HISTORY</a></li>
       <li><a href="#" class="rounded-lg ">VITAL SIGNS</a></li>
       <li><a href="#" class="rounded-lg ">CLINICAL NOTES</a></li>
       <li><a href="#" class="rounded-lg ">LAB INVESTIGATIONS</a></li>
@@ -34,10 +48,10 @@
       <li><a href="#" class="rounded-lg ">THEATRE</a></li>
     </ul>
 <!-- top end  -->
-    <div class="uk-switcher uk-margin">
+    <div class="uk-switcher uk-margin ">
       <!-- break -->
       <div class=""> 
-        <div class="overflow-x-auto p-2">
+        <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
               <thead class="bg-cyan-50">
               <tr class=" text-xs">
@@ -82,7 +96,50 @@
     <!-- break -->
       <!-- break -->
       <div> 
-        <div class="overflow-x-auto p-2">
+        <div class="overflow-x-auto max-h-[50vh] p-2">
+          <table class="min-w-full divide-y divide-cyan-200 mb-4">
+            <thead class="bg-cyan-50">
+              <tr class="text-xs">
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">TRANSACTION</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DESCRIPTION</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">AMOUNT</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DATE</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-cyan-200">
+              {%for w in wallet %}
+              <tr class="uppercase bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 text-xs ">
+                <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
+                {% if w.transaction_type == 'DEBIT' %}
+                <td class=" p-3 whitespace-nowrap text-red-700">
+                  <i class="fa-solid fa-minus-circle text-red-700 fa-2xl"></i> {{w.transaction_type}}
+                </td>
+                {% else %}
+                <td class=" p-3 whitespace-nowrap text-green-700">
+                  <i class="fa-solid fa-plus-circle fa-2xl"></i> {{w.transaction_type}}
+                </td>
+                {% endif %}
+                <td class=" p-3 whitespace-nowrap">{{ w.description }}</td>
+                <td class=" p-3 whitespace-nowrap text-green-700">&#x20A6;{{ w.amount }}</td>
+                <td class=" p-3 whitespace-nowrap text-green-700">{{ w.created_at }}</td>
+              </tr>
+              {%empty%}
+              <div class="p-2">
+                  <p>No payments found yet</p>
+              </div>
+             {%endfor%}
+            </tbody>
+          </table>
+        </div>
+     </div>
+    <!-- break -->
+      <!-- break -->
+
+      <!-- break -->
+      <!-- break -->
+      <div> 
+        <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr class="text-xs">
@@ -90,6 +147,7 @@
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">SERVICE</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">PRICE</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">PAYMENT STATUS</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DATE</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
@@ -100,13 +158,14 @@
                 <td class=" p-3 whitespace-nowrap text-green-700">&#x20A6;{{ p.price }}</td>
                 {% if p.status == False %}
                 <td class=" p-3 whitespace-nowrap text-red-700">
-              <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
+                  <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
                 </td>
-            {% else %}
+                {% else %}
                 <td class=" p-3 whitespace-nowrap text-green-700">
-                 <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-               </td>
-            {% endif %}
+                  <i class="fa-solid fa-thumbs-up fa-2xl"></i>
+                </td>
+                {% endif %}
+                <td class=" p-3 whitespace-nowrap">{{ p.updated }}</td>
               </tr>
               {%empty%}
               <div class="p-2">
@@ -131,7 +190,7 @@
         <div>
         <a href="{%url 'vital_signs' patient.file_no%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-heartbeat fa-2xl"></i></a>
       </div>     
-        <div class="overflow-x-auto p-2">
+        <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr class="text-xs">
@@ -179,7 +238,7 @@
         <a href="{%url 'clinical_note' patient.file_no%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-notes-medical fa-2xl"></i></a>
       </div>     
 
-        <div class="overflow-x-auto p-2">
+        <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr class="text-xs">
@@ -200,7 +259,7 @@
                 <td class=" p-3 whitespace-nowrap">
                   <details>
                     <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                    <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto rounded-md m-4">
+                    <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4">
                       <p class="text-xs text-center">{{ c.note.html|safe }}</p>
                     </div>
                   </details>
@@ -238,7 +297,7 @@
                 <a href="{% url 'pathology:hematology_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                 </div>
              
-                <div class="overflow-x-auto p-2">
+                <div class="overflow-x-auto max-h-[50vh] p-2">
                   <table class="min-w-full divide-y divide-cyan-200 mb-4">
                     <thead class="bg-cyan-50">
                       <tr class="text-xs">
@@ -279,7 +338,7 @@
                 <div>
                   <a href="{% url 'pathology:micro_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                 </div>
-                <div class="overflow-x-auto p-2">
+                <div class="overflow-x-auto max-h-[50vh] p-2">
                   <table class="min-w-full divide-y divide-cyan-200 mb-4">
                     <thead class="bg-cyan-50">
                       <tr class="text-xs">
@@ -321,7 +380,7 @@
                 <div>
                   <a href="{% url 'pathology:chempath_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                 </div>
-                <div class="overflow-x-auto p-2">
+                <div class="overflow-x-auto max-h-[50vh] p-2">
                   <table class="min-w-full divide-y divide-cyan-200 mb-4">
                     <thead class="bg-cyan-50">
             
@@ -363,7 +422,7 @@
                 <div>
                   <a href="{% url 'pathology:serology_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                       </div>
-                      <div class="overflow-x-auto p-2">    
+                      <div class="overflow-x-auto max-h-[50vh] p-2">    
                         <table class="min-w-full divide-y divide-cyan-200 mb-4">
                           <thead class="bg-cyan-50">
                             <tr class="text-xs">
@@ -410,7 +469,7 @@
         <a href="{% url 'pharm:add_prescription' patient.file_no %}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-prescription fa-2xl"></i></a>
 
       </div>     
-        <div class="overflow-x-auto p-2">
+        <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr class="text-xs">
@@ -444,7 +503,7 @@
         <div>
             <a href="{% url 'radiology_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-x-ray fa-2xl"></i></a>
           </div>
-        <div class="overflow-x-auto p-2">
+        <div class="overflow-x-auto max-h-[50vh] p-2">
             <table class="min-w-full divide-y divide-cyan-200 mb-4">
                 <thead class="bg-cyan-50">
                     <tr class="text-xs">
@@ -483,7 +542,7 @@
         <div>
         <a href="#" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-crutch fa-2xl"></i></a>
       </div>     
-        <div class="overflow-x-auto p-2">
+        <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr class="text-xs">
@@ -506,7 +565,7 @@
         <div>
         <a href="{%url 'admit_patient' patient.file_no %}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-bed fa-2xl"></i></a>
       </div>     
-        <div class="overflow-x-auto p-2">
+        <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4 uppercase">
             <thead class="bg-cyan-50">
               <tr class="text-xs">
@@ -549,7 +608,7 @@
             <a href="{% url 'private_surgery_bill' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-money-check fa-2xl"></i></a>
             </div>
          
-            <div class="overflow-x-auto p-2">
+            <div class="overflow-x-auto max-h-[50vh] p-2">
               <table class="min-w-full divide-y divide-cyan-200 mb-4">
                 <thead class="bg-cyan-50">
                   <tr class="text-xs">
@@ -593,7 +652,7 @@
             <a href="{% url 'surgery_bill' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-money-check fa-2xl"></i></a>
             </div>
          
-            <div class="overflow-x-auto p-2">
+            <div class="overflow-x-auto max-h-[50vh] p-2">
               <table class="min-w-full divide-y divide-cyan-200 mb-4">
                 <thead class="bg-cyan-50">
                   <tr class="text-xs">
@@ -637,7 +696,7 @@
             <a href="{% url 'ward_vital_signs' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-heartbeat fa-2xl"></i></a>
             </div>
          
-            <div class="overflow-x-auto p-2">
+            <div class="overflow-x-auto max-h-[50vh] p-2">
               <table class="min-w-full divide-y divide-cyan-200 mb-4">
                 <thead class="bg-cyan-50">
                   <tr class="text-xs">
@@ -682,7 +741,7 @@
             <div>
               <a href="{% url 'ward_medication' patient.file_no %}" class="text-xs text-cyan-600 hover:text-green-700"><i class="fa-solid fa-file-prescription fa-2xl"></i></a>
             </div>
-            <div class="overflow-x-auto p-2">
+            <div class="overflow-x-auto max-h-[50vh] p-2">
               <table class="min-w-full divide-y divide-cyan-200 mb-4">
                 <thead class="bg-cyan-50">
                   <tr class="text-xs">
@@ -720,7 +779,7 @@
             <div>
               <a href="{% url 'ward_notes' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
             </div>
-            <div class="overflow-x-auto p-2">
+            <div class="overflow-x-auto max-h-[50vh] p-2">
               <table class="min-w-full divide-y divide-cyan-200 mb-4">
                 <thead class="bg-cyan-50">
         
@@ -739,7 +798,7 @@
                     <td class=" p-3 whitespace-nowrap">
                       <details>
                         <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                        <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto rounded-md m-4">
+                        <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4">
                           <p class="text-xs text-center">{{ w.note.html|safe }}</p>
                         </div>
                       </details>    
@@ -782,7 +841,7 @@
               <div>
                 <a href="{% url 'book_for_surgery' patient.file_no %}" class="text-xs text-cyan-600 hover:text-green-700"><i class="fa-solid fa-calendar-days fa-2xl"></i></a>
               </div>
-              <div class="overflow-x-auto p-2">
+              <div class="overflow-x-auto max-h-[50vh] p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
                   <thead class="bg-cyan-50">
                     <tr class="text-xs">
@@ -824,7 +883,7 @@
               <div>
                 <a href="{% url 'operation_notes' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
-              <div class="overflow-x-auto p-2">
+              <div class="overflow-x-auto max-h-[50vh] p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
                   <thead class="bg-cyan-50">
           
@@ -851,7 +910,7 @@
                       <td class=" p-3 whitespace-nowrap">
                         <details>
                           <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                          <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto rounded-md m-4">
+                          <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4">
                             <p class="text-xs text-center">{{ o.notes }}</p>
                           </div>
                         </details>    
@@ -874,7 +933,7 @@
               <div>
                 <a href="{% url 'theatre_operation_record' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
-              <div class="overflow-x-auto p-2">
+              <div class="overflow-x-auto max-h-[50vh] p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
                   <thead class="bg-cyan-50">
           
@@ -923,7 +982,7 @@
               <div>
                 <a href="{% url 'operating_theatre' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
-              <div class="overflow-x-auto p-2">
+              <div class="overflow-x-auto max-h-[50vh] p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
                   <thead class="bg-cyan-50">
           
@@ -978,7 +1037,7 @@
               <div>
                 <a href="{% url 'anaesthesia_checklist' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
-              <div class="overflow-x-auto p-2">
+              <div class="overflow-x-auto max-h-[50vh] p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
                   <thead class="bg-cyan-50">
           
@@ -1033,7 +1092,7 @@
               <div>
                 <a href="{% url 'peri_op_nurse' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
-              <div class="overflow-x-auto p-2">
+              <div class="overflow-x-auto max-h-[50vh] p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
                   <thead class="bg-cyan-50">
           

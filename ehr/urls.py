@@ -155,6 +155,9 @@ urlpatterns = [
     path('private-bill/<int:pk>/', PrivateBillDetailView.as_view(), name='private_bill_detail'),
     path('private-bills/', PrivateBillListView.as_view(), name='private_bill_list'),
     path('private-bill/pdf/<int:pk>/', PrivateBillPDFView.as_view(), name='private_bill_pdf'),
-
-
+   
+    #wallet
+    path('patient/<int:patient_pk>/fund-wallet/', FundWalletView.as_view(), name='fund_wallet'),
+    path('revenue/wallet/transactions/', AllTransactionsListView.as_view(), name='all_transactions'),
+    # path('patient/<str:file_no>/transactions/', PatientTransactionsListView.as_view(), name='patient_transactions'),
 ]

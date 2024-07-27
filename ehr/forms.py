@@ -173,7 +173,7 @@ class ServiceForm(forms.ModelForm):
 class PayForm(forms.ModelForm):
     class Meta:
         model = Paypoint
-        fields = ['status']
+        fields = ['payment_method','status']
 
     def __init__(self, *args, **kwargs):
         super(PayForm, self).__init__(*args, **kwargs)
@@ -186,7 +186,7 @@ class PayForm(forms.ModelForm):
 class PayUpdateForm(forms.ModelForm):
     class Meta:
         model = Paypoint
-        fields = ['status']
+        fields = ['payment_method','status']
 
     def __init__(self, *args, **kwargs):
         super(PayUpdateForm, self).__init__(*args, **kwargs)

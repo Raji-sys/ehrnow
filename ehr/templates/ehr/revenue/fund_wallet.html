@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Fund Wallet{% endblock %}
+
+{% block page_title %}
+<div class="flex justify-center items-center space-x-2">
+    <i class="fas fa-wallet text-cyan-600"></i>
+    <span class=" text-cyan-700 uppercase">Fund Wallet</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-10">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-cyan-500 to-blue-500 p-4">
+            <div class="flex justify-between items-center">
+                <span class="text-white text-lg font-semibold">Current Balance</span>
+                <span class="text-white text-2xl font-bold">₦{{ patient.wallet.balance|floatformat:2 }}</span>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <section class="mb-6">
+                {% for message in messages %}
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                    <p class="font-semibold">{{ message }}</p>
+                </div>
+                {% endfor %}
+            </section>
+
+            {% if form.errors %}
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+                <p class="font-semibold">{{ form.errors }}</p>
+            </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-6">
+                    <label for="{{ form.amount.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Amount to Add</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        ₦<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            
+                            <span class="text-gray-500 sm:text-lg"></span>
+                        </div>
+                        {{ form.amount }}
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        Add Funds
+                    </button>
+                    <a href="{% url 'patient_details' patient.file_no %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Patient
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

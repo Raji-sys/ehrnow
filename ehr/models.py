@@ -6,6 +6,10 @@ from django.utils.translation import gettext as _
 from django.utils import timezone
 from django_quill.fields import QuillField
 from django.db.models import Sum
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.db import transaction
+
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -239,7 +243,14 @@ class PatientData(models.Model):
     
     def __str__(self):
         return self.full_name()
+    
+    def create_wallet(self):
+        Wallet.objects.get_or_create(patient=self)
 
+@receiver(post_save, sender=PatientData)
+def create_patient_wallet(sender, instance, created, **kwargs):
+    if created:
+        instance.create_wallet()
     
 class Services(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -262,8 +273,29 @@ class Paypoint(models.Model):
     status=models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateField(auto_now=True)
+    PAYMENT_METHODS = [
+        ('CASH', 'Cash'),
+        ('WALLET', 'Wallet'),
+    ]
+    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS, default='CASH',null=True,blank=True)
+    
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        if self.pk: 
+            old_instance = Paypoint.objects.get(pk=self.pk)
+            if not old_instance.status and self.status: 
+                if self.payment_method == 'WALLET':
+                    wallet = self.patient.wallet
+                    try:
+                        wallet.deduct_funds(self.price)
+                    except ValidationError as e:
+                        raise ValidationError(f"Wallet error: {str(e)}")
+        super().save(*args, **kwargs)
+
+
     def __str__(self):
         return f"{self.status}"
+
 
 class FollowUpVisit(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -726,3 +758,45 @@ class PrivateBilling(models.Model):
 
     def __str__(self):
         return f"{self.item.name}"
+    
+
+from django.core.exceptions import ValidationError
+class Wallet(models.Model):
+    patient = models.OneToOneField('PatientData', on_delete=models.CASCADE, related_name='wallet')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def balance(self):
+        credits = self.transactions.filter(transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
+        debits = self.transactions.filter(transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
+        return credits - debits
+
+    def add_funds(self, amount):
+        if amount <= 0:
+            raise ValidationError("Amount must be positive")
+        WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='CREDIT')
+
+    def deduct_funds(self, amount):
+        if amount <= 0:
+            raise ValidationError("Amount must be positive")
+        if self.balance() < amount:
+            raise ValidationError("Insufficient funds")
+        WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='DEBIT')
+
+    def __str__(self):
+        return f"Wallet for {self.patient}"
+
+class WalletTransaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('CREDIT', 'Credit'),
+        ('DEBIT', 'Debit'),
+    ]
+
+    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_type = models.CharField(max_length=6, choices=TRANSACTION_TYPES)
+    description = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_transaction_type_display()} of {self.amount} for {self.wallet.patient}"
