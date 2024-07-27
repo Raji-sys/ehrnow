@@ -405,10 +405,6 @@ class RadiologyResult(models.Model):
     payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="radiology_result_payment")
     updated = models.DateTimeField(auto_now=True)
     
-    def save(self, *args, **kwargs):
-        if self.dicom_file:
-            self.local_file_path = f"C:/DicomFiles/Patient_{self.patient.id}/{self.dicom_file.name}"
-        super().save(*args, **kwargs)
     class Meta:
         verbose_name_plural = 'radiology results'
 

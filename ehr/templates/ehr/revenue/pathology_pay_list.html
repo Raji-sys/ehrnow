@@ -4,300 +4,228 @@
 {%block page_title%}
 <div class="flex justify-center text-xs">
   <div class=""><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl m-4"></i></a>PATHOLOGY TRANSACTION HISTORY</div>
-  <div class="text-green-700 uppercase text-xs font-bold p-2 text-center">
-    <span class="shadow-white text-xs uppercase p-2 rounded bg-stone-500 text-white m-1">
-      Net Total transactions: 
-    </span>&#x20A6;{{ combined_total_worth|floatformat:2 }}
-  </div>
-</div>
-{%endblock%}
-{%block content %}
-<div class="">
-    <section class="text-center border-purple-700 m-1">
-        {% for message in messages %}
-        <div class="">
-          <div class="uk-alert-success rounded-2xl text-xs w-fit mx-auto" uk-alert>
-              <a href class="uk-alert-close font-bold" uk-close></a>
-              <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
-          </div>
-      </div>
-        {% endfor %}
-      </section>
-      <div class="gap-0 grid md:grid-cols-2 mt-4">
-      <!-- hematology payment -->
-    <div class=" mx-2 md:mx-20 rounded-sm p-2 shadow-black shadow-sm bg-purple-50 m-2">
-      <span class=" shadow-white text-xs uppercase p-2 rounded bg-purple-500 text-white">{{hema_pay_total}} &nbsp;hematology transactions</span> 
-      <span class="uppercase text-xs font-semibold text-purple-700">
-        Total:<span class="text-green-700 uppercase text-sm font-bold">
-          &#x20A6;{{ hema_total_worth|floatformat:2 }}
-        </span>
+    <div class="ml-4 text-emerald-700 font-semibold mt-2">
+      <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded">
+        Net Total: ₦{{ combined_total_worth|floatformat:2 }}
       </span>
-      <div class="overflow-x-auto overflow-y-auto p-2 uppercase">
-        <table class="min-w-full divide-y divide-purple-200">
-          <thead class="bg-purple-50">
-            <tr class="text-xs text-center">
-                <th class="p-1 text-purple-500 uppercase tracking-wider">
-                  #
-                </th>
-              <th class="p-1   text-purple-500 uppercase tracking-wider">
-              REVENUE OFFICER
-              </th>
-              <th class="p-1   text-purple-500 uppercase tracking-wider">
-                DETAILS
-              </th>
-              <th class="p-1   text-purple-500 uppercase tracking-wider">
-                PAYMENT STATUS
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-purple-200">
-            {% for p in hematology_pays %}
-            <tr class="text-xs text-center bg-purple-100 hover:bg-purple-200 transition-colors duration-300 uppercase">
-                <td class="p-1 whitespace-nowrap">
-                    {{forloop.counter}}
-                </td>
-                <td class="p-1 whitespace-nowrap">
-                  {{request.user}}
-                </td>
-              <td class="p-1 whitespace-nowrap">
-                <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-                  {{ p.patient}}
-                </a> <br>
-                {{ p.service }} -
-                &#x20A6;{{p.price}} <br>
-                {{ p.updated }}
-              </td>
-              {% if p.status == False %}
-              <td class="p-1 whitespace-nowrap text-red-700">
-            <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-            <span class="space-x-4">
-              <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-500"></i></a>
-          </span>
-              </td>
-          {% else %}
-              <td class="p-1 whitespace-nowrap text-green-700">
-               <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-             </td>
-          {% endif %}
-            </tr>
-            {% empty %}
-            <tr class="bg-white">
-              <td colspan="2" class="p-1 text-center text-purple-500">
-                No hematology transactions found
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
     </div>
   </div>
+  {% endblock %}
   
-     <!-- Chempath Payments -->
-     <div class="mx-2 md:mx-20 rounded-sm p-2 shadow-black shadow-sm bg-orange-50 m-2">
-      <span class=" shadow-white text-xs uppercase p-2 rounded bg-orange-500 text-white">{{chem_pay_total}} &nbsp;Chemapath transactions</span> 
-      <span class="uppercase text-xs font-semibold text-orange-500">
-        Total:<span class="text-green-700 uppercase text-sm font-bold">
-          &#x20A6;{{ chem_total_worth|floatformat:2 }}
-        </span>
-      </span>
-      <div class="overflow-x-auto overflow-y-auto p-2 uppercase">
-        <table class="min-w-full divide-y divide-orange-200">
-          <thead class="bg-orange-50">
-            <tr class="text-xs text-center">
-                <th class="p-1   text-orange-500 uppercase tracking-wider">
-                  #
-                </th>
-              <th class="p-1   text-orange-500 uppercase tracking-wider">
-              REVENUE OFFICER
-              </th>
-              <th class="p-1   text-orange-500 uppercase tracking-wider">
-                DETAILS
-              </th>
-              <th class="p-1   text-orange-500 uppercase tracking-wider">
-                PAYMENT
-              </th>
-            </tr>
-          </thead>
-            <tbody class="bg-white divide-y divide-orange-200">
-            {% for p in chempath_pays %}
-            <tr class="text-xs text-center bg-orange-100 hover:bg-orange-200 transition-colors duration-300 uppercase">
-              <td class="p-1 whitespace-nowrap">
-                  {{forloop.counter}}
-              </td>
-              <td class="p-1 whitespace-nowrap">
-                {{request.user}}
-              </td>
-            <td class="p-1 whitespace-nowrap">
-              <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-              {{ p.patient}}
-              </a> <br>
-              {{ p.service }} -
-              &#x20A6;{{p.price}} <br>
-              {{ p.updated }}
-            </td>
-            {% if p.status == False %}
-            <td class="p-1 whitespace-nowrap text-red-700">
-          <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-          <span class="space-x-4">
-            <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-500"></i></a>                  
-        </span>
-            </td>
-        {% else %}
-            <td class="p-1 whitespace-nowrap text-green-700">
-             <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-           </td>
-        {% endif %}
-          </tr>
-            {% empty %}
-            <tr class="bg-white">
-              <td colspan="8" class="p-1 text-center text-orange-500">
-                No chempath transactions found
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-
+  {% block content %}
+  <div class="container mx-auto px-4">
+    <section class="text-center my-4">
+      {% for message in messages %}
+      <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+        <p class="font-medium">{{ message }}</p>
+      </div>
+      {% endfor %}
+    </section>
+  
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Hematology Payments -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-indigo-100 p-4">
+          <span class="bg-indigo-500 text-white text-xs font-medium px-2 py-1 rounded">
+            {{hema_pay_total}} Hematology Transactions
+          </span>
+          <span class="ml-2 text-indigo-800 font-semibold">
+            Total: ₦{{ hema_total_worth|floatformat:2 }}
+          </span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for p in hematology_pays %}
+              <tr class="hover:bg-gray-50">
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{forloop.counter}}</td>
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{request.user}}</td>
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">
+                  <a href="{{p.patient.get_absolute_url}}" class="text-indigo-600 hover:text-indigo-900">{{ p.patient }}</a><br>
+                  {{ p.service }} - ₦{{p.price}}<br>
+                  {{ p.updated }}
+                </td>
+                <td class="p-3 whitespace-nowrap text-sm">
+                  {% if p.status == False %}
+                  <span class="text-red-600"><i class="fa-solid fa-x"></i> Unpaid</span>
+                  <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="ml-2 text-indigo-600 hover:text-indigo-900">
+                    <i class="fa-solid fa-cash-register"></i> Pay
+                  </a>
+                  {% else %}
+                  <span class="text-green-600"><i class="fa-solid fa-check"></i> Paid</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="p-3 text-center text-sm text-gray-500">No hematology transactions found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- Chempath Payments -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-amber-100 p-4">
+          <span class="bg-amber-500 text-white text-xs font-medium px-2 py-1 rounded">
+            {{chem_pay_total}} Chempath Transactions
+          </span>
+          <span class="ml-2 text-amber-800 font-semibold">
+            Total: ₦{{ chem_total_worth|floatformat:2 }}
+          </span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for p in chempath_pays %}
+              <tr class="hover:bg-gray-50">
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{forloop.counter}}</td>
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{request.user}}</td>
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">
+                  <a href="{{p.patient.get_absolute_url}}" class="text-amber-600 hover:text-amber-900">{{ p.patient }}</a><br>
+                  {{ p.service }} - ₦{{p.price}}<br>
+                  {{ p.updated }}
+                </td>
+                <td class="p-3 whitespace-nowrap text-sm">
+                  {% if p.status == False %}
+                  <span class="text-red-600"><i class="fa-solid fa-x"></i> Unpaid</span>
+                  <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="ml-2 text-amber-600 hover:text-amber-900">
+                    <i class="fa-solid fa-cash-register"></i> Pay
+                  </a>
+                  {% else %}
+                  <span class="text-green-600"><i class="fa-solid fa-check"></i> Paid</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="p-3 text-center text-sm text-gray-500">No chempath transactions found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- Microbiology Payments -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-cyan-100 p-4">
+          <span class="bg-cyan-500 text-white text-xs font-medium px-2 py-1 rounded">
+            {{micro_pay_total}} Microbiology Transactions
+          </span>
+          <span class="ml-2 text-cyan-800 font-semibold">
+            Total: ₦{{ micro_total_worth|floatformat:2 }}
+          </span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for p in micro_pays %}
+              <tr class="hover:bg-gray-50">
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{forloop.counter}}</td>
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{request.user}}</td>
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">
+                  <a href="{{p.patient.get_absolute_url}}" class="text-cyan-600 hover:text-cyan-900">{{ p.patient }}</a><br>
+                  {{ p.service }} - ₦{{p.price}}<br>
+                  {{ p.updated }}
+                </td>
+                <td class="p-3 whitespace-nowrap text-sm">
+                  {% if p.status == False %}
+                  <span class="text-red-600"><i class="fa-solid fa-x"></i> Unpaid</span>
+                  <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="ml-2 text-cyan-600 hover:text-cyan-900">
+                    <i class="fa-solid fa-cash-register"></i> Pay
+                  </a>
+                  {% else %}
+                  <span class="text-green-600"><i class="fa-solid fa-check"></i> Paid</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="p-3 text-center text-sm text-gray-500">No microbiology transactions found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- Serology Payments -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-fuchsia-100 p-4">
+          <span class="bg-fuchsia-500 text-white text-xs font-medium px-2 py-1 rounded">
+            {{serology_pay_total}} Serology Transactions
+          </span>
+          <span class="ml-2 text-fuchsia-800 font-semibold">
+            Total: ₦{{ serology_total_worth|floatformat:2 }}
+          </span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for p in serology_pays %}
+              <tr class="hover:bg-gray-50">
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{forloop.counter}}</td>
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{request.user}}</td>
+                <td class="p-3 whitespace-nowrap text-sm text-gray-500">
+                  <a href="{{p.patient.get_absolute_url}}" class="text-fuchsia-600 hover:text-fuchsia-900">{{ p.patient }}</a><br>
+                  {{ p.service }} - ₦{{p.price}}<br>
+                  {{ p.updated }}
+                </td>
+                <td class="p-3 whitespace-nowrap text-sm">
+                  {% if p.status == False %}
+                  <span class="text-red-600"><i class="fa-solid fa-x"></i> Unpaid</span>
+                  <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="ml-2 text-fuchsia-600 hover:text-fuchsia-900">
+                    <i class="fa-solid fa-cash-register"></i> Pay
+                  </a>
+                  {% else %}
+                  <span class="text-green-600"><i class="fa-solid fa-check"></i> Paid</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="p-3 text-center text-sm text-gray-500">No serology transactions found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-
-    <!-- microbiology Payments -->
-     <div class="mx-2 md:mx-20 rounded-sm p-2 shadow-black shadow-sm bg-cyan-50 m-2">
-      <span class=" shadow-white text-xs uppercase p-2 rounded bg-cyan-500 text-white">{{micro_pay_total}} &nbsp;microbiology transactions</span> 
-      <span class="uppercase text-xs font-semibold text-cyan-500">
-        Total:<span class="text-green-700 uppercase text-sm font-bold">
-           &#x20A6;{{ micro_total_worth|floatformat:2 }}
-         </span>
-       </span>
-      <div class="overflow-x-auto overflow-y-auto p-2 uppercase">
-        <table class="min-w-full divide-y divide-cyan-200">
-          <thead class="bg-cyan-50">
-            <tr class="text-xs text-center">
-                <th class="p-1   text-cyan-500 uppercase tracking-wider">
-                  #
-                </th>
-              <th class="p-1   text-cyan-500 uppercase tracking-wider">
-              REVENUE OFFICER
-              </th>
-              <th class="p-1   text-cyan-500 uppercase tracking-wider">
-                DETAILS
-              </th>
-              <th class="p-1   text-cyan-500 uppercase tracking-wider">
-                PAYMENT STATUS
-              </th>
-            </tr>
-          </thead>
-            <tbody class="bg-white divide-y divide-cyan-200">
-            {% for p in micro_pays %}
-            <tr class="text-xs text-center bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 uppercase">
-              <td class="p-1 whitespace-nowrap">
-                  {{forloop.counter}}
-              </td>
-              <td class="p-1 whitespace-nowrap">
-                {{request.user}}
-              </td>
-            <td class="p-1 whitespace-nowrap">
-              <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-              {{ p.patient}}
-              </a> <br>
-              {{ p.service }} -
-              &#x20A6;{{p.price}} <br>
-              {{ p.updated }}
-            </td>
-            {% if p.status == False %}
-            <td class="p-1 whitespace-nowrap text-red-700">
-          <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-          <span class="space-x-4">
-            <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-500"></i></a>
-        </span>
-            </td>
-        {% else %}
-            <td class="p-1 whitespace-nowrap text-green-700">
-             <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-           </td>
-        {% endif %}
-        </tr>
-            {% empty %}
-            <tr class="bg-white">
-              <td colspan="8" class="p-1 text-center text-cyan-500">
-                No microbiology transactions found
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- serology Payments -->
-     <div class="mx-2 md:mx-20 rounded-sm p-2 shadow-black shadow-sm bg-fuchsia-50 m-2">
-      <span class=" shadow-white text-xs uppercase p-2 rounded bg-fuchsia-500 text-white">{{serology_pay_total}} &nbsp;Serology transactions</span> 
-      <span class="uppercase text-xs font-semibold text-fuchsia-500">
-        Total:<span class="text-green-700 uppercase text-sm font-bold">
-          &#x20A6;{{ serology_total_worth|floatformat:2 }}
-        </span>
-      </span>
-      <div class="overflow-x-auto overflow-y-auto p-2 uppercase">
-        <table class="min-w-full divide-y divide-fuchsia-200">
-          <thead class="bg-fuchsia-50">
-            <tr class="text-xs text-center">
-                <th class="p-1   text-fuchsia-500 uppercase tracking-wider">
-                  #
-                </th>
-              <th class="p-1   text-fuchsia-500 uppercase tracking-wider">
-              REVENUE OFFICER
-              </th>
-              <th class="p-1   text-fuchsia-500 uppercase tracking-wider">
-                DETAILS
-              </th>
-              <th class="p-1   text-fuchsia-500 uppercase tracking-wider">
-                PAYMENT STATUS
-              </th>
-            </tr>
-          </thead>
-            <tbody class="bg-white divide-y divide-fuchsia-200">
-            {% for p in serology_pays %}
-            <tr class="text-xs text-center bg-fuchsia-100 hover:bg-fuchsia-200 transition-colors duration-300 uppercase">
-              <td class="p-1 whitespace-nowrap">
-                  {{forloop.counter}}
-              </td>
-              <td class="p-1 whitespace-nowrap">
-                {{request.user}}
-              </td>
-            <td class="p-1 whitespace-nowrap">
-              <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-              {{ p.patient}}
-              </a> <br>
-              {{ p.service }} -
-              &#x20A6;{{p.price}} <br>
-              {{ p.updated }}
-            </td>
-            {% if p.status == False %}
-            <td class="p-1 whitespace-nowrap text-red-700">
-          <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-          <span class="space-x-4">
-            <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-500"></i></a>                  
-        </span>
-            </td>
-        {% else %}
-            <td class="p-1 whitespace-nowrap text-green-700">
-             <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-           </td>
-        {% endif %}            
-          </tr>
-            {% empty %}
-            <tr class="bg-white">
-              <td colspan="8" class="p-1 text-center text-fuchsia-500">
-                No serology transactions found
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-
-</div>
-</div>
-{%endblock%}
+  </div>
+  {% endblock %}

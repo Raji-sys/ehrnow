@@ -1185,7 +1185,7 @@ class PayCreateView(RevenueRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         paypoint = form.save(commit=False)
-        paypoint.save()
+        messages.success(self.request, 'TRANSACTION SUCCESSFULLY')
         return super().form_valid(form)
         
     def get_context_data(self, **kwargs):
@@ -1222,8 +1222,7 @@ class PayUpdateView(UpdateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         paypoint = form.save(commit=False)
-            
-        paypoint.save()
+        messages.success(self.request, 'TRANSACTION SUCCESSFULLY')
         return super().form_valid(form)
 
 
@@ -2383,7 +2382,7 @@ class AllTransactionsListView(LoginRequiredMixin, ListView):
     model = WalletTransaction
     template_name = 'ehr/revenue/wallet_transaction_list.html'
     context_object_name = 'transactions'
-    paginate_by = 20  # Adjust as needed
+    paginate_by = 10  # Adjust as needed
 
     def get_queryset(self):
         return WalletTransaction.objects.all().order_by('-created_at')

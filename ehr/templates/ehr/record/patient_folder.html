@@ -2,16 +2,15 @@
 {%load static%}
 {% block title %}PATIENT FOLDER{% endblock%}
 {%block page_title%}
-<div class="text-xs  text-amber-800 flex justify-start uppercase">
+<div class="text-xs text-amber-800 flex justify-start uppercase">
   <span class="p-3">
     Wallet Balance: ₦{{ patient.wallet.balance|floatformat:2 }}
-  </span>  
+  </span>
   <a href="{% url 'fund_wallet' patient.id %}" class="bg-green-500 hover:bg-green-600 text-white rounded text-xs py-3 px-1">
     Fund&nbsp;<i class="fa fa-solid fa-wallet fa-xl"></i>
   </a>
 </div>
 <div class="text-sm uppercase">{{patient.full_name}}</div>
-
 {%endblock%}
 {% block content %}
 
