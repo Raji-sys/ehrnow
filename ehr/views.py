@@ -37,7 +37,7 @@ from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import Sum, Count
-
+from django.db.models import Q
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -1222,8 +1222,17 @@ class PayUpdateView(UpdateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         paypoint = form.save(commit=False)
-        messages.success(self.request, 'TRANSACTION SUCCESSFULLY')
-        return super().form_valid(form)
+        
+        try:
+            paypoint.save()
+            messages.success(self.request, 'TRANSACTION SUCCESSFUL')
+            return super().form_valid(form)
+        except ValidationError as e:
+            error_message = str(e)
+            if "Insufficient funds" in error_message:
+                error_message = "Insufficient funds in the wallet. Please add funds and try again."
+            form.add_error(None, error_message)
+            return self.form_invalid(form)
 
 
 class PayListView(ListView):
@@ -2392,4 +2401,36 @@ class AllTransactionsListView(LoginRequiredMixin, ListView):
         context['total_credit'] = WalletTransaction.objects.filter(transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
         context['total_debit'] = WalletTransaction.objects.filter(transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
         context['net_balance'] = context['total_credit'] - context['total_debit']
+        return context
+    
+
+class MedicalRecordPayListView(ListView):
+    model = Paypoint
+    template_name = 'ehr/revenue/record_pay_list.html'
+    context_object_name = 'record_pays'
+    paginate_by = 10
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+   
+    # def get_queryset(self):
+    #     return Paypoint.objects.filter(service__in=['new registration', 'follow up']).order_by('-updated')
+
+    def get_queryset(self):
+        return Paypoint.objects.filter(Q(service='new registration') | Q(service='follow up')).order_by('-updated')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+
+        
+        pay_total = queryset.count()
+        total_worth = queryset.filter(status=True).aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context

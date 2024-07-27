@@ -4,8 +4,8 @@
 
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>MEDICAL RECORD REVENUE DASHBOARD</div>{%endblock%}
 {%block content %}
-<div class="flex justify-center m-10">
-    <div class="grid md:grid-cols-2 grid-cols-1 gap-6 uppercase text-center rounded-xl p-12 md:p-16 bg-gray-50">
+<div class=" w-fit mx-auto bg-white rounded-xl p-12 mt-10">
+    <div class="grid md:grid-cols-2 grid-cols-1 gap-6 uppercase text-center  ">
         <div>
             <a href="{% url 'paypoint_dash' %}">
         <div class="hover:bg-emerald-600 hover:text-white bg-white text-emerald-800 rounded-2xl shadow-2xl p-2 md:p-6 border-2 border-white-400 transition duration-300">
@@ -20,8 +20,17 @@
         </div>
       </a>
     </div>
-</div>
-    <div>
+  </div>
+  <div class="flex justify-center gap-2 uppercase text-center px-2 py-8 mt-8 rounded-xl">
+      <div class="">
+        <a href="{%url 'record_pay_list' %}">
+          <div class=" bg-amber-900 hover:text-amber-800 hover:bg-white text-white rounded-2xl shadow-2xl p-4 md:p-12 border-2  transition duration-300">
+              <div class=" text-xs ">
+                <i class="fa-solid fa-wallet fa-2x"></i><br><br>
+                TRANSACTIONS</div>
+          </div>
+      </a>
+  </div>
 </div>
 </div>
 {%endblock%}

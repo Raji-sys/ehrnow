@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}SURGERY BILLING TRANSACTION HISTORY{%endblock%}
-{%block page_title%}<div class="flex justify-center p-2"> <div><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>SURGERY BILL TRANSACTION</div>
+{%block title%}MEDICAL RECORD TRANSACTION HISTORY{%endblock%}
+{%block page_title%}<div class="flex justify-center p-2"> <div><a href="{%url 'record_revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>MEDICAL RECORD TRANSACTIONS</div>
 <div class="">
   <span class="shadow-sm shadow-blue-900 gap-4 bg-blue-600 text-white uppercase text-xs border-b-2 border-blue-900 py-2 px-4 rounded-xl mx-2 w-fit">
     <span class=" shadow-white text-xs p-1 rounded-full bg-white text-blue-900">{{pay_total}}</span>&nbsp;transactions 
@@ -14,13 +14,6 @@
             {%endif%}
         </span>
       </div>
-
-      <span class="uppercase shadow-white text-xs p-1 rounded-full bg-blue-200 text-white">
-        <a href="{% url 'bill_list' %}">
-          surgery bills list table
-        </a> 
-      </span>&nbsp; 
-
       <div class="">
         <span class="uppercase text-xs font-semibold bg-green-200 p-1 rounded">
       Total Worth: <span class="text-green-700 uppercase text-xs font-bold">
@@ -45,40 +38,37 @@
             
       </section>
       
-    <div class=" mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-blue-50">
+    <div class=" mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-green-50">
       <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="min-w-full divide-y divide-blue-200">
-          <thead class="bg-blue-50">
+        <table class="min-w-full divide-y divide-green-200">
+          <thead class="bg-green-50">
             <tr class="text-xs">
-                <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+                <th class="p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                   #
                 </th>
-              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
               REVENUE OFFICER
               </th>
-              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 PATIENT
               </th>
-              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 SERVICE
               </th>
-              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 PRICE
               </th>
-              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 PAYMENT STATUS
               </th>
-              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
                 TRANSACTION DATE 
-              </th>
-              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
-                PROCESS
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-blue-200">
-            {% for p in bill_pays %}
-            <tr class="text-xs bg-blue-100 hover:bg-blue-200 transition-colors duration-300 uppercase">
+          <tbody class="bg-white divide-y divide-green-200">
+            {% for p in record_pays %}
+            <tr class="text-xs bg-green-100 hover:bg-green-200 transition-colors duration-300 uppercase">
                 <td class="p-3 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
@@ -97,26 +87,21 @@
                     &#x20A6;{{p.price}}
                 </td>
                 {% if p.status == False %}
-                <td class="p-3 whitespace-nowrap text-red-700">
+                <td class="p-3 whitespace-nowrap text-red-700 text-center">
                     <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
                 </td>
                 {% else %}
-                <td class="p-3 whitespace-nowrap text-green-700">
+                <td class="p-3 whitespace-nowrap text-green-700 text-center">
                     <i class="fa-solid fa-thumbs-up fa-2xl"></i>
                 </td>
                 {% endif %}
                 <td class="p-3 whitespace-nowrap">
                     {{ p.updated }}
                 </td>
-                <td class="p-3 whitespace-nowrap">
-                    <span class="space-x-4">
-                        <a href="{% url 'update_pay' p.id %}?next={%url 'bill_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-600"></i></a>
-                    </span>
-                </td>
-            </tr>
+                           </tr>
             {% empty %}
             <tr class="bg-white">
-                <td colspan="2" class="p-3 text-center text-blue-500">
+                <td colspan="2" class="p-3 text-center text-green-500">
                     No transactions found
                 </td>
             </tr>
@@ -127,14 +112,14 @@
           <div class="pagination flex justify-center">
               <span class="flex items-center">
                   {% if page_obj.has_previous %}
-                  <a href="?page=1" class="p-1 rounded-lg bg-blue-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
-                  <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-blue-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                  <a href="?page=1" class="p-1 rounded-lg bg-green-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                  <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-green-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
                   {% endif %}
               </span>
                   <span class="flex item-center"> 
                       {% if page_obj.has_next %}
-                      <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-blue-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
-                      <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-blue-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                      <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-green-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                      <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-green-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
                       {% endif %}
                   </span>
               </div>

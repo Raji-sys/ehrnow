@@ -1,45 +1,50 @@
 {% extends 'base.html'%}
 {% load static %}
 {%block title%}FOLLOW UP PAYMENT{%endblock%}
-{%block page_title%}<div class="flex justify-center enom">FOLLOW UP PAYMENT</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center">FOLLOW UP PAYMENT</div>{%endblock%}
 {%block content %}
-<div class="">
-    <div class="uk-overlay rounded-3xl bg-white uk-position-center">
-        <section class="text-center border-cyan-700 p-4 m-2">
-            {% for message in messages %}
-          <div class="mt-2">
-               <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
-                <a href class="uk-alert-close font-bold" uk-close></a>
-                <p class="text-green-700 font-semibold">{{ message }}</p>
-                </div>
+<div class="mx-auto px-12 sm:px-8">
+  <div class="py-8 w-fit mx-auto ">
+      <div class="max-w-md mx-auto bg-white rounded-lg overflow-hidden md:max-w-lg shadow-lg">
+          <div class="md:flex">
+              <div class="w-full px-6 py-8 md:p-8">
+                  {% for message in messages %}
+                  <div class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded" role="alert">
+                      <p>{{ message }}</p>
+                  </div>
+                  {% endfor %}
+
+                  {% if form.errors %}
+                  <div class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded" role="alert">
+                      <p class="font-bold">Error</p>
+                      <p>{{ form.errors }}</p>
+                  </div>
+                  {% endif %}
+
+                  <form method="post" enctype="multipart/form-data" class="uppercase text-xs p-4">
+                      {% csrf_token %}
+                      {% for field in form %}
+                      <div class="mb-4">
+                          <label for="{{ field.id_for_label }}" class="block text-emerald-700  mb-2">
+                              {{ field.label }}
+                          </label>
+                          {{ field }}
+                      </div>
+                      {% endfor %}
+
+                      <div class="flex items-center justify-between mt-8 uppercase text-xs gap-4">
+                          <button type="submit" class="bg-green-700 hover:bg-white hover:text-green-600 hover:border hover:border:green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline uppercase">
+                              Pay
+                          </button>
+                          <a href="{{ next }}" class="bg-rose-700 hover:bg-white hover:text-red-600 hover:border hover:border-rose-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                              Cancel
+                          </a>
+                      </div>
+                  </form>
+              </div>
           </div>
-              {% endfor %}
-        </section>
-        {% if form.errors %}
-        <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
-            <a href class="uk-alert-close font-bold" uk-close></a>
-            <p>{{form.errors}}</p>
-        </div>
-            {% endif %}
-  <form method="post" enctype="multipart/form-data" >
-    {% csrf_token %}
-    <div class="mb-2 uppercase text-cyan-900 px-10">
-      {% for field in form %}
-      <div class="flex justify-center">
-       <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
-       </div>
-       <div class="flex justify-center mb-6">
-       {{ field }}
       </div>
-      {%endfor%}
-    </div>
-    <div class="gap-4 flex justify-center align-middle">
-      <input type="submit" value="pay" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-  bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
-  <a href="{{next}}" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-  bg-rose-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">cancel</a>
-    </div>
-    </form>
-    </div>
-    </div>
+  </div>
+</div>
+
 {%endblock%}

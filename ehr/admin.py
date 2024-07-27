@@ -221,3 +221,15 @@ class PrivateTheatreItemAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     list_filter = ('name',)
+
+@admin.register(Wallet)
+class WalletAdmin(admin.ModelAdmin):
+    list_display = ('patient','balance')
+    search_fields = ('patient',)
+    list_filter = ('patient',)
+
+@admin.register(WalletTransaction)
+class WalletTransactionAdmin(admin.ModelAdmin):
+    list_display = ('wallet','amount','transaction_type','description')
+    search_fields = ('wallet','transaction_type')
+    list_filter = ('wallet','transaction_type')

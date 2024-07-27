@@ -72,6 +72,7 @@ urlpatterns = [
     path('revenue/hospital-services/', HospitalServicesListView.as_view(), name='hospital_services'),
 
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
+    path('revenue/medical-record-list/', MedicalRecordPayListView.as_view(), name='record_pay_list'),
     path('revenue/pathology-list/', PathologyPayListView.as_view(), name='pathology_pay_list'),
     path('revenue/radiology-list/', RadiologyPayListView.as_view(), name='radiology_pay_list'),
     path('revenue/billing-list/', BillingPayListView.as_view(), name='bill_pay_list'),

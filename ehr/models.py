@@ -779,7 +779,7 @@ class Wallet(models.Model):
         WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='DEBIT', description=description)
 
     def __str__(self):
-        return f"Wallet for {self.patient}"
+        return f"{self.patient}"
 
 class WalletTransaction(models.Model):
     TRANSACTION_TYPES = [
