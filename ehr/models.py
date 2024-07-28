@@ -671,6 +671,7 @@ class LastMeal(models.Model):
         
 class AnaesthisiaChecklist(models.Model):
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="anaesthesia_checklist")
     concurrent_medical_illness=models.ManyToManyField(MedicalIllness,blank=True)
     past_medical_history=models.TextField(null=True)
@@ -693,6 +694,7 @@ class AnaesthisiaChecklist(models.Model):
 
 class OperationNotes(models.Model):
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="operation_notes")
     operated=models.BooleanField(default=False)
     notes=QuillField(null=True,blank=True)
@@ -726,7 +728,9 @@ class Implant(models.Model):
     
 class TheatreOperationRecord(models.Model):
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='theatre_operation_record')
-    ward = models.CharField(max_length=50,null=True,blank=True)
+    theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
+    ward = models.ForeignKey(Ward, null=True, on_delete=models.CASCADE)
+    # ward = models.CharField(max_length=50,null=True,blank=True)
     
     # Operation Details
     diagnosis = models.CharField(max_length=200,null=True,blank=True)

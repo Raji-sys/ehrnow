@@ -41,6 +41,7 @@ from django.db.models import Q
 import os
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.db.models import Prefetch
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -1883,19 +1884,19 @@ class BillPDFView(DetailView):
     
 
 class TheatreBookingCreateView(DoctorRequiredMixin, CreateView):
-        model = TheatreBooking
-        form_class = TheatreBookingForm
-        template_name = 'ehr/theatre/book_theatre.html'
+    model = TheatreBooking
+    form_class = TheatreBookingForm
+    template_name = 'ehr/theatre/book_theatre.html'
 
-        def form_valid(self, form):
-            form.instance.user = self.request.user
-            form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-            self.object = form.save()
-            return super().form_valid(form)
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        self.object = form.save()
+        return super().form_valid(form)
         
-        def get_success_url(self):
-            messages.success(self.request, 'PATIENT BOOKED FOR SURGERY')
-            return self.object.patient.get_absolute_url()
+    def get_success_url(self):
+        messages.success(self.request, 'PATIENT BOOKED FOR SURGERY')
+        return self.object.patient.get_absolute_url()
 
 
 class TheatreBookingUpdateView(DoctorRequiredMixin,UpdateView):
@@ -1928,13 +1929,20 @@ class TheatreBookingListView(DoctorRequiredMixin,ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        theatrebooking = super().get_queryset().order_by('-updated')
+        theatre_id = self.kwargs.get('theatre_id')
+        theatre = get_object_or_404(Theatre, id=theatre_id)
+        theatrebooking = super().get_queryset().filter(theatre=theatre).order_by('-updated')
         theatrebooking_filter = TheatreBookingFilter(self.request.GET, queryset=theatrebooking)
         return theatrebooking_filter.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        theatre_id = self.kwargs.get('theatre_id')
+        theatre = get_object_or_404(Theatre, id=theatre_id)
+
         total_bookings = self.get_queryset().count()
+        
+        context['theatre'] = theatre
         context['total_bookings'] = total_bookings
         context['theatreBookingFilter'] = TheatreBookingFilter(self.request.GET, queryset=self.get_queryset())
         return context
@@ -1970,13 +1978,19 @@ class OperationNotesListView(DoctorRequiredMixin,ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        theatre = super().get_queryset().order_by('-updated')
-        theatre_filter = OperationNotesFilter(self.request.GET, queryset=theatre)
+        theatre_id = self.kwargs.get('theatre_id')
+        theatre = get_object_or_404(Theatre, id=theatre_id)
+        operated = super().get_queryset().filter(theatre=theatre).order_by('-updated')
+        theatre_filter = OperationNotesFilter(self.request.GET, queryset=operated)
         return theatre_filter.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        theatre_id = self.kwargs.get('theatre_id')
+        theatre = get_object_or_404(Theatre, id=theatre_id)
+
         total_operations = self.get_queryset().count()
+        context['theatre'] = theatre
         context['total_operations'] = total_operations
         context['theatreFilter'] = OperationNotesFilter(self.request.GET, queryset=self.get_queryset())
         return context
@@ -2012,14 +2026,21 @@ class AnaesthesiaChecklistListView(DoctorRequiredMixin,ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        anaesthesia_checklist = super().get_queryset().order_by('-updated')
+        theatre_id = self.kwargs.get('theatre_id')
+        theatre = get_object_or_404(Theatre, id=theatre_id)
+        anaesthesia_checklist = super().get_queryset().filter(theatre=theatre).order_by('-updated')
         anaesthesia_checklist_filter = AnaesthisiaChecklistFilter(self.request.GET, queryset=anaesthesia_checklist)
         return anaesthesia_checklist_filter.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_anaesthesia_checklist = self.get_queryset().count()
-        context['total_anaesthesia_checklist'] = total_anaesthesia_checklist
+        theatre_id = self.kwargs.get('theatre_id')
+        theatre = get_object_or_404(Theatre, id=theatre_id)
+        
+        total_operations = self.get_queryset().count()
+        context['theatre'] = theatre
+        context['total_operations'] = total_operations
+
         context['anaesthesia_checklistFilter'] = AnaesthisiaChecklistFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
@@ -2287,37 +2308,63 @@ class TheatreOperationRecordCreateView(CreateView):
     model = TheatreOperationRecord
     form_class = TheatreOperationRecordForm
     template_name = 'ehr/theatre/theatre_record.html'
-    success_url = reverse_lazy('theatre') 
-    
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['consumables'] = ConsumableUsageFormSet(self.request.POST)
+            data['implants'] = ImplantUsageFormSet(self.request.POST)
+        else:
+            data['consumables'] = ConsumableUsageFormSet()
+            data['implants'] = ImplantUsageFormSet()
+        return data
+
     def form_valid(self, form):
-        response = super().form_valid(form)
-        consumables = form.cleaned_data['consumables']
-        implants = form.cleaned_data['implants']
+        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        context = self.get_context_data()
+        consumables = context['consumables']
+        implants = context['implants']
+        with transaction.atomic():
+            self.object = form.save()
+            if consumables.is_valid():
+                consumables.instance = self.object
+                consumables.save()
+            if implants.is_valid():
+                implants.instance = self.object
+                implants.save()
+        self.object=form.save()
+        return super().form_valid(form)
 
-        for consumable in consumables:
-            ConsumableUsage.objects.create(surgical_record=self.object, consumable=consumable)
-
-        for implant in implants:
-            ImplantUsage.objects.create(surgical_record=self.object, implant=implant)
-        return response
+    def get_success_url(self):
+        messages.success(self.request, 'SURGERY RECORD ADDED')
+        return self.object.patient.get_absolute_url()
 
 
-class TheatreOperationRecordListView(DoctorRequiredMixin,ListView):
-    model=TheatreOperationRecord
-    template_name='ehr/theatre/theatre_record_list.html'
-    context_object_name='surgical_records'
+class TheatreOperationRecordListView(DoctorRequiredMixin, ListView):
+    model = TheatreOperationRecord
+    template_name = 'ehr/theatre/theatre_record_list.html'
+    context_object_name = 'surgical_records'
     paginate_by = 10
 
     def get_queryset(self):
-        theatre = super().get_queryset().order_by('-updated')
-        theatre_op_filter = TheatreOperationRecordFilter(self.request.GET, queryset=theatre)
+        theatre_id = self.kwargs.get('theatre_id')
+        theatre = get_object_or_404(Theatre, id=theatre_id)
+        
+        queryset = super().get_queryset().filter(theatre=theatre).order_by('-updated')
+        theatre_op_filter = TheatreOperationRecordFilter(self.request.GET, queryset=queryset)
+        
         return theatre_op_filter.qs.prefetch_related(
             Prefetch('consumableusage_set', queryset=ConsumableUsage.objects.select_related('consumable')),
             Prefetch('implantusage_set', queryset=ImplantUsage.objects.select_related('implant'))
         )
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_operations = self.get_queryset().count()
-        context['total_operations'] = total_operations
+        theatre_id = self.kwargs.get('theatre_id')
+        theatre = get_object_or_404(Theatre, id=theatre_id)
+        
+        context['theatre'] = theatre
+        context['total_operations'] = self.get_queryset().count()
         context['theatreOpFilter'] = TheatreOperationRecordFilter(self.request.GET, queryset=self.get_queryset())
+        
         return context

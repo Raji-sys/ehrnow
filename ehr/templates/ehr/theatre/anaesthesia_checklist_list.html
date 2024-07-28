@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}ANAESTHESIA CHECKLIST LIST{%endblock%}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>ANAESTHESIA CHECKLIST RECORD</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre_details' theatre.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a> {{theatre}} ANAESTHESIA CHECKLIST RECORD</div>{%endblock%}
 {%block content %}
 <div class="">
     <section class="text-center border-zinc-700 p-2 m-1">

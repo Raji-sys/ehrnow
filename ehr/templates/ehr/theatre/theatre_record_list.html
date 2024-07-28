@@ -1,14 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Surgical Records{% endblock %}
-{% block page_title %}
-<div class="uppercase flex justify-center items-center text-gray-800 py-2">
-  <a href="{% url 'theatre' %}" class="text-blue-500 hover:text-blue-600 transition duration-300">
-    <i class="fa-solid fa-chevron-left text-xs mr-2"></i>
-  </a>
-  <span class="text-xs font-semibold">Surgical Records</span>
-</div>
-{% endblock %}
+{% block title %}OPERATION RECORD{% endblock %}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre_details' theatre.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{theatre}} OPERATION RECORD</div>{%endblock%}
+
 {% block content %}
 <div class="bg-white shadow-md rounded-lg overflow-hidden md:mx-20 sm:mx-4 my-2 max-h-[calc(100vh-6rem)] overflow-y-auto">
   <div class="p-4">
@@ -16,7 +10,10 @@
       <table class="w-full">
         <thead>
           <tr class="bg-gray-100 text-gray-600 uppercase text-xs">
+            <th class="py-2 px-3 text-left">#</th>
             <th class="py-2 px-3 text-left">Patient</th>
+            <th class="py-2 px-3 text-left">Theatre</th>
+            <th class="py-2 px-3 text-left">Ward</th>
             <th class="py-2 px-3 text-left">Operation</th>
             <th class="py-2 px-3 text-left">Date</th>
             <th class="py-2 px-3 text-left">Surgeon</th>
@@ -29,8 +26,13 @@
           {% for record in surgical_records %}
             <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-150">
               <td class="py-2 px-3 whitespace-nowrap">
+                <span class="font-medium">{{ forloop.counter }}</span>
+              </td>
+              <td class="py-2 px-3 whitespace-nowrap">
                 <span class="font-medium">{{ record.patient }}</span>
               </td>
+              <td class="py-2 px-3">{{ record.theatre }}</td>
+              <td class="py-2 px-3">{{ record.ward }}</td>
               <td class="py-2 px-3">{{ record.operation }}</td>
               <td class="py-2 px-3">{{ record.date_of_operation }}</td>
               <td class="py-2 px-3">{{ record.surgeon }}</td>
@@ -62,11 +64,7 @@
         </tbody>
       </table>
     </div>
-    <div class="mt-4 flex justify-end">
-      <a href="#" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
-        <i class="fas fa-plus mr-1"></i>New Record
-      </a>
-    </div>
+    
   </div>
 </div>
 {% endblock %}

@@ -119,17 +119,17 @@ urlpatterns = [
     path('theatre/theatre-details/<int:pk>/', TheatreDetailView.as_view(), name='theatre_details'),
     
     path('clinic/theatre-booking/book-for-surgery/<str:file_no>/', TheatreBookingCreateView.as_view(), name='book_for_surgery'),
-    path('clinic/theatre-booking/surgery-wait-list/', TheatreBookingListView.as_view(), name="surgery_wait_list"),
+    path('clinic/<int:theatre_id>/theatre-booking/surgery-wait-list/', TheatreBookingListView.as_view(), name="surgery_wait_list"),
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
     
-    path('theatre-operation-record/create/<str:file_No>/', TheatreOperationRecordCreateView.as_view(), name='theatre_operation_record'),
-    path('theatre/theatre-operation-record-list/', TheatreOperationRecordListView.as_view(), name="theatre_operation_record_list"),
-
+    path('theatre-operation-record/create/<str:file_no>/', TheatreOperationRecordCreateView.as_view(), name='theatre_operation_record'),
+    path('theatre/<int:theatre_id>/theatre-operation-record-list/', TheatreOperationRecordListView.as_view(), name="theatre_operation_record_list"), 
+    
     path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='operation_notes'),
-    path('theatre/operated-patient-list/', OperationNotesListView.as_view(), name="operated_list"),
+    path('theatre/<int:theatre_id>/operated-patient-list/', OperationNotesListView.as_view(), name="operated_list"),
 
     path('theatre/anaesthesia-checklist/<str:file_no>/', AnaesthesiaChecklistCreateView.as_view(), name='anaesthesia_checklist'),
-    path('theatre/anaesthesia-checklist_llist/', AnaesthesiaChecklistListView.as_view(), name="anaesthesia_checklist_list"),
+    path('theatre/<int:theatre_id>/anaesthesia-checklist_list/', AnaesthesiaChecklistListView.as_view(), name="anaesthesia_checklist_list"),
 
     #radiology
     path('radiology-list/', RadiologyListView.as_view(), name='radiology_list'),

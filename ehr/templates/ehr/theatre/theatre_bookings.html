@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}THEATRE BOOKINGS{%endblock%}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>THEATRE BOOKINGS</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre_details' theatre.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a> {{theatre}} BOOKINGS</div>{%endblock%}
 {%block content %}
 <div class="">
     <section class="text-center border-amber-700 p-2 m-1">

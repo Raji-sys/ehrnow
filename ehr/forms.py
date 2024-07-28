@@ -370,37 +370,34 @@ class PrivateBillingForm(forms.ModelForm):
             field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
-class ConsumableUsageForm(forms.ModelForm):
-    class Meta:
-        model = ConsumableUsage
-        fields = ['consumable', 'quantity']
 
-class ImplantUsageForm(forms.ModelForm):
-    class Meta:
-        model = ImplantUsage
-        fields = ['implant', 'quantity']
+ConsumableUsageFormSet = inlineformset_factory(
+    TheatreOperationRecord,
+    ConsumableUsage,
+    fields=('consumable', 'quantity'),
+    extra=1,
+    can_delete=False
+)
+
+ImplantUsageFormSet = inlineformset_factory(
+    TheatreOperationRecord,
+    ImplantUsage,
+    fields=('implant', 'quantity'),
+    extra=1,
+    can_delete=False
+)
 
 class TheatreOperationRecordForm(forms.ModelForm):
     class Meta:
         model = TheatreOperationRecord
-        exclude = ['patient','consumables', 'implants']
+        exclude = ['patient', 'consumables', 'implants']
         widgets = {
             'date_of_operation': forms.DateInput(attrs={'type': 'date'}),
             'tourniquet_time': forms.TimeInput(attrs={'type': 'time'}),
             'tourniquet_off_time': forms.TimeInput(attrs={'type': 'time'}),
         }
-    consumables = forms.ModelMultipleChoiceField(
-        queryset=Consumable.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-    implants = forms.ModelMultipleChoiceField(
-        queryset=Implant.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
-            if field not in ['consumables', 'implants']:
-                self.fields[field].widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            self.fields[field].widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})

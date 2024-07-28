@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}OPERATED PATIENTS{%endblock%}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>OPERATED PATIENTS</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre_details' theatre.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{theatre}} OPERATED PATIENTS</div>{%endblock%}
 {%block content %}
 <div class="">
     <section class="text-center border-emerald-700 p-2 m-1">

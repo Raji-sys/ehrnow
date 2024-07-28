@@ -7,7 +7,7 @@
 {% block content %}
 <div class="mx-2 md:mx-20 bg-gray-100 rounded-xl mt-4 p-2">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 p-2">
-        <a href="{% url 'surgery_wait_list' %}" class="block transform hover:-translate-y-1 transition duration-300">
+        <a href="{% url 'surgery_wait_list' theatre.pk %}" class="block transform hover:-translate-y-1 transition duration-300">
             <div class="bg-white rounded-xl shadow-xl overflow-hidden">
                 <div class="bg-amber-600 text-white p-6 flex items-center justify-center ">
                     <h2 class="text-sm text-white text-center uppercase">Surgery booking</h2>
@@ -18,7 +18,7 @@
             </div>
         </a>
 
-        <a href="{% url 'operated_list' %}" class="block transform hover:-translate-y-1 transition duration-300">
+        <a href="{% url 'operated_list' theatre.pk %}" class="block transform hover:-translate-y-1 transition duration-300">
             <div class="bg-white rounded-xl shadow-xl overflow-hidden">
                 <div class="bg-emerald-600 text-white p-6  flex items-center justify-center">
                     <h2 class="text-sm text-white text-center uppercase">Operated Patients</h2>
@@ -30,7 +30,7 @@
         </a>
 
 
-        <a href="{% url 'theatre_operation_record_list' %}" class="block transform hover:-translate-y-1 transition duration-300">
+        <a href="{% url 'theatre_operation_record_list' theatre.pk %}" class="block transform hover:-translate-y-1 transition duration-300">
             <div class="bg-white rounded-xl shadow-xl overflow-hidden">
                 <div class="bg-rose-600 text-white p-6 flex items-center justify-center">
                     <h2 class="text-sm text-white text-center uppercase">Theatre Operation Record</h2>
@@ -41,7 +41,7 @@
             </div>
         </a>
 
-        <a href="{% url 'anaesthesia_checklist_list' %}" class="block transform hover:-translate-y-1 transition duration-300">
+        <a href="{% url 'anaesthesia_checklist_list' theatre.pk %}" class="block transform hover:-translate-y-1 transition duration-300">
             <div class="bg-white rounded-xl shadow-xl overflow-hidden">
                 <div class="bg-zinc-600 text-white p-6 flex items-center justify-center">
                     <h2 class="text-sm text-white text-center uppercase">Anaesthesia Checklists</h2>

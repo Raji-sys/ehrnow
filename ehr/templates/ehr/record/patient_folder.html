@@ -3,11 +3,11 @@
 {% block title %}PATIENT FOLDER{% endblock%}
 {%block page_title%}
 <div class="text-xs text-amber-800 flex justify-start uppercase">
-  <span class="p-3">
-    Wallet Balance: ₦{{ patient.wallet.balance|floatformat:2 }}
+  <span class="p-1 text-xs">
+    Wallet Balance: <br> <span class="font-semibold text-sm">₦{{ patient.wallet.balance|floatformat:2 }}</span>
   </span>
   <a href="{% url 'fund_wallet' patient.id %}" class="bg-amber-700 hover:bg-amber-600 text-white rounded text-xs py-3 px-1">
-    Fund&nbsp;<i class="fa fa-solid fa-wallet fa-xl"></i>
+    <i class="fa fa-solid fa-wallet fa-xl"></i>&nbsp;fund wallet
   </a>
 </div>
 <div class="text-sm uppercase">{{patient.full_name}}</div>
@@ -951,16 +951,17 @@
           
                     <tr class="text-xs">
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">info</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">theatre</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">ward</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">diagnosis</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">operation</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">surgeons</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">surgeon</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">assistant</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">instrument nurse</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">circulating nurse</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">anaesthetist</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">anaesthetic</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">circulation</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">comments</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date of operation</th>
                     </tr>
           
                   </thead>
@@ -968,16 +969,17 @@
                     {% for t in theatre_operation_record %}
                     <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                       <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.info }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.theatre }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.ward }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.diagnosis }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.operation }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.surgeons }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.assistant }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.surgeon }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.assistant_1 }} <br> {{t.assistant_2}}<br> {{t.assistant_3}}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.instrument_nurse|default_if_none:'' }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.circulating_nurse|default_if_none:'' }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.anaesthetist|default_if_none:'' }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.anaesthetic|default_if_none:'' }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.circulation|default_if_none:'' }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.comments|default_if_none:'' }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.updated|default_if_none:'' }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.date_of_operation|default_if_none:'' }}</td>
                     </tr>
                     {%empty%}
                     <div class="p-2">

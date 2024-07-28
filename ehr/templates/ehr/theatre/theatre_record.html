@@ -1,19 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}New Surgical Record{% endblock %}
-{% block page_title %}
-<div class="uppercase flex justify-center items-center text-gray-800 py-2">
-  <a href="#" class="text-blue-500 hover:text-blue-600 transition duration-300">
-    <i class="fa-solid fa-chevron-left text-xs mr-2"></i>
-  </a>
-  <span class="text-xs font-semibold">New Surgical Record</span>
-</div>
-{% endblock %}
+{% block title %}NEW OPERATION RECORD{% endblock %}
+{%block page_title%}<div class="flex justify-center"><a href="#"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>NEW OPERATION RECORD</div>{%endblock%}
+
 {% block content %}
-<div class="bg-white shadow-md rounded-lg overflow-hidden lg:mx-20 sm:mx-4 my-1 max-h-[calc(100vh-6rem)] overflow-y-auto">
+<div class="bg-white shadow-md rounded-lg overflow-hidden lg:mx-20 sm:mx-4 my-1  overflow-y-auto max-h-[80vh] uppercase">
   <form method="post" class="p-3">
     {% csrf_token %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
       {% for field in form %}
         {% if field.name != 'consumables' and field.name != 'implants' %}
           <div class="mb-3">
@@ -26,33 +20,140 @@
         {% endif %}
       {% endfor %}
     </div>
+    <div class="flex justify-center gap-10">
     <div class="mb-1">
-      <h3 class="text-xs font-semibold mb-1 text-gray-700">Consumables</h3>
-      <div class="flex gap-1">
-        {% for consumable in form.consumables %}
-          <div class="flex items-center">
-            {{ consumable.tag }}
-            <label for="{{ consumable.id_for_label }}" class="ml-1 text-xs text-gray-600">{{ consumable.choice_label }}</label>
+      {{ consumables.management_form }}
+      <div id="consumables-formset">
+        {% for form in consumables.forms %}
+          <div class="consumable-form flex gap-2 mb-1">
+            {% for field in form.visible_fields %}
+              <div class="mb-1">
+                <label for="{{ field.id_for_label }}" class="block text-gray-700 text-xs font-medium mb-1">
+                  {{ field.label }}
+                </label>
+                {{ field.errors }}
+                {% if field.field.widget.input_type == 'select' %}
+                  <select name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+                    {% for choice in field.field.choices %}
+                      <option value="{{ choice.0 }}" {% if field.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                    {% endfor %}
+                  </select>
+                {% else %}
+                  <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}" class="text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+                {% endif %}
+              </div>
+            {% endfor %}
+            <button type="button" class="remove-form text-red-500 text-xs">Remove</button>
           </div>
         {% endfor %}
       </div>
+      <button type="button" id="add-consumable" class="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-1 px-2 rounded mt-2">Add Consumable</button>
     </div>
-    <div class="mb-1">
-      <h3 class="text-xs font-semibold mb-1 text-gray-700">Implants</h3>
-      <div class="flex gap-1">
-        {% for implant in form.implants %}
-          <div class="flex items-center">
-            {{ implant.tag }}
-            <label for="{{ implant.id_for_label }}" class="ml-1 text-xs text-gray-600">{{ implant.choice_label }}</label>
+    <div class="mb-4">
+      {{ implants.management_form }}
+      <div id="implants-formset">
+        {% for form in implants.forms %}
+          <div class="implant-form flex gap-2 mb-1">
+            {% for field in form.visible_fields %}
+              <div class="mb-1">
+                <label for="{{ field.id_for_label }}" class="block text-gray-700 text-xs font-medium mb-1">
+                  {{ field.label }}
+                </label>
+                {{ field.errors }}
+                {% if field.field.widget.input_type == 'select' %}
+                  <select name="{{ field.html_name }}" id="{{ field.id_for_label }}" class="text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+                    {% for choice in field.field.choices %}
+                      <option value="{{ choice.0 }}" {% if field.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                    {% endfor %}
+                  </select>
+                {% else %}
+                  <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}" class="text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+                {% endif %}
+              </div>
+            {% endfor %}
+            <button type="button" class="remove-form text-red-500 text-xs">Remove</button>
           </div>
         {% endfor %}
       </div>
+      <button type="button" id="add-implant" class="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-1 px-2 rounded mt-2">Add Implant</button>
     </div>
-    <div class="flex items-center justify-center mt-1">
-      <button class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded focus:outline-none focus:shadow-outline transition duration-300" type="submit">
+  </div>
+
+    <div class="flex items-center justify-center mt-4">
+      <button class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300" type="submit">
         <i class="fas fa-save mr-1"></i>Save
       </button>
     </div>
   </form>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const consumablesFormset = document.getElementById('consumables-formset');
+    const implantsFormset = document.getElementById('implants-formset');
+    const addConsumableBtn = document.getElementById('add-consumable');
+    const addImplantBtn = document.getElementById('add-implant');
+
+    function updateFormIndex(formset, prefix) {
+      const forms = formset.getElementsByClassName(`${prefix}-form`);
+      for (let i = 0; i < forms.length; i++) {
+        const inputs = forms[i].getElementsByTagName('input');
+        const selects = forms[i].getElementsByTagName('select');
+        for (let j = 0; j < inputs.length; j++) {
+          inputs[j].name = inputs[j].name.replace(/-\d+-/, `-${i}-`);
+          inputs[j].id = inputs[j].id.replace(/-\d+-/, `-${i}-`);
+        }
+        for (let j = 0; j < selects.length; j++) {
+          selects[j].name = selects[j].name.replace(/-\d+-/, `-${i}-`);
+          selects[j].id = selects[j].id.replace(/-\d+-/, `-${i}-`);
+        }
+        const labels = forms[i].getElementsByTagName('label');
+        for (let j = 0; j < labels.length; j++) {
+          labels[j].setAttribute('for', labels[j].getAttribute('for').replace(/-\d+-/, `-${i}-`));
+        }
+      }
+      const totalForms = formset.querySelector(`#id_${prefix}-TOTAL_FORMS`);
+      totalForms.value = forms.length;
+    }
+
+    function addForm(formset, prefix) {
+      const newForm = formset.querySelector(`.${prefix}-form`).cloneNode(true);
+      const formCount = formset.getElementsByClassName(`${prefix}-form`).length;
+      newForm.innerHTML = newForm.innerHTML.replace(/-\d+-/g, `-${formCount}-`);
+      const inputs = newForm.getElementsByTagName('input');
+      const selects = newForm.getElementsByTagName('select');
+      for (let i = 0; i < inputs.length; i++) {
+        inputs[i].value = '';
+      }
+      for (let i = 0; i < selects.length; i++) {
+        selects[i].selectedIndex = 0;
+      }
+      formset.appendChild(newForm);
+      updateFormIndex(formset, prefix);
+    }
+
+    function removeForm(event) {
+      const form = event.target.closest('.consumable-form, .implant-form');
+      const formset = form.parentNode;
+      const prefix = form.classList.contains('consumable-form') ? 'consumable' : 'implant';
+      form.remove();
+      updateFormIndex(formset, prefix);
+    }
+
+    addConsumableBtn.addEventListener('click', () => addForm(consumablesFormset, 'consumable'));
+    addImplantBtn.addEventListener('click', () => addForm(implantsFormset, 'implant'));
+
+    consumablesFormset.addEventListener('click', (event) => {
+      if (event.target.classList.contains('remove-form')) {
+        removeForm(event);
+      }
+    });
+
+    implantsFormset.addEventListener('click', (event) => {
+      if (event.target.classList.contains('remove-form')) {
+        removeForm(event);
+      }
+    });
+  });
+</script>
 {% endblock %}
