@@ -38,6 +38,9 @@ from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import Sum, Count
 from django.db.models import Q
+import os
+from django.conf import settings
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -730,10 +733,8 @@ class PatientFolderView(DetailView):
         context['ward_clinical_notes'] = patient.ward_clinical_notes.all().order_by('-updated')
         context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
         context['operation_notes'] = patient.operation_notes.all().order_by('-updated')
-        context['peri_op_nurse'] = patient.peri_op_nurse.all().order_by('-updated')
         context['anaesthesia_checklist'] = patient.anaesthesia_checklist.all().order_by('-updated')
         context['theatre_operation_record'] = patient.theatre_operation_record.all().order_by('-updated')
-        context['operating_theatre'] = patient.operating_theatre.all().order_by('-updated')
         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
         context['private_bill'] = patient.private_bill.all().order_by('-created')
 
@@ -1981,114 +1982,6 @@ class OperationNotesListView(DoctorRequiredMixin,ListView):
         return context
 
 
-class TheatreOperationRecordCreateView(CreateView):
-    model = TheatreOperationRecord
-    form_class = TheatreOperationRecordForm
-    template_name = 'ehr/theatre/theatreOpRecord.html'
-    success_url = reverse_lazy('theatre') 
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data['instrument_counts'] = InstrumentCountFormSet(self.request.POST)
-        else:
-            data['instrument_counts'] = InstrumentCountFormSet()
-        return data
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        instrument_counts = context['instrument_counts']
-        with transaction.atomic():
-            self.object = form.save()
-            if instrument_counts.is_valid():
-                instrument_counts.instance = self.object
-                instrument_counts.save()
-        return super().form_valid(form)
-
-
-class TheatreOperationRecordListView(DoctorRequiredMixin,ListView):
-    model=TheatreOperationRecord
-    template_name='ehr/theatre/theatreOpRecord.html'
-    context_object_name='operated'
-    paginate_by = 10
-
-    def get_queryset(self):
-        theatre = super().get_queryset().order_by('-updated')
-        theatre_op_filter = TheatreOperationRecordFilter(self.request.GET, queryset=theatre)
-        return theatre_op_filter.qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        total_operations = self.get_queryset().count()
-        context['total_operations'] = total_operations
-        context['theatreOpFilter'] = TheatreOperationRecordFilter(self.request.GET, queryset=self.get_queryset())
-        return context
-    
-
-class OperatingTheatreFormView(CreateView):
-    model = OperatingTheatre
-    form_class = OperatingTheatreForm
-    template_name = 'ehr/theatre/operating_theatre.html'
-    success_url = reverse_lazy('theatre')  # Adjust as needed
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context['surgical_consumables'] = SurgicalConsumableFormSet(self.request.POST, instance=self.object)
-            context['implants'] = ImplantFormSet(self.request.POST, instance=self.object)
-        else:
-            context['surgical_consumables'] = SurgicalConsumableFormSet(instance=self.object)
-            context['implants'] = ImplantFormSet(instance=self.object)
-        return context
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        surgical_consumables = context['surgical_consumables']
-        implants = context['implants']
-        
-        with transaction.atomic():
-            self.object = form.save()
-            
-            if surgical_consumables.is_valid():
-                surgical_consumables.instance = self.object
-                surgical_consumables.save()
-            else:
-                return self.form_invalid(form)
-            
-            if implants.is_valid():
-                implants.instance = self.object
-                implants.save()
-            else:
-                return self.form_invalid(form)
-        
-        messages.success(self.request, "Operating Theatre record created successfully.")
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        context = self.get_context_data()
-        messages.error(self.request, "There was an error in your form. Please correct it and try again.")
-        return self.render_to_response(context)
-
-
-class OperatingTheatreListView(DoctorRequiredMixin,ListView):
-    model=OperatingTheatre
-    template_name='ehr/theatre/operating_theatre.html'
-    context_object_name='operated'
-    paginate_by = 10
-
-    def get_queryset(self):
-        theatre = super().get_queryset().order_by('-updated')
-        operating_theatre_filter = OperatingTheatreFilter(self.request.GET, queryset=theatre)
-        return operating_theatre_filter.qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        total_operations = self.get_queryset().count()
-        context['total_operations'] = total_operations
-        context['operating_theatreFilter'] = OperatingTheatreFilter(self.request.GET, queryset=self.get_queryset())
-        return context
-    
-
 class AnaesthesiaChecklistCreateView(DoctorRequiredMixin,CreateView):
     model = AnaesthisiaChecklist
     form_class = AnaesthisiaChecklistForm
@@ -2128,48 +2021,6 @@ class AnaesthesiaChecklistListView(DoctorRequiredMixin,ListView):
         total_anaesthesia_checklist = self.get_queryset().count()
         context['total_anaesthesia_checklist'] = total_anaesthesia_checklist
         context['anaesthesia_checklistFilter'] = AnaesthisiaChecklistFilter(self.request.GET, queryset=self.get_queryset())
-        return context
-
-
-class PeriOPNurseCreateView(DoctorRequiredMixin,CreateView):
-    model = PeriOPNurse
-    form_class = PeriOPNurseForm
-    template_name = 'ehr/theatre/peri_op_nurse.html'
-
-    def form_valid(self, form):
-        form.instance.nurse = self.request.user
-        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        form.instance.patient = patient_data
-        self.object = form.save()
-
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        return context
-
-    def get_success_url(self):
-        messages.success(self.request, 'RECORD ADDED')
-        return self.object.patient.get_absolute_url()
-
-
-class PeriOPNurseListView(DoctorRequiredMixin,ListView):
-    model=PeriOPNurse
-    template_name='ehr/theatre/peri_op_nurse_list.html'
-    context_object_name='peri_op_nurse'
-    paginate_by = 10
-
-    def get_queryset(self):
-        peri_op_nurse = super().get_queryset().order_by('-updated')
-        peri_op_nurse_filter = PeriOPNurseFilter(self.request.GET, queryset=peri_op_nurse)
-        return peri_op_nurse_filter.qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        total_peri_op_nurse = self.get_queryset().count()
-        context['total_peri_op_nurse'] = total_peri_op_nurse
-        context['peri_op_nurseFilter'] = PeriOPNurseFilter(self.request.GET, queryset=self.get_queryset())
         return context
 
 
@@ -2294,9 +2145,6 @@ class PrivateBillListView(DoctorRequiredMixin, LoginRequiredMixin, ListView):
         return context
     
 
-import os
-from django.conf import settings
-
 def link_callback(uri, rel):
     """
     Convert HTML URIs to absolute system paths so xhtml2pdf can access those
@@ -2333,7 +2181,6 @@ def render_to_pdf(template_src, context_dict):
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return None
 
-from django.contrib.staticfiles.storage import staticfiles_storage
 
 class PrivateBillPDFView(DetailView):
     model = PrivateBill
@@ -2391,7 +2238,7 @@ class AllTransactionsListView(LoginRequiredMixin, ListView):
     model = WalletTransaction
     template_name = 'ehr/revenue/wallet_transaction_list.html'
     context_object_name = 'transactions'
-    paginate_by = 10  # Adjust as needed
+    paginate_by = 10 
 
     def get_queryset(self):
         return WalletTransaction.objects.all().order_by('-created_at')
@@ -2433,4 +2280,44 @@ class MedicalRecordPayListView(ListView):
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        return context
+    
+
+class TheatreOperationRecordCreateView(CreateView):
+    model = TheatreOperationRecord
+    form_class = TheatreOperationRecordForm
+    template_name = 'ehr/theatre/theatre_record.html'
+    success_url = reverse_lazy('theatre') 
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        consumables = form.cleaned_data['consumables']
+        implants = form.cleaned_data['implants']
+
+        for consumable in consumables:
+            ConsumableUsage.objects.create(surgical_record=self.object, consumable=consumable)
+
+        for implant in implants:
+            ImplantUsage.objects.create(surgical_record=self.object, implant=implant)
+        return response
+
+
+class TheatreOperationRecordListView(DoctorRequiredMixin,ListView):
+    model=TheatreOperationRecord
+    template_name='ehr/theatre/theatre_record_list.html'
+    context_object_name='surgical_records'
+    paginate_by = 10
+
+    def get_queryset(self):
+        theatre = super().get_queryset().order_by('-updated')
+        theatre_op_filter = TheatreOperationRecordFilter(self.request.GET, queryset=theatre)
+        return theatre_op_filter.qs.prefetch_related(
+            Prefetch('consumableusage_set', queryset=ConsumableUsage.objects.select_related('consumable')),
+            Prefetch('implantusage_set', queryset=ImplantUsage.objects.select_related('implant'))
+        )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        total_operations = self.get_queryset().count()
+        context['total_operations'] = total_operations
+        context['theatreOpFilter'] = TheatreOperationRecordFilter(self.request.GET, queryset=self.get_queryset())
         return context

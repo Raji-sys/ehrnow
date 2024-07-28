@@ -340,49 +340,6 @@ class OperationNotesForm(forms.ModelForm):
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
-class TheatreOperationRecordForm(forms.ModelForm):
-    class Meta:
-        model = TheatreOperationRecord
-        exclude = ['patient','info']
-
-    def __init__(self, *args, **kwargs):
-        super(TheatreOperationRecordForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
-            })
-InstrumentCountFormSet = inlineformset_factory(
-    TheatreOperationRecord, 
-    InstrumentCount, 
-    fields=('item', 'stage', 'count'),
-    extra=15,  # 5 items * 3 stages
-    can_delete=False
-)
-
-
-class OperatingTheatreForm(forms.ModelForm):
-    class Meta:
-        model = OperatingTheatre
-        exclude = ['patient']
-    def __init__(self, *args, **kwargs):
-        super(OperatingTheatreForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
-            })
-
-SurgicalConsumableFormSet = inlineformset_factory(
-    OperatingTheatre, SurgicalConsumable, 
-    fields=('item_description', 'quantity', 'cost'), 
-    extra=3, can_delete=False
-)
-    
-ImplantFormSet = inlineformset_factory(
-    OperatingTheatre, Implant, 
-    fields=('type_of_implant', 'quantity', 'cost'), 
-    extra=3, can_delete=False
-)
-
 
 class AnaesthisiaChecklistForm(forms.ModelForm):
     concurrent_medical_illnesses=forms.ModelMultipleChoiceField(
@@ -401,17 +358,6 @@ class AnaesthisiaChecklistForm(forms.ModelForm):
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
 
-class PeriOPNurseForm(forms.ModelForm):
-    class Meta:
-        model = PeriOPNurse
-        exclude=['patient','nurse','updated']
-
-    def __init__(self, *args, **kwargs):
-        super(PeriOPNurseForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
-            })
 
 class PrivateBillingForm(forms.ModelForm):
     class Meta:
@@ -422,3 +368,39 @@ class PrivateBillingForm(forms.ModelForm):
         super(PrivateBillingForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
+
+class ConsumableUsageForm(forms.ModelForm):
+    class Meta:
+        model = ConsumableUsage
+        fields = ['consumable', 'quantity']
+
+class ImplantUsageForm(forms.ModelForm):
+    class Meta:
+        model = ImplantUsage
+        fields = ['implant', 'quantity']
+
+class TheatreOperationRecordForm(forms.ModelForm):
+    class Meta:
+        model = TheatreOperationRecord
+        exclude = ['patient','consumables', 'implants']
+        widgets = {
+            'date_of_operation': forms.DateInput(attrs={'type': 'date'}),
+            'tourniquet_time': forms.TimeInput(attrs={'type': 'time'}),
+            'tourniquet_off_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
+    consumables = forms.ModelMultipleChoiceField(
+        queryset=Consumable.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    implants = forms.ModelMultipleChoiceField(
+        queryset=Implant.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            if field not in ['consumables', 'implants']:
+                self.fields[field].widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})

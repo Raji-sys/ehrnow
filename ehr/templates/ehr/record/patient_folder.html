@@ -41,6 +41,7 @@
       <li><a href="#" class="rounded-lg ">RADIOLOGY</a></li>
       <li><a href="#" class="rounded-lg ">PHYSIO</a></li>
       <li><a href="#" class="rounded-lg ">ADMISSION</a></li>
+      <li><a href="#" class="rounded-lg ">SURGERY BILL</a></li>
       <li><a href="#" class="rounded-lg ">WARD</a></li>
       <li><a href="#" class="rounded-lg ">THEATRE</a></li>
     </ul>
@@ -594,9 +595,6 @@
         <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-2 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
           <li ><a href="#" class="rounded-lg ">PRIVATE SURGERY BILL</a></li>
           <li ><a href="#" class="rounded-lg ">SURGERY BILL</a></li>
-          <li ><a href="#" class="rounded-lg ">IN-PATIENT VITAL SIGNS</a></li>
-          <li class=><a href="#" class="rounded-lg ">IN-PATIENT MEDICATION</a></li>
-          <li><a href="#" class="rounded-lg ">IN-PATIENT NOTES</a></li>
         </ul>
         
         <div class="uk-switcher uk-margin">
@@ -687,6 +685,25 @@
               </table>
             </div>
          </div>
+
+        
+  </div>
+
+  </div>
+     </div>
+
+     <!-- break -->
+      <!-- break -->
+      <div> 
+      <div class="text-center rounded-xl p-2 md:p-10 bg-gray-50">
+        <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-2 " uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+          <li ><a href="#" class="rounded-lg ">IN-PATIENT VITAL SIGNS</a></li>
+          <li class=><a href="#" class="rounded-lg ">IN-PATIENT MEDICATION</a></li>
+          <li><a href="#" class="rounded-lg ">IN-PATIENT NOTES</a></li>
+        </ul>
+        
+        <div class="uk-switcher uk-margin">
+
 
          <div> 
             <div >
@@ -827,9 +844,7 @@
             <li ><a href="#" class="rounded-lg ">THEATRE BOOKINGS</a></li>
             <li><a href="#" class="rounded-lg ">OPERATION NOTES</a></li>
             <li><a href="#" class="rounded-lg ">THEATRE OPERATION RECORD</a></li>
-            <li><a href="#" class="rounded-lg ">OPERATING THEATRE</a></li>
             <li><a href="#" class="rounded-lg ">ANAESTHSIA CHECKLIST</a></li>
-            <li><a href="#" class="rounded-lg ">PERI-OP NURSE</a></li>
           </ul>
           
           <div class="uk-switcher uk-margin">
@@ -975,59 +990,6 @@
             </div>  
           
           
-            <div>
-              <div>
-                <a href="{% url 'operating_theatre' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
-              </div>
-              <div class="overflow-x-auto max-h-[50vh] p-2">
-                <table class="min-w-full divide-y divide-cyan-200 mb-4">
-                  <thead class="bg-cyan-50">
-          
-                    <tr class="text-xs">
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">ward</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">diagnosis</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">operation</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">surgeon</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">assistant 1</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">assistant 2</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">assistant 3</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">scrub nurse</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">circulating nurse</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">anaesthetist</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">scrub_nurse_signature</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                    </tr>
-          
-                  </thead>
-                  <tbody class="bg-white divide-y divide-cyan-200">
-                    {% for o in operating_theatre %}
-                    <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                      <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.ward }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.date }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.diagnosis }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.operation }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.surgeon }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.asst_1 }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.asst_2 }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.asst_3 }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.scrub_nurse }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.circulating_nurse }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.anaesthetist_nurse }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.scrub_nurse_signature }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.updated|default_if_none:'' }}</td>
-                    </tr>
-                    {%empty%}
-                    <div class="p-2">
-                        <p>No operating theatre record yet</p>
-                    </div>
-                   {%endfor%}
-                  </tbody>
-                </table>
-              </div>
-            </div>  
           
           
             <div>
@@ -1084,38 +1046,6 @@
               </div>
             </div>  
           
-          
-            <div>
-              <div>
-                <a href="{% url 'peri_op_nurse' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
-              </div>
-              <div class="overflow-x-auto max-h-[50vh] p-2">
-                <table class="min-w-full divide-y divide-cyan-200 mb-4">
-                  <thead class="bg-cyan-50">
-          
-                    <tr class="text-xs">
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">nurse</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                    </tr>
-          
-                  </thead>
-                  <tbody class="bg-white divide-y divide-cyan-200">
-                    {% for p in peri_op_nurse %}
-                    <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                      <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ p.user|default_if_none:'' }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ p.updated|default_if_none:'' }}</td>
-                    </tr>
-                    {%empty%}
-                    <div class="p-2">
-                        <p>No theatre notes yet</p>
-                    </div>
-                   {%endfor%}
-                  </tbody>
-                </table>
-              </div>
-            </div>  
           
     </div>
   

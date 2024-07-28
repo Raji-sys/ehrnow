@@ -9,7 +9,7 @@ from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import transaction
-
+from django.core.exceptions import ValidationError
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -536,6 +536,87 @@ class Billing(models.Model):
         return self.item.price * self.quantity
        
 
+class Physio(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="physio_payment")
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.patient
+    
+
+class PrivateBill(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='private_bill',null=True)
+    created = models.DateTimeField(auto_now_add=True,null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Private Surgery Billing"
+
+    
+class PrivateTheatreItem(models.Model):
+    name=models.CharField(max_length=200,null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    
+class PrivateBilling(models.Model):
+    private_bill = models.ForeignKey(PrivateBill, on_delete=models.CASCADE, related_name='private_items',null=True)
+    item = models.ForeignKey(PrivateTheatreItem, on_delete=models.CASCADE,null=True,blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="private_bill_payment")
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.item.name}"
+    
+
+class Wallet(models.Model):
+    patient = models.OneToOneField('PatientData', on_delete=models.CASCADE, related_name='wallet')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def balance(self):
+        credits = self.transactions.filter(transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
+        debits = self.transactions.filter(transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
+        return credits - debits
+
+    def add_funds(self, amount):
+        if amount <= 0:
+            raise ValidationError("Amount must be positive")
+        WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='CREDIT')
+
+    def deduct_funds(self, amount, description):
+        if amount <= 0:
+            raise ValidationError("Amount must be positive")
+        if self.balance() < amount:
+            raise ValidationError("Insufficient funds")
+        WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='DEBIT', description=description)
+
+    def __str__(self):
+        return f"{self.patient}"
+
+class WalletTransaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('CREDIT', 'Credit'),
+        ('DEBIT', 'Debit'),
+    ]
+
+    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_type = models.CharField(max_length=6, choices=TRANSACTION_TYPES)
+    description = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_transaction_type_display()} of {self.amount} for {self.wallet.patient}"
+    
+
 class TheatreBooking(models.Model):
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_bookings')
@@ -548,17 +629,6 @@ class TheatreBooking(models.Model):
     note=QuillField(null=True, blank=True)
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return self.patient
-
-
-class PeriOPNurse(models.Model):
-    nurse = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="peri_op_nurse")
-    updated = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'peri-op nurses'
     
     def __str__(self):
         return self.patient
@@ -619,84 +689,7 @@ class AnaesthisiaChecklist(models.Model):
     
     def __str__(self):
         return self.patient
-
-
-class TheatreOperationRecord(models.Model):
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='theatre_operation_record')
-    info=models.ForeignKey(TheatreBooking,on_delete=models.CASCADE,null=True)    
-    operation=models.CharField(max_length=300,null=True,blank=True)
-    surgeons=models.TextField(null=True,blank=True)
-    assistant=models.TextField(null=True,blank=True)
-    instrument_nurse=models.CharField(max_length=300,null=True,blank=True)
-    anaesthetist=models.CharField(max_length=300,null=True,blank=True)
-    anaesthetic=models.CharField(max_length=300,null=True,blank=True)
-    circulation=models.CharField(max_length=300,null=True,blank=True)
-    comments=models.TextField(null=True,blank=True)
-    updated = models.DateTimeField(auto_now=True)
-
-class InstrumentCount(models.Model):
-    ITEM_CHOICES = [
-        ('SWABS', 'Swabs & Instrument Count'),
-        ('TOWEL', 'Towel Clips'),
-        ('GAUZE', 'Pack Gauze Small'),
-        ('ARTERY', 'Artery Forceps'),
-        ('NEEDLES', 'Needles'),
-        ('LARGE_SWABS', 'Large Swabs'),
-    ]    
-    STAGE_CHOICES = [
-        ('BEFORE', 'Before Operation'),
-        ('DURING', 'During Operation'),
-        ('TOTAL', 'Total at the End'),
-    ]
-    operation_record = models.ForeignKey(TheatreOperationRecord, on_delete=models.CASCADE, related_name='instrument_counts')
-    item = models.CharField(max_length=20, choices=ITEM_CHOICES)
-    stage = models.CharField(max_length=10, choices=STAGE_CHOICES)
-    count = models.IntegerField()
-
-    class Meta:
-        unique_together = ['operation_record', 'item', 'stage']
-
-    def __str__(self):
-        return f"{self.get_item_display()} - {self.get_stage_display()}: {self.count}"
     
-
-class OperatingTheatre(models.Model):
-    patient = models.ForeignKey('PatientData', on_delete=models.CASCADE,related_name='operating_theatre')
-    ward = models.ForeignKey(Ward,on_delete=models.CASCADE, null=True)
-    date = models.DateField()
-    diagnosis = models.CharField(max_length=300, blank=True, null=True)
-    operation = models.CharField(max_length=300, blank=True, null=True)
-    surgeon = models.CharField(max_length=100, blank=True, null=True)
-    asst_1 = models.CharField(max_length=100, blank=True, null=True)
-    asst_2 = models.CharField(max_length=100, blank=True, null=True)
-    asst_3 = models.CharField(max_length=100, blank=True, null=True)
-    scrub_nurse = models.CharField(max_length=100, blank=True, null=True)
-    circulating_nurse = models.CharField(max_length=100, blank=True, null=True)
-    anaesthetist = models.CharField(max_length=100, blank=True, null=True)
-    scrub_nurse_signature = models.CharField(max_length=100, blank=True, null=True)
-    updated = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"Operation for {self.patient} on {self.date}"
-
-class SurgicalConsumable(models.Model):
-    operation = models.ForeignKey(OperatingTheatre, related_name='surgical_consumables', on_delete=models.CASCADE)
-    item_description = models.CharField(max_length=300)
-    quantity = models.IntegerField()
-    cost = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f"{self.item_description} for {self.operation}"
-
-class Implant(models.Model):
-    operation = models.ForeignKey(OperatingTheatre, related_name='implants', on_delete=models.CASCADE)
-    type_of_implant = models.CharField(max_length=300)
-    quantity = models.IntegerField()
-    cost = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f"{self.type_of_implant} for {self.operation}"
-
 
 class OperationNotes(models.Model):
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -715,83 +708,72 @@ class OperationNotes(models.Model):
         return self.patient
 
 
-class Physio(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="physio_payment")
+class Consumable(models.Model):
+    name = models.CharField(max_length=100,null=True,blank=True)
+    cost = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.patient
-    
+        return self.name
 
-class PrivateBill(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='private_bill',null=True)
-    created = models.DateTimeField(auto_now_add=True,null=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
-    updated = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return f"Private Surgery Billing"
-
-    
-class PrivateTheatreItem(models.Model):
-    name=models.CharField(max_length=200,null=True, blank=True)
+class Implant(models.Model):
+    name = models.CharField(max_length=100,null=True,blank=True)
+    cost = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.name}"
+        return self.name
+    
+class TheatreOperationRecord(models.Model):
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='theatre_operation_record')
+    ward = models.CharField(max_length=50,null=True,blank=True)
+    
+    # Operation Details
+    diagnosis = models.CharField(max_length=200,null=True,blank=True)
+    operation = models.CharField(max_length=200,null=True,blank=True)
+    date_of_operation = models.DateField(null=True,blank=True)
+    operation_suite = models.CharField(max_length=50,null=True,blank=True)
+    
+    # Staff
+    surgeon = models.CharField(max_length=100,null=True,blank=True)
+    assistant_1 = models.CharField(max_length=100, null=True,blank=True)
+    assistant_2 = models.CharField(max_length=100, null=True,blank=True)
+    assistant_3 = models.CharField(max_length=100, null=True,blank=True)
+    instrument_nurse = models.CharField(max_length=100,null=True,blank=True)
+    circulating_nurse = models.CharField(max_length=100,null=True,blank=True)
+    anaesthetist = models.CharField(max_length=100,null=True,blank=True)
+    
+    consumables = models.ManyToManyField(Consumable, through='ConsumableUsage',blank=True)
+    implants = models.ManyToManyField(Implant, through='ImplantUsage',blank=True)
 
     
-class PrivateBilling(models.Model):
-    private_bill = models.ForeignKey(PrivateBill, on_delete=models.CASCADE, related_name='private_items',null=True)
-    item = models.ForeignKey(PrivateTheatreItem, on_delete=models.CASCADE,null=True,blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="private_bill_payment")
+    # Instrument Count
+    towel_clips = models.IntegerField(default=0,null=True,blank=True)
+    plain_gauze_small = models.IntegerField(default=0,null=True,blank=True)
+    artery_forceps = models.IntegerField(default=0,null=True,blank=True)
+    needles = models.IntegerField(default=0,null=True,blank=True)
+    large_swabs = models.IntegerField(default=0,null=True,blank=True)
+    
+    # Tourniquet
+    tourniquet_applied = models.BooleanField(default=False)
+    tourniquet_time = models.TimeField(null=True, blank=True)
+    tourniquet_by = models.CharField(max_length=100, blank=True)
+    tourniquet_off_by = models.CharField(max_length=100, blank=True)
+    tourniquet_off_time = models.TimeField(null=True, blank=True)
+    
+    comments = models.TextField(blank=True,null=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.item.name}"
-    
+        return f"{self.patient} - {self.operation}"
 
-from django.core.exceptions import ValidationError
-class Wallet(models.Model):
-    patient = models.OneToOneField('PatientData', on_delete=models.CASCADE, related_name='wallet')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    def balance(self):
-        credits = self.transactions.filter(transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
-        debits = self.transactions.filter(transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
-        return credits - debits
+class ConsumableUsage(models.Model):
+    surgical_record = models.ForeignKey(TheatreOperationRecord, on_delete=models.CASCADE)
+    consumable = models.ForeignKey(Consumable, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
 
-    def add_funds(self, amount):
-        if amount <= 0:
-            raise ValidationError("Amount must be positive")
-        WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='CREDIT')
-
-    def deduct_funds(self, amount, description):
-        if amount <= 0:
-            raise ValidationError("Amount must be positive")
-        if self.balance() < amount:
-            raise ValidationError("Insufficient funds")
-        WalletTransaction.objects.create(wallet=self, amount=amount, transaction_type='DEBIT', description=description)
-
-    def __str__(self):
-        return f"{self.patient}"
-
-class WalletTransaction(models.Model):
-    TRANSACTION_TYPES = [
-        ('CREDIT', 'Credit'),
-        ('DEBIT', 'Debit'),
-    ]
-
-    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    transaction_type = models.CharField(max_length=6, choices=TRANSACTION_TYPES)
-    description = models.CharField(max_length=255, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.get_transaction_type_display()} of {self.amount} for {self.wallet.patient}"
+class ImplantUsage(models.Model):
+    surgical_record = models.ForeignKey(TheatreOperationRecord, on_delete=models.CASCADE)
+    implant = models.ForeignKey(Implant, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)

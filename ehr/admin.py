@@ -181,11 +181,11 @@ class OperationNotesAdmin(admin.ModelAdmin):
     list_filter = ('patient','notes','type_of_anaesthesia','findings','post_op_order','operated','updated')
 
 
-@admin.register(PeriOPNurse)
-class PeriOpNurseAdmin(admin.ModelAdmin):
-    list_display = ('patient','nurse','updated')
-    search_fields = ('nurse','updated')
-    list_filter = ('nurse','updated')
+@admin.register(TheatreOperationRecord)
+class TheatreOperationRecordeAdmin(admin.ModelAdmin):
+    list_display = ('patient','updated')
+    search_fields = ('patient','updated')
+    list_filter = ('patient','updated')
 
 
 @admin.register(AnaesthisiaChecklist)
@@ -227,9 +227,25 @@ class WalletAdmin(admin.ModelAdmin):
     list_display = ('patient','balance')
     search_fields = ('patient',)
     list_filter = ('patient',)
+    readonly_fields=('patient',)
+
 
 @admin.register(WalletTransaction)
 class WalletTransactionAdmin(admin.ModelAdmin):
     list_display = ('wallet','amount','transaction_type','description')
     search_fields = ('wallet','transaction_type')
     list_filter = ('wallet','transaction_type')
+    readonly_fields=('wallet','amount','transaction_type','description')
+
+@admin.register(Consumable)
+class ConsumableAdmin(admin.ModelAdmin):
+    list_display = ('name','cost','updated')
+    search_fields = ('name','cost','updated')
+    list_filter = ('name','cost','updated')
+
+
+@admin.register(Implant)
+class ImplantAdmin(admin.ModelAdmin):
+    list_display = ('name','cost','updated')
+    search_fields = ('name','cost','updated')
+    list_filter = ('name','cost','updated')

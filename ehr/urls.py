@@ -123,19 +123,13 @@ urlpatterns = [
     path('clinic/theatre-booking/updating-boking/<int:pk>/', TheatreBookingUpdateView.as_view(), name='update_theatre_booking'),
     
     path('theatre-operation-record/create/<str:file_No>/', TheatreOperationRecordCreateView.as_view(), name='theatre_operation_record'),
-    path('theatre/theatre-operation-record-list/', TheatreOperationRecordListView.as_view(), name="theatre_operation_list"),
-
-    path('theatre/operating-theatre/create/<str:file_No>/', OperatingTheatreFormView.as_view(), name='operating_theatre'),
-    path('theatre/operating-theatre-list/', OperatingTheatreListView.as_view(), name="operating_theatre_list"),
+    path('theatre/theatre-operation-record-list/', TheatreOperationRecordListView.as_view(), name="theatre_operation_record_list"),
 
     path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='operation_notes'),
     path('theatre/operated-patient-list/', OperationNotesListView.as_view(), name="operated_list"),
 
     path('theatre/anaesthesia-checklist/<str:file_no>/', AnaesthesiaChecklistCreateView.as_view(), name='anaesthesia_checklist'),
     path('theatre/anaesthesia-checklist_llist/', AnaesthesiaChecklistListView.as_view(), name="anaesthesia_checklist_list"),
-
-    path('theatre/peri-op-nurse/<str:file_no>/', PeriOPNurseCreateView.as_view(), name='peri_op_nurse'),
-    path('theatre/peri-op-nurse-list/', PeriOPNurseListView.as_view(), name="peri_op_nurse_list"),
 
     #radiology
     path('radiology-list/', RadiologyListView.as_view(), name='radiology_list'),
