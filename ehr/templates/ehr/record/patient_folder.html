@@ -2,13 +2,15 @@
 {%load static%}
 {% block title %}PATIENT FOLDER{% endblock%}
 {%block page_title%}
-<div class="text-xs text-amber-800 flex justify-start uppercase">
-  <span class="p-1 text-xs">
-    Wallet Balance: <br> <span class="font-semibold text-sm">₦{{ patient.wallet.balance|floatformat:2 }}</span>
+<div class=" text-xs text-emerald-700 flex justify-start uppercase">
+  <span class="bg-white rounded-xl p-1 border-emerald-700 border">
+    Wallet Balance <br> <span class="font-semibold text-xs  border-emerald-400 p-2">₦{{ patient.wallet.balance|floatformat:2 }}</span>
   </span>
-  <a href="{% url 'fund_wallet' patient.id %}" class="bg-amber-700 hover:bg-amber-600 text-white rounded text-xs py-3 px-1">
-    <i class="fa fa-solid fa-wallet fa-xl"></i>&nbsp;fund wallet
-  </a>
+  <span class="text-xs m-1 p-2"> 
+    <a href="{% url 'fund_wallet' patient.id %}" class="bg-amber-700 hover:bg-white hover:text-amber-700 rounded-xl p-3 text-white hover:border hover:border-amber-900 border-2 border-amber-100">
+      <i class="fa fa-solid fa-wallet fa-xl mr-1"></i>fund wallet
+    </a>
+  </span>
 </div>
 <div class="text-sm uppercase">{{patient.full_name}}</div>
 {%endblock%}
@@ -26,7 +28,7 @@
       {% endfor %}
     </section>
 
-<div class="md:mx-20  rounded-xl shadow-black shadow-lg mx-2 text-xs ">
+<div class="md:mx-20  rounded-xl shadow-black shadow-sm mx-2 text-xs ">
   <div class="text-center rounded-xl md:p-8 p-2 bg-gray-50 uppercase max-h[40vh]">
 <!-- start -->
 <!-- top  -->
@@ -571,17 +573,19 @@
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">status</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">ward</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">bed number</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">admission date</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">discharge date</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
               {%for a in admission_info %}
               <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                <td class=" p-3 whitespace-nowrap">{%if a.admit == True %}<span class="text-green-600">on admission</span>{%else%}<span class="text-rose-500">not admitted yet</span>{%endif%}</td>
+                <td class=" p-3 whitespace-nowrap">{%if a.status == 'RECEIVED' %}<span class="text-green-600">on admission</span>{%elif a.status == 'DISCHARGE' %}<span class="text-cyan-600">discharged</span>{%else%}<span class="text-rose-500">not admitted yet</span>{%endif%}</td>
                 <td class=" p-3 whitespace-nowrap">{{ a.ward|default_if_none:'' }}</td>
                 <td class=" p-3 whitespace-nowrap">{%if a.bed_number is None%}<span class="text-rose-500">bed not assigned yet</span> {%else%}<span class="text-green-600">{{ a.bed_number|default_if_none:''}}</span>{%endif%}</td>
-                <td class=" p-3 whitespace-nowrap">{{ a.updated }}</td>
+                <td class=" p-3 whitespace-nowrap">{{ a.created}}</td>
+                <td class=" p-3 whitespace-nowrap">{%if a.status == 'DISCHARGE' %}{{ a.updated }}{%else%}{%endif%}</td>
               </tr>
               {%endfor%}
             </tbody>

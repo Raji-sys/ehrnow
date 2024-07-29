@@ -28,8 +28,7 @@ urlpatterns = [
     path('get-started/physio', PhysioView.as_view(), name='physio'),
     path('get-started/theatre', TheatreListView.as_view(), name='theatre'),
  
-    path('get-started/ward', WardView.as_view(), name='ward_list'),
-
+    path('get-started/ward/', WardListView.as_view(), name='ward_list'),
     path('get-started/audit', AuditView.as_view(), name='audit'),
     path('get-started/store', StoreView.as_view(), name='store'),
 
@@ -93,8 +92,8 @@ urlpatterns = [
     path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room'),
     path('clinic/<int:clinic_id>/patients/<str:status>/', views.PTListView.as_view(), name='pt_list'),
 
-    path('waiting-consultation/ae/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
-    path('waiting-consultation/ae/clinical_note_update/<int:pk>/', ClinicalNoteUpdateView.as_view(), name='clinical_note_update'),
+    path('waiting-consultation/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
+    path('waiting-consultation/clinical_note_update/<int:pk>/', ClinicalNoteUpdateView.as_view(), name='clinical_note_update'),
    
     path('clinic/report/', PatientHandoverReportView.as_view(), name='handover_report'),
     path('clinic/report/pdf', views.clinic_handover_pdf, name='clinic_handover_pdf'),
@@ -102,15 +101,14 @@ urlpatterns = [
 
     #admission
     path('clinic/admit-patient/<str:file_no>/', AdmissionCreateView.as_view(), name='admit_patient'),
-    path('clinic/admission-list/', AdmissionListView.as_view(), name='admission_list'),
+    # path('clinic/admission-list/', AdmissionListView.as_view(), name='admission_list'),
     path('clinic/update-admission/<int:pk>/', AdmissionUpdateView.as_view(), name='receive_patient'),
+    path('clinic/patient-discharge/<int:pk>/', AdmissionDischargeView.as_view(), name='discharge_patient'),
     
     #wards    
-    path('wards/', views.WardView.as_view(), name='ward_list'),
-    path('ward/<int:pk>/', views.WardDetailView.as_view(), name='ward_details'),
-    path('ward/<int:pk>/waiting-list/', views.GenericWardListView.as_view(), {'admit': False, 'accept': False}, name='ward_waiting_list'),
-    path('ward/<int:pk>/admitted-list/', views.GenericWardListView.as_view(), {'admit': True, 'accept': True}, name='ward_admitted_list'),
-  
+    path('ward/<int:pk>/',WardDetailView.as_view(), name='ward_details'),
+    path('ward/<int:ward_id>/<str:status>/', GenericWardListView.as_view(), name='admission_list'),
+ 
     path('ward/nursing/vital-signs/<str:file_no>/', WardVitalSignCreateView.as_view(), name='ward_vital_signs'),
     path('ward/nursing/medication/<str:file_no>/', WardMedicationCreateView.as_view(), name='ward_medication'),
     path('ward/nursing/notes/<str:file_no>/', WardNotesCreateView.as_view(), name='ward_notes'),

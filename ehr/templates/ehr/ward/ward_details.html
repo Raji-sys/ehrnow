@@ -11,21 +11,28 @@
 {% endblock %}
 
 {% block content %}
-<div class="md:mx-20 mx-2 bg-zinc-200 rounded-md shadow-black h-fit shadow-2xl mt-2">
-    <div class="grid grid-cols-2 gap-6 uppercase text-center rounded-xl p-8 md:p-6">
-        <div>
-            <a href="{{ wait_list_url }}">
-                <div class="hover:bg-white hover:text-zinc-800 bg-zinc-600 text-white rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
-                    <div class="text-xs">PATIENT ON WAITING LIST</div>
+<div class="w-fit mx-auto bg-zinc-50 rounded-md shadow-black h-fit shadow-sm mt-2">
+    <div class="grid grid-cols-3 gap-6 uppercase text-center rounded-xl p-8 md:p-6">
+        <div class="">
+            <a href="{{ admit_list_url }}">
+                <div class="hover:bg-white hover:text-amber-800 bg-amber-600 text-white rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
+                    <div class="text-xs">INCOMING PATIENTS</div>
                 </div>
-            </a> 
+            </a>
         </div>
         <div>
-            <a href="{{ admission_list_url }}">
-                <div class="hover:bg-white hover:text-fuchsia-800 bg-fuchsia-600 text-white rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
+            <a href="{{ received_list_url }}">
+                <div class="hover:bg-white hover:text-green-800 bg-green-600 text-white rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
                     <div class="text-xs">PATIENTS ON ADMISSION</div>
                 </div>
-            </a> 
+            </a>
+        </div>
+        <div>
+            <a href="{{ discharged_list_url }}">
+                <div class="hover:bg-white hover:text-blue-800 bg-blue-600 text-white rounded-2xl shadow-2xl p-4 md:p-8 border-2 border-white-400 transition duration-300">
+                    <div class="text-xs">DISCHARGED PATIENTS</div>
+                </div>
+            </a>
         </div>
     </div>
 </div>

@@ -197,43 +197,64 @@ class PayUpdateForm(forms.ModelForm):
             
 
 
-class DicomUploadForm(forms.ModelForm):
-    class Meta:
-        model = RadiologyResult
-        fields = ['dicom_file']
-    def __init__(self, *args, **kwargs):
-        super(DicomUploadForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            # field.required=True
-            field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
-            
-
 class AdmissionForm(forms.ModelForm):
     class Meta:
         model = Admission
-        fields = ['admit','ward']
+        fields = ['status', 'ward', 'expected_discharge_date']
+        widgets = {
+            'expected_discharge_date': forms.DateInput(attrs={'type': 'date'})
+        }
+
 
     def __init__(self, *args, **kwargs):
         super(AdmissionForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
-            # field.required=True
-            field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
 
+    def clean(self):
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        ward = cleaned_data.get('ward')
+        if status == 'DISCHARGE' and ward:
+            raise ValidationError("Discharged patients should not be assigned a ward.")
+        return cleaned_data
 
 class AdmissionUpdateForm(forms.ModelForm):
     class Meta:
         model = Admission
-        fields = ['accept','bed_number']
-
+        fields = ['status', 'bed_number', 'expected_discharge_date'] 
+        widgets = {
+            'expected_discharge_date': forms.DateInput(attrs={'type': 'date'})
+        }
     def __init__(self, *args, **kwargs):
         super(AdmissionUpdateForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
-            # field.required=True
-            field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
-            
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+    def clean(self):
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        bed_number = cleaned_data.get('bed_number')
+        if status == 'DISCHARGE' and bed_number:
+            raise ValidationError("Discharged patients should not have a bed number assigned.")
+        return cleaned_data            
+
+
+class AdmissionDischargeForm(forms.ModelForm):
+    class Meta:
+        model = Admission
+        fields = ['status',] 
+    def __init__(self, *args, **kwargs):
+        super(AdmissionDischargeForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
 
 class WardVitalSignsForm(forms.ModelForm):
     class Meta:

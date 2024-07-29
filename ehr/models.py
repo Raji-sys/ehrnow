@@ -413,16 +413,23 @@ class RadiologyResult(models.Model):
 
 
 class Admission(models.Model):
+    STATUS = [
+        ('ADMIT', 'ADMIT'),
+        ('RECEIVED', 'RECEIVED'),
+        ('DISCHARGE', 'DISCHARGE'),
+    ]
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="admission_info")
-    admit=models.BooleanField(default=False)
-    accept=models.BooleanField(default=False)
-    ward = models.ForeignKey(Ward,on_delete=models.CASCADE, null=True)
-    bed_number=models.CharField(max_length=300,null=True, blank=True)
+    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="admission_info")
+    status = models.CharField(max_length=30, null=True, choices=STATUS, default='ADMIT')
+    ward = models.ForeignKey(Ward, on_delete=models.CASCADE, null=True)
+    bed_number = models.CharField(max_length=300, null=True, blank=True)
+    expected_discharge_date = models.DateField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    created = models.DateTimeField(auto_now_add=True,null=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.patient.full_name().upper()
+        return f"{self.patient} - {self.status}"
 
 
 class WardVitalSigns(models.Model):

@@ -323,6 +323,21 @@ class ClinicDashView(DoctorNurseRecordRequiredMixin, ListView):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+class AuditView(AuditorRequiredMixin,TemplateView):
+    template_name = "ehr/dashboard/audit.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class StoreView(TemplateView):
+    template_name = "ehr/dashboard/store.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ServiceView(TemplateView):
+    template_name = "ehr/dashboard/service.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
     model = Clinic
     context_object_name = 'clinic'
@@ -412,38 +427,10 @@ class TheatreDetailView(DoctorNurseRequiredMixin, DetailView):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class WardView(DoctorNurseRequiredMixin, ListView):
+class WardListView(DoctorNurseRequiredMixin, ListView):
     model = Ward
     context_object_name = 'wards'
     template_name = "ehr/dashboard/ward_list.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Define known ward types with their specific icons and colors
-        known_ward_types = {
-            'MALE WARD': {'icon': 'fa-male', 'color': 'blue'},
-            'FEMALE WARD': {'icon': 'fa-female', 'color': 'green'},
-            'CHILDRENS WARD': {'icon': 'fa-children', 'color': 'amber'},
-            'ICU': {'icon': 'fa-mask-ventilator', 'color': 'red'},
-        }
-    
-        # Process wards and add generic icon/color for unknown types
-        processed_wards = []
-        for ward in context['wards']:
-            ward_info = known_ward_types.get(ward.name.upper(), {'icon': 'fa-bed', 'color': 'gray'})
-            
-            processed_wards.append({
-                'id': ward.id,
-                'name': ward.name.upper(),
-                'url_name': reverse('ward_details', kwargs={'pk': ward.id}),
-                'icon': ward_info['icon'],
-                'color': ward_info['color'],
-                'ward': ward,  # Keep the original ward object for any additional data you might need
-            })
-
-        context['wards'] = processed_wards
-        return context
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -451,65 +438,50 @@ class WardDetailView(DoctorNurseRequiredMixin, DetailView):
     model = Ward
     template_name = "ehr/ward/ward_details.html"
     context_object_name = 'ward'
-
+    paginate_by=10
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ward = self.object
-
-        known_ward_types = {
-            'MALE WARD': {'icon': 'fa-male', 'color': 'blue'},
-            'FEMALE WARD': {'icon': 'fa-female', 'color': 'pink'},
-            'CHILDRENS WARD': {'icon': 'fa-children', 'color': 'yellow'},
-            'ICU': {'icon': 'fa-mask-ventilator', 'color': 'red'},
-        }
-
-        ward_info = known_ward_types.get(ward.name.upper(), {'icon': 'fa-bed', 'color': 'gray'})
-
-        context['ward_info'] = {
-            'id': ward.id,
-            'name': ward.name.upper(),
-            'icon': ward_info['icon'],
-            'color': ward_info['color'],
-            'wait_list_url': reverse('ward_waiting_list', kwargs={'pk': ward.id}),
-            'admission_list_url': reverse('ward_admitted_list', kwargs={'pk': ward.id}),
-        }
-
+        context['admit_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'admit'})
+        context['received_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'received'})
+        context['discharged_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'discharge'})
         return context
-    
 
 class GenericWardListView(DoctorRequiredMixin, ListView):
-    model = Admission
-    context_object_name = 'admissions'
-    template_name = 'ehr/dashboard/generic_ward_list.html'
+    model = Admission  # Changed from Ward to Admission
+    context_object_name = 'admissions'  # Changed from 'ward' to 'admissions'
+    template_name = 'ehr/ward/generic_ward_list.html'
+    paginate_by = 10  # Add pagination
 
     def get_queryset(self):
-        ward = get_object_or_404(Ward, pk=self.kwargs['pk'])
-        queryset = super().get_queryset()
-        filters = {
-            'admit': self.kwargs.get('admit', True),
-            'accept': self.kwargs.get('accept', True),
-            'ward': ward,
-        }
-        return queryset.filter(**filters).order_by('-updated')
+        ward = get_object_or_404(Ward, pk=self.kwargs['ward_id'])
+        status = self.kwargs['status'].upper()
+        queryset = Admission.objects.filter(ward=ward, status=status)
+
+        # Add search functionality
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)
+            )
+
+        return queryset.order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ward = get_object_or_404(Ward, pk=self.kwargs['pk'])
+        ward = get_object_or_404(Ward, pk=self.kwargs['ward_id'])
         context['ward'] = ward
-        context['is_waiting_list'] = not self.kwargs.get('admit', True)
+        context['status'] = self.kwargs['status'].upper()
+        context['admitted'] = Admission.objects.filter(ward=ward, status='ADMIT').count()
+        context['received'] = Admission.objects.filter(ward=ward, status='RECEIVED').count()
+        context['discharged'] = Admission.objects.filter(ward=ward, status='DISCHARGE').count()
+        
+        context['query'] = self.request.GET.get('q', '')
+        
         return context
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class AuditView(AuditorRequiredMixin,TemplateView):
-    template_name = "ehr/dashboard/audit.html"
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class StoreView(TemplateView):
-    template_name = "ehr/dashboard/store.html"
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class ServiceView(TemplateView):
-    template_name = "ehr/dashboard/service.html"
 
 
 #1 Patient create
@@ -1538,13 +1510,17 @@ class AdmissionUpdateView(UpdateView):
     model = Admission
     template_name = 'ehr/ward/update_admission.html'
     form_class = AdmissionUpdateForm
-    success_url = reverse_lazy("ward_list")
+
+    def get_success_url(self):
+        ward_id = self.object.ward.id
+        status = self.object.status
+        return reverse('admission_list', kwargs={'ward_id': ward_id, 'status': status})
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        messages.success(self.request, 'PATIENT RECEIVED')
         if form.is_valid():
             form.save()
+            messages.success(self.request, 'PATIENT UPDATED')
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
@@ -1553,26 +1529,58 @@ class AdmissionUpdateView(UpdateView):
         messages.error(self.request, 'Error')
         return self.render_to_response(self.get_context_data(form=form))
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cancel_url'] = self.get_success_url()
+        return context
 
-class AdmissionListView(ListView):
-    model=Admission
-    template_name='ehr/ward/admission_list.html'
-    context_object_name='admissions'
-    paginate_by = 10
 
-    def get_queryset(self):
-        updated = super().get_queryset().order_by('-updated')
-        admission_filter = AdmissionFilter(self.request.GET, queryset=updated)
-        return admission_filter.qs
+class AdmissionDischargeView(UpdateView):
+    model = Admission
+    template_name = 'ehr/ward/update_admission.html'
+    form_class = AdmissionDischargeForm
+
+    def get_success_url(self):
+        ward_id = self.object.ward.id
+        status = self.object.status
+        return reverse('admission_list', kwargs={'ward_id': ward_id, 'status': status})
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        if form.is_valid():
+            form.save()
+            messages.success(self.request, 'PATIENT UPDATED')
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error')
+        return self.render_to_response(self.get_context_data(form=form))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_admissions = self.get_queryset().count()
-        context['admissionFilter'] = AdmissionFilter(self.request.GET, queryset=self.get_queryset())
-        context['total_admission'] = total_admissions
+        context['cancel_url'] = self.get_success_url()
         return context
-    
 
+# class AdmissionListView(ListView):
+#     model=Admission
+#     template_name='ehr/ward/admission_list.html'
+#     context_object_name='admissions'
+#     paginate_by = 10
+
+#     def get_queryset(self):
+#         updated = super().get_queryset().order_by('-updated')
+#         admission_filter = AdmissionFilter(self.request.GET, queryset=updated)
+#         return admission_filter.qs
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         total_admissions = self.get_queryset().count()
+#         context['admissionFilter'] = AdmissionFilter(self.request.GET, queryset=self.get_queryset())
+#         context['total_admission'] = total_admissions
+#         return context
+    
 
 class WardVitalSignCreateView(NurseRequiredMixin,CreateView):
     model = WardVitalSigns
