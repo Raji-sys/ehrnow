@@ -36,16 +36,16 @@
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
-              <tr>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+              <tr class="">
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               {% for p in hematology_pays %}
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50 text-center">
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{forloop.counter}}</td>
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{request.user}}</td>
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">
@@ -55,12 +55,12 @@
                 </td>
                 <td class="p-3 whitespace-nowrap text-sm">
                   {% if p.status == False %}
-                  <span class="text-red-600"><i class="fa-solid fa-x"></i> Unpaid</span>
+                  <span class="text-red-600"><i class="fa-solid fa-x"></i> </span>
                   <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="ml-2 text-indigo-600 hover:text-indigo-900">
-                    <i class="fa-solid fa-cash-register"></i> Pay
+                    <i class="fa-solid fa-cash-register"></i> 
                   </a>
                   {% else %}
-                  <span class="text-green-600"><i class="fa-solid fa-check"></i> Paid</span>
+                  <span class="text-green-600"><i class="fa-solid fa-check"></i> </span>
                   {% endif %}
                 </td>
               </tr>
@@ -71,7 +71,7 @@
               {% endfor %}
               <tr class="">
                 <td></td>
-                <td class="p-1 text-left">        
+                <td class="p-1 text-center">        
             <div class="pagination flex justify-center">
                 <span class="flex items-center">
                     {% if page_obj.has_previous %}
@@ -107,15 +107,15 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               {% for p in chempath_pays %}
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50 text-center">
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{forloop.counter}}</td>
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{request.user}}</td>
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">
@@ -125,12 +125,12 @@
                 </td>
                 <td class="p-3 whitespace-nowrap text-sm">
                   {% if p.status == False %}
-                  <span class="text-red-600"><i class="fa-solid fa-x"></i> Unpaid</span>
+                  <span class="text-red-600"><i class="fa-solid fa-x"></i> </span>
                   <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="ml-2 text-amber-600 hover:text-amber-900">
-                    <i class="fa-solid fa-cash-register"></i> Pay
+                    <i class="fa-solid fa-cash-register"></i>
                   </a>
                   {% else %}
-                  <span class="text-green-600"><i class="fa-solid fa-check"></i> Paid</span>
+                  <span class="text-green-600"><i class="fa-solid fa-check"></i> </span>
                   {% endif %}
                 </td>
               </tr>
@@ -141,7 +141,7 @@
               {% endfor %}
               <tr class="">
                 <td></td>
-                <td class="p-1 text-left">        
+                <td class="p-1 text-center">        
             <div class="pagination flex justify-center">
                 <span class="flex items-center">
                     {% if page_obj.has_previous %}
@@ -177,15 +177,15 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               {% for p in micro_pays %}
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50 text-center">
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{forloop.counter}}</td>
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{request.user}}</td>
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">
@@ -195,12 +195,12 @@
                 </td>
                 <td class="p-3 whitespace-nowrap text-sm">
                   {% if p.status == False %}
-                  <span class="text-red-600"><i class="fa-solid fa-x"></i> Unpaid</span>
+                  <span class="text-red-600"><i class="fa-solid fa-x"></i> </span>
                   <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="ml-2 text-cyan-600 hover:text-cyan-900">
-                    <i class="fa-solid fa-cash-register"></i> Pay
+                    <i class="fa-solid fa-cash-register"></i>
                   </a>
                   {% else %}
-                  <span class="text-green-600"><i class="fa-solid fa-check"></i> Paid</span>
+                  <span class="text-green-600"><i class="fa-solid fa-check"></i> </span>
                   {% endif %}
                 </td>
               </tr>
@@ -211,7 +211,7 @@
               {% endfor %}
               <tr class="">
                 <td></td>
-                <td class="p-1 text-left">        
+                <td class="p-1 text-center">        
             <div class="pagination flex justify-center">
                 <span class="flex items-center">
                     {% if page_obj.has_previous %}
@@ -247,15 +247,15 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Officer</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th class="p-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               {% for p in serology_pays %}
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50 text-center">
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{forloop.counter}}</td>
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">{{request.user}}</td>
                 <td class="p-3 whitespace-nowrap text-sm text-gray-500">
@@ -265,12 +265,12 @@
                 </td>
                 <td class="p-3 whitespace-nowrap text-sm">
                   {% if p.status == False %}
-                  <span class="text-red-600"><i class="fa-solid fa-x"></i> Unpaid</span>
+                  <span class="text-red-600"><i class="fa-solid fa-x"></i> </span>
                   <a href="{% url 'update_pay' p.id %}?next={% url 'pathology_pay_list' %}" class="ml-2 text-fuchsia-600 hover:text-fuchsia-900">
-                    <i class="fa-solid fa-cash-register"></i> Pay
+                    <i class="fa-solid fa-cash-register"></i>
                   </a>
                   {% else %}
-                  <span class="text-green-600"><i class="fa-solid fa-check"></i> Paid</span>
+                  <span class="text-green-600"><i class="fa-solid fa-check"></i> </span>
                   {% endif %}
                 </td>
               </tr>
@@ -281,7 +281,7 @@
               {% endfor %}
               <tr class="">
                 <td></td>
-                <td class="p-1 text-left">        
+                <td class="p-1 text-center">        
             <div class="pagination flex justify-center">
                 <span class="flex items-center">
                     {% if page_obj.has_previous %}

@@ -428,6 +428,13 @@ class Admission(models.Model):
     created = models.DateTimeField(auto_now_add=True,null=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def days_on_admission(self):
+        if self.created and self.status == 'RECEIVED':
+            today = date.today()
+            days_on = (today - self.created.date()).days
+            return max(days_on, 0)  # Ensure non-negative value
+        return 0
+
     def __str__(self):
         return f"{self.patient} - {self.status}"
 

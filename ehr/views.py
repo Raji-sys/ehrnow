@@ -1174,6 +1174,41 @@ class PayCreateView(RevenueRequiredMixin, CreateView):
         return super().get_success_url()
 
 
+# class PayUpdateView(UpdateView):
+#     model = Paypoint
+#     template_name = 'ehr/revenue/update_pay.html'
+#     form_class = PayUpdateForm
+
+#     def get_success_url(self):
+#         next_url = self.request.GET.get('next')
+#         if next_url:
+#             return next_url
+#         return reverse_lazy("pay_list")
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         paypoint = self.get_object()
+#         context['patient'] = paypoint.patient
+#         context['service'] = paypoint.service
+#         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+#         return context
+
+#     def form_valid(self, form):
+#         form.instance.user = self.request.user
+#         paypoint = form.save(commit=False)
+        
+#         try:
+#             paypoint.save()
+#             messages.success(self.request, 'TRANSACTION SUCCESSFUL')
+#             return super().form_valid(form)
+#         except ValidationError as e:
+#             error_message = str(e)
+#             if "Insufficient funds" in error_message:
+#                 error_message = "Insufficient funds in the wallet. Please add funds and try again."
+#             form.add_error(None, error_message)
+#             return self.form_invalid(form)
+from django.db import transaction
+
 class PayUpdateView(UpdateView):
     model = Paypoint
     template_name = 'ehr/revenue/update_pay.html'
@@ -1193,12 +1228,17 @@ class PayUpdateView(UpdateView):
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context
 
+    @transaction.atomic
     def form_valid(self, form):
         form.instance.user = self.request.user
         paypoint = form.save(commit=False)
-        
         try:
             paypoint.save()
+
+            if paypoint.service.startswith("Surgery Bill:"):
+                wallet, created = Wallet.objects.get_or_create(patient=paypoint.patient)
+                wallet.add_funds(paypoint.price)
+
             messages.success(self.request, 'TRANSACTION SUCCESSFUL')
             return super().form_valid(form)
         except ValidationError as e:
@@ -1207,7 +1247,6 @@ class PayUpdateView(UpdateView):
                 error_message = "Insufficient funds in the wallet. Please add funds and try again."
             form.add_error(None, error_message)
             return self.form_invalid(form)
-
 
 class PayListView(ListView):
     model=Paypoint
