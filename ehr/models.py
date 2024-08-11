@@ -318,21 +318,30 @@ class MedicalRecord(models.Model):
 
 
 class PatientHandover(models.Model):
-    STATUS=[
+    STATUS = [
         ('waiting for payment', 'Waiting for Payment'),
-        ('f waiting for payment', 'F Waiting for Payment'),
+        ('waiting for follow up payment', 'Waiting for Follow Up Payment'),
         ('waiting for clinic assignment', 'Waiting for Clinic Assignment'),
         ('waiting for vital signs', 'Waiting for Vital Signs'),
         ('waiting for consultation', 'Waiting for Consultation'),
-        ('seen','Seen'),
-        ('awaiting review','Awaiting Review'),
+        ('seen', 'Seen'),
+        ('awaiting review', 'Awaiting Review'),
     ]
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
-    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True)
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True)
     nursing_desk = models.ForeignKey(NursingDesk, on_delete=models.SET_NULL, null=True, blank=True)
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.CharField(max_length=30, null=True,choices=STATUS)
-    updated = models.DateField(auto_now=True)
+    status = models.CharField(max_length=30, null=True, choices=STATUS)
+    updated = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Handover for {self.patient.file_no} in {self.clinic} - {self.status}"
+
+    def close_handover(self):
+        self.is_active = False
+        self.status = 'seen'
+        self.save()
 
     def __str__(self):
         return f"Handover for {self.patient.file_no} in {self.clinic} with {self.room} room"
