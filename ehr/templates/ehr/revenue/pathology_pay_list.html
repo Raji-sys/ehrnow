@@ -33,7 +33,7 @@
             Total: ₦{{ hema_total_worth|floatformat:2 }}
           </span>
         </div>
-        <div class="overflow-x-auto max-h-[50vh] overflow-y-auto">
+        <div class="max-h-[40vh] overflow-y-auto overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr class="">
@@ -69,6 +69,25 @@
                 <td colspan="4" class="p-3 text-center text-sm text-gray-500">No hematology transactions found</td>
               </tr>
               {% endfor %}
+              <tr class="">
+                <td></td>
+                <td class="p-1 text-center">        
+            <div class="pagination flex justify-center">
+                <span class="flex items-center">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1" class="p-1 rounded-lg bg-purple-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                    <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-purple-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                    {% endif %}
+                </span>
+                    <span class="flex item-center"> 
+                        {% if page_obj.has_next %}
+                        <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-purple-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                        <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-purple-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                        {% endif %}
+                    </span>
+                </div>
+            </td>
+          </tr>
             </tbody>
           </table>
         </div>
@@ -84,7 +103,7 @@
             Total: ₦{{ chem_total_worth|floatformat:2 }}
           </span>
         </div>
-        <div class="overflow-x-auto">
+        <div class="max-h-[40vh] overflow-y-auto overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
@@ -120,6 +139,25 @@
                 <td colspan="4" class="p-3 text-center text-sm text-gray-500">No chempath transactions found</td>
               </tr>
               {% endfor %}
+              <tr class="">
+                <td></td>
+                <td class="p-1 text-center">        
+            <div class="pagination flex justify-center">
+                <span class="flex items-center">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                    <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                    {% endif %}
+                </span>
+                    <span class="flex item-center"> 
+                        {% if page_obj.has_next %}
+                        <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                        <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                        {% endif %}
+                    </span>
+                </div>
+            </td>
+          </tr>
             </tbody>
           </table>
         </div>
@@ -135,7 +173,7 @@
             Total: ₦{{ micro_total_worth|floatformat:2 }}
           </span>
         </div>
-        <div class="overflow-x-auto">
+        <div class="max-h-[40vh] overflow-y-auto overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
@@ -171,6 +209,25 @@
                 <td colspan="4" class="p-3 text-center text-sm text-gray-500">No microbiology transactions found</td>
               </tr>
               {% endfor %}
+              <tr class="">
+                <td></td>
+                <td class="p-1 text-center">        
+            <div class="pagination flex justify-center">
+                <span class="flex items-center">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1" class="p-1 rounded-lg bg-cyan-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                    <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-cyan-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                    {% endif %}
+                </span>
+                    <span class="flex item-center"> 
+                        {% if page_obj.has_next %}
+                        <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-cyan-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                        <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-cyan-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                        {% endif %}
+                    </span>
+                </div>
+            </td>
+          </tr>
             </tbody>
           </table>
         </div>
@@ -186,7 +243,7 @@
             Total: ₦{{ serology_total_worth|floatformat:2 }}
           </span>
         </div>
-        <div class="overflow-x-auto">
+        <div class="max-h-[40vh] overflow-y-auto overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
@@ -222,33 +279,29 @@
                 <td colspan="4" class="p-3 text-center text-sm text-gray-500">No serology transactions found</td>
               </tr>
               {% endfor %}
-
+              <tr class="">
+                <td></td>
+                <td class="p-1 text-center">        
+            <div class="pagination flex justify-center">
+                <span class="flex items-center">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1" class="p-1 rounded-lg bg-fucshia-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                    <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-fucshia-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                    {% endif %}
+                </span>
+                    <span class="flex item-center"> 
+                        {% if page_obj.has_next %}
+                        <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-fucshia-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                        <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-fucshia-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                        {% endif %}
+                    </span>
+                </div>
+            </td>
+          </tr>
             </tbody>
           </table>
         </div>
       </div>
-  
     </div>
-
   </div>
-      <!-- Pagination Controls -->
-      <div class="pagination flex justify-center mt-4">
-        {% if hematology_pays.has_previous or chempath_pays.has_previous or micro_pays.has_previous or serology_pays.has_previous %}
-          <a href="?page=1" class="p-1 rounded-lg bg-purple-600 text-white mr-2">
-            <i class="fa-solid fa-angle-double-left fa-md"></i>
-          </a>
-          <a href="?page={{ hematology_pays.previous_page_number|default:1 }}" class="p-1 rounded-lg bg-purple-600 text-white">
-            <i class="fa-solid fa-angle-left fa-md"></i>
-          </a>
-        {% endif %}
-  
-        {% if hematology_pays.has_next or chempath_pays.has_next or micro_pays.has_next or serology_pays.has_next %}
-          <a href="?page={{ hematology_pays.next_page_number|default:1 }}" class="p-1 rounded-lg bg-purple-600 text-white mr-2">
-            <i class="fa-solid fa-angle-right fa-md"></i>
-          </a>
-          <a href="?page={{ hematology_pays.paginator.num_pages }}" class="p-1 rounded-lg bg-purple-600 text-white">
-            <i class="fa-solid fa-angle-double-right fa-md"></i>
-          </a>
-        {% endif %}
-      </div>
   {% endblock %}

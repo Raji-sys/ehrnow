@@ -1542,64 +1542,62 @@ def receipt_pdf(request):
     return HttpResponse(buffer, content_type='application/pdf')
 
 
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-
 class PathologyPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/pathology_pay_list.html'
-    paginate_by = 10  # Pagination rule applied to all tables
+    # context_object_name = 'hematology_pays'
+    paginate_by = 3
+
+    def get_queryset(self):
+        # We'll handle this in get_context_data
+        return Paypoint.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Function to paginate querysets
-        def paginate(queryset, page, per_page):
-            paginator = Paginator(queryset, per_page)
-            try:
-                return paginator.page(page)
-            except PageNotAnInteger:
-                return paginator.page(1)
-            except EmptyPage:
-                return paginator.page(paginator.num_pages)
 
-        # Get current page number
-        page = self.request.GET.get('page', 1)
-
-        # Querysets
         hematology_pays = Paypoint.objects.filter(hematology_result_payment__isnull=False).order_by('-updated')
         chempath_pays = Paypoint.objects.filter(chempath_result_payment__isnull=False).order_by('-updated')
         micro_pays = Paypoint.objects.filter(micro_result_payment__isnull=False).order_by('-updated')
         serology_pays = Paypoint.objects.filter(serology_result_payment__isnull=False).order_by('-updated')
+        # general_pays = Paypoint.objects.filter(general_result_payment__isnull=False).order_by('-updated')
 
-        # Paginate each queryset
-        context['hematology_pays'] = paginate(hematology_pays, page, self.paginate_by)
-        context['chempath_pays'] = paginate(chempath_pays, page, self.paginate_by)
-        context['micro_pays'] = paginate(micro_pays, page, self.paginate_by)
-        context['serology_pays'] = paginate(serology_pays, page, self.paginate_by)
+        hema_pay_total = hematology_pays.count()
+        hema_paid_transactions = hematology_pays.filter(status=True)
+        hema_total_worth = hema_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
 
-        # Calculate totals
-        context['hema_pay_total'] = hematology_pays.count()
-        context['hema_total_worth'] = hematology_pays.filter(status=True).aggregate(total_worth=Sum('price'))['total_worth'] or 0
-        
-        context['chem_pay_total'] = chempath_pays.count()
-        context['chem_total_worth'] = chempath_pays.filter(status=True).aggregate(total_worth=Sum('price'))['total_worth'] or 0
-        
-        context['micro_pay_total'] = micro_pays.count()
-        context['micro_total_worth'] = micro_pays.filter(status=True).aggregate(total_worth=Sum('price'))['total_worth'] or 0
-        
-        context['serology_pay_total'] = serology_pays.count()
-        context['serology_total_worth'] = serology_pays.filter(status=True).aggregate(total_worth=Sum('price'))['total_worth'] or 0
-        
+        chem_pay_total = chempath_pays.count()
+        chem_paid_transactions = chempath_pays.filter(status=True)
+        chem_total_worth = chem_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        micro_pay_total = micro_pays.count()
+        micro_paid_transactions = micro_pays.filter(status=True)
+        micro_total_worth = micro_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        serology_pay_total = serology_pays.count()
+        serology_paid_transactions = serology_pays.filter(status=True)
+        serology_total_worth = serology_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
         # Combined total worth
-        context['combined_total_worth'] = (
-            context['hema_total_worth'] +
-            context['chem_total_worth'] +
-            context['micro_total_worth'] +
-            context['serology_total_worth']
-        )
+        combined_total_worth = hema_total_worth + chem_total_worth + micro_total_worth + serology_total_worth
 
-        return context
+        context['hematology_pays'] = hematology_pays
+        context['chempath_pays'] = chempath_pays
+        context['micro_pays'] = micro_pays
+        context['serology_pays'] = serology_pays
 
+        context['hema_pay_total'] = hema_pay_total
+        context['chem_pay_total'] = chem_pay_total
+        context['micro_pay_total'] = micro_pay_total
+        context['serology_pay_total'] = serology_pay_total
+
+        context['hema_total_worth'] = hema_total_worth
+        context['chem_total_worth'] = chem_total_worth
+        context['micro_total_worth'] = micro_total_worth
+        context['serology_total_worth'] = serology_total_worth
+        # context['general_total_worth'] = general_total_worth
+        
+        context['combined_total_worth'] = combined_total_worth
+        return context  
 
 
 class RadiologyPayListView(ListView):
