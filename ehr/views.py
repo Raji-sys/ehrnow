@@ -714,6 +714,7 @@ class PatientFolderView(DetailView):
         context['theatre_operation_record'] = patient.theatre_operation_record.all().order_by('-updated')
         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
         context['private_bill'] = patient.private_bill.all().order_by('-created')
+        context['archive'] = patient.patient_archive.all().order_by('-updated')
 
  # Check if the patient has a wallet
         if hasattr(patient, 'wallet'):
@@ -2536,3 +2537,37 @@ class TheatreOperationRecordListView(DoctorRequiredMixin, ListView):
         context['theatreOpFilter'] = TheatreOperationRecordFilter(self.request.GET, queryset=self.get_queryset())
         
         return context
+
+
+class ArchiveCreateView(CreateView):
+    model=Archive
+    template_name='ehr/archive_form.html'
+    form_class=ArchiveForm
+
+    def form_valid(self, form):
+        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        self.object = form.save()
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        messages.success(self.request, 'RECORD ADDED')
+        return self.object.patient.get_absolute_url()
+
+
+class ArchiveUpdateView(UpdateView):
+    model=Archive
+    template_name='ehr/archive_form.html'
+    form_class=ArchiveForm
+    
+    def get_success_url(self):
+        messages.success(self.request, 'RECORD UPDATED ADDED')
+        return self.object.patient.get_absolute_url()
+
+
+class ArchiveDeleteView(DeleteView):
+    model = Archive
+    template_name = 'ehr/confirm_delete.html'
+
+    def get_success_url(self):
+        messages.success(self.request, 'File deleted successfully.')
+        return self.object.patient.get_absolute_url()

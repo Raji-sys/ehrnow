@@ -249,3 +249,10 @@ class ImplantAdmin(admin.ModelAdmin):
     list_display = ('name','cost','updated')
     search_fields = ('name','cost','updated')
     list_filter = ('name','cost','updated')
+
+
+@admin.register(Archive)
+class ArchiveAdmin(admin.ModelAdmin):
+    list_display = ('title','file','updated')
+    search_fields = ('title','file','updated')
+    list_filter = ('title','updated')

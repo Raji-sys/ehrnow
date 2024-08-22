@@ -10,6 +10,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import transaction
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
+
 
 class SerialNumberField(models.CharField):
     description = "A unique serial number field with leading zeros"
@@ -804,3 +806,18 @@ class ImplantUsage(models.Model):
     surgical_record = models.ForeignKey(TheatreOperationRecord, on_delete=models.CASCADE)
     implant = models.ForeignKey(Implant, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+
+import os
+
+class Archive(models.Model):
+    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name='patient_archive')
+    title = models.CharField(max_length=255,null=True)
+    file = models.FileField(upload_to='patient_files/',validators=[FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'jpeg', 'png'])],null=True)
+    updated = models.DateTimeField(auto_now=True,null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.title:
+            self.title = os.path.splitext(os.path.basename(self.file.name))[0]
+        super().save(*args, **kwargs)
+    def __str__(self):
+        return self.title

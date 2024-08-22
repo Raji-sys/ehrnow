@@ -153,4 +153,7 @@ urlpatterns = [
     path('patient/<int:patient_pk>/fund-wallet/', FundWalletView.as_view(), name='fund_wallet'),
     path('revenue/wallet/transactions/', AllTransactionsListView.as_view(), name='all_transactions'),
     # path('patient/<str:file_no>/transactions/', PatientTransactionsListView.as_view(), name='patient_transactions'),
+    path('patient/add-archive/<str:file_no>/',ArchiveCreateView.as_view(),name='new_archive'),
+    path('patient/updated-archive/<int:pk>/',ArchiveUpdateView.as_view(),name='update_archive'),
+    path('patient/delete-archive/<int:pk>/', ArchiveDeleteView.as_view(), name='delete_archive'),
 ]
