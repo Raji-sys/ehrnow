@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "chart.js": "^4.4.4",
     "cornerstone-tools": "^6.0.10",
     "dicom-web-viewer": "^0.1.2"
   }

@@ -1,192 +1,223 @@
-{%extends "base.html" %}
-<h1>Stats</h1>
-{% block title %}stats{% endblock%}
-{%block page_title%}
-<div class="flex justify-center items-end"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT PERSONAL STATISTICS</div>
- {%endblock%}
+{% extends "base.html" %}
+{% block title %}stats{% endblock %}
+{% block page_title %}
+<div class="flex justify-center items-end">
+    <a href="{% url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT PERSONAL STATISTICS
+</div>
+{% endblock %}
 
- {% block content %}
-<div class="flex md:justify-center justify-start items-center bg-stone-100 shadow-sm shadow-black md:mx-20 mx-2 md:p-8 p-2 md:mt-10 mt-2 rounded-xl">
-<div class="grid md:grid-cols-5 md:gap-24 grid-cols-1 gap-4">
-<div>
-<details> 
-    <summary class="bg-cyan-600 p-2 text-white text-center text-sm rounded-md w-fit">GENDER</summary>
-    <div class="overflow-x-auto px-1 md:px-10 m-4 uppercase">
-    <table class="md:justify-center justify-start table-auto m-2 max-sm:flex p-2">
-        <tbody class="uppercase text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-cyan-600 bg-white">
-            <tr class=" text-xs">
-              {%for g in gender_counts %}
-            <th scope="col" class="border-2 p-2 ">{{g.gender}}</th>
-            <th class="border-2 p-2 text-center">{{g.pc}}</th>
-            {% endfor %}
-          </tr>
-        </tbody>
-    </table>
+{% block content %}
+<div class="bg-stone-100 shadow-sm shadow-black mx-4 md:mx-20 p-4 mt-10 rounded-xl">
+    <div class="overflow-y-auto max-h-[75vh] pr-4">
+        <div class="flex flex-wrap justify-center items-start">
+            <!-- Gender Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="genderChart"></canvas>
+                <div id="genderTable" class="mt-4"></div>
+            </div>
+            <!-- Geopolitical Zone Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="geoChart"></canvas>
+                <div id="geoTable" class="mt-4"></div>
+            </div>
+            <!-- State of Origin Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="stateChart"></canvas>
+                <div id="stateTable" class="mt-4"></div>
+            </div>
+            <!-- Religion Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="religionChart"></canvas>
+                <div id="religionTable" class="mt-4"></div>
+            </div>
+            <!-- Marital Status Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="maritalStatusChart"></canvas>
+                <div id="maritalStatusTable" class="mt-4"></div>
+            </div>
+            <!-- Nationality Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="nationalityChart"></canvas>
+                <div id="nationalityTable" class="mt-4"></div>
+            </div>
+            <!-- Occupation Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="occupationChart"></canvas>
+                <div id="occupationTable" class="mt-4"></div>
+            </div>
+            <!-- Role in Occupation Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="roleInOccupationChart"></canvas>
+                <div id="roleInOccupationTable" class="mt-4"></div>
+            </div>
+            <!-- LGA Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="lgaChart"></canvas>
+                <div id="lgaTable" class="mt-4"></div>
+            </div>
+            <!-- Address Chart and Table -->
+            <div class="w-full md:w-1/2 lg:w-1/3 p-4">
+                <canvas id="addressChart"></canvas>
+                <div id="addressTable" class="mt-4"></div>
+            </div>
+        </div>
     </div>
-</details>
-</div>
-<div>
-    <details>
-        <summary class="bg-blue-600 p-2 text-white text-sm rounded-md w-fit text-center">GEO-POLITICAL ZONE</summary>
-        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-    <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-blue-700 bg-white">
-            <tr class=" text-xs">
-            {%for gz in geo_counts %}
-            <th scope="col" class="border-2 p-2 ">{{gz.zone}}</th>
-            <td class="border-2 p-2 text-center">{{gz.pc}}</td>
-            {%endfor%}
-        </tr>
-        </tbody>
-    </table>
-    </div>
-    </details>
 </div>
 
-<div>
-    <details>
-        <summary class=" bg-amber-600 p-2 text-white  text-sm rounded-md w-fit text-center">STATE OF ORIGIN</summary>
-        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-            <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-amber-600 bg-white">
-            <tr class=" text-xs">
-                {%for s in state_counts %}
-            <th scope="col" class="border-2 p-2 ">{{s.state}}</th>
-            <td class="border-2 p-2 text-center">{{s.pc}}</td>
-            {%endfor%}
-        </tr>
-        </tbody>
-    </table>
-    </div>
-    </details>
-</div>
+<script>
+// Function to create a chart
+function createChart(ctx, type, labels, data, title) {
+    return new Chart(ctx, {
+        type: type,
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: title
+                }
+            }
+        }
+    });
+}
 
-<div>
-    <details>
-        <summary class=" bg-cyan-800 p-2 text-white  text-sm rounded-md w-fit text-center">LGA</summary>
-        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-    <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-cyan-800 bg-white">
-            <tr class=" text-xs">
-                {%for l in lga_counts%}
-            <th scope="col" class="border-2 p-2 ">{{l.lga}}</th>
-            <td class="border-2 p-2 text-center">{{l.pc}}</td>
-            {%endfor%}
+// Function to create a table
+function createTable(data, labels, containerId) {
+    const container = document.getElementById(containerId);
+    const table = document.createElement('table');
+    table.className = 'w-full text-xs text-center text-gray-500';
+    
+    const thead = document.createElement('thead');
+    thead.className = 'text-xs text-gray-700 uppercase bg-gray-50';
+    thead.innerHTML = `
+        <tr>
+            <th scope="col" class="p-2">Category</th>
+            <th scope="col" class="p-2">Count</th>
         </tr>
-        </tbody>
-    </table>
-    </div>
-    </details>    
-</div>
+    `;
+    table.appendChild(thead);
 
-<div>
-    <details>
-        <summary class=" bg-teal-400 p-2 text-white  text-sm rounded-md w-fit text-center">RELIGION</summary>
-        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-teal-400 bg-white">
-            <tr class=" text-xs">
-                {%for r in religion_counts %}
-            <th scope="col" class="border-2 p-2 ">{{r.religion}}</th>
-            <td class="border-2 p-2 text-center">{{r.pc}}</td>
-            {%endfor%}
-        </tr>
-        </tbody>
-    </table>
-    </div>
-</details>    
-</div>
+    const tbody = document.createElement('tbody');
+    for (let i = 0; i < labels.length; i++) {
+        const tr = document.createElement('tr');
+        tr.className = 'bg-white border-b';
+        tr.innerHTML = `
+            <td class="p-2">${labels[i]}</td>
+            <td class="p-2">${data[i]}</td>
+        `;
+        tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
 
-<div>
-    <details>
-        <summary class=" bg-orange-500 p-2 text-white  text-sm rounded-md w-fit text-center">MARITAL STATUS</summary>
-        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-orange-500 bg-white">
-            <tr class=" text-xs">
-            {%for m in marital_status_counts %}
-            <th scope="col" class="border-2 p-2 ">{{m.marital_status}}</th>
-            <td class="border-2 p-2 text-center">{{m.pc}}</td>
-            {%endfor%}
-        </tr>
-        </tbody>
-    </table>
-    </div>
-</details>    
-</div>
+    container.appendChild(table);
+}
 
-<div>
-    <details>
-        <summary class=" bg-green-500 p-2 text-white  text-sm rounded-md w-fit text-center">NATIONALITY</summary>
-        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-green-500 bg-white">
-            <tr class=" text-xs">
-                {%for n in nationality_counts %}
-            <th scope="col" class="border-2 p-2 ">{{n.nationality}}</th>
-            <td class="border-2 p-2 text-center">{{n.pc}}</td>
-            {%endfor%}
-        </tr>
-        </tbody>
-    </table>
-    </div>
-</details>    
-</div>
+// Function to safely parse JSON data
+function safeJSONParse(data) {
+    try {
+        return JSON.parse(data.replace(/&quot;/g, '"'));
+    } catch (e) {
+        console.error("Error parsing JSON:", e);
+        return [];
+    }
+}
 
-<div>
-    <details>
-        <summary class=" bg-purple-600 p-2 text-white  text-sm rounded-md w-fit text-center">OCCUPATION</summary>
-        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-            <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
-                <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-purple-600 bg-white">
-                    <tr class=" text-xs">
-                {%for c in occupation_counts%}
-                <th scope="col" class="border-2 p-2 ">{{c.occupation}}</th>
-            <td class="border-2 p-2 text-center">{{c.pc}}</td>
-            {%endfor%}
-        </tr>
-        </tbody>
-    </table>
-</div>
-</details>    
-</div>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gender Chart and Table
+    const genderData = safeJSONParse('{{ gender_data|escapejs }}');
+    const genderLabels = safeJSONParse('{{ gender_labels|escapejs }}');
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
+    createChart(genderCtx, 'pie', genderLabels, genderData, 'Gender Distribution');
+    createTable(genderData, genderLabels, 'genderTable');
 
-<div>
-    <details>
-        <summary class=" bg-red-600 p-2 text-white  text-sm rounded-md w-fit text-center">ROLE IN OCCUPATION</summary>
-        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-    <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-red-600 bg-white">
-            <tr class=" text-xs">
-                {%for r in role_in_occupation_counts %}
-            <th scope="col" class="border-2 p-2 ">{{r.role_in_occupation}}</th>
-            <td class="border-2 p-2 text-center">{{r.pc}}</td>
-            {%endfor%}
-        </tr>
-        </tbody>
-    </table>
-    </div>
-    </details>    
-</div>
+    // Geopolitical Zone Chart and Table
+    const geoData = safeJSONParse('{{ geo_data|escapejs }}');
+    const geoLabels = safeJSONParse('{{ geo_labels|escapejs }}');
+    const geoCtx = document.getElementById('geoChart').getContext('2d');
+    createChart(geoCtx, 'bar', geoLabels, geoData, 'Geopolitical Zone Distribution');
+    createTable(geoData, geoLabels, 'geoTable');
 
-<div>
-    <details>
-        <summary class=" bg-teal-600 p-2 text-white  text-sm rounded-md w-fit text-center">ADDRESS</summary>
-        <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-    <table class="md:justify-center justify-start table-auto  m-2 max-sm:flex p-2">
-        <tbody class="uppercase  text-xs rounded-lg max-sm:p-16 p-4 overflow-x-auto mx-0 text-teal-600 bg-white">
-            <tr class=" text-xs">
-                {%for a in address_counts %}
-            <th scope="col" class="border-2 p-2 ">{{a.address}}</th>
-            <td class="border-2 p-2 text-center">{{a.pc}}</td>
-            {%endfor%}
-        </tr>
-        </tbody>
-    </table>
-    </div>
-    </details>    
-</div>
+    // State of Origin Chart and Table
+    const stateData = safeJSONParse('{{ state_data|escapejs }}');
+    const stateLabels = safeJSONParse('{{ state_labels|escapejs }}');
+    const stateCtx = document.getElementById('stateChart').getContext('2d');
+    createChart(stateCtx, 'doughnut', stateLabels, stateData, 'State of Origin Distribution');
+    createTable(stateData, stateLabels, 'stateTable');
 
-</div>
-<div>
+    // Religion Chart and Table
+    const religionData = safeJSONParse('{{ religion_data|escapejs }}');
+    const religionLabels = safeJSONParse('{{ religion_labels|escapejs }}');
+    const religionCtx = document.getElementById('religionChart').getContext('2d');
+    createChart(religionCtx, 'bar', religionLabels, religionData, 'Religion Distribution');
+    createTable(religionData, religionLabels, 'religionTable');
+
+    // Marital Status Chart and Table
+    const maritalStatusData = safeJSONParse('{{ marital_status_data|escapejs }}');
+    const maritalStatusLabels = safeJSONParse('{{ marital_status_labels|escapejs }}');
+    const maritalStatusCtx = document.getElementById('maritalStatusChart').getContext('2d');
+    createChart(maritalStatusCtx, 'pie', maritalStatusLabels, maritalStatusData, 'Marital Status Distribution');
+    createTable(maritalStatusData, maritalStatusLabels, 'maritalStatusTable');
+
+    // Nationality Chart and Table
+    const nationalityData = safeJSONParse('{{ nationality_data|escapejs }}');
+    const nationalityLabels = safeJSONParse('{{ nationality_labels|escapejs }}');
+    const nationalityCtx = document.getElementById('nationalityChart').getContext('2d');
+    createChart(nationalityCtx, 'doughnut', nationalityLabels, nationalityData, 'Nationality Distribution');
+    createTable(nationalityData, nationalityLabels, 'nationalityTable');
+
+    // Occupation Chart and Table
+    const occupationData = safeJSONParse('{{ occupation_data|escapejs }}');
+    const occupationLabels = safeJSONParse('{{ occupation_labels|escapejs }}');
+    const occupationCtx = document.getElementById('occupationChart').getContext('2d');
+    createChart(occupationCtx, 'bar', occupationLabels, occupationData, 'Occupation Distribution');
+    createTable(occupationData, occupationLabels, 'occupationTable');
+
+    // Role in Occupation Chart and Table
+    const roleInOccupationData = safeJSONParse('{{ role_in_occupation_data|escapejs }}');
+    const roleInOccupationLabels = safeJSONParse('{{ role_in_occupation_labels|escapejs }}');
+    const roleInOccupationCtx = document.getElementById('roleInOccupationChart').getContext('2d');
+    createChart(roleInOccupationCtx, 'pie', roleInOccupationLabels, roleInOccupationData, 'Role in Occupation Distribution');
+    createTable(roleInOccupationData, roleInOccupationLabels, 'roleInOccupationTable');
+
+    // LGA Chart and Table
+    const lgaData = safeJSONParse('{{ lga_data|escapejs }}');
+    const lgaLabels = safeJSONParse('{{ lga_labels|escapejs }}');
+    const lgaCtx = document.getElementById('lgaChart').getContext('2d');
+    createChart(lgaCtx, 'doughnut', lgaLabels, lgaData, 'LGA Distribution');
+    createTable(lgaData, lgaLabels, 'lgaTable');
+
+    // Address Chart and Table
+    const addressData = safeJSONParse('{{ address_data|escapejs }}');
+    const addressLabels = safeJSONParse('{{ address_labels|escapejs }}');
+    const addressCtx = document.getElementById('addressChart').getContext('2d');
+    createChart(addressCtx, 'bar', addressLabels, addressData, 'Address Distribution');
+    createTable(addressData, addressLabels, 'addressTable');
+});
+</script>
 {% endblock %}

@@ -82,6 +82,7 @@ urlpatterns = [
     
     #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
+    path('nursing-station/follow-up/vital_signs/<str:file_no>/', FollowUpVitalSignCreateView.as_view(), name='follow_up_vital_signs'),
     path('nursing-desks/', NursingDeskListView.as_view(), name='nursing_desks_list'),
     path('nursing-station/<int:pk>/', NursingStationDetailView.as_view(), name='nursing_station_detail'),
     # AE

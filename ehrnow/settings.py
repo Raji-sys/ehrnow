@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django_quill',
     'pathology',
     'pharm',
+    'chartjs',
 ]
 
 MIDDLEWARE = [

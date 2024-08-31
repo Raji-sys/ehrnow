@@ -645,35 +645,71 @@ def clinic_handover_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientStatsView(TemplateView):
     template_name = 'ehr/record/stats.html'
 
     def get_context_data(self, **kwargs):
-        context=super().get_context_data(**kwargs)
-        pc = PatientData.objects.all().count()
-        gender_counts = PatientData.objects.values('gender').annotate(pc=Count('id'))
-        geo_counts = PatientData.objects.values('zone').annotate(pc=Count('id'))
-        state_counts = PatientData.objects.values('state').annotate(pc=Count('id'))
-        lga_counts = PatientData.objects.values('lga').annotate(pc=Count('id'))
-        religion_counts = PatientData.objects.values('religion').annotate(pc=Count('id'))
-        marital_status_counts = PatientData.objects.values('marital_status').annotate(pc=Count('id'))
-        nationality_counts = PatientData.objects.values('nationality').annotate(pc=Count('id'))
-        occupation_counts = PatientData.objects.values('occupation').annotate(pc=Count('id'))
-        role_in_occupation_counts = PatientData.objects.values('role_in_occupation').annotate(pc=Count('id'))
-        address_counts = PatientData.objects.values('address').annotate(pc=Count('id'))
-        context['pc'] = pc
-        context['gender_counts'] = gender_counts
-        context['geo_counts'] = geo_counts
-        context['state_counts'] = state_counts
-        context['lga_counts'] = lga_counts
-        context['religion_counts'] = religion_counts
-        context['marital_status_counts'] = marital_status_counts
-        context['nationality_counts'] = nationality_counts
-        context['occupation_counts'] = occupation_counts
-        context['role_in_occupation_counts'] = role_in_occupation_counts
-        context['address_counts'] = address_counts
+        context = super().get_context_data(**kwargs)
+
+        # Existing context data
+        context['pc'] = PatientData.objects.all().count()
+        context['gender_counts'] = PatientData.objects.values('gender').annotate(pc=Count('id'))
+        context['geo_counts'] = PatientData.objects.values('zone').annotate(pc=Count('id'))
+        context['state_counts'] = PatientData.objects.values('state').annotate(pc=Count('id'))
+        context['lga_counts'] = PatientData.objects.values('lga').annotate(pc=Count('id'))
+        context['religion_counts'] = PatientData.objects.values('religion').annotate(pc=Count('id'))
+        context['marital_status_counts'] = PatientData.objects.values('marital_status').annotate(pc=Count('id'))
+        context['nationality_counts'] = PatientData.objects.values('nationality').annotate(pc=Count('id'))
+        context['occupation_counts'] = PatientData.objects.values('occupation').annotate(pc=Count('id'))
+        context['role_in_occupation_counts'] = PatientData.objects.values('role_in_occupation').annotate(pc=Count('id'))
+        context['address_counts'] = PatientData.objects.values('address').annotate(pc=Count('id'))
+
+        # Data for charts
+        gender_counts = list(context['gender_counts'])
+        geo_counts = list(context['geo_counts'])
+        state_counts = list(context['state_counts'])
+        lga_counts = list(context['lga_counts'])
+        religion_counts = list(context['religion_counts'])
+        marital_status_counts = list(context['marital_status_counts'])
+        nationality_counts = list(context['nationality_counts'])
+        occupation_counts = list(context['occupation_counts'])
+        role_in_occupation_counts = list(context['role_in_occupation_counts'])
+        address_counts = list(context['address_counts'])
+
+        context.update({
+            'gender_labels': json.dumps([g['gender'] for g in gender_counts], cls=DjangoJSONEncoder),
+            'gender_data': json.dumps([g['pc'] for g in gender_counts], cls=DjangoJSONEncoder),
+            'geo_labels': json.dumps([gz['zone'] for gz in geo_counts], cls=DjangoJSONEncoder),
+            'geo_data': json.dumps([gz['pc'] for gz in geo_counts], cls=DjangoJSONEncoder),
+            'state_labels': json.dumps([s['state'] for s in state_counts], cls=DjangoJSONEncoder),
+            'state_data': json.dumps([s['pc'] for s in state_counts], cls=DjangoJSONEncoder),
+            'religion_labels': json.dumps([r['religion'] for r in religion_counts], cls=DjangoJSONEncoder),
+            'religion_data': json.dumps([r['pc'] for r in religion_counts], cls=DjangoJSONEncoder),
+            'marital_status_labels': json.dumps([m['marital_status'] for m in marital_status_counts], cls=DjangoJSONEncoder),
+            'marital_status_data': json.dumps([m['pc'] for m in marital_status_counts], cls=DjangoJSONEncoder),
+            'nationality_labels': json.dumps([n['nationality'] for n in nationality_counts], cls=DjangoJSONEncoder),
+            'nationality_data': json.dumps([n['pc'] for n in nationality_counts], cls=DjangoJSONEncoder),
+            'occupation_labels': json.dumps([o['occupation'] for o in occupation_counts], cls=DjangoJSONEncoder),
+            'occupation_data': json.dumps([o['pc'] for o in occupation_counts], cls=DjangoJSONEncoder),
+            'role_in_occupation_labels': json.dumps([r['role_in_occupation'] for r in role_in_occupation_counts], cls=DjangoJSONEncoder),
+            'role_in_occupation_data': json.dumps([r['pc'] for r in role_in_occupation_counts], cls=DjangoJSONEncoder),
+            'lga_labels': json.dumps([l['lga'] for l in lga_counts], cls=DjangoJSONEncoder),
+            'lga_data': json.dumps([l['pc'] for l in lga_counts], cls=DjangoJSONEncoder),
+            'address_labels': json.dumps([a['address'] for a in address_counts], cls=DjangoJSONEncoder),
+            'address_data': json.dumps([a['pc'] for a in address_counts], cls=DjangoJSONEncoder),
+        })
+
         return context
+
+
     
     
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -954,6 +990,7 @@ class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
             messages.error(self.request, 'No valid handover found for this patient.')
             return self.form_invalid(form)
 
+
 class NursingStationDetailView(DetailView):
     model = NursingDesk
     template_name = 'ehr/nurse/nursing_station.html'
@@ -961,12 +998,22 @@ class NursingStationDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['handovers'] = PatientHandover.objects.filter(
+        handovers = PatientHandover.objects.filter(
             nursing_desk=self.object,
             status='waiting for vital signs',
             is_active=True,
         )
+
+        # Add a property to determine the correct URL for each handover
+        for handover in handovers:
+            if FollowUpVisit.objects.filter(patient=handover.patient).exists():
+                handover.vitals_url = 'follow_up_vital_signs'
+            else:
+                handover.vitals_url = 'vital_signs'
+
+        context['handovers'] = handovers
         return context
+
 
 class NursingDeskListView(ListView):
     model = NursingDesk
@@ -979,38 +1026,6 @@ class NursingDeskListView(ListView):
             desk.patient_count = desk.patienthandover_set.filter(status='waiting for vital signs').count()
         return queryset
 
-# class VitalSignCreateView(NurseRequiredMixin, CreateView):
-#     model = VitalSigns
-#     form_class = VitalSignsForm
-#     template_name = 'ehr/nurse/vital_signs.html'
-#     success_url = reverse_lazy('nursing_desks_list')
-
-#     def get_form_kwargs(self):
-#         kwargs = super().get_form_kwargs()
-#         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-#         kwargs['clinic'] = patient_data.clinic
-#         return kwargs
-
-#     def form_valid(self, form):
-#         form.instance.user = self.request.user
-#         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-#         form.instance.patient = patient_data
-#         form.instance.clinic = patient_data.clinic
-#         room = form.cleaned_data.get('room')
-#         self.object = form.save()
-
-#         handover = get_object_or_404(PatientHandover, patient=patient_data, status='waiting for vital signs')
-#         handover.status = 'waiting for consultation'
-#         handover.room = room
-#         handover.save()
-
-#         messages.success(self.request, 'Vital signs recorded and patient assigned to room.')
-#         return super().form_valid(form)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-#         return context
 
 class VitalSignCreateView(NurseRequiredMixin, CreateView):
     model = VitalSigns
@@ -1021,13 +1036,12 @@ class VitalSignCreateView(NurseRequiredMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        kwargs['clinic'] = patient_data.clinic
+        clinic = patient_data.clinic
+        kwargs['clinic'] = clinic
         return kwargs
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        room = form.cleaned_data.get('room')
-        self.object = form.save()
         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         form.instance.patient = patient_data
         form.instance.clinic = patient_data.clinic
@@ -1055,44 +1069,53 @@ class VitalSignCreateView(NurseRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         return context
+
+
+class FollowUpVitalSignCreateView(NurseRequiredMixin, CreateView):
+    model = VitalSigns
+    form_class = FollowUpVitalSignsForm
+    template_name = 'ehr/nurse/follow_up_vital_signs.html'
+    success_url = reverse_lazy('nursing_desks_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        patient_data = get_object_or_404(FollowUpVisit, patient__file_no=self.kwargs['file_no'])
+        clinic = patient_data.clinic
+        kwargs['clinic'] = clinic
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        patient_data = get_object_or_404(FollowUpVisit, patient__file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data.patient  # Assign the actual PatientData instance
+        form.instance.clinic = patient_data.clinic
+        room = form.cleaned_data.get('room')
+        self.object = form.save()
+
+        # Get the most recent active handover for this patient
+        handover = PatientHandover.objects.filter(
+            patient=patient_data.patient,  # Use the actual PatientData instance
+            is_active=True,
+            status='waiting for vital signs'
+        ).order_by('-updated').first()
+
+        if handover:
+            handover.status = 'waiting for consultation'
+            handover.room = room
+            handover.save()
+            messages.success(self.request, 'Vital signs recorded and patient assigned to room.')
+        else:
+            messages.success(self.request, 'Vital signs recorded. New handover created for consultation.')
+
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = get_object_or_404(FollowUpVisit, patient__file_no=self.kwargs['file_no']).patient
+        return context
+
+
     
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
-#     model = ClinicalNote
-#     form_class = ClinicalNoteForm
-#     template_name = 'ehr/doctor/clinical_note.html'
-
-#     def form_valid(self, form):
-#         form.instance.user = self.request.user
-#         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-#         form.instance.patient = patient_data
-#         self.object = form.save()
-
-#         # Update or create PatientHandover
-#         handover, created = PatientHandover.objects.get_or_create(
-#             patient=patient_data,
-#             clinic=patient_data.clinic,
-#             defaults={'status': 'seen'}
-#         )
-
-#         # Update status based on needs_review
-#         if form.instance.needs_review:
-#             handover.status = 'awaiting review'
-#         else:
-#             handover.status = 'seen'
-        
-#         handover.save()
-
-#         messages.success(self.request, 'Clinical note created and patient status updated.')
-#         return super().form_valid(form)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-#         return context
-
-#     def get_success_url(self):
-#         return self.object.patient.get_absolute_url()
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
     model = ClinicalNote

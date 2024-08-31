@@ -89,11 +89,17 @@ class VitalSignsForm(forms.ModelForm):
         clinic = kwargs.pop('clinic', None)
         super(VitalSignsForm, self).__init__(*args, **kwargs)
         if clinic:
+            print(f"Filtering rooms by clinic: {clinic}")
             self.fields['room'].queryset = Room.objects.filter(clinic=clinic)
+        else:
+            print("No clinic passed to form.")
+
+        # Additional customization of fields' widgets
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
+
 
 class FollowUpVitalSignsForm(forms.ModelForm):
     class Meta:
@@ -101,18 +107,22 @@ class FollowUpVitalSignsForm(forms.ModelForm):
         fields = [
             'body_temperature', 'pulse_rate', 'respiration_rate',
             'blood_pressure', 'blood_oxygen', 'blood_glucose',
-            'weight', 'height','handover_room',
+            'weight', 'height','room',
         ]
-    handover_room = forms.ChoiceField(choices=[
-        ('ROOM 1', 'ROOM 1'),
-        ('ROOM 2', 'ROOM 2')
-    ])
+    
     def __init__(self, *args, **kwargs):
+        clinic = kwargs.pop('clinic', None)
         super(FollowUpVitalSignsForm, self).__init__(*args, **kwargs)
+        if clinic:
+            print(f"Filtering rooms by clinic: {clinic}")
+            self.fields['room'].queryset = Room.objects.filter(clinic=clinic)
+        else:
+            print("No clinic passed to form.")
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
+
 
 
 class AppointmentForm(forms.ModelForm):

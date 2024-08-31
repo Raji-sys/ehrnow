@@ -42,37 +42,36 @@ class Clinic(models.Model):
 
     def get_absolute_url(self):
         return reverse('clinic_details', args=[self.name])
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-        if is_new:
-            NursingDesk.objects.create(clinic=self)
 
     def __str__(self):
-        if self.name:
-            return f"{self.name}"
+        return f"{self.name}" if self.name else "unnamed"
 
 class NursingDesk(models.Model):
     clinic = models.OneToOneField(Clinic, on_delete=models.CASCADE, related_name='nursing_desk')
 
     def get_absolute_url(self):
-        return reverse('nursing_details', args=[self.clinic])
+        return reverse('nursing_details', args=[self.clinic.pk])
 
     def __str__(self):
-        if self.clinic:
-            return f"{self.clinic} nursing desk"
+        return f"{self.clinic} nursing desk" if self.clinic else ""
 
-    
 class Room(models.Model):
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='consultation_rooms',null=True,blank=True)
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='consultation_rooms', null=True, blank=True)
     name = models.CharField(null=True, blank=True, max_length=200)
-    
+
     def get_absolute_url(self):
-        return reverse('room_details', args=[self.name])
+        return reverse('room_details', args=[self.pk])
 
     def __str__(self):
-        if self.name:
-            return f"{self.name}"
+        return f"{self.name}" if self.name else ""
+
+@receiver(post_save, sender=Clinic)
+def create_clinic_related_objects(sender, instance, created, **kwargs):
+    if created:
+        NursingDesk.objects.create(clinic=instance)
+        for i in range(1, 5):
+            Room.objects.create(clinic=instance, name=f"Room {i}")
+
 
 class Ward(models.Model):
     name = models.CharField(null=True, blank=True, max_length=200)
@@ -128,7 +127,6 @@ class Profile(models.Model):
             return f"{self.full_name()}"
 
         
-    
 class PatientData(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
@@ -245,9 +243,10 @@ class PatientData(models.Model):
     
     def __str__(self):
         return self.full_name()
-    
+
     def create_wallet(self):
         Wallet.objects.get_or_create(patient=self)
+
 
 @receiver(post_save, sender=PatientData)
 def create_patient_wallet(sender, instance, created, **kwargs):
