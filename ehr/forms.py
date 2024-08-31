@@ -188,7 +188,7 @@ class PayForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PayForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
-            # field.required=True
+            field.required=True
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
@@ -201,7 +201,7 @@ class PayUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PayUpdateForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
-            # field.required=True
+            field.required=True
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
             

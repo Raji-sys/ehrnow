@@ -710,8 +710,6 @@ class PatientStatsView(TemplateView):
         return context
 
 
-    
-    
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientFolderView(DetailView):
     template_name = 'ehr/record/patient_folder.html'
@@ -752,7 +750,7 @@ class PatientFolderView(DetailView):
         context['private_bill'] = patient.private_bill.all().order_by('-created')
         context['archive'] = patient.patient_archive.all().order_by('-updated')
 
- # Check if the patient has a wallet
+         # Check if the patient has a wallet
         if hasattr(patient, 'wallet'):
             # Retrieve wallet transactions
             context['wallet'] = patient.wallet.transactions.all().order_by('-created_at')
@@ -863,7 +861,13 @@ class PaypointView(RevenueRequiredMixin, CreateView):
         patient = get_object_or_404(PatientData, file_no=file_no)
         handover = patient.handovers.filter(clinic=patient.clinic, status='waiting for payment').first()
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-        
+                # Add wallet balance to context
+        try:
+            wallet = patient.wallet
+            context['wallet_balance'] = wallet.balance()
+        except Wallet.DoesNotExist:
+            context['wallet_balance'] = 0
+
         if handover:
             context['patient'] = patient
             context['handover'] = handover
@@ -890,6 +894,21 @@ class PaypointView(RevenueRequiredMixin, CreateView):
             service = MedicalRecord.objects.get(name='new registration')
             payment.service = service.name
             payment.price = service.price
+            # Check payment method
+            if payment.payment_method == 'WALLET':
+                try:
+                    wallet = patient.wallet
+                    if wallet.balance() < payment.price:
+                        messages.error(self.request, 'Insufficient funds in wallet.')
+                        return self.form_invalid(form)
+                    wallet.deduct_funds(payment.price, payment.service)
+                except Wallet.DoesNotExist:
+                    messages.error(self.request, 'Patient does not have a wallet.')
+                    return self.form_invalid(form)
+                except ValidationError as e:
+                    messages.error(self.request, f'Wallet error: {str(e)}')
+                    return self.form_invalid(form)
+
             payment.save()
             
             # Update handover status to 'waiting for vital signs'
