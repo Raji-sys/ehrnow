@@ -29,7 +29,7 @@ urlpatterns = [
     path('get-started/theatre', TheatreListView.as_view(), name='theatre'),
  
     path('get-started/ward/', WardListView.as_view(), name='ward_list'),
-    path('get-started/audit', AuditView.as_view(), name='audit'),
+    path('get-started/data', AuditView.as_view(), name='data'),
     path('get-started/store', StoreView.as_view(), name='store'),
 
     # Record URLs

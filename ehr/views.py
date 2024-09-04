@@ -99,11 +99,9 @@ def fetch_resources(uri, rel):
     Handles fetching static and media resources when generating the PDF.
     """
     if uri.startswith(settings.STATIC_URL):
-        path = os.path.join(settings.STATIC_ROOT,
-                            uri.replace(settings.STATIC_URL, ""))
+        path = os.path.join(settings.STATIC_ROOT,uri.replace(settings.STATIC_URL, ""))
     else:
-        path = os.path.join(settings.MEDIA_ROOT,
-                            uri.replace(settings.MEDIA_URL, ""))
+        path = os.path.join(settings.MEDIA_ROOT,uri.replace(settings.MEDIA_URL, ""))
     return path
 
 
@@ -269,7 +267,7 @@ class GetStartedView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['items'] = [
-        {'url': 'medical_record', 'text_color': 'text-slate-600',  'hover_bg_color': 'green-600', 'icon': 'fa-book', 'name': 'MEDICAL RECORD'},
+        {'url': 'medical_record', 'text_color': 'text-slate-600', 'hover_bg_color': 'green-600', 'icon': 'fa-book', 'name': 'MEDICAL RECORD'},
         {'url': 'revenue', 'text_color': 'text-green-600',  'hover_bg_color': 'green-600', 'icon': 'fa-cash-register', 'name': 'REVENUE'},
         {'url': 'nursing_desks_list', 'text_color': 'text-blue-600',  'hover_bg_color': 'green-600', 'icon': 'fa-stethoscope', 'name': 'NURSING'},
         {'url': 'clinic_list', 'text_color': 'text-gray-800',  'hover_bg_color': 'green-600', 'icon': 'fa-user-doctor', 'name': 'CLINIC'},
@@ -280,7 +278,7 @@ class GetStartedView(TemplateView):
         {'url': 'theatre', 'text_color': 'text-pink-600',  'hover_bg_color': 'green-600', 'icon': 'fa-head-side-mask', 'name': 'THEATRE'},
         {'url': 'physio', 'text_color': 'text-gray-600',  'hover_bg_color': 'green-600', 'icon': 'fa-wheelchair-move', 'name': 'PHYSIO'},
         {'url': 'store', 'text_color': 'text-rose-600',  'hover_bg_color': 'green-600', 'icon': 'fa-warehouse', 'name': 'STORE'},
-        {'url': 'audit', 'text_color': 'text-emerald-600',  'hover_bg_color': 'green-600', 'icon': 'fa-calculator', 'name': 'AUDIT'},
+        {'url': 'data', 'text_color': 'text-emerald-600',  'hover_bg_color': 'green-600', 'icon': 'fa-chart-bar', 'name': 'CLINIC ACTIVITY REPORT'},
     ]
         return context
     
