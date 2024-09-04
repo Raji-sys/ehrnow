@@ -111,7 +111,7 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         if self.request.user.is_superuser:
-            return reverse_lazy('index')
+            return reverse_lazy('get_started')
         else:
             return reverse_lazy('profile_details', args=[self.request.user.username])
 
@@ -278,7 +278,7 @@ class GetStartedView(TemplateView):
         {'url': 'theatre', 'text_color': 'text-pink-600',  'hover_bg_color': 'green-600', 'icon': 'fa-head-side-mask', 'name': 'THEATRE'},
         {'url': 'physio', 'text_color': 'text-gray-600',  'hover_bg_color': 'green-600', 'icon': 'fa-wheelchair-move', 'name': 'PHYSIO'},
         {'url': 'store', 'text_color': 'text-rose-600',  'hover_bg_color': 'green-600', 'icon': 'fa-warehouse', 'name': 'STORE'},
-        {'url': 'data', 'text_color': 'text-emerald-600',  'hover_bg_color': 'green-600', 'icon': 'fa-chart-bar', 'name': 'CLINIC ACTIVITY REPORT'},
+        {'url': 'handover_report', 'text_color': 'text-emerald-600',  'hover_bg_color': 'green-600', 'icon': 'fa-chart-bar', 'name': 'CLINIC ACTIVITY REPORT'},
     ]
         return context
     
@@ -322,8 +322,8 @@ class ClinicDashView(DoctorNurseRecordRequiredMixin, ListView):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class AuditView(AuditorRequiredMixin,TemplateView):
-    template_name = "ehr/dashboard/audit.html"
+class AuditView(DoctorNurseRecordRequiredMixin,TemplateView):
+    template_name = "ehr/dashboard/data.html"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -591,7 +591,7 @@ def patient_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class PatientHandoverReportView(ListView):
+class PatientHandoverReportView(DoctorNurseRecordRequiredMixin,ListView):
     model = PatientHandover
     template_name = 'ehr/clinic/report.html'
     context_object_name = 'handovers'
