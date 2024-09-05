@@ -14,66 +14,66 @@
       </div>
         {% endfor %}
       </section>
-    <div class="mx-2 md:mx-20 rounded-xl p-2 shadow-black shadow-sm bg-emerald-50">
-        <div class="m-2 md:m-2 text-center">
-            <span class="shadow-sm shadow-emerald-700 gap-4 bg-emerald-700 text-white uppercase text-xs md:text:md border-b-2 border-emerald-900 py-2 px-2 rounded-xl mx-2 w-fit">
-                <span class=" shadow-white md:text-xs text-xs p-1 rounded-full bg-white text-emerald-900">{{total_patient}}</span>&nbsp;patients registered
-                    {% if request.GET.urlencode %}
-                    <span class="p-2">
-                        <a href="?" class=" p-2 focus:opacity-10  focus:border-emerald-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-sm text-center w-fit ">
+    <div class="mx-2 md:mx-20 rounded-md p-2 shadow-black shadow-sm bg-emerald-50">
+      <div class="flex justify-between">
+        <div class="m-2 md:m-2 text-center flex-1">
+          <span class="shadow-sm shadow-emerald-700 gap-4 bg-emerald-700 text-white uppercase text-xs border-b-2 border-emerald-900 py-2 px-2 rounded-xl mx-2 w-fit">
+            <span class=" shadow-white text-xs p-1 rounded-full bg-white text-emerald-900">{{total_patient}}</span>&nbsp;patients registered
+                    </span>
+                </div>
+                {% if request.GET.q %}
+                <span class="gap-4  text-blue-600 uppercase text-xs font-medium rounded-xl w-fit m-3">
+                 <span class="text-sm rounded-full bg-white text-blue-600 font-medium border border-blue-600 p-2">{{ search_count }}</span>&nbsp;{%if search_count <= 1 %}patient {%else%} patients {% endif %}match your search
+                        <a href="?" class=" p-2 focus:opacity-10  focus:border-emerald-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-sm text-center w-fit">
                             <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
                         </span>
                         {%endif%}
-                    </span>
+                <div class="m-2 text-emerald-900 text-center flex-1">
+                  <form method="get" class="text-xs text-center">
+                    <div class="text-center">
+                      <input type="field.field.widget.input_type" name="q" placeholder="Search by: Name, File No, Phone No, or Title"
+                             class="md:text-center text-xs focus:outline-none w-1/3 md:w-1/2 text-emerald-950 p-2
+                                    rounded shadow-sm shadow-emerald-900 border-emerald-900 border"
+                             value="{{request.GET.q|default:''}}">
+                      <button type="submit" class="shadow-sm shadow-emerald-700 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-emerald-600 bg-emerald-700 text-white rounded hover:border-emerald-700 ">
+                        <i class="fa-solid fa-search fa-xl "></i>
+                      </button>
+                    </div>
+                  </form>
                 </div>
-      <div class="text-emerald-900 text-center flex justify-center">
-        <form method="get" class="text-xs text-center">
-            <div class="text-center">
-                {% for field in patientFilter.form %}
-                <!-- <label for="{{field.id_for_label}}" class="inline">{{ field.label_tag }}</label> -->
-                <input type="field.field.widget.input_type" name="{{field.name}}" placeholder="{{field.name}}"
-                class="md:text-center text-xs uppercase focus:outline-none w-1/3 md:w-fit text-emerald-950 p-2
-                rounded shadow-sm shadow-emerald-900 border-emerald-900 border"
-                {%if field.value%} value="{{field.value}}"{%endif%}> 
-                {% endfor %}
-                <button type="submit" class="shadow-sm shadow-emerald-700 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-emerald-600 bg-emerald-700 text-white rounded hover:border-emerald-700 ">
-                    <i class="fa-solid fa-search fa-xl "></i>
-                </button>
-            </div>
-        </form>
-    </div>
+              </div>
       <div class="overflow-x-auto p-2 m-1 uppercase">
         <table class="min-w-full divide-y divide-emerald-200">
           <thead class="bg-emerald-50">
-            <tr class="text-xs">
-                <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+            <tr class="text-xs text-left">
+                <th class="p-3  text-emerald-500 uppercase tracking-wider">
                     #
                 </th>
-              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+              <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 FILE NUMBER
               </th>
-              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+              <th class="p-3 text-emerald-500 uppercase tracking-wider">
                 NAME
               </th>
-              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+              <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 PHONE
               </th>
-              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+              <th class="p-3 text-emerald-500 uppercase tracking-wider">
                 AGE
               </th>
-              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+              <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 NEXT OF KIN
               </th>
-              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+              <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 NEXT OF KIN PHONE
               </th>
-              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+              <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 RELATIONSHIP
               </th>
-              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+              <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 DATE REGISTERED
               </th>
-              <th class="p-3 text-center text-emerald-500 uppercase tracking-wider">
+              <th class="p-3 text-emerald-500 uppercase tracking-wider">
                 EDIT
               </th>
             </tr>
@@ -125,12 +125,8 @@
             </tr>
             {% endfor %}
             <tr class="">
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="p-1 text-left">        
-          <div class="pagination flex justify-center">
+              <td colspan="10" class="p-1">        
+          <div class="pagination flex justify-end">
               <span class="flex items-center">
                   {% if page_obj.has_previous %}
                   <a href="?page=1" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
@@ -145,8 +141,6 @@
                   </span>
               </div>
           </td>
-          <td></td>
-          <td></td>
         </tr>
           </tbody>
         </table>

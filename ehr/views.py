@@ -528,15 +528,28 @@ class PatientListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        patients = super().get_queryset().order_by('-file_no')
-        patient_filter = PatientFilter(self.request.GET, queryset=patients)
-        return patient_filter.qs
+        queryset = super().get_queryset().order_by('-file_no')
+        # Add search functionality
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(other_name__icontains=query) |
+                Q(file_no__icontains=query)|
+                Q(phone__icontains=query)|
+                Q(title__icontains=query)
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        total_patient = self.get_queryset().count()
-        context['patientFilter'] = PatientFilter(self.request.GET, queryset=self.get_queryset())
+        search_count = self.get_queryset().count()
+        total_patient=PatientData.objects.count()
+        context['search_count'] = search_count
         context['total_patient'] = total_patient
+        context['query'] = self.request.GET.get('q', '')
+
         return context
 
 
