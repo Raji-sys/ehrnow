@@ -344,7 +344,16 @@ class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['rooms'] = self.object.consultation_rooms.all()
+        rooms = self.object.consultation_rooms.all()
+        context['rooms'] = rooms        # Count patients for each room
+        for room in rooms:
+            room.waiting_count = PatientHandover.objects.filter(
+                is_active=True,
+                clinic=self.object,
+                room=room,
+                status='waiting for consultation'
+            ).count()
+
         context['waiting_count'] = PatientHandover.objects.filter(
             is_active=True,
             clinic=self.object,
@@ -604,7 +613,7 @@ def patient_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class PatientHandoverReportView(DoctorNurseRecordRequiredMixin,ListView):
+class PatientHandoverReportView(DoctorNurseRecordRequiredMixin, ListView):
     model = PatientHandover
     template_name = 'ehr/clinic/report.html'
     context_object_name = 'handovers'
@@ -613,7 +622,7 @@ class PatientHandoverReportView(DoctorNurseRecordRequiredMixin,ListView):
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-updated')
         self.filterset = PatientHandoverFilter(self.request.GET, queryset=queryset)
-        return self.filterset.qs
+        return self.filterset.qs.select_related('patient', 'clinic')  # Use select_related for efficiency
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -818,13 +827,24 @@ class FollowUpListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        patients = super().get_queryset().order_by('-updated')
-        patient_filter = PatientFilter(self.request.GET, queryset=patients)
-        return patient_filter.qs
+        queryset = super().get_queryset().order_by('-updated')
+        # Add search functionality
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(other_name__icontains=query) |
+                Q(file_no__icontains=query)|
+                Q(phone__icontains=query)|
+                Q(title__icontains=query)
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['patientFilter'] = PatientFilter(self.request.GET, queryset=self.get_queryset())
+        context['query'] = self.request.GET.get('q', '')
+
         return context
 
 
@@ -1244,13 +1264,24 @@ class NewAppointmentListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        patients = super().get_queryset().order_by('-updated')
-        patient_filter = PatientFilter(self.request.GET, queryset=patients)
-        return patient_filter.qs
+        queryset = super().get_queryset().order_by('-updated')
+        # Add search functionality
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(other_name__icontains=query) |
+                Q(file_no__icontains=query)|
+                Q(phone__icontains=query)|
+                Q(title__icontains=query)
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['patientFilter'] = PatientFilter(self.request.GET, queryset=self.get_queryset())
+        context['query'] = self.request.GET.get('q', '')
+
         return context
     
 

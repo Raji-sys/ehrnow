@@ -333,7 +333,7 @@ class PatientHandover(models.Model):
     nursing_desk = models.ForeignKey(NursingDesk, on_delete=models.SET_NULL, null=True, blank=True)
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=30, null=True, choices=STATUS)
-    updated = models.DateTimeField(auto_now=True)
+    updated = models.DateField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

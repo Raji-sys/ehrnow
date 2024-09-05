@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}PATIENT REPORT{%endblock%}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'clinic_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT REPORT</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT REPORT</div>{%endblock%}
 {%block content %}
 <div class="p-1">
   <div class="m-2 flex justify-center items-center space-x-4 text-sm font-medium">
@@ -50,61 +50,43 @@
         </form>
     </div>
     {% if request.GET.urlencode %}
-      <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="min-w-full divide-y divide-zinc-200">
-          <thead class="bg-zinc-200">
-            <tr class="text-xs">
-                <th class="p-3 text-center text-zinc-500 uppercase tracking-wider">
-                    #
-                </th>
-              <th class="p-3 text-center text-zinc-500 uppercase tracking-wider">
-                FILE NUMBER
-              </th>
-              <th class="p-3 text-center text-zinc-500 uppercase tracking-wider">
-                NAME
-              </th>
-              <th class="p-3 text-center text-zinc-500 uppercase tracking-wider">
-                PHONE
-              </th>
-              <th class="p-3 text-center text-zinc-500 uppercase tracking-wider">
-                AGE
-              </th>
-              <th class="p-3 text-center text-zinc-500 uppercase tracking-wider">
-                STATUS
-              </th>
-              <th class="p-3 text-center text-zinc-500 uppercase tracking-wider">
-                DATE
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-zinc-200">
-            {% for p in handovers %}
-            <tr class="text-xs bg-zinc-100 hover:bg-zinc-200 transition-colors duration-300">
-                <td class="p-3 whitespace-nowrap">
-                    {{forloop.counter}}
-                </td>
-                <td class="p-3 whitespace-nowrap">
-                  {{ p.patient.file_no }}
-                </td>
-              <td class="p-3 whitespace-nowrap">
-                <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-                {{ p.patient.full_name }}
-                </a>
-              </td>
-              <td class="p-3 whitespace-nowrap">
-                {{ p.patient.phone }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
-                {{ p.patient.age }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
-                {{ p.status }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
-                {{ p.updated }}
-              </td>
-            </tr>
-            {% empty %}
+        <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr class="">
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Number</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clinic</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for p in handovers %}
+                <tr class="hover:bg-gray-50 uppercase">
+                  <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ forloop.counter }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-gray-900">{{ p.patient.file_no }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
+                    <a href="{{ p.patient.get_absolute_url }}" class="text-indigo-600 hover:text-indigo-900">{{ p.patient.full_name }}</a>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ p.patient.phone }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ p.patient.age }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 rounded-full 
+                      {% if p.status == 'waiting for consultation' %}bg-yellow-100 text-yellow-800
+                      {% elif p.status == 'seen' %}bg-green-100 text-green-800
+                      {% elif p.status == 'awaiting review' %}bg-blue-100 text-blue-800
+                      {% else %}bg-gray-100 text-gray-800{% endif %}">
+                      {{ p.status }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ p.clinic.name }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ p.updated|date:"d M Y" }}</td>
+                </tr>
+              {% empty %}
             <tr class="bg-white">
               <td colspan="2" class="p-3 text-center text-zinc-500">
                 Not found
@@ -112,10 +94,7 @@
             </tr>
             {% endfor %}
             <tr class="">
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="p-1 text-left">        
+              <td class="p-1" colspan='9'>        
           <div class="pagination flex justify-center">
               <span class="flex items-center">
                   {% if page_obj.has_previous %}
@@ -131,8 +110,6 @@
                   </span>
               </div>
           </td>
-          <td></td>
-          <td></td>
         </tr>
           </tbody>
         </table>
