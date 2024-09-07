@@ -33,6 +33,7 @@
                         <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PATIENT NAME</th>
                         <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PHONE NUMBER</th>
                         <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">CLINIC</th>
+                        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">TEAM</th>
                         <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">ROOM</th>
                         <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PROCESS</th>
                     </tr>
@@ -45,6 +46,7 @@
                         <td class="p-3 whitespace-nowrap">{{ v.patient.full_name|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap">{{ v.patient.phone|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap">{{ v.clinic|default_if_none:'' }}</td>
+                        <td class="p-3 whitespace-nowrap">{{ v.team|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap">{{ v.room|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap">
                             <a href="{{ v.patient.get_absolute_url }}" class="text-green-500" target="_blank">

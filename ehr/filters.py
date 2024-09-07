@@ -41,6 +41,7 @@ class VisitFilter(django_filters.FilterSet):
     age_start = django_filters.NumberFilter(label="AGE R1", field_name="patient__age", lookup_expr='gte',)  
     age_end = django_filters.NumberFilter(label="AGE R2", field_name="patient__age", lookup_expr='lte',)
     clinic = django_filters.ModelChoiceFilter(label='CLINIC', queryset=Clinic.objects.all(),field_name='clinic',to_field_name='id',lookup_expr='exact',widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
+    team = django_filters.ModelChoiceFilter(label='TEAM', queryset=Team.objects.all(),field_name='clinic',to_field_name='id',lookup_expr='exact',widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
     seen = django_filters.BooleanFilter(
         label='SEEN',
         field_name='seen',
