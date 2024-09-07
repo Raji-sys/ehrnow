@@ -17,7 +17,7 @@
       </div>
       <div class="">
         <span class="uppercase text-xs font-semibold bg-green-200 p-1 rounded">
-      Total Worth: <span class="text-green-700 uppercase text-xs font-bold">
+      Total: <span class="text-green-700 uppercase text-xs font-bold">
         &#x20A6;{{ total_worth|floatformat:2 }}
       </span>
     </span>
@@ -112,11 +112,11 @@
                 &#x20A6;{{p.price}}
               </td>
               {% if p.status == False %}
-              <td class="p-3 whitespace-nowrap text-red-700">
+              <td class="p-3 whitespace-nowrap text-red-700 text-center">
             <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
               </td>
           {% else %}
-              <td class="p-3 whitespace-nowrap text-green-700">
+              <td class="p-3 whitespace-nowrap text-green-700 text-center">
                <i class="fa-solid fa-thumbs-up fa-2xl"></i>
              </td>
           {% endif %}
@@ -131,9 +131,6 @@
                     
                 </span>
               </td>
-              <td>
-                
-              </td>
             </tr>
             {% empty %}
             <tr class="bg-white">
@@ -143,8 +140,7 @@
             </tr>
             {% endfor %}
             <tr class="">
-              <td></td>
-              <td class="p-1 text-left">        
+              <td class="p-1 text-left" colspan="8">        
           <div class="pagination flex justify-center">
               <span class="flex items-center">
                   {% if page_obj.has_previous %}

@@ -5,11 +5,11 @@
 {%block page_title%}
 <div class="flex justify-center">
     <a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>CLINICS
-    <a href="{%url 'handover_report' %}" class="text-xs font-medium text-green-600 "><i class="fa-solid fa-file-lines fa-2xl m-2"></i>CLINIC ACTIVITY REPORT</a>
+    <a href="{%url 'visit_report' %}" class="text-xs font-medium text-green-600 "><i class="fa-solid fa-file-lines fa-2xl m-2"></i>CLINIC ACTIVITY REPORT</a>
 </div>
 {%endblock%}
 {%block content %}
-<div class="mx-20 ">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <section class="text-center border-cyan-700 p-2 m-2">
         {% for message in messages %}
         <div class="">
@@ -20,8 +20,8 @@
         </div>
       {% endfor %}
     </section>
-    <div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden mt-1">
-        <div class="bg-gradient-to-r from-cyan-500 to-emerald-500 p-3 text-center">
+    <div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden mt-4">
+        <div class="bg-gradient-to-r from-emerald-600 to-sky-600 p-2 text-center">
             <span class="text-sm text-white  uppercase">Available Clinics</span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 p-6">
@@ -29,10 +29,10 @@
             <a href="{%url 'clinic_details' c.id %}" class="block">
                 <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
                     <div class="p-3 text-center">
-                        <h3 class="text-lg font-medium text-gray-900">{{ c.name }}</h3>
-                        <p class="text-sm text-gray-500">clinic</p>
+                        <h3 class="text-sm font-medium text-gray-900">{{ c.name }}</h3>
+                        <p class="text-xs text-gray-500">clinic</p>
                     </div>
-                    <div class="bg-gradient-to-r from-green-400 to-blue-500 h-1"></div>
+                    <div class="bg-gradient-to-r from-emerald-600 to-sky-600 h-1"></div>
                 </div>
             </a>
             {% endfor %}

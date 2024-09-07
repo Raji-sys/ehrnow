@@ -18,28 +18,30 @@
       <div class="text-zinc-900">
         <form method="get" class="text-xs">
             <div class="text-center sm:flex md:flex-row sm:flex-wrap gap-2 sm:justify-center">
-                {% for field in patientHandoverFilter.form %}
-                <div class="sm:flex sm:justify-center sm:items-start sm:flex-col">
-                  <div class="">
-                      <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
+              {% for field in visitFilter.form %}
+              <div class="sm:flex sm:justify-center sm:items-start sm:flex-col">
+                <div class="">
+                  <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                </div>
+                {% if field.field.widget.input_type == 'checkbox' %}
+                  <div class="mt-1">
+                    <input type="checkbox" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-checkbox h-4 w-4 text-blue-600 focus:outline-none border border-zinc-600 rounded shadow-sm">
                   </div>
-                  {% if field.field.widget.input_type == 'select' %}
-                      {{ field }}
-                  {% else %}
-                      <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
-                             class="text-center text-xs focus:outline-none w-1/3 sm:w-fit text-zinc-800
-                                    rounded shadow-sm shadow-zinc-600 border-zinc-600 border">
-                  {% endif %}
-                  <span class="form-error">{{ field.errors }}</span>
-              </div>                {% endfor %}
-                <div class="mt-4 flex justify-center align-middle ">
+                {% elif field.field.widget.input_type == 'select' %}
+                  {{ field }}
+                {% else %}
+                  <input type="{{field.field.widget.input_type}}" name="{{field.name}}" class="text-center text-xs focus:outline-none w-1/3 sm:w-fit text-zinc-800 rounded shadow-sm shadow-zinc-600 border-zinc-600 border">
+                {% endif %}
+                <span class="form-error">{{ field.errors }}</span>
+              </div>
+            {% endfor %}                <div class="mt-4 flex justify-center align-middle ">
                     <button type="submit" class="text-sm shadow-sm shadow-zinc-900 w-fit p-3 focus:opacity-10 uppercase border-gray-500 focus:border-zinc-600 bg-zinc-600 text-white rounded hover:border-zinc-700 ">
                       <i class="fa-solid fa-search fa-xl "></i>
                   </button>
                   {% if request.GET.urlencode %}
                   <div class="m-3">
                       <a href="?" class="text-sm p-3 focus:opacity-10 bg-orange-500 text-white rounded w-fit"><i class="fa-solid fa-rotate fa-xl"></i></a>
-                      <a class="text-sm text-white focus:opacity-10  bg-green-600 p-3 rounded w-fit" href="{% url 'clinic_handover_pdf' %}?{{request.GET.urlencode}}">
+                      <a class="text-sm text-white focus:opacity-10  bg-green-600 p-3 rounded w-fit" href="{% url 'visit_pdf' %}?{{request.GET.urlencode}}">
                         <i class="fa-solid fa-file-pdf fa-xl"></i></a>
  
                     </div>
@@ -65,7 +67,7 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              {% for p in handovers %}
+              {% for p in visits %}
                 <tr class="hover:bg-gray-50 uppercase">
                   <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ forloop.counter }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-gray-900">{{ p.patient.file_no }}</td>
@@ -84,7 +86,7 @@
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ p.clinic.name }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ p.updated|date:"d M Y" }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{{ p.updated }}</td>
                 </tr>
               {% empty %}
             <tr class="bg-white">

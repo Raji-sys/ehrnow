@@ -43,7 +43,9 @@ from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Prefetch
 from django.db import transaction
-
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.translation import gettext_lazy as _
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -267,18 +269,18 @@ class GetStartedView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['items'] = [
-        {'url': 'medical_record', 'text_color': 'text-slate-600', 'hover_bg_color': 'green-600', 'icon': 'fa-book', 'name': 'MEDICAL RECORD'},
-        {'url': 'revenue', 'text_color': 'text-green-600',  'hover_bg_color': 'green-600', 'icon': 'fa-cash-register', 'name': 'REVENUE'},
-        {'url': 'nursing_desks_list', 'text_color': 'text-blue-600',  'hover_bg_color': 'green-600', 'icon': 'fa-stethoscope', 'name': 'NURSING'},
-        {'url': 'clinic_list', 'text_color': 'text-gray-800',  'hover_bg_color': 'green-600', 'icon': 'fa-user-doctor', 'name': 'CLINIC'},
-        {'url': 'pharmacy', 'text_color': 'text-indigo-600',  'hover_bg_color': 'green-600', 'icon': 'fa-prescription', 'name': 'PHARMACY'},
-        {'url': 'pathology:dashboard', 'text_color': 'text-fuchsia-600',  'hover_bg_color': 'green-600', 'icon': 'fa-vial', 'name': 'PATHOLOGY'},
-        {'url': 'radiology', 'text_color': 'text-amber-600',  'hover_bg_color': 'green-600', 'icon': 'fa-x-ray', 'name': 'RADIOLOGY'},
-        {'url': 'ward_list', 'text_color': 'text-purple-600',  'hover_bg_color': 'green-600', 'icon': 'fa-bed-pulse', 'name': 'WARD'},
-        {'url': 'theatre', 'text_color': 'text-pink-600',  'hover_bg_color': 'green-600', 'icon': 'fa-head-side-mask', 'name': 'THEATRE'},
-        {'url': 'physio', 'text_color': 'text-gray-600',  'hover_bg_color': 'green-600', 'icon': 'fa-wheelchair-move', 'name': 'PHYSIO'},
-        {'url': 'store', 'text_color': 'text-rose-600',  'hover_bg_color': 'green-600', 'icon': 'fa-warehouse', 'name': 'STORE'},
-        {'url': 'handover_report', 'text_color': 'text-emerald-600',  'hover_bg_color': 'green-600', 'icon': 'fa-chart-bar', 'name': 'CLINIC ACTIVITY REPORT'},
+        {'url': 'medical_record', 'text_color': 'text-slate-600', 'hover_bg_color': 'emerald-600', 'icon': 'fa-file-archive', 'name': 'MEDICAL RECORD'},
+        {'url': 'revenue', 'text_color': 'text-emerald-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-cash-register', 'name': 'REVENUE'},
+        {'url': 'nursing_desks_list', 'text_color': 'text-blue-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-stethoscope', 'name': 'NURSING'},
+        {'url': 'clinic_list', 'text_color': 'text-gray-800',  'hover_bg_color': 'emerald-600', 'icon': 'fa-user-doctor', 'name': 'CLINIC'},
+        {'url': 'pharmacy', 'text_color': 'text-indigo-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-prescription', 'name': 'PHARMACY'},
+        {'url': 'pathology:dashboard', 'text_color': 'text-fuchsia-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-microscope', 'name': 'PATHOLOGY'},
+        {'url': 'radiology', 'text_color': 'text-amber-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-x-ray', 'name': 'RADIOLOGY'},
+        {'url': 'ward_list', 'text_color': 'text-purple-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-bed-pulse', 'name': 'WARD'},
+        {'url': 'theatre', 'text_color': 'text-pink-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-head-side-mask', 'name': 'THEATRE'},
+        {'url': 'physio', 'text_color': 'text-gray-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-wheelchair-move', 'name': 'PHYSIO'},
+        {'url': 'store', 'text_color': 'text-rose-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-warehouse', 'name': 'STORE'},
+        {'url': 'visit_report', 'text_color': 'text-emerald-600',  'hover_bg_color': 'emerald-600', 'icon': 'fa-chart-bar', 'name': 'CLINIC ACTIVITY REPORT'},
     ]
         return context
     
@@ -310,21 +312,11 @@ class RevenueView(RevenueRequiredMixin,TemplateView):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class RevenueRecordView(TemplateView):
-    template_name = "ehr/revenue/record_revenue.html"
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicDashView(DoctorNurseRecordRequiredMixin, ListView):
     model=Clinic
     context_object_name= 'clinics'
     template_name = "ehr/dashboard/clinic_list.html"
     
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class AuditView(DoctorNurseRecordRequiredMixin,TemplateView):
-    template_name = "ehr/dashboard/data.html"
-
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class StoreView(TemplateView):
@@ -335,78 +327,6 @@ class StoreView(TemplateView):
 class ServiceView(TemplateView):
     template_name = "ehr/dashboard/service.html"
 
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
-    model = Clinic
-    context_object_name = 'clinic'
-    template_name = "ehr/clinic/clinic_details.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        rooms = self.object.consultation_rooms.all()
-        context['rooms'] = rooms        # Count patients for each room
-        for room in rooms:
-            room.waiting_count = PatientHandover.objects.filter(
-                is_active=True,
-                clinic=self.object,
-                room=room,
-                status='waiting for consultation'
-            ).count()
-
-        context['waiting_count'] = PatientHandover.objects.filter(
-            is_active=True,
-            clinic=self.object,
-            status='waiting for consultation'
-        ).count()
-        context['seen_count'] = PatientHandover.objects.filter(
-            clinic=self.object,
-            status='seen'
-        ).count()
-        context['review_count'] = PatientHandover.objects.filter(
-            is_active=True,
-            clinic=self.object,
-            status='awaiting review'
-        ).count()
-        return context
-    
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class PTListView(DoctorNurseRecordRequiredMixin, ListView):
-    model = PatientHandover
-    template_name = 'ehr/clinic/pt_list.html'
-    context_object_name = 'handovers'
-
-    def get_queryset(self):
-        self.clinic = get_object_or_404(Clinic, pk=self.kwargs['clinic_id'])
-        self.status = self.kwargs.get('status', 'waiting for consultation')
-        return PatientHandover.objects.filter(
-            clinic=self.clinic,
-            status=self.status,
-            # is_active=True,
-            updated__gte=timezone.now() - timedelta(days=30)
-        ).order_by('-updated')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['clinic'] = self.clinic
-        context['status'] = self.status
-        return context
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class RoomDetailView(DoctorNurseRequiredMixin, DetailView):
-    model = Room
-    template_name = 'ehr/clinic/room_details.html'
-    context_object_name = 'room'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['patients'] = PatientHandover.objects.filter(
-            room=self.object,
-            is_active=True,
-            status__in=['waiting for consultation', 'awaiting review']
-        ).select_related('patient').order_by('-updated')
-        return context
     
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class RadiologyView(RadiologyRequiredMixin,TemplateView):
@@ -490,12 +410,10 @@ class GenericWardListView(DoctorRequiredMixin, ListView):
         context['received'] = Admission.objects.filter(ward=ward, status='RECEIVED').count()
         context['discharged'] = Admission.objects.filter(ward=ward, status='DISCHARGE').count()
         
-        context['query'] = self.request.GET.get('q', '')
-        
+        context['query'] = self.request.GET.get('q', '')        
         return context
 
 
-#1 Patient create
 class PatientCreateView(RecordRequiredMixin, CreateView):
     model = PatientData
     form_class = PatientForm
@@ -505,7 +423,6 @@ class PatientCreateView(RecordRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         patient = form.save()
-        PatientHandover.objects.create(patient=patient, clinic=patient.clinic, status='waiting for payment')
         messages.success(self.request, 'Patient registered successfully')
         return super().form_valid(form)
 
@@ -613,30 +530,30 @@ def patient_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class PatientHandoverReportView(DoctorNurseRecordRequiredMixin, ListView):
-    model = PatientHandover
+class VisitReportView(DoctorNurseRecordRequiredMixin, ListView):
+    model = VisitRecord
     template_name = 'ehr/clinic/report.html'
-    context_object_name = 'handovers'
+    context_object_name = 'visits'
     paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-updated')
-        self.filterset = PatientHandoverFilter(self.request.GET, queryset=queryset)
+        self.filterset = VisitFilter(self.request.GET, queryset=queryset)
         return self.filterset.qs.select_related('patient', 'clinic')  # Use select_related for efficiency
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['patientHandoverFilter'] = self.filterset
+        context['visitFilter'] = self.filterset
         context['total_patient'] = PatientData.objects.count()
         context['filtered_count'] = self.filterset.qs.count()
         return context
     
 
 @login_required
-def clinic_handover_pdf(request):
+def visit_pdf(request):
     ndate = datetime.datetime.now()
     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
-    f = PatientHandoverFilter(request.GET, queryset=PatientHandover.objects.all()).qs
+    f = VisitFilter(request.GET, queryset=VisitRecord.objects.all()).qs
     patient = f.first().patient if f.exists() else None
     result = ""
     result2 = ""
@@ -654,7 +571,7 @@ def clinic_handover_pdf(request):
 
     buffer = BytesIO()
 
-    pisa_status = pisa.CreatePDF(get_template('ehr/clinic/clinic_handover_pdf.html').render(
+    pisa_status = pisa.CreatePDF(get_template('ehr/clinic/visit_pdf.html').render(
         context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
 
     if not pisa_status.err:
@@ -664,13 +581,6 @@ def clinic_handover_pdf(request):
         return response
     return HttpResponse('Error generating PDF', status=500)
 
-
-import json
-from django.core.serializers.json import DjangoJSONEncoder
-from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
-from django.contrib.auth.decorators import login_required
-from django.db.models import Count
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientStatsView(TemplateView):
@@ -726,7 +636,6 @@ class PatientStatsView(TemplateView):
             'address_labels': json.dumps([a['address'] for a in address_counts], cls=DjangoJSONEncoder),
             'address_data': json.dumps([a['pc'] for a in address_counts], cls=DjangoJSONEncoder),
         })
-
         return context
 
 
@@ -748,6 +657,7 @@ class PatientFolderView(DetailView):
         context = super().get_context_data(**kwargs)
         patient = self.get_object()
         context['patient'] = patient
+        context['visits'] = patient.visit_record.all().order_by('-updated')
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
         context['payments'] = patient.patient_payments.all().order_by('-updated')
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
@@ -756,7 +666,6 @@ class PatientFolderView(DetailView):
         context['chempath_results']=patient.chemical_pathology_results.all().order_by('-created')
         context['micro_results']=patient.microbiology_results.all().order_by('-created')
         context['serology_results']=patient.serology_results.all().order_by('-created')
-            # context['general_results']=patient.general_results.all().order_by('-created')
         context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
         context['admission_info'] = patient.admission_info.all().order_by('-updated')
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
@@ -791,254 +700,89 @@ class PatientFolderView(DetailView):
         context['total_amount'] = total_amount    
         return context
    
-# 2. FollowUpVisitCreateView
-class FollowUpVisitCreateView(RecordRequiredMixin, CreateView):
-    model = FollowUpVisit
+
+class VisitCreateView(LoginRequiredMixin, CreateView):
+    model = VisitRecord
     form_class = VisitForm
-    template_name = 'ehr/record/follow_up.html'
-    success_url = reverse_lazy("medical_record")
-
-    def get_patient(self):
-        file_no = self.kwargs.get('file_no')
-        return PatientData.objects.get(file_no=file_no)
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        patient = self.get_patient()
-        visit = form.save(commit=False)
-        visit.patient = patient
-        visit.save()
-        clinic = form.cleaned_data['clinic']
-
-        # Create or update PatientHandover
-        PatientHandover.objects.update_or_create(
-            patient=patient,
-            clinic=clinic,
-            defaults={'status': 'waiting for follow up payment'}
-        )
-        messages.success(self.request, 'Follow-up visit created successfully')
-        return redirect(self.success_url)
-
-
-class FollowUpListView(ListView):
-    model=PatientData
-    template_name='ehr/record/follow_up_list.html'
-    context_object_name='patients'
-    paginate_by = 10
-
-    def get_queryset(self):
-        queryset = super().get_queryset().order_by('-updated')
-        # Add search functionality
-        query = self.request.GET.get('q')
-        if query:
-            queryset = queryset.filter(
-                Q(first_name__icontains=query) |
-                Q(last_name__icontains=query) |
-                Q(other_name__icontains=query) |
-                Q(file_no__icontains=query)|
-                Q(phone__icontains=query)|
-                Q(title__icontains=query)
-            )
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q', '')
-
-        return context
-
-
-class PaypointDashboardView(RevenueRequiredMixin, ListView):
-    model = PatientHandover
-    template_name = 'ehr/revenue/paypoint_dash.html'
-    context_object_name = 'handovers'
-
-    def get_queryset(self):
-        return PatientHandover.objects.filter(is_active=True,
-    status__in=['waiting for payment'])
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-
-class PaypointFollowUpDashboardView(RevenueRequiredMixin, ListView):
-    model = PatientHandover
-    template_name = 'ehr/revenue/follow_up_pay_dash.html'
-    context_object_name = 'handovers'
-
-    def get_queryset(self):
-        return PatientHandover.objects.filter(
-            status='waiting for follow up payment',
-            patient__follow_up__isnull=False,
-            is_active=True,
-        ).distinct()
-
-    
-class PaypointView(RevenueRequiredMixin, CreateView):
-    model = Paypoint
-    template_name = 'ehr/revenue/paypoint.html'
-    form_class = PayForm
-
-    def get_success_url(self):
-        next_url = self.request.GET.get('next')
-        if next_url:
-            return next_url
-        return reverse_lazy("pay_list")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        file_no = self.kwargs.get('file_no')
-        patient = get_object_or_404(PatientData, file_no=file_no)
-        handover = patient.handovers.filter(clinic=patient.clinic, status='waiting for payment').first()
-        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-                # Add wallet balance to context
-        try:
-            wallet = patient.wallet
-            context['wallet_balance'] = wallet.balance()
-        except Wallet.DoesNotExist:
-            context['wallet_balance'] = 0
-
-        if handover:
-            context['patient'] = patient
-            context['handover'] = handover
-            service = MedicalRecord.objects.get(name='new registration')
-            context['service'] = service
-            
-            # Get all nursing desks
-            context['nursing_desks'] = NursingDesk.objects.all()
-        else:
-            # Handle the case where no handover object is found
-            pass
-        return context
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        file_no = self.kwargs.get('file_no')
-        patient = get_object_or_404(PatientData, file_no=file_no)
-        handover = patient.handovers.filter(clinic=patient.clinic, status='waiting for payment').first()
+    template_name = 'ehr/record/visit.html'
         
-        if handover:
-            payment = form.save(commit=False)
-            payment.patient = patient
-            payment.status = True
-            service = MedicalRecord.objects.get(name='new registration')
-            payment.service = service.name
-            payment.price = service.price
-            # Check payment method
-            if payment.payment_method == 'WALLET':
-                try:
-                    wallet = patient.wallet
-                    if wallet.balance() < payment.price:
-                        messages.error(self.request, 'Insufficient funds in wallet.')
-                        return self.form_invalid(form)
-                    wallet.deduct_funds(payment.price, payment.service)
-                except Wallet.DoesNotExist:
-                    messages.error(self.request, 'Patient does not have a wallet.')
-                    return self.form_invalid(form)
-                except ValidationError as e:
-                    messages.error(self.request, f'Wallet error: {str(e)}')
-                    return self.form_invalid(form)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['file_no'] = self.kwargs['file_no']
+        return kwargs
 
-            payment.save()
-            
-            # Update handover status to 'waiting for vital signs'
-            handover.status = 'waiting for vital signs'
-            handover.save()
-              # Get the nursing desk for the patient's clinic
+    def form_valid(self, form):
+        patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        
+        # Check for existing open visit
+        existing_open_visit = VisitRecord.objects.filter(
+            patient=patient,
+            seen=False
+        ).exists()
+
+        if existing_open_visit:
+            form.add_error(None, ValidationError(
+                _("This patient already has an open visit. Please close the existing visit before creating a new one."),
+                code='duplicate_visit'
+            ))
+            return self.form_invalid(form)
+
+        form.instance.patient = patient
+        form.instance.user = self.request.user
+        form.instance.clinic = form.cleaned_data['clinic']
+
+        visit = form.save(commit=False)
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status=False,
+            service=visit.record, 
+            price=visit.record.price,
+        )
+        visit.payment = payment
+        visit.vitals = False
+        visit.save()
+
+        if payment.status:
             nursing_desk = NursingDesk.objects.filter(clinic=patient.clinic).first()
             if nursing_desk:
-                handover.nursing_desk = nursing_desk
-                handover.save()
-                messages.success(self.request, f'Payment successful. Patient handed over to {nursing_desk} for vital signs.')
+                messages.success(self.request, f'Payment successful. Patient sent to {nursing_desk} for vital signs.')
             else:
                 messages.warning(self.request, f'Payment successful, but no nursing desk available for {patient.clinic}.')
-            
-            return super().form_valid(form)
         else:
-            messages.error(self.request, 'No valid handover found for this patient.')
-            return super().form_invalid(form)
+            messages.warning(self.request, 'Proceed to revenue station and complete the payment.')
+        
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
 
 
-class PaypointFollowUpView(RevenueRequiredMixin, CreateView):
+class VisitPayListView(ListView):
     model = Paypoint
-    template_name = 'ehr/revenue/paypoint_follow_up.html'
-    form_class = PayForm
+    template_name = 'ehr/revenue/visit_pay_list.html'
+    context_object_name = 'visit_pays'
+    paginate_by = 10
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
         if next_url:
             return next_url
         return reverse_lazy("pay_list")
+    
+    def get_queryset(self):
+        return Paypoint.objects.filter(record_payment__isnull=False).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        file_no = self.kwargs.get('file_no')
-        patient = get_object_or_404(PatientData, file_no=file_no)
-        context['patient'] = patient
+        pay_total = self.get_queryset().count()
 
-        service_name = 'follow up'
-        service = MedicalRecord.objects.get(name=service_name)
-        context['service_name'] = service.name
-        context['service_price'] = service.price
+        paid_transactions = self.get_queryset().filter(status=True)
+        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-        
-        # Add wallet balance to context
-        try:
-            wallet = patient.wallet
-            context['wallet_balance'] = wallet.balance()
-        except Wallet.DoesNotExist:
-            context['wallet_balance'] = 0
-
-        return context
-
-    @transaction.atomic
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        file_no = self.kwargs.get('file_no')
-        patient = get_object_or_404(PatientData, file_no=file_no)        
-        handover = patient.handovers.filter(status='waiting for follow up payment').first()
-        
-        if handover:
-            payment = form.save(commit=False)
-            payment.patient = patient
-            payment.status = True
-            service = MedicalRecord.objects.get(name='follow up')
-            payment.service = service.name
-            payment.price = service.price
-
-            # Check payment method
-            if payment.payment_method == 'WALLET':
-                try:
-                    wallet = patient.wallet
-                    if wallet.balance() < payment.price:
-                        messages.error(self.request, 'Insufficient funds in wallet.')
-                        return self.form_invalid(form)
-                    wallet.deduct_funds(payment.price, payment.service)
-                except Wallet.DoesNotExist:
-                    messages.error(self.request, 'Patient does not have a wallet.')
-                    return self.form_invalid(form)
-                except ValidationError as e:
-                    messages.error(self.request, f'Wallet error: {str(e)}')
-                    return self.form_invalid(form)
-
-            payment.save()
-
-            handover.status = 'waiting for vital signs'
-            nursing_desk = NursingDesk.objects.filter(clinic=handover.clinic).first()
-
-            if nursing_desk:
-                handover.nursing_desk = nursing_desk
-                handover.save()
-                messages.success(self.request, f'Payment successful. Patient handed over to {nursing_desk} for vitals.')
-            else:
-                handover.save()
-                messages.warning(self.request, f'Payment successful, but no nursing desk available for {handover.clinic}. Patient handed over for vitals.')
-
-            return super().form_valid(form)
-        else:
-            messages.error(self.request, 'No valid handover found for this patient.')
-            return self.form_invalid(form)
+        return context  
 
 
 class NursingStationDetailView(DetailView):
@@ -1048,20 +792,16 @@ class NursingStationDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        handovers = PatientHandover.objects.filter(
-            nursing_desk=self.object,
-            status='waiting for vital signs',
-            is_active=True,
-        )
 
-        # Add a property to determine the correct URL for each handover
-        for handover in handovers:
-            if FollowUpVisit.objects.filter(patient=handover.patient).exists():
-                handover.vitals_url = 'follow_up_vital_signs'
-            else:
-                handover.vitals_url = 'vital_signs'
+        # Fetch patients whose payment is complete and who are assigned to the current nursing desk's clinic
+        visits = VisitRecord.objects.filter(
+            clinic=self.object.clinic,  # Match the clinic with the nursing desk
+            payment__status=True,
+            vitals=False
+        ).select_related('patient', 'payment', 'record')
 
-        context['handovers'] = handovers
+        # Pass the list of visit records to the template
+        context['visits'] = visits
         return context
 
 
@@ -1073,7 +813,12 @@ class NursingDeskListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         for desk in queryset:
-            desk.patient_count = desk.patienthandover_set.filter(status='waiting for vital signs').count()
+            # Count patients with completed payment waiting for vital signs
+            desk.patient_count = VisitRecord.objects.filter(
+                clinic=desk.clinic,
+                payment__status=True,# Ensure the payment is complete
+                vitals=False
+            ).count()
         return queryset
 
 
@@ -1085,87 +830,121 @@ class VitalSignCreateView(NurseRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        clinic = patient_data.clinic
-        kwargs['clinic'] = clinic
+        visit_record = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).latest('id')
+        kwargs['clinic'] = visit_record.clinic
         return kwargs
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        form.instance.patient = patient_data
-        form.instance.clinic = patient_data.clinic
+        visit_record = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).latest('id')
+        form.instance.patient = visit_record.patient
+        form.instance.clinic = visit_record.clinic
         room = form.cleaned_data.get('room')
+
         self.object = form.save()
 
-        # Get the most recent active handover for this patient
-        handover = PatientHandover.objects.filter(
-            patient=patient_data,
-            is_active=True,
-            status='waiting for vital signs'
-        ).order_by('-updated').first()
+        visit_record.vitals = True
+        visit_record.room = room
+        visit_record.save()
 
-        if handover:
-            handover.status = 'waiting for consultation'
-            handover.room = room
-            handover.save()
-            messages.success(self.request, 'Vital signs recorded and patient assigned to room.')
-        else:
-            messages.success(self.request, 'Vital signs recorded. New handover created for consultation.')
-
+        messages.success(self.request, 'Vital signs recorded. Patient has been moved to consultation.')
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        context['visit_record'] = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).latest('id')
         return context
-
-
-class FollowUpVitalSignCreateView(NurseRequiredMixin, CreateView):
-    model = VitalSigns
-    form_class = FollowUpVitalSignsForm
-    template_name = 'ehr/nurse/follow_up_vital_signs.html'
-    success_url = reverse_lazy('nursing_desks_list')
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        patient_data = get_object_or_404(FollowUpVisit, patient__file_no=self.kwargs['file_no'])
-        clinic = patient_data.clinic
-        kwargs['clinic'] = clinic
-        return kwargs
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        patient_data = get_object_or_404(FollowUpVisit, patient__file_no=self.kwargs['file_no'])
-        form.instance.patient = patient_data.patient  # Assign the actual PatientData instance
-        form.instance.clinic = patient_data.clinic
-        room = form.cleaned_data.get('room')
-        self.object = form.save()
-
-        # Get the most recent active handover for this patient
-        handover = PatientHandover.objects.filter(
-            patient=patient_data.patient,  # Use the actual PatientData instance
-            is_active=True,
-            status='waiting for vital signs'
-        ).order_by('-updated').first()
-
-        if handover:
-            handover.status = 'waiting for consultation'
-            handover.room = room
-            handover.save()
-            messages.success(self.request, 'Vital signs recorded and patient assigned to room.')
-        else:
-            messages.success(self.request, 'Vital signs recorded. New handover created for consultation.')
-
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['patient'] = get_object_or_404(FollowUpVisit, patient__file_no=self.kwargs['file_no']).patient
-        return context
-
-
     
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
+    model = Clinic
+    context_object_name = 'clinic'
+    template_name = "ehr/clinic/clinic_details.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rooms = self.object.consultation_rooms.all()
+        context['rooms'] = rooms        
+        for room in rooms:
+            room.waiting_count = VisitRecord.objects.filter(
+                clinic=self.object,
+                room=room,
+                vitals=True,
+                seen=False
+            ).count()
+
+        context['waiting_count'] = VisitRecord.objects.filter(
+            clinic=self.object,
+            vitals=True,
+            seen=False
+        ).count()
+        context['seen_count'] = VisitRecord.objects.filter(
+            clinic=self.object,
+            seen=True,
+        ).count()
+        context['review_count'] = VisitRecord.objects.filter(
+            clinic=self.object,
+            review=True
+        ).count()
+        return context
+    
+    
+class VisitListView(DoctorNurseRecordRequiredMixin, ListView):
+    model = VisitRecord
+    template_name = 'ehr/clinic/pt_list.html'  # Base template
+    context_object_name = 'visits'
+    filter_params = {}
+
+    def get_queryset(self):
+        self.clinic = get_object_or_404(Clinic, pk=self.kwargs['clinic_id'])
+        queryset = VisitRecord.objects.filter(
+            clinic=self.clinic,
+            updated__gte=timezone.now() - timedelta(days=100),
+            **self.filter_params
+        ).order_by('-updated')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clinic'] = self.clinic
+        return context
+
+class WaitingListView(VisitListView):
+    filter_params = {
+        'vitals': True,
+        'seen': False
+    }
+    template_name = 'ehr/clinic/waiting_list.html'  # Custom template if needed
+
+class SeenListView(VisitListView):
+    filter_params = {
+        'seen': True
+    }
+    template_name = 'ehr/clinic/seen_list.html'
+
+class ReviewListView(VisitListView):
+    filter_params = {
+        'review': True
+    }
+    template_name = 'ehr/clinic/review_list.html'
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class RoomDetailView(DoctorNurseRequiredMixin, DetailView):
+    model = Room
+    template_name = 'ehr/clinic/room_details.html'
+    context_object_name = 'room'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patients'] = VisitRecord.objects.filter(
+        room=self.object,
+        seen=False 
+    ).select_related('patient').order_by('-updated')
+        return context
+        
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
     model = ClinicalNote
@@ -1177,25 +956,15 @@ class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         form.instance.patient = patient_data
         self.object = form.save()
-
-        # Find the active handover for this patient in the current clinic
-        handover = PatientHandover.objects.filter(
-            patient=patient_data,
-            clinic=patient_data.clinic,  # Include the clinic in the filter
-            is_active=True,
-            status__in=['waiting for consultation', 'awaiting review']  # Include both statuses
-        ).order_by('-updated').first()
-
-        if handover:
-            if form.instance.needs_review:
-                handover.status = 'awaiting review'
-                handover.save()
-                messages.success(self.request, 'Clinical note created. Patient awaiting review.')
-            else:
-                handover.close_handover()
-                messages.success(self.request, 'Clinical note created. Patient consultation completed.')
+        
+        visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()        
+        if form.instance.needs_review:
+            visit.review = True
+            visit.save()
+            messages.success(self.request, 'Clinical note created. Patient awaiting review.')
         else:
-            messages.warning(self.request, 'Clinical note created, but no active handover found for the patient in this clinic.')
+            visit.close_visit()
+            messages.success(self.request, 'Clinical note created. Patient consultation completed.')
 
         return super().form_valid(form)
 
@@ -1206,6 +975,8 @@ class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
 
     def get_success_url(self):
         return self.object.patient.get_absolute_url()
+
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
@@ -1387,40 +1158,6 @@ class PayCreateView(RevenueRequiredMixin, CreateView):
         return super().get_success_url()
 
 
-# class PayUpdateView(UpdateView):
-#     model = Paypoint
-#     template_name = 'ehr/revenue/update_pay.html'
-#     form_class = PayUpdateForm
-
-#     def get_success_url(self):
-#         next_url = self.request.GET.get('next')
-#         if next_url:
-#             return next_url
-#         return reverse_lazy("pay_list")
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         paypoint = self.get_object()
-#         context['patient'] = paypoint.patient
-#         context['service'] = paypoint.service
-#         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-#         return context
-
-#     def form_valid(self, form):
-#         form.instance.user = self.request.user
-#         paypoint = form.save(commit=False)
-        
-#         try:
-#             paypoint.save()
-#             messages.success(self.request, 'TRANSACTION SUCCESSFUL')
-#             return super().form_valid(form)
-#         except ValidationError as e:
-#             error_message = str(e)
-#             if "Insufficient funds" in error_message:
-#                 error_message = "Insufficient funds in the wallet. Please add funds and try again."
-#             form.add_error(None, error_message)
-#             return self.form_invalid(form)
-
 class PayUpdateView(UpdateView):
     model = Paypoint
     template_name = 'ehr/revenue/update_pay.html'
@@ -1459,6 +1196,7 @@ class PayUpdateView(UpdateView):
                 error_message = "Insufficient funds in the wallet. Please add funds and try again."
             form.add_error(None, error_message)
             return self.form_invalid(form)
+
 
 class PayListView(ListView):
     model=Paypoint
@@ -1644,7 +1382,6 @@ class PathologyPayListView(ListView):
         chempath_pays = Paypoint.objects.filter(chempath_result_payment__isnull=False).order_by('-updated')
         micro_pays = Paypoint.objects.filter(micro_result_payment__isnull=False).order_by('-updated')
         serology_pays = Paypoint.objects.filter(serology_result_payment__isnull=False).order_by('-updated')
-        # general_pays = Paypoint.objects.filter(general_result_payment__isnull=False).order_by('-updated')
 
         hema_pay_total = hematology_pays.count()
         hema_paid_transactions = hematology_pays.filter(status=True)
@@ -1808,24 +1545,6 @@ class AdmissionDischargeView(UpdateView):
         context['cancel_url'] = self.get_success_url()
         return context
 
-# class AdmissionListView(ListView):
-#     model=Admission
-#     template_name='ehr/ward/admission_list.html'
-#     context_object_name='admissions'
-#     paginate_by = 10
-
-#     def get_queryset(self):
-#         updated = super().get_queryset().order_by('-updated')
-#         admission_filter = AdmissionFilter(self.request.GET, queryset=updated)
-#         return admission_filter.qs
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         total_admissions = self.get_queryset().count()
-#         context['admissionFilter'] = AdmissionFilter(self.request.GET, queryset=self.get_queryset())
-#         context['total_admission'] = total_admissions
-#         return context
-    
 
 class WardVitalSignCreateView(NurseRequiredMixin,CreateView):
     model = WardVitalSigns
@@ -2522,38 +2241,6 @@ class AllTransactionsListView(LoginRequiredMixin, ListView):
         context['total_credit'] = WalletTransaction.objects.filter(transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
         context['total_debit'] = WalletTransaction.objects.filter(transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
         context['net_balance'] = context['total_credit'] - context['total_debit']
-        return context
-    
-
-class MedicalRecordPayListView(ListView):
-    model = Paypoint
-    template_name = 'ehr/revenue/record_pay_list.html'
-    context_object_name = 'record_pays'
-    paginate_by = 10
-
-    def get_success_url(self):
-        next_url = self.request.GET.get('next')
-        if next_url:
-            return next_url
-        return reverse_lazy("pay_list")
-   
-    # def get_queryset(self):
-    #     return Paypoint.objects.filter(service__in=['new registration', 'follow up']).order_by('-updated')
-
-    def get_queryset(self):
-        return Paypoint.objects.filter(Q(service='new registration') | Q(service='follow up')).order_by('-updated')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        queryset = self.get_queryset()
-
-        
-        pay_total = queryset.count()
-        total_worth = queryset.filter(status=True).aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-        context['pay_total'] = pay_total
-        context['total_worth'] = total_worth
-        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context
     
 

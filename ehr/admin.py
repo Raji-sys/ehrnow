@@ -1,32 +1,6 @@
 from .models import *
 from django.contrib import admin
 
-@admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user','full_name','department','unit','phone')
-    search_fields = ('unit',)
-    list_filter = ('unit',)
-
-@admin.register(PatientData)
-class PatientAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'gender', 'age', 'phone',)
-    search_fields = ('file_no','phone')
-    list_filter = ('gender',)
-
-
-@admin.register(FollowUpVisit)
-class VisitAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'clinic', 'payment')
-    search_fields = ('patient',)
-    list_filter = ('patient__file_no',)
-
-
-@admin.register(Paypoint)
-class PaypointAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'service','status')
-    search_fields = ('status','service')
-    list_filter = ('status','service')
-
 
 @admin.register(Services)
 class ServicesAdmin(admin.ModelAdmin):
@@ -69,74 +43,10 @@ class WardAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('name',)
 
-@admin.register(Room)
-class RoomAdmin(admin.ModelAdmin):
-    list_display = ('clinic','name',)
-    search_fields = ('clinic','name',)
-    list_filter = ('clinic','name',)
-
-@admin.register(NursingDesk)
-class NursinDeskAdmin(admin.ModelAdmin):
-    list_display = ('clinic',)
-    search_fields = ('clinic',)
-    list_filter = ('clinic',)
-
-
-@admin.register(Unit)
-class UnitAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-
-
-@admin.register(ClinicalNote)
-class ClinicNoteAdmin(admin.ModelAdmin):
-    list_display = ('patient','user','note','diagnosis','needs_review','appointment')
-    search_fields = ('patient','diagnosis','needs_review','appointment')
-    list_filter = ('patient','diagnosis','needs_review','appointment')
-
-
-@admin.register(PatientHandover)
-class HandoverAdmin(admin.ModelAdmin):
-    list_display = ('patient','status','clinic','room','updated')
-    search_fields = ('patient','updated')
-    list_filter = ('patient','updated')
-
-
-@admin.register(VitalSigns)
-class VitalSignAdmin(admin.ModelAdmin):
-    list_display = ('patient',)
-    search_fields = ('patient',)
-    list_filter = ('patient',)
-
 
 @admin.register(MedicalRecord)
 class MedicalRecordAdmin(admin.ModelAdmin):
     list_display = ('name','price')
-
-
-
-@admin.register(Bill)
-class BillAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'user', 'total_amount', 'get_payment', 'created',)
-    list_filter = ('created',)
-    search_fields = ('patient__name', 'user__username')
-    readonly_fields=('patient','user','total_amount',)
-
-    def get_payment(self, obj):
-        billing = obj.items.first()  
-        return billing.payment if billing else None
-    get_payment.short_description = 'Payment'
-    get_payment.admin_order_field = 'items__payment'
-
-# class BillingAdmin(admin.ModelAdmin):
-#     list_display = ('id', 'bill', 'get_patient', 'category', 'item', 'quantity', 'payment', 'updated')
-#     list_filter = ('updated', 'category')
-#     search_fields = ('bill__patient__name', 'item__name')
-#     readonly_fields=('payment','bill',)
-
-#     def get_patient(self, obj):
-#         return obj.bill.patient if obj.bill else None
-#     get_patient.short_description = 'Patient'  # Sets column name in admin
-#     get_patient.admin_order_field = 'bill__patient'  # Allows column to be sortable
 
 
 @admin.register(TheatreItem)
@@ -159,12 +69,6 @@ class RadiologyTestAdmin(admin.ModelAdmin):
     search_fields = ('name','updated')
     list_filter = ('name','updated')
 
-
-@admin.register(Admission)
-class AdmissionAdmin(admin.ModelAdmin):
-    list_display = ('patient','ward','bed_number','updated')
-    search_fields = ('patient','ward','bed_number','updated')
-    list_filter = ('patient','ward','bed_number','updated')
 
 
 @admin.register(TheatreBooking)
@@ -208,26 +112,11 @@ class WardShiftSUmmaryNoteAdmin(admin.ModelAdmin):
     list_filter = ('nurse','updated')
 
 
-@admin.register(PrivateBill)
-class PrivateBillAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'user', 'total_amount', 'created',)
-    list_filter = ('created',)
-    search_fields = ('patient__name', 'user__username')
-    readonly_fields=('patient','user','total_amount',)
-
-
 @admin.register(PrivateTheatreItem)
 class PrivateTheatreItemAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     list_filter = ('name',)
-
-@admin.register(Wallet)
-class WalletAdmin(admin.ModelAdmin):
-    list_display = ('patient','balance')
-    search_fields = ('patient',)
-    list_filter = ('patient',)
-    readonly_fields=('patient',)
 
 
 @admin.register(WalletTransaction)
@@ -251,8 +140,9 @@ class ImplantAdmin(admin.ModelAdmin):
     list_filter = ('name','cost','updated')
 
 
-@admin.register(Archive)
-class ArchiveAdmin(admin.ModelAdmin):
-    list_display = ('title','file','updated')
-    search_fields = ('title','file','updated')
-    list_filter = ('title','updated')
+@admin.register(VisitRecord)
+class VisitRecorddmin(admin.ModelAdmin):
+    list_display = ('patient','clinic','seen','vitals','review','consultation','updated')
+    search_fields = ('patient','clinic','updated')
+    list_filter = ('patient','clinic','updated')
+

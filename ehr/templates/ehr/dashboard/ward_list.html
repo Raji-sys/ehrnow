@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="mx-20">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <section class="text-center border-cyan-700 p-2 m-1">
     {% for message in messages %}
     <div class="">
@@ -20,20 +20,20 @@
     </div>
     {% endfor %}
 </section>
-<div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden mt-1">
-    <div class="bg-white p-3 text-center">
-        <span class="text-sm text-emerald-700  uppercase">Available WARDS</span>
+<div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden mt-4">
+    <div class="bg-gradient-to-r from-emerald-600 to-sky-600 p-2 text-center">
+        <span class="text-sm text-white  uppercase">Available WARDS</span>
     </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 p-6">
 {% for w in wards %}
 <a href="{%url 'ward_details' w.id %}" class="block">
-    <div class="bg-gradient-to-r from-cyan-300 to-emerald-300  rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
+    <div class="bg-white  rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
         <div class="p-3 text-center">
-            <h3 class="text-lg font-medium text-gray-900">{{ w.name }}</h3>
-            <p class="text-sm text-gray-700">WARD</p>
+            <h3 class="text-sm font-medium text-gray-900">{{ w.name }}</h3>
+            <p class="text-xs text-gray-700">WARD</p>
         </div>
-        <div class="bg-gray-50 h-1"></div>
+        <div class="bg-gradient-to-r from-emerald-600 to-sky-600 h-1"></div>
     </div>
 </a>
 {% endfor %}

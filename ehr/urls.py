@@ -29,7 +29,6 @@ urlpatterns = [
     path('get-started/theatre', TheatreListView.as_view(), name='theatre'),
  
     path('get-started/ward/', WardListView.as_view(), name='ward_list'),
-    path('get-started/data', AuditView.as_view(), name='data'),
     path('get-started/store', StoreView.as_view(), name='store'),
 
     # Record URLs
@@ -37,12 +36,12 @@ urlpatterns = [
     path('medical-record/appointment-dash/', AppointmentDashboardView.as_view(), name='appt_dashboard'),
 
     path('record/create-patient/', PatientCreateView.as_view(), name='new_patient'),
+    path('medical_record/visit/<str:file_no>/', VisitCreateView.as_view(), name='visit_record'),
+
     path('record/patient-list/', PatientListView.as_view(), name='patient_list'),
     path('record/patient/update-patient/<int:pk>/', UpdatePatientView.as_view(), name='update_patient'),
     path('record/patient/<str:file_no>/', PatientFolderView.as_view(), name='patient_details'),
 
-    path('record/follow-up/', FollowUpListView.as_view(), name='follow_up_list'),
-    path('record/patient/follow-up/<str:file_no>/', FollowUpVisitCreateView.as_view(), name='follow_up'),
 
     path('record/patient-report/', PatientReportView.as_view(), name='patient_report'),
     path('record/report/pdf', views.patient_report_pdf, name='patient_report_pdf'),
@@ -53,16 +52,6 @@ urlpatterns = [
     path('record/appointment/update-appointment/<int:pk>/', AppointmentUpdateView.as_view(), name='update_appointment'),
     path('record/appointment/new-appointment/', NewAppointmentListView.as_view(), name='new_appt_list'),
 
-
-    # Payment Clerk URLs
-    path('revenue/paypoint-dash/record/', RevenueRecordView.as_view(), name='record_revenue'),
-    path('revenue/paypoint/<str:file_no>/', PaypointView.as_view(), name='paypoint'),
-    path('revenue/paypoint-dash/', PaypointDashboardView.as_view(), name='paypoint_dash'),
-
-    path('revenue/follow-up/<str:file_no>/', PaypointFollowUpView.as_view(), name='paypoint_follow_up'),
-    path('revenue/follow-up/', PaypointFollowUpDashboardView.as_view(), name='follow_up_pay_dash'),
-    
-
     path('get-started/service-dash', ServiceView.as_view(), name='service_dash'),
     path('revenue/add-service/', ServiceCreateView.as_view(), name='add_service'),
     path('revenue/service-list/', ServiceListView.as_view(), name='service_list'),
@@ -71,9 +60,9 @@ urlpatterns = [
     path('revenue/hospital-services/', HospitalServicesListView.as_view(), name='hospital_services'),
 
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
-    path('revenue/medical-record-list/', MedicalRecordPayListView.as_view(), name='record_pay_list'),
     path('revenue/pathology-list/', PathologyPayListView.as_view(), name='pathology_pay_list'),
     path('revenue/radiology-list/', RadiologyPayListView.as_view(), name='radiology_pay_list'),
+    path('revenue/visit-list/', VisitPayListView.as_view(), name='visit_pay_list'),
     path('revenue/billing-list/', BillingPayListView.as_view(), name='bill_pay_list'),
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
@@ -82,7 +71,6 @@ urlpatterns = [
     
     #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
-    path('nursing-station/follow-up/vital_signs/<str:file_no>/', FollowUpVitalSignCreateView.as_view(), name='follow_up_vital_signs'),
     path('nursing-desks/', NursingDeskListView.as_view(), name='nursing_desks_list'),
     path('nursing-station/<int:pk>/', NursingStationDetailView.as_view(), name='nursing_station_detail'),
     # AE
@@ -91,14 +79,16 @@ urlpatterns = [
     path('clinics/', ClinicDashView.as_view(), name='clinic_list'),
     path('clinic/<int:pk>/', ClinicDetailView.as_view(), name='clinic_details'),
     path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room'),
-    path('clinic/<int:clinic_id>/patients/<str:status>/', views.PTListView.as_view(), name='pt_list'),
+
+    path('clinic/<int:clinic_id>/waiting/', WaitingListView.as_view(), name='waiting_list'),
+    path('clinic/<int:clinic_id>/seen/', SeenListView.as_view(), name='seen_list'),
+    path('clinic/<int:clinic_id>/review/', ReviewListView.as_view(), name='review_list'),
 
     path('waiting-consultation/clinical_note/<str:file_no>/', ClinicalNoteCreateView.as_view(), name='clinical_note'),
     path('waiting-consultation/clinical_note_update/<int:pk>/', ClinicalNoteUpdateView.as_view(), name='clinical_note_update'),
    
-    path('clinic/report/', PatientHandoverReportView.as_view(), name='handover_report'),
-    path('clinic/report/pdf', views.clinic_handover_pdf, name='clinic_handover_pdf'),
-
+    path('clinic/report/', VisitReportView.as_view(), name='visit_report'),
+    path('clinic/report/pdf', views.visit_pdf, name='visit_pdf'),
 
     #admission
     path('clinic/admit-patient/<str:file_no>/', AdmissionCreateView.as_view(), name='admit_patient'),

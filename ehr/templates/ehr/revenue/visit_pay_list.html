@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}RADIOLOGY TRANSACTION HISTORY{%endblock%}
-{%block page_title%}<div class="flex justify-center p-2"><div><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>RADIOLOGY TRANSACTION HISTORY</div>
+{%block title%}VISIT TRANSACTION HISTORY{%endblock%}
+{%block page_title%}<div class="flex justify-center p-2"><div><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>HOSPITAL VISIT TRANSACTION HISTORY</div>
 <div class="">
-  <span class="shadow-sm shadow-cyan-900 gap-4 bg-cyan-600 text-white uppercase text-xs border-b-2 border-cyan-900 py-2 px-4 rounded-xl mx-2 w-fit">
-    <span class=" shadow-white text-xs p-1 rounded-full bg-white text-cyan-900">{{pay_total}}</span>&nbsp;transactions 
+  <span class="shadow-sm shadow-sky-900 gap-4 bg-sky-600 text-white uppercase text-xs border-b-2 border-sky-900 py-2 px-4 rounded-xl mx-2 w-fit">
+    <span class=" shadow-white text-xs p-1 rounded-full bg-white text-sky-900">{{pay_total}}</span>&nbsp;transactions 
         {% if request.GET.urlencode %}
         <span>
-            <a href="?" class=" p-2 focus:opacity-10  focus:border-cyan-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
+            <a href="?" class=" p-2 focus:opacity-10  focus:border-sky-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
                 <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
             </span>
             {%endif%}
@@ -25,7 +25,7 @@
 {%endblock%}
 {%block content %}
 <div class="">
-    <section class="text-center border-cyan-700 p-2 m-1">
+    <section class="text-center border-sky-700 p-2 m-1">
         {% for message in messages %}
         <div class="mt-2 ">
           <div class="uk-alert-success rounded-2xl text-xs w-fit mx-auto" uk-alert>
@@ -37,40 +37,40 @@
             
       </section>
       
-    <div class=" mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-cyan-50">
+    <div class=" mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-sky-50">
       <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="min-w-full divide-y divide-cyan-200">
-          <thead class="bg-cyan-50">
+        <table class="min-w-full divide-y divide-sky-200">
+          <thead class="bg-sky-50">
             <tr class="text-xs">
-                <th class="p-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">
+                <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
                   #
                 </th>
-              <th class="p-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
               REVENUE OFFICER
               </th>
-              <th class="p-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
                 PATIENT
               </th>
-              <th class="p-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
                 SERVICE
               </th>
-              <th class="p-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
                 PRICE
               </th>
-              <th class="p-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
                 PAYMENT STATUS
               </th>
-              <th class="p-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
                 TRANSACTION DATE 
               </th>
-              <th class="p-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
                 PROCESS
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-cyan-200">
-            {% for p in radiology_pays %}
-            <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 uppercase">
+          <tbody class="bg-white divide-y divide-sky-200">
+            {% for p in visit_pays %}
+            <tr class="text-xs bg-sky-100 hover:bg-sky-200 transition-colors duration-300 uppercase">
                 <td class="p-3 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
@@ -103,7 +103,7 @@
               </td>
             <td class="p-3 whitespace-nowrap">
                 <span class="space-x-4">
-                    <a href="{% url 'update_pay' p.id %}?next={%url 'radiology_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-600"></i></a>
+                    <a href="{% url 'update_pay' p.id %}?next={%url 'visit_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-600"></i></a>
                 </span>
               </td>
               <td>
@@ -112,7 +112,7 @@
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="p-3 text-center text-cyan-500">
+              <td colspan="2" class="p-3 text-center text-sky-500">
                 No transactions found
               </td>
             </tr>
@@ -123,14 +123,14 @@
           <div class="pagination flex justify-center">
               <span class="flex items-center">
                   {% if page_obj.has_previous %}
-                  <a href="?page=1" class="p-1 rounded-lg bg-cyan-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
-                  <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-cyan-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                  <a href="?page=1" class="p-1 rounded-lg bg-sky-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                  <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-sky-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
                   {% endif %}
               </span>
                   <span class="flex item-center"> 
                       {% if page_obj.has_next %}
-                      <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-cyan-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
-                      <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-cyan-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                      <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-sky-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                      <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-sky-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
                       {% endif %}
                   </span>
               </div>

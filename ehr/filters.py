@@ -36,17 +36,21 @@ class PatientReportFilter(django_filters.FilterSet):
         fields = ['file_no','gender','marital_status','religion','occupation','nationality','zone','state','lga','address']
 
 
-class PatientHandoverFilter(django_filters.FilterSet):
+class VisitFilter(django_filters.FilterSet):
     dob=django_filters.CharFilter(label='DATE OF BIRTH', field_name="patient__dob",lookup_expr='exact',widget=forms.DateInput(attrs={'type': 'date'}))
     age_start = django_filters.NumberFilter(label="AGE R1", field_name="patient__age", lookup_expr='gte',)  
     age_end = django_filters.NumberFilter(label="AGE R2", field_name="patient__age", lookup_expr='lte',)
     clinic = django_filters.ModelChoiceFilter(label='CLINIC', queryset=Clinic.objects.all(),field_name='clinic',to_field_name='id',lookup_expr='exact',widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
-    status = django_filters.ChoiceFilter(label='STATUS', choices=PatientHandover.STATUS,widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
+    seen = django_filters.BooleanFilter(
+        label='SEEN',
+        field_name='seen',
+        widget=forms.CheckboxInput
+    )
     updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
  
     class Meta:
-        model=PatientHandover
-        fields=['clinic','status','updated']
+        model=VisitRecord
+        fields=['clinic','seen']
 
 
 class AppointmentFilter(django_filters.FilterSet):

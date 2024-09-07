@@ -16,11 +16,11 @@
 <link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
 <!-- UIkit CSS -->
 <link rel="stylesheet" href="{% static 'uikit/css/uikit.min.css' %}" type="text/css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/css/uikit.min.css" />
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/css/uikit.min.css" /> -->
 
 <!-- UIkit JS -->
-	<script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit-icons.min.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.21.4/dist/js/uikit-icons.min.js"></script> -->
 <script src="{% static 'uikit/js/uikit.min.js' %}"></script>
 <script src="{% static 'uikit/js/uikit-icons.js' %}"></script>
 
@@ -34,15 +34,15 @@
 <link rel="stylesheet" href="{% static 'css/darcula.min.css' %}">
 <script src="{% static 'js/highlight.min.js' %}"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/quill.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.min.css" rel="stylesheet">
+<!-- <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/quill.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.min.css" rel="stylesheet"> -->
 <link href="{% static 'css/quill.snow.css' %}" rel="stylesheet">
 <script src="{% static 'js/quill.min.js' %}"></script>
 
 <script src="{% static 'js/quill.imageCompressor.min.js' %}"></script>
 <script src="{% static 'js/quill-resize-module.min.js' %}"></script>
 <script src="{%static 'js/jquery-3.6.0.min.js'%}"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
 {% include 'django_quill/media.html' %}
 </head>
@@ -82,7 +82,7 @@
 
   </style>
 		{% if request.user.is_authenticated %}
-		<header class="bg-emerald-500 p-1 shadow-md md:mx-20 mx-2 rounded-t">
+		<header class="bg-gradient-to-r from-emerald-600 to-sky-600 p-2 shadow-md md:mx-20 mx-2">
 			<nav class="flex flex-row flex-wrap justify-between">
 			  <div class="flex align-middle">
 				<div class="border-4 border-white bg-green-800 rounded-xl p-1 text-xs text-white text-center flex justify-center items-center align-middle mr-4">
@@ -91,7 +91,7 @@
 				  </a>
 				</div>
 				{%if request.user.is_superuser%}
-				<a href="{%url 'admin:index' %}" class="text-white m-4 uppercase">
+				<a href="{%url 'admin:index' %}" class="text-white m-4 uppercase text-xs">
 				  control panel
 				</a>
 				{%endif%}

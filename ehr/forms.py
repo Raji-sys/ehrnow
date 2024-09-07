@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django import forms
 from .models import *
 from django.forms import inlineformset_factory
+from django.utils.translation import gettext_lazy as _
 
 class CustomUserCreationForm(UserCreationForm):
     middle_name = forms.CharField(max_length=30, required=False)
@@ -67,18 +68,36 @@ class PatientForm(forms.ModelForm):
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
 
+
 class VisitForm(forms.ModelForm):
     class Meta:
-        model = FollowUpVisit
-        fields = ['clinic']
+        model = VisitRecord
+        fields = ['record', 'clinic']
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, file_no=None, **kwargs):
         super(VisitForm, self).__init__(*args, **kwargs)
+        self.file_no = file_no
+        # Filter records to only show 'new registration' and 'follow up'
+        self.fields['record'].queryset = MedicalRecord.objects.filter(name__in=['new registration', 'follow up'])
         for field in self.fields.values():
-            # field.required=True
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if self.file_no:
+            patient = PatientData.objects.get(file_no=self.file_no)
+            existing_open_visit = VisitRecord.objects.filter(
+                patient=patient,
+                seen=False
+            ).exists()
+            if existing_open_visit:
+                raise ValidationError(
+                    _("This patient already has an open visit. Please close the existing visit before creating a new one."),
+                    code='duplicate_visit'
+                )
+        return cleaned_data
+    
 
 class VitalSignsForm(forms.ModelForm):
     class Meta:
@@ -89,10 +108,7 @@ class VitalSignsForm(forms.ModelForm):
         clinic = kwargs.pop('clinic', None)
         super(VitalSignsForm, self).__init__(*args, **kwargs)
         if clinic:
-            print(f"Filtering rooms by clinic: {clinic}")
             self.fields['room'].queryset = Room.objects.filter(clinic=clinic)
-        else:
-            print("No clinic passed to form.")
 
         # Additional customization of fields' widgets
         for field in self.fields.values():

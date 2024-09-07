@@ -79,33 +79,3 @@ class RecordAdmin(admin.ModelAdmin):
 
     issued_by_username.short_description = "Issued By"
 
-
-@admin.register(Dispensary)
-class DispenseAdmin(admin.ModelAdmin):
-    exclude = ('balance',)
-    list_display = ['drug', 'patient','quantity','dispensed_date']
-    search_fields = ['drug','patient','quantity','drug__current_balance', 'dispensed_date']
-    list_filter = ['drug','patient','quantity','dispensed_date']
-    list_per_page = 10
-
-    def save_model(self, request, obj, form, change):
-        try:
-            obj.issued_by = request.user
-            super().save_model(request, obj, form, change)
-        except ValidationError as e:
-            messages.error(request, f"Error: {e.message}")
-
-    def drug_date(self, obj):
-        return obj.drug.date_added
-
-    def issued_by_username(self, obj):
-        return obj.issued_by.username if obj.issued_by else None
-
-    issued_by_username.short_description = "Issued By"
-
-
-@admin.register(Prescription)
-class PrescriptionAdmin(admin.ModelAdmin):
-    list_display = ('patient','drug','quantity','updated')
-    search_fields = ('patient','drug','quantity','updated')
-    list_filter = ('patient','drug','quantity','updated')

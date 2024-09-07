@@ -47,6 +47,7 @@
 </style>
 <ul class="text-xs text-cyan-700 uk-subnav uk-subnav-pill uppercase flex flex-wrap justify-center gap-2 border-b-2 border-cyan-200 mb-3  bg-gray-50" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
   <li><a href="#" class="rounded-lg">BIODATA</a></li>
+  <li><a href="#" class="rounded-lg">VISIT</a></li>
   <li><a href="#" class="rounded-lg">WALLET TRANSACTION HISTORY</a></li>
   <li><a href="#" class="rounded-lg">PAYMENT HISTORY</a></li>
   <li><a href="#" class="rounded-lg">VITAL SIGNS</a></li>
@@ -103,6 +104,32 @@
                 <td class=" p-3">{{ patient.nok_addr|default_if_none:''|upper }}</td>
                 
               </tr>
+            </tbody>
+          </table>
+        </div>
+     </div>
+      <div class="">
+        <div>
+          <a href="{%url 'visit_record' patient.file_no%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i></a>
+        </div>        
+        <div class="overflow-x-auto max-h-[50vh] p-2">
+          <table class="min-w-full divide-y divide-cyan-200 mb-4">
+            <thead class="bg-cyan-50">
+              <tr class=" text-xs">
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">CLINIC</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">REASON</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DATE</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-cyan-200">
+              {%for v in visits %}
+              <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 text-xs">
+                <td class=" p-3">{{ v.clinic|default_if_none:''|upper}}</td>
+                <td class=" p-3">{{ v.record|default_if_none:''|upper}}</td>
+                <td class=" p-3">{{ v.updated|default_if_none:''}}</td>
+                
+              </tr>
+              {%endfor%}
             </tbody>
           </table>
         </div>

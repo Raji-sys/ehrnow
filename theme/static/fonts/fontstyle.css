@@ -8,14 +8,6 @@
 	font-style: normal;
   }
   
-  /* Import Lato Bold */
-  @font-face {
-	font-family: 'Kode_Mono';
-	src: url('../fonts/Kode_Mono/static/KodeMono-Bold.ttf');
-	font-weight:400;
-	font-style: normal;
-	
-  }
   .enom{
-	font-family: 'Kode_Mono';
+	font-family: 'Lato';
 }

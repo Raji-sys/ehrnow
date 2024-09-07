@@ -34,7 +34,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-emerald-200">
-                    {% for h in handovers %}
+                    {% for h in visits %}
                     <tr class="text-xs bg-emerald-50 hover:bg-emerald-200 transition-colors duration-300">
                         <td class="p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                         <td class="p-3 whitespace-nowrap">{{ h.patient.file_no|default_if_none:'' }}</td>
@@ -43,7 +43,7 @@
                         <td class="p-3 whitespace-nowrap">{{ h.clinic|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap">{{ h.room|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap">
-                            <a href="{% url h.vitals_url h.patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">
+                            <a href="{% url 'vital_signs' h.patient.file_no %}" class="text-sm text-blue-500 hover:text-blue-700">
                                 <i class="fa-solid fa-heartbeat fa-2xl"></i>
                             </a>
                         </td>

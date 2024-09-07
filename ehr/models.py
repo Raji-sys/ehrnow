@@ -46,6 +46,7 @@ class Clinic(models.Model):
     def __str__(self):
         return f"{self.name}" if self.name else "unnamed"
 
+
 class NursingDesk(models.Model):
     clinic = models.OneToOneField(Clinic, on_delete=models.CASCADE, related_name='nursing_desk')
 
@@ -54,6 +55,7 @@ class NursingDesk(models.Model):
 
     def __str__(self):
         return f"{self.clinic} nursing desk" if self.clinic else ""
+
 
 class Room(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='consultation_rooms', null=True, blank=True)
@@ -204,7 +206,6 @@ class PatientData(models.Model):
            ('GRANDSON','GRANDSON'),('GRANDDAUGHTER','GRANDAUGHTER'),('COUSIN','COUSIN'),('OTHER','OTHER'))
     nok_rel = models.CharField('relationship with next of kin',choices=rel, max_length=300, null=True, blank=True)
     # nok_photo = models.ImageField('first next of kin photo', null=True, blank=True)
-    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -297,14 +298,6 @@ class Paypoint(models.Model):
         return f"{self.status}"
 
 
-class FollowUpVisit(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE,related_name='follow_up')
-    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True,blank=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField('date', auto_now_add=True)
-
-
 class MedicalRecord(models.Model):
     services=(('new registration','new registration'),('follow up','follow up'),('card replacement','card replacement'))
     name = models.CharField(choices=services,max_length=100, null=True, blank=True)
@@ -317,35 +310,31 @@ class MedicalRecord(models.Model):
     class Meta:
         verbose_name_plural = 'medical record'
 
-
-class PatientHandover(models.Model):
-    STATUS = [
-        ('waiting for payment', 'Waiting for Payment'),
-        ('waiting for follow up payment', 'Waiting for Follow Up Payment'),
-        ('waiting for clinic assignment', 'Waiting for Clinic Assignment'),
-        ('waiting for vital signs', 'Waiting for Vital Signs'),
-        ('waiting for consultation', 'Waiting for Consultation'),
-        ('seen', 'Seen'),
-        ('awaiting review', 'Awaiting Review'),
-    ]
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='handovers')
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True)
+class VisitRecord(models.Model):
+    record=models.ForeignKey(MedicalRecord, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="visits")
+    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True,blank=True)    
+    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="visit_record")
+    payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="record_payment")
     nursing_desk = models.ForeignKey(NursingDesk, on_delete=models.SET_NULL, null=True, blank=True)
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.CharField(max_length=30, null=True, choices=STATUS)
-    updated = models.DateField(auto_now=True)
-    is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return f"Handover for {self.patient.file_no} in {self.clinic} - {self.status}"
-
-    def close_handover(self):
-        self.is_active = False
-        self.status = 'seen'
+    vitals=models.BooleanField(default=False)
+    consultation=models.BooleanField(default=False)
+    seen=models.BooleanField(default=False)
+    review=models.BooleanField(default=False)
+    updated = models.DateTimeField(auto_now=True)
+    
+    def close_visit(self):
+        self.consultation = False
+        self.seen = True
+        self.review = False
         self.save()
 
     def __str__(self):
-        return f"Handover for {self.patient.file_no} in {self.clinic} with {self.room} room"
+        return f"{self.patient}"
+
+    class Meta:
+        verbose_name_plural = 'visit record'
+
 
 class Appointment(models.Model):
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
@@ -408,7 +397,6 @@ class RadiologyResult(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     test = models.ForeignKey(RadiologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="results")
     patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="radiology_results")
-    dicom_file = models.FileField(upload_to='dicom_files/', null=True, blank=True)
     local_file_path = models.CharField(max_length=255, null=True, blank=True)    
     cleared = models.BooleanField(default=False)
     comments = models.CharField(max_length=200, null=True, blank=True)
