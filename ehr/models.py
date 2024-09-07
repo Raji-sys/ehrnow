@@ -313,6 +313,7 @@ class MedicalRecord(models.Model):
 class VisitRecord(models.Model):
     record=models.ForeignKey(MedicalRecord, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="visits")
     clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True,blank=True)    
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
     patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="visit_record")
     payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="record_payment")
     nursing_desk = models.ForeignKey(NursingDesk, on_delete=models.SET_NULL, null=True, blank=True)
@@ -322,6 +323,7 @@ class VisitRecord(models.Model):
     seen=models.BooleanField(default=False)
     review=models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
+    created = models.DateField(auto_now=True)
     
     def close_visit(self):
         self.consultation = False

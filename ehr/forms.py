@@ -72,7 +72,7 @@ class PatientForm(forms.ModelForm):
 class VisitForm(forms.ModelForm):
     class Meta:
         model = VisitRecord
-        fields = ['record', 'clinic']
+        fields = ['record', 'clinic','team']
     
     def __init__(self, *args, file_no=None, **kwargs):
         super(VisitForm, self).__init__(*args, **kwargs)
@@ -80,6 +80,7 @@ class VisitForm(forms.ModelForm):
         # Filter records to only show 'new registration' and 'follow up'
         self.fields['record'].queryset = MedicalRecord.objects.filter(name__in=['new registration', 'follow up'])
         for field in self.fields.values():
+            field.required=True
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
@@ -459,3 +460,15 @@ class ArchiveForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
+
+class FundWalletForm(forms.ModelForm):
+    class Meta:
+        model = WalletTransaction
+        fields = ['amount']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['amount'].widget.attrs.update({
+            'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+        })
