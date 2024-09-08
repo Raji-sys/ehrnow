@@ -513,24 +513,30 @@ def patient_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class VisitReportView(DoctorNurseRecordRequiredMixin, ListView):
+
+class VisitReportView(ListView):
     model = VisitRecord
+    filterset_class = VisitFilter
     template_name = 'ehr/clinic/report.html'
     context_object_name = 'visits'
-    paginate_by = 10
+    paginate_by = 20
 
+    
     def get_queryset(self):
-        queryset = super().get_queryset().order_by('-updated')
-        self.filterset = VisitFilter(self.request.GET, queryset=queryset)
-        return self.filterset.qs.select_related('patient', 'clinic')  # Use select_related for efficiency
+        # Get the filtered queryset
+        self.filterset = VisitFilter(self.request.GET, queryset=VisitRecord.objects.select_related('patient', 'clinic','team').all())
+        return self.filterset.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['visitFilter'] = self.filterset
+        
+        # Add total patient count and filtered count to the context
         context['total_patient'] = PatientData.objects.count()
         context['filtered_count'] = self.filterset.qs.count()
+        context['visitFilter'] = self.filterset
+
         return context
-    
+
 
 @login_required
 def visit_pdf(request):
@@ -860,7 +866,8 @@ class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
         context['waiting_count'] = VisitRecord.objects.filter(
             clinic=self.object,
             vitals=True,
-            seen=False
+            seen=False,
+            review=False
         ).count()
         context['seen_count'] = VisitRecord.objects.filter(
             clinic=self.object,
@@ -896,9 +903,10 @@ class VisitListView(DoctorNurseRecordRequiredMixin, ListView):
 class WaitingListView(VisitListView):
     filter_params = {
         'vitals': True,
-        'seen': False
+        'seen': False,
+        'review':False
     }
-    template_name = 'ehr/clinic/waiting_list.html'  # Custom template if needed
+    template_name = 'ehr/clinic/waiting_list.html'  
 
 class SeenListView(VisitListView):
     filter_params = {
@@ -958,7 +966,6 @@ class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
 
     def get_success_url(self):
         return self.object.patient.get_absolute_url()
-
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

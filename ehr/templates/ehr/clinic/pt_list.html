@@ -17,40 +17,44 @@
         <div class="">
             <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
                 <a href class="uk-alert-close font-bold" uk-close></a>
-                <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
+                <p class="text-green-700 font-medium uppercase p-4">{{ message }}</p>
             </div>
         </div>
         {% endfor %}
     </section>
     
-    <div class="mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-emerald-50">
-        <div class="overflow-x-auto uppercase">
-            <table class="min-w-full divide-y divide-emerald-500">
+    <div class="mx-2 md:mx-20 rounded-b-xl bg-sky-50 shadow-md p-2">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-sky-300">
                 <thead class="bg-emerald-100">
-                    <tr class="text-xs">
-                        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">#</th>
-                        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">FILE NUMBER</th>
-                        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PATIENT NAME</th>
-                        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PHONE NUMBER</th>
-                        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">CLINIC</th>
-                        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">TEAM</th>
-                        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">ROOM</th>
-                        <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">PROCESS</th>
+                    <tr class="text-xs text-emerald-600">
+                        <th class="p-2 text-left font-medium uppercase">#</th>
+                        <th class="p-2 text-left font-medium uppercase">File Number</th>
+                        <th class="p-2 text-left font-medium uppercase">Patient Name</th>
+                        <th class="p-2 text-left font-medium uppercase">Phone Number</th>
+                        <th class="p-2 text-left font-medium uppercase">Gender</th>
+                        <th class="p-2 text-left font-medium uppercase">Age</th>
+                        <th class="p-2 text-left font-medium uppercase">Clinic</th>
+                        <th class="p-2 text-left font-medium uppercase">Team</th>
+                        <th class="p-2 text-left font-medium uppercase">Room</th>
+                        <th class="p-2 text-left font-medium uppercase">Process</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-emerald-200">
+                <tbody class="bg-white divide-y divide-sky-100">
                     {% for v in visits %}
-                    <tr class="bg-emerald-50 hover:bg-emerald-200 transition-colors duration-300 text-xs">
-                        <td class="p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                        <td class="p-3 whitespace-nowrap">{{ v.patient.file_no|default_if_none:'' }}</td>
-                        <td class="p-3 whitespace-nowrap">{{ v.patient.full_name|default_if_none:'' }}</td>
-                        <td class="p-3 whitespace-nowrap">{{ v.patient.phone|default_if_none:'' }}</td>
-                        <td class="p-3 whitespace-nowrap">{{ v.clinic|default_if_none:'' }}</td>
-                        <td class="p-3 whitespace-nowrap">{{ v.team|default_if_none:'' }}</td>
-                        <td class="p-3 whitespace-nowrap">{{ v.room|default_if_none:'' }}</td>
-                        <td class="p-3 whitespace-nowrap">
-                            <a href="{{ v.patient.get_absolute_url }}" class="text-green-500" target="_blank">
-                                <i class="fa-solid fa-folder-closed fa-2xl"></i>
+                    <tr class="bg-sky-50 hover:bg-sky-100 transition-colors duration-300 text-xs">
+                        <td class="p-2 whitespace-nowrap">{{ forloop.counter }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ v.patient.file_no|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ v.patient.full_name|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ v.patient.phone|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ v.patient.gender|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ v.patient.age|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ v.clinic|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ v.team|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ v.room|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">
+                            <a href="{{ v.patient.get_absolute_url }}" class="text-emerald-500 hover:text-emerald-700" target="_blank">
+                                <i class="fa-solid fa-folder-closed text-base"></i>
                             </a>
                         </td>
                     </tr>
@@ -59,5 +63,6 @@
             </table>
         </div>
     </div>
+    
 </div>
 {% endblock %}

@@ -37,37 +37,58 @@ class PatientReportFilter(django_filters.FilterSet):
 
 
 class VisitFilter(django_filters.FilterSet):
-    gender=django_filters.CharFilter(label='GENDER', field_name="patient__gender",lookup_expr='iexact')
-    age_start = django_filters.NumberFilter(label="AGE R1", field_name="patient__age", lookup_expr='gte',)  
-    age_end = django_filters.NumberFilter(label="AGE R2", field_name="patient__age", lookup_expr='lte',)
-    clinic = django_filters.ModelChoiceFilter(label='CLINIC', queryset=Clinic.objects.all(),field_name='clinic',to_field_name='id',lookup_expr='exact',widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
-    team = django_filters.ModelChoiceFilter(label='TEAM', queryset=Team.objects.all(),field_name='clinic',to_field_name='id',lookup_expr='exact',widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
-    seen = django_filters.BooleanFilter(
-        label='SEEN',
-        field_name='seen',
-        widget=forms.CheckboxInput
+    clinic = django_filters.ModelChoiceFilter(
+        queryset=Clinic.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+        })
     )
-    consultation = django_filters.BooleanFilter(
-        label='WAITING FOR DOCTOR',
-        field_name='consultation',
-        widget=forms.CheckboxInput
+    
+    team = django_filters.ModelChoiceFilter(
+        queryset=Team.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+        }),
     )
-    vitals = django_filters.BooleanFilter(
-        label='WAITING FOR VITALS',
-        field_name='vitals',
-        widget=forms.CheckboxInput
+    
+    created = django_filters.DateFilter(
+        label="Date",
+        field_name="created",
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+        }),
+        input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y']
     )
-    review = django_filters.BooleanFilter(
-        label='WAITING FOR REVIEW',
-        field_name='review',
-        widget=forms.CheckboxInput
+    
+    gender = django_filters.ChoiceFilter(
+        field_name='patient__gender',
+        choices=PatientData.sex,
+        label='Gender',
+        widget=forms.Select(attrs={
+            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-zinc-800 rounded shadow-sm shadow-zinc-600 border-zinc-600 border'
+        })
     )
-    created = django_filters.DateFilter(label="DATE", field_name="created", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
- 
-    class Meta:
-        model=VisitRecord
-        fields=['clinic','seen','consultation','vitals','review','created']
+    age_min = django_filters.NumberFilter(
+        field_name='patient__age',
+        lookup_expr='gte',
+        label='MIN AGE',
+        widget=forms.NumberInput(attrs={
+            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+        })
+    )
 
+    age_max = django_filters.NumberFilter(
+        field_name='patient__age',
+        lookup_expr='lte',
+        label='MAX AGE',
+        widget=forms.NumberInput(attrs={
+            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+        })
+    )
+    class Meta:
+        model = VisitRecord
+        fields = ['clinic','team','created']
 
 class AppointmentFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(label="DATE", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])

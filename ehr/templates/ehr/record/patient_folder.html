@@ -117,6 +117,7 @@
             <thead class="bg-cyan-50">
               <tr class=" text-xs">
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">CLINIC</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">TEAM</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">REASON</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DATE</th>
               </tr>
@@ -125,6 +126,7 @@
               {%for v in visits %}
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 text-xs">
                 <td class=" p-3">{{ v.clinic|default_if_none:''|upper}}</td>
+                <td class=" p-3">{{ v.team|default_if_none:''|upper}}</td>
                 <td class=" p-3">{{ v.record|default_if_none:''|upper}}</td>
                 <td class=" p-3">{{ v.updated|default_if_none:''}}</td>
                 
