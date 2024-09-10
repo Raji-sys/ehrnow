@@ -519,13 +519,13 @@ class VisitReportView(ListView):
     filterset_class = VisitFilter
     template_name = 'ehr/clinic/report.html'
     context_object_name = 'visits'
-    paginate_by = 20
+    paginate_by = 10
 
     
     def get_queryset(self):
         # Get the filtered queryset
         self.filterset = VisitFilter(self.request.GET, queryset=VisitRecord.objects.select_related('patient', 'clinic','team').all())
-        return self.filterset.qs
+        return self.filterset.qs.order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

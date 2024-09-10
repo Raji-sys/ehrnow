@@ -1,3 +1,4 @@
+from cProfile import label
 from random import choices
 import django_filters
 from django import forms
@@ -38,6 +39,7 @@ class PatientReportFilter(django_filters.FilterSet):
 
 class VisitFilter(django_filters.FilterSet):
     clinic = django_filters.ModelChoiceFilter(
+        label='CLINIC',
         queryset=Clinic.objects.all(),
         widget=forms.Select(attrs={
             'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
@@ -46,13 +48,14 @@ class VisitFilter(django_filters.FilterSet):
     
     team = django_filters.ModelChoiceFilter(
         queryset=Team.objects.all(),
+        label='TEAM',
         widget=forms.Select(attrs={
             'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
         }),
     )
     
     created = django_filters.DateFilter(
-        label="Date",
+        label="DATE",
         field_name="created",
         widget=forms.DateInput(attrs={
             'type': 'date',
@@ -64,7 +67,7 @@ class VisitFilter(django_filters.FilterSet):
     gender = django_filters.ChoiceFilter(
         field_name='patient__gender',
         choices=PatientData.sex,
-        label='Gender',
+        label='GENDER',
         widget=forms.Select(attrs={
             'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-zinc-800 rounded shadow-sm shadow-zinc-600 border-zinc-600 border'
         })

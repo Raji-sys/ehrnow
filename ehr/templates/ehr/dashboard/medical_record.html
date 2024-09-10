@@ -13,57 +13,49 @@
     </div>
     {% endfor %}
 </section>
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<div class="md:mx-20 mx-auto lg:py-8 px-6 lg:px-12 py-4">
     <div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden mt-1">
         <div class="bg-gradient-to-r from-emerald-600 to-sky-600 p-2 text-center">
             <span class="text-sm text-white  uppercase">manage patient</span>
         </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-8 bg-gray-100 uppercase">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-12 bg-gray-100 uppercase">
         <a href="{% url 'new_patient' %}" class="group">
           <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 text-center hover:bg-emerald-50 transform hover:-translate-y-1">
-            <i class="fas fa-user-plus text-2xl text-emerald-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
+            <i class="fas fa-user-plus fa-2x text-emerald-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
             <div class="text-xs font-medium text-gray-800 group-hover:text-emerald-700">New Registration</div>
           </div>
         </a>
-        <a href="#" class="group">
+        <a href="{% url 'appt_dashboard' %}" class="group">
           <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 text-center hover:bg-purple-50 transform hover:-translate-y-1">
-            <i class="fas fa-clipboard-check text-2xl text-purple-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
-            <div class="text-xs font-medium text-gray-800 group-hover:text-purple-700">Follow Up Visit</div>
+            <i class="fas fa-calendar-alt fa-2x text-fuchsia-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
+            <div class="text-xs font-medium text-gray-800 group-hover:text-fuchsia-700">Appointment Schedule</div>
           </div>
         </a>
         <a href="{% url 'patient_movement' %}" class="group">
           <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 text-center hover:bg-cyan-50 transform hover:-translate-y-1">
-            <i class="fas fa-walking text-2xl text-cyan-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
+            <i class="fas fa-walking fa-2x text-cyan-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
             <div class="text-xs font-medium text-gray-800 group-hover:text-cyan-700">Patient Movement</div>
           </div>
         </a>
         <a href="{% url 'patient_list' %}" class="group">
           <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 text-center hover:bg-amber-50 transform hover:-translate-y-1">
-            <i class="fas fa-list-ol text-2xl text-amber-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
+            <i class="fas fa-list-ol fa-2x text-amber-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
             <div class="text-xs font-medium text-gray-800 group-hover:text-amber-700">List of Patients</div>
           </div>
         </a>
         <a href="{% url 'patient_report' %}" class="group">
           <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 text-center hover:bg-indigo-50 transform hover:-translate-y-1">
-            <i class="fas fa-file-medical-alt text-2xl text-indigo-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
+            <i class="fas fa-file-medical-alt fa-2x text-indigo-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
             <div class="text-xs font-medium text-gray-800 group-hover:text-indigo-700">Patient Report</div>
           </div>
         </a>
         <a href="{% url 'patient_stats' %}" class="group">
           <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 text-center hover:bg-rose-50 transform hover:-translate-y-1">
-            <i class="fas fa-chart-pie text-2xl text-rose-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
+            <i class="fas fa-chart-pie fa-2x text-rose-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
             <div class="text-xs font-medium text-gray-800 group-hover:text-rose-700">Patient Statistics</div>
           </div>
         </a>
       </div>
   
-      <div class="p-8 border-t border-gray-200 bg-gray-50 uppercase">
-        <a href="{% url 'appt_dashboard' %}" class="block group">
-          <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 text-center mx-auto max-w-sm hover:bg-fuchsia-50 transform hover:-translate-y-1">
-            <i class="fas fa-calendar-alt text-5xl text-fuchsia-500 mb-4 group-hover:scale-110 transition-all duration-300"></i>
-            <div class="text-xs font-medium text-gray-800 group-hover:text-fuchsia-700">Appointment Schedule</div>
-          </div>
-        </a>
-      </div>
   </div>
 {%endblock%}

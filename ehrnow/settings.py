@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'tailwind',
     'theme',
-    # 'django_browser_reload',
     'django_filters',
     'django_fastdev',
     'import_export',
@@ -47,8 +46,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'django_browser_reload.middleware.BrowserReloadMiddleware',
-
 ]
 
 ROOT_URLCONF = 'ehrnow.urls'
@@ -133,21 +130,12 @@ LOGIN_URL="/login/"
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# Base directory of the project
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-DICOM_FILES_DIR = os.path.join(MEDIA_ROOT, 'dicom_files')
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'node_modules', 'cornerstone-tools', 'dist'),
-# ]
 
-# STATICFILES_FINDERS = [
-#     'compressor.finders.CompressorFinder',
-# ]
-
-# COMPRESS_ENABLED = True
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'staticfiles'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -175,7 +163,4 @@ QUILL_CONFIGS = {
             ]
         }
     }
-}
-MIME_TYPES = {
-    'dcm': 'application/dicom',
 }

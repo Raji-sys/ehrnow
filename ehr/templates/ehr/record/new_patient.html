@@ -3,7 +3,7 @@
 {%block title%}NEW PATIENT REGISTRATION{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>NEW PATIENT REGISTRATION</div>{%endblock%}
 {%block content %}
-    <div class="p-2 rounded-xl bg-white mx-2 md:mx-20 mt-2">
+    <div class="p-2 rounded-xl bg-white mx-2 md:mx-20 mt-4">
       <section class="text-center border-cyan-700 p-1 m-1">
         {% for message in messages %}
         <div class="mt-1">
@@ -24,7 +24,7 @@
     {% csrf_token %}
     <div class="uppercase text-cyan-900">
         <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">enter patient information</p>
-        <div class="grid md:grid-cols-5 p-4 gap-4">
+        <div class="grid grid-cols-3 md:grid-cols-4 p-4 gap-4">
       {% for field in form %}
         <div class="text-center text-xs">
             <div class="">
