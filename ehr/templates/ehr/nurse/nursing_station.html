@@ -43,8 +43,8 @@
                         <td class="p-2 whitespace-nowrap">{{ h.patient.file_no|default_if_none:'' }}</td>
                         <td class="p-2 whitespace-nowrap">{{ h.patient.full_name|default_if_none:'' }}</td>
                         <td class="p-2 whitespace-nowrap">{{ h.patient.phone|default_if_none:'' }}</td>
-                        <td class="p-2 whitespace-nowrap">{{ v.patient.gender|default_if_none:'' }}</td>
-                        <td class="p-2 whitespace-nowrap">{{ v.patient.age|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ h.patient.gender|default_if_none:'' }}</td>
+                        <td class="p-2 whitespace-nowrap">{{ h.patient.age|default_if_none:'' }}</td>
                         <td class="p-2 whitespace-nowrap">{{ h.clinic|default_if_none:'' }}</td>
                         <td class="p-2 whitespace-nowrap">{{ h.team|default_if_none:'' }}</td>
                         <td class="p-2 whitespace-nowrap">{{ h.room|default_if_none:'' }}</td>
