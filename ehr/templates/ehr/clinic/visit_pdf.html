@@ -100,7 +100,7 @@ body {
     <hr>
         <table >
             <tr>
-        <th colspan="7">FILTERED BY:&nbsp;{{ result|upper }}</th>
+        <th colspan="10">FILTERED BY:&nbsp;{{ result|upper }}</th>
     </tr>
         <tbody >
             <tr>
@@ -110,6 +110,9 @@ body {
                 <td><span class="variable">NAME</span></td>
                 <td><span class="variable">AGE</span></td>
                 <td><span class="variable">STATUS</span></td>
+                <td><span class="variable">CLINIC</span></td>
+                <td><span class="variable">TEAM</span></td>
+                <td><span class="variable">DIAGNOSIS</span></td>
                 <td><span class="variable">DATE</span></td>
             </tr>
               {% for i in f %}        
@@ -132,6 +135,15 @@ body {
             <td class="value">
             {{i.status|default_if_none:''|upper}}
             </td>
+            <td class="value">
+            {{i.clinic|default_if_none:''|upper}}
+            </td>
+            <td class="value">
+            {{i.team|default_if_none:''|upper}}
+            </td>
+            <td class="value">
+              {{ i.latest_diagnosis|default_if_none:'No Diagnosis'|upper }}
+          </td>          
             <td class="value">
             {{i.updated}}
             </td>

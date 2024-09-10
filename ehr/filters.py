@@ -72,6 +72,7 @@ class VisitFilter(django_filters.FilterSet):
             'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-zinc-800 rounded shadow-sm shadow-zinc-600 border-zinc-600 border'
         })
     )
+    
     age_min = django_filters.NumberFilter(
         field_name='patient__age',
         lookup_expr='gte',
@@ -89,9 +90,21 @@ class VisitFilter(django_filters.FilterSet):
             'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
         })
     )
+    
+    # Add a filter for diagnosis
+    diagnosis = django_filters.CharFilter(
+        field_name='latest_diagnosis',
+        lookup_expr='icontains',  # Use icontains for partial matches
+        label='DIAGNOSIS',
+        widget=forms.TextInput(attrs={
+            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border',
+        })
+    )
+
     class Meta:
         model = VisitRecord
-        fields = ['clinic','team','created']
+        fields = ['clinic', 'team', 'created', 'gender', 'age_min', 'age_max', 'diagnosis']
+
 
 class AppointmentFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(label="DATE", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])

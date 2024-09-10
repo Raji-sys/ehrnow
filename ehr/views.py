@@ -513,6 +513,7 @@ def patient_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
+from django.db.models import OuterRef, Subquery
 
 class VisitReportView(ListView):
     model = VisitRecord
@@ -521,10 +522,16 @@ class VisitReportView(ListView):
     context_object_name = 'visits'
     paginate_by = 10
 
-    
     def get_queryset(self):
-        # Get the filtered queryset
-        self.filterset = VisitFilter(self.request.GET, queryset=VisitRecord.objects.select_related('patient', 'clinic','team').all())
+        # Subquery to get the latest ClinicalNote for each patient
+        latest_note = ClinicalNote.objects.filter(patient=OuterRef('patient')).order_by('-updated').values('diagnosis')[:1]
+
+        # Annotate the VisitRecord queryset with the latest clinical note's diagnosis
+        self.filterset = VisitFilter(
+            self.request.GET, 
+            queryset=VisitRecord.objects.select_related('patient', 'clinic', 'team')
+            .annotate(latest_diagnosis=Subquery(latest_note))
+        )
         return self.filterset.qs.order_by('-updated')
 
     def get_context_data(self, **kwargs):
@@ -537,38 +544,65 @@ class VisitReportView(ListView):
 
         return context
 
+from django.db.models import Subquery, OuterRef
 
 @login_required
 def visit_pdf(request):
     ndate = datetime.datetime.now()
     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
-    f = VisitFilter(request.GET, queryset=VisitRecord.objects.all()).qs
+
+    # Subquery to get the latest clinical note for each patient
+    latest_note_subquery = ClinicalNote.objects.filter(
+        patient=OuterRef('patient')
+    ).order_by('-updated').values('diagnosis')[:1]
+
+    # Annotating the VisitRecord queryset with the latest diagnosis
+    f = VisitFilter(request.GET, queryset=VisitRecord.objects.annotate(
+        latest_diagnosis=Subquery(latest_note_subquery)
+    )).qs
+    
     patient = f.first().patient if f.exists() else None
     result = ""
     result2 = ""
     result3 = ""
+
     for key, value in request.GET.items():
         if value:
             result += f"{value.upper()} "
             result2 += f"Generated on: {ndate.strftime('%d-%B-%Y : %I:%M %p')}" 
             result3 += f"By: {request.user.username.upper()}"
 
-    context = {'f': f, 'pagesize': 'A4','patient':patient,
-               'orientation': 'landscape', 'result': result,'result2':result2,'result3':result3}
+    context = {
+        'f': f,
+        'pagesize': 'A4',
+        'patient': patient,
+        'orientation': 'landscape',
+        'result': result,
+        'result2': result2,
+        'result3': result3
+    }
+
     response = HttpResponse(content_type='application/pdf',
                             headers={'Content-Disposition': f'filename="Report__{filename}"'})
 
     buffer = BytesIO()
 
-    pisa_status = pisa.CreatePDF(get_template('ehr/clinic/visit_pdf.html').render(
-        context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+    # Render the PDF with the updated context
+    pisa_status = pisa.CreatePDF(
+        get_template('ehr/clinic/visit_pdf.html').render(context),
+        dest=buffer,
+        encoding='utf-8',
+        link_callback=fetch_resources
+    )
 
     if not pisa_status.err:
         pdf = buffer.getvalue()
         buffer.close()
         response.write(pdf)
         return response
+    
     return HttpResponse('Error generating PDF', status=500)
+
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
