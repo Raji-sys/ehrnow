@@ -90,7 +90,7 @@ class HematologyRequestListView(ListView):
     context_object_name='hematology_request'
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(cleared=False)
+        queryset = queryset.filter(cleared=False).order_by('-updated')
         return queryset
 
     
@@ -552,3 +552,107 @@ def serology_report_pdf(request):
         response.write(pdf)
         return response
     return HttpResponse('Error generating PDF', status=500)
+
+# class GeneralListView(ListView):
+#     model=GeneralTestResult
+#     template_name='general/general_list.html'
+#     context_object_name='general_results'
+
+#     def get_queryset(self):
+#         queryset=super().get_queryset()
+#         queryset=queryset.filter(result__isnull=False)
+#         return queryset
+
+# class GeneralRequestListView(ListView):
+#     model=GeneralTestResult
+#     template_name='general/general_request.html'
+#     context_object_name='general_request'
+
+#     def get_queryset(self):
+#         queryset=super().get_queryset()
+#         queryset=queryset.filter(result__isnull=True)
+#         return queryset
+
+
+# class GeneralTestCreateView(LoginRequiredMixin, CreateView):
+#     model=GeneralTestResult
+#     form_class = GeneralTestForm
+#     template_name = 'general/general_result.html'
+
+#     def form_valid(self, form):
+        
+#         # Get the patient instance from the request
+#         patient = Patient.objects.get(surname=self.kwargs['surname'])
+#         form.instance.patient = patient
+
+#         messages.success(self.request, 'general result created successfully')
+#         return super().form_valid(form)
+    
+#     def get_success_url(self):
+#         return self.object.patient.get_absolute_url()
+
+
+# class GeneralResultCreateView(LoginRequiredMixin, UpdateView):
+#     model=GeneralTestResult
+#     form_class = GeneralTestResultForm
+#     template_name = 'general/general_update.html'
+#     context_object_name = 'result'
+
+#     def get_object(self, queryset=None):
+#         patient = Patient.objects.get(surname=self.kwargs['surname'])
+#         return GeneralTestResult.objects.get(patient=patient, pk=self.kwargs['pk'])
+
+#     def form_valid(self, form):
+#         messages.success(self.request, 'general result updated successfully')
+#         return super().form_valid(form)
+
+#     def get_success_url(self):
+#         return reverse('patient_details', kwargs={'surname': self.kwargs['surname']})
+
+
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class GeneralReportView(ListView):
+#     model=GeneralTestResult
+#     template_name = 'general/general_report.html'
+#     paginate_by = 10
+#     context_object_name = 'patient'
+
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+
+#         gen_filter = GenFilter(self.request.GET, queryset=queryset)
+#         patient = gen_filter.qs.order_by('-created')
+
+#         return patient
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['gen_filter'] = GenFilter(self.request.GET, queryset=self.get_queryset())
+#         return context
+
+# @login_required
+# def general_report_pdf(request):
+#     ndate = datetime.datetime.now()
+#     filename = ndate.strftime('on_%d/%m/%Y_at_%I.%M%p.pdf')
+#     f = GenFilter(request.GET, queryset=GeneralTestResult.objects.all()).qs
+#     result = ""
+#     for key, value in request.GET.items():
+#         if value:
+#             result += f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
+
+#     context = {'f': f, 'pagesize': 'A4',
+#                'orientation': 'landscape', 'result': result}
+#     response = HttpResponse(content_type='application/pdf',
+#                             headers={'Content-Disposition': f'filename="Report__{filename}"'})
+
+#     buffer = BytesIO()
+
+#     pisa_status = pisa.CreatePDF(get_template('report_pdf.html').render(
+#         context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+
+#     if not pisa_status.err:
+#         pdf = buffer.getvalue()
+#         buffer.close()
+#         response.write(pdf)
+#         return response
+#     return HttpResponse('Error generating PDF', status=500)

@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOHD STORE REPORT</title>
+    <style>
+/* Table styles */
+ /* Table styles */
+ table {
+            width: auto;
+            margin-top: 1px; /* Adjust the top margin as needed */
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 0.5px solid #060501; /* Adjust the color as needed */
+            padding: 6px; /* Adjust the padding as needed */
+        }
+
+        /* Table header cell styles */
+        th {
+            background: #cd900d; /* Adjust the background color as needed */
+            color: #fff; /* Text color for header */
+        }
+        .table-auto {
+            width: auto;
+            table-layout: auto;
+        }
+
+        .max-sm\:flex {
+            display: flex;
+            max-width: 100%;
+        }
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        /* Table body styles */
+        .bg-white {
+            background-color: #fff;
+        }
+
+        .border-2 {
+            border: 1px solid #010603; /* Adjust the color as needed */
+        }
+
+        .max-sm\:p-2,
+        .p-2 {
+            padding: 0.05rem;
+        }
+
+        .border-green-900 {
+            border: 1px solid #565d59; /* Adjust the color as needed */
+        }
+
+        .text-xs {
+            font-size: 1rem;
+        }
+
+
+        .border-b-2 {
+            border-bottom: 1px solid #fff; /* Adjust the color as needed */
+            color: #000; /* Text color for header */
+        }
+
+        .border-t-2 {
+            border-top: 1px solid #fff; /* Adjust the color as needed */
+            color: #000; /* Text color for header */
+        }
+
+        .p-3 {
+            padding: 0.2rem;
+        }
+
+        /* Table data row styles */
+        .text-gray-600 {
+            color: #1c1e21; /* Adjust the color as needed */
+        }
+
+        /* Table data cell styles */
+        .text-center {
+            text-align: center;
+        }
+        
+        .center {
+            text-align: center;
+        }
+
+        .center img {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<p>Report for: {{result|safe}}</p>
+  <hr>  
+  <table class="table-auto max-sm:flex items-center justify-center">
+        <tbody class="bg-white border-2 max-sm:p-2 p-2 overflow-x-auto border-green-900 text-xs">
+            <tr class="bg-gradient-to-r from-green-700 via-green-500 to-green-700 text-white">
+                <th scope="col" class="border-2 border-white p-3">ITEM</th>
+                <th scope="col" class="border-2 border-white p-3">DATE ADDED</th>
+                <th scope="col" class="border-2 border-white p-3">VENDOR</th>
+                <th scope="col" class="border-2 border-white p-3">ISSUED TO</th>
+                <th scope="col" class="border-2 border-white p-3">ISSUED BY</th>
+                <th scope="col" class="border-2 border-white p-3">QUANITITY</th>
+                <th scope="col" class="border-2 border-white p-3">SIV</th>
+                <th scope="col" class="border-2 border-white p-3">REQUISITION NUMBER</th>
+                <th scope="col" class="border-2 border-white p-3">BALANCE</th>
+                <th scope="col" class="border-2 border-white p-3">DATE ISSUED</th>
+            </tr>
+              {% for r in f %}        
+        <tr class="{% cycle 'bg-white hover:bg-green-200' 'bg-green-100 hover:bg-green-200' %} text-gray-600">
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.item|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.item.date_added|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.item.vendor|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.department_issued_to|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-1 text-center">
+            {{r.issued_by}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.quantity|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.siv|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.requisition_number|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.balance|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.date_issued|default_if_none:''}}
+            </td>
+
+          </tr>
+          {%endfor%}
+        </tbody>
+</table>
+
+</body>
+</html>

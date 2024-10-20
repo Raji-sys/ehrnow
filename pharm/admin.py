@@ -8,7 +8,6 @@ from import_export.admin import ImportMixin
 
 admin.site.site_header="ADMIN PANEL"
 admin.site.index_title="PHARMACY INVENTORY MANAGEMENT SYSTEM"
-admin.site.site_title="NOHD PHARMACY INVENTORY"
 
     
 class DrugAdminForm(forms.ModelForm):

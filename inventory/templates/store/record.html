@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block title %}INVENTORY RECRD{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'inventory:store_inventory' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>inventory record</div>{%endblock%}
+{% block content %}
+<div class="p-2 bg-white w-fit mx-auto flex justify-center rounded-t-xl">
+    <a href="{%url 'inventory:create_record' %}" class="focus:opacity-10 bg-amber-500 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-plus fa-lg "></i></a>
+    <a href="{%url 'inventory:record_report' %}" class="focus:opacity-10 bg-amber-500 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-file fa-lg"></i></a>
+</div>
+<div class="p-1 max-sm:p-1 text-sm rounded-2xl text-center mt-2">    
+    <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
+        <tbody class="bg-white border-1 shadow-2xl rounded-2xl max-sm:p-3 p-2 overflow-x-auto border-amber-700">
+            <div class="flex justify-center items-center gap-3">
+                
+            </div>
+            <tr class="text-xs bg-amber-500 text-white">
+                <th scope="col" class=" p-3">ITEM</th>
+                <th scope="col" class=" p-3">DATE ADDED</th>
+                <th scope="col" class=" p-3">VENDOR</th>
+                <th scope="col" class=" p-3">ISSUED TO</th>
+                <th scope="col" class=" p-3">ISSUED BY</th>
+                <th scope="col" class=" p-3">ISSUED</th>
+                <th scope="col" class=" p-3">SIV</th>
+                <th scope="col" class=" p-3">REQUISITION NUMBER</th>
+                <th scope="col" class=" p-3">BALANCE</th>
+                <th scope="col" class=" p-3">%</th>
+                <th scope="col" class=" p-3">DATE ISSUED</th>
+            </tr>
+            {% for r in po %}
+        <tr class="text-xs {% cycle 'bg-white hover:bg-amber-200' 'bg-amber-100 hover:bg-amber-200' %} border-b border-amber-700">
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.item|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+                {{r.item.date_added|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.item.vendor|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.issued_to|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-1 text-center">
+            {{r.issued_by|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.quantity|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.siv|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.requisition_number|default_if_none:''}}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.balance|default_if_none:''}}
+            </td>            
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {% if r.balance_percentage <= 35 %}
+            <h1 class="font-semibold text-rose-600 text-xl">Balance at or below 35%</h1>
+            {{r.balance_percentage|default_if_none:''}}%
+            {% endif %}
+            </td>
+            <td class="border-1 border-amber-700 p-3 text-center">
+            {{r.date_issued|default_if_none:''}}
+            </td>
+
+        </tr>
+            {%endfor%} 
+        <tr class="">
+            <td class="p-3 text-center">        
+        <div class="pagination flex justify-between">
+            <span class="flex items-center">
+                {% if po.has_previous %}
+                <a href="?page=1" class="p-2 px-2 rounded-lg bg-amber-500 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-lg"></i></a>
+                <a href="?page={{po.previous_page_number}}" class="p-2 px-2 rounded-lg bg-amber-500 text-white"><i class="fa-solid fa-angle-left fa-lg"></i></a>
+                {% endif %}
+            </span>
+                <span class="text-sm text-gray-700 m-2 font-semibold">
+                    {{po.number}}-{{po.paginator.num_pages}}
+                </span>
+                <span class="flex item-center">
+                    {% if po.has_next %}
+                    <a href="?page={{po.next_page_number}}" class="p-2 px-2 rounded-lg bg-amber-500 text-white mr-2"><i class="fa-solid fa-angle-right fa-lg"></i></a>
+                    <a href="?page={{po.paginator.num_pages}}" class="p-2 px-2 rounded-lg bg-amber-500 text-white"><i class="fa-solid fa-angle-double-right fa-lg"></i></a>
+                    {% endif %}
+                </span>
+            </div>
+        </td>
+        </tr>
+</tbody>
+</table>
+
+</div>     
+{% endblock %}

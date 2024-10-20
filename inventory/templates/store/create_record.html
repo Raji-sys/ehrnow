@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}NOHD STORE{% endblock %}
+{% block content %}
+  <div class="flex justify-center mt-10">
+    <div class=" font-semibold uppercase text-xs shadow-2xl sm:max-w-lg mx-auto md:p-8 overflow-hidden rounded-2xl bg-white mt-8">
+      <section class="text-center border-b-2 border-green-800 p-2 m-2">
+        <p class="text-sm font-bold pt-2">issue item</p>
+  
+
+      </section>
+<!-- create_record.html -->
+<form id="recordForm" action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="grid grid-cols-1 gap-2">
+        {% if form.non_field_errors %}
+          <div class="text-red-600 text-lg">
+            {{ form.non_field_errors.0 }}
+          </div>
+        {% endif %}
+        <span>UNIT</span>
+        {{ form.unit }}
+        {% if form.unit.errors %}
+            <div class="text-red-600 ">
+                {{ form.unit.errors.0 }}
+            </div>
+        {% endif %}
+
+        <span>ITEM</span>
+        {{ form.item }}
+        {% if form.item.errors %}
+            <div class="text-red-600 ">
+                {{ form.item.errors.0 }}
+            </div>
+        {% endif %}
+
+        <span>TO WHOM</span>
+        {{ form.issued_to }}
+        {% if form.issued_to.errors %}
+            <div class="text-red-600">
+                {{ form.issued_to.errors.0 }}
+            </div>
+        {% endif %}
+
+        <span>QUANTITY</span>
+        {{ form.quantity }}
+        {% if form.quantity.errors %}
+            <div class="text-red-600">
+                {{ form.quantity.errors.0 }}
+            </div>
+        {% endif %}
+
+
+    </div>
+
+    <div class="flex justify-center align-middle mt-2">
+        <input type="submit" value="issue item"
+               class="focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+         bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl">
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var unitSelect = document.getElementById('id_unit');
+        var itemSelect = document.getElementById('id_item');
+
+        unitSelect.addEventListener('change', function () {
+            // Reset the item select and error message
+            itemSelect.innerHTML = '<option value="">Select an item</option>';
+
+            // Get the selected unit ID
+            var unitId = unitSelect.value;
+
+            // If a unit is selected, fetch items for that unit using AJAX
+            if (unitId) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/get_items_for_unit/?unit_id=' + unitId, true);
+                
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        var items = JSON.parse(xhr.responseText);
+                        // Populate the item select with the fetched items
+                        items.forEach(function (item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.name;
+                            itemSelect.add(option);
+                        });
+                    }
+                };
+                xhr.send();
+            }
+        });
+    });
+</script>
+
+{% endblock %}

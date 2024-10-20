@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block title %}INVENTORY WORTH{% endblock %}
+
+{% block content %}
+<div class="mt-4 rounded-2xl p-4  bg-white border border-zinc-500 text-center m-72">
+    <h3 class="text-xl border-b-2 border-zinc-400 p-2 bg-zinc-700 text-white">Total Store Value <br></h3> 
+    <h1 class="text-green-700 text-7xl font-extrabold p-10"> &#x20A6;{{ total_store_value|floatformat:2 }}</h1>
+    <h3 class="text-xl border-t-2 border-zinc-400 p-2 bg-zinc-700 text-white">as of today: {{today}} <br></h3> 
+</div>     
+{% endblock %}

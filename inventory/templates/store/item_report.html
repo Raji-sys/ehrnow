@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}NOHD STORE{% endblock %}
+
+{% block content %}
+<div class="flex justify-start items-start mt-14 relative">
+
+    <!-- start of first grid  -->
+    <div class="hidden lg:block fixed top-14 right-2 bottom-2 h-full overflow-y-auto">
+        <!-- Add your styling for the fixed div here -->
+        <div class="flex flex-col justify-center items-center rounded-2xl shadow-2xl bg-zinc-600 p-6 text-white">
+            {% if request.GET.urlencode%}
+    <div class="flex justify-center gap-1">
+    <a class="text-xl text-white focus:opacity-10 focus:border-zinc-600 bg-green-600 
+    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center" href="{% url 'inventory:item_pdf' %}?{{request.GET.urlencode}}">
+    <i class="fa-solid fa-file-pdf fa-lg"></i></a>
+    <a href="?" class="text-xl text-white focus:opacity-10  focus:border-blue-600 bg-white 
+    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-lg text-zinc-700"></i></a>
+    </div>
+    {%endif%}
+            <form method="get" class="text-xs ">
+                {% for field in itemfilter.form %}
+                {{field.errors}}
+                {% endfor %}
+                <div class="flex flex-col justify-start items-start gap-1 m-2 text-center">
+                    {% for field in itemfilter.form %}
+                        <label class="form-label">{{ field.label_tag }}</label>
+                        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"
+                            class="text-xs text-zinc-700 focus:outline-none border border-blue-300 p-1 rounded shadow-lg hover:shadow-xl">
+                        <span class="form-error">{{ field.errors }}</span>
+                    {% endfor %}
+                </div>
+                <div class="flex justify-center align-middle ">
+                <button type="submit" class="focus:opacity-10 uppercase focus:border-green-600
+            bg-gradient-to-r from-green-700 via-green-500 to-green-700 text-white px-4 py-2 rounded shadow-lg hover:shadow-xl">
+            <i class="fa-solid fa-search fa-lg"></i></button>                     
+        </div>
+            </form>
+        </div>
+    </div>
+    <!-- end of first grid -->
+
+    {% if request.GET.urlencode %}
+<div class="ml-24 max-w-screen-xl">
+   <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
+        <tbody class="bg-white border-1 shadow-2xl rounded-2xl max-sm:p-4 p-2 overflow-x-auto border-zinc-700">
+            <tr class="text-xs bg-zinc-600 text-white">
+                <th scope="col" class=" p-3">DATE ADDED</th>
+                <th scope="col" class=" p-3">NAME</th>
+                <th scope="col" class=" p-3">VENDOR</th>
+                <th scope="col" class=" p-3">ADDED BY</th>
+                <th scope="col" class=" p-3">INVOICE NUMBER</th>
+                <th scope="col" class=" p-3">STORE RECEIVING VOUCHER</th>
+                <th scope="col" class=" p-3">UNIT</th>
+                <th scope="col" class=" p-3">UNIT PRICE</th>
+                <th scope="col" class=" p-3">EXPIRY DATE</th>
+                <th scope="col" class=" p-3">TOTAL ITEMS</th>
+                <th scope="col" class=" p-3">BALANCE</th>
+                <th scope="col" class=" p-3">TOTAL VALUE</th>
+            </tr>
+            {% for i in itemfilter.qs %}
+        <tr class="text-xs {% cycle 'bg-white hover:bg-zinc-200' 'bg-zinc-100 hover:bg-zinc-200' %} border-b border-zinc-700">
+            <td class="border-1 border-zinc-700 p-3 text-center">
+                {{i.date_added|default_if_none:''}}
+            </td>
+            <td class="border-1 border-zinc-700 p-3 text-center">
+                {{i.name|default_if_none:''}}
+            </td>
+            <td class="border-1 border-zinc-700 p-3 text-center">
+            {{i.vendor|default_if_none:''}}
+            </td>
+            <td class="border-1 border-zinc-700 p-3 text-center">
+                {{i.added_by|default_if_none:''}}
+            </td>
+            <td class="border-1 border-zinc-700 p-1 text-center">
+            {{i.invoice_number|default_if_none:''}} 
+            </td>
+            <td class="border-1 border-zinc-700 p-1 text-center">
+            {{i.store_receiving_voucher|default_if_none:''}} 
+            </td>
+            <td class="border-1 border-zinc-700 p-3 text-center">
+                {{i.unit|default_if_none:''}} 
+            </td>
+            <td class="border-1 border-zinc-700 p-3 text-center">
+                {{i.unit_price|default_if_none:''}}
+            </td>
+            <td class="border-1 border-zinc-700 p-3 text-center">
+                {{i.expiration_date|default_if_none:''}}
+            </td>
+            <td class="border-1 border-zinc-700 p-3 text-center">
+                {{i.total_purchased_quantity|default_if_none:''}} 
+            </td>
+            <td class="border-1 border-zinc-700 p-4 text-center">
+                {{i.current_balance|default_if_none:''}}
+            </td>
+            <td class="border-1 border-zinc-700 p-4 text-center">
+                {{i.total_value|default_if_none:''}}
+            </td>
+            </tr>
+            {% empty %}
+
+            {%endfor%} 
+        <tr class="">
+            <td class="p-3 text-center">        
+       <!-- <div class="pagination flex justify-between my-4 ">
+            <span class="flex items-center">
+                {% if po.has_previous %}
+                <a href="?page=1" class="p-2 px-4 rounded-lg bg-zinc-500 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-lg"></i></a>
+                <a href="?page={{po.has_previous_page_number}}" class="p-2 px-4 rounded-lg bg-zinc-500 text-white"><i class="fa-solid fa-angle-left fa-lg"></i></a>
+                {% endif %}
+            </span>
+                <span class="text-sm text-gray-700 m-2 font-semibold">
+                    Page {{po.number}} of {{po.paginator.num_pages}}
+                </span>
+                <span class="flex item-center">
+                    {% if po.has_next %}
+                    <a href="?page=1{{po.next_page_number}}" class="p-2 px-4 rounded-lg bg-zinc-500 text-white mr-2"><i class="fa-solid fa-angle-right fa-lg"></i></a>
+                    <a href="?page={{po.paginator.num_pages}}" class="p-2 px-4 rounded-lg bg-zinc-500 text-white"><i class="fa-solid fa-angle-double-right fa-lg"></i></a>
+                    {% endif %}
+                </span>
+            </div> -->
+
+        </td>
+        </tr>
+</tbody>
+</table>
+{%else%}
+<div class="rounded-2xl bg-white p-10 flex flex-col justify-center item mx-auto">
+    <h1 class="text-green-500 mt-2 text-lg font-semibold text-center">MAKE YOU QUERIES IN THE PROVIDED INPUT FIELDS 
+        <br><br> AND REPORT TABLE WILL APPEAR HERE <hr>
+        <h3 class="text-gray-800 mt-6 text-xs font-bold text-center">then you can <span class=" text-green-500">print out your report</span> or 
+            <span class="text-amber-500 ">refresh the page</span> to generate another report</h3>
+    </h1>
+</div>
+</div>
+{% endif %}
+
+  <!-- end of second grid  -->
+  </div>
+{% endblock %}

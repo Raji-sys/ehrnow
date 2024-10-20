@@ -1,0 +1,77 @@
+
+{% extends 'base.html' %}
+{% block title %}ADD NEW ITEM{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'inventory:list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>add a new item</div>{%endblock%}
+{% block content %}
+  <div class="flex justify-center ">
+    
+    <div class=" uppercase text-xs  sm:max-w-lg mx-auto md:p-8 overflow-hidden rounded-2xl bg-white mt-2">
+      <section class="text-center">        
+        {% if form.non_field_errors %}
+        <div class="text-red-600 text-lg">
+          {{ form.non_field_errors.0 }}
+        </div>
+        {% endif %}
+      </section>
+      <form action="" method="POST" enctype="multipart/form-data" class="text-xs">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 gap-2 text-xs">
+         
+          <span>ITEM NAME</span>
+          {{ form.name }}
+          {% if form.name.errors %}
+            <div class="text-red-600 ">
+              {{ form.name.errors.0 }}
+            </div>
+          {% endif %}
+          
+          <span>VENDOR</span>
+          {{ form.vendor }}
+          {% if form.vendor.errors %}
+            <div class="text-red-600">
+              {{ form.vendor.errors.0 }}
+            </div>
+          {% endif %}
+
+          
+          <span>UNIT</span>
+          {{ form.unit }}
+          {% if form.unit.errors %}
+            <div class="text-red-600">
+              {{ form.unit.errors.0 }}
+            </div>
+          {% endif %}
+
+          <span>UNIT PRICE</span>
+          {{ form.unit_price }}
+          {% if form.unit_price.errors %}
+            <div class="text-red-600">
+              {{ form.unit_price.errors.0 }}
+            </div>
+          {% endif %}
+          
+          <span>EXPIRATION DATE</span>
+          {{ form.expiration_date }}
+          {% if form.expiration_date.errors %}
+            <div class="text-red-600">
+              {{ form.expiration_date.errors.0 }}
+            </div>
+          {% endif %}
+
+            <span>QUANTITY</span>
+          {{ form.qty }}
+          {% if form.qty.errors %}
+            <div class="text-red-600">
+              {{ form.qty.errors.0 }}
+            </div>
+          {% endif %}
+
+        </div>
+        <div class="flex justify-center align-middle mt-2">
+          <input type="submit" value="add item" class="focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+         bg-green-500 text-white py-2 px-6 rounded ">
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

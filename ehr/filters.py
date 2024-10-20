@@ -143,7 +143,7 @@ class PayFilter(django_filters.FilterSet):
 class RadioFilter(django_filters.FilterSet):
     updated1 = django_filters.DateFilter(label="date1", field_name="updated",lookup_expr='lte', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     updated2 = django_filters.DateFilter(label="date2", field_name="updated",lookup_expr='gte', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
-    patient_no=django_filters.NumberFilter(label='pn', field_name="patient__file_no",lookup_expr='exact')
+    patient_no=django_filters.NumberFilter(label='pn', field_name="patient__file_no",lookup_expr='contains')
     test=django_filters.CharFilter(label='test',field_name="test__name",lookup_expr='iexact')                                                                                                     
 
     class Meta:

@@ -1695,7 +1695,7 @@ class RadiologyRequestListView(ListView):
     context_object_name='radiology_request'
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(cleared=False)
+        queryset = queryset.filter(cleared=False).order_by('-updated')
         return queryset
 
 
