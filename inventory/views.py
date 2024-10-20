@@ -153,7 +153,7 @@ def item_pdf(request):
     result = ""
     for key, value in request.GET.items():
         if value:
-            result+= f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
+            result+= f" <br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
     
     context = {'f': f, 'pagesize': 'A4', 'orientation': 'Potrait','result':result}
     response = HttpResponse(content_type='application/pdf', headers={'Content-Disposition': f'filename="Report__{filename}"'})
@@ -178,7 +178,7 @@ def record_pdf(request):
     result = ""
     for key, value in request.GET.items():
         if value:
-            result+= f" {value.upper()} {key.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
+            result+= f"<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
     
     context = {'f': f, 'pagesize': 'A4', 'orientation': 'Potrait','result':result}
     response = HttpResponse(content_type='application/pdf', headers={'Content-Disposition': f'filename="Report__{filename}"'})

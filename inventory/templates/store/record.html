@@ -22,11 +22,10 @@
                 <th scope="col" class=" p-3">ISSUED BY</th>
                 <th scope="col" class=" p-3">ISSUED</th>
                 <th scope="col" class=" p-3">BALANCE</th>
-                <th scope="col" class=" p-3">%</th>
                 <th scope="col" class=" p-3">DATE ISSUED</th>
             </tr>
             {% for r in po %}
-        <tr class="text-xs {% cycle 'bg-white hover:bg-amber-200' 'bg-amber-100 hover:bg-amber-200' %} border-b border-amber-700">
+        <tr class="text-xs {% cycle 'bg-white hover:bg-amber-200' 'bg-amber-100 hover:bg-amber-200' %} border-b border-amber-700 uppercase">
             <td class="border-1 border-amber-700 p-3 text-center">
                 {{r.item|default_if_none:''}}
             </td>
@@ -48,12 +47,6 @@
             <td class="border-1 border-amber-700 p-3 text-center">
             {{r.balance|default_if_none:''}}
             </td>            
-            <td class="border-1 border-amber-700 p-3 text-center">
-            {% if r.balance_percentage <= 35 %}
-            <h1 class="font-semibold text-rose-600 text-xl">Balance at or below 35%</h1>
-            {{r.balance_percentage|default_if_none:''}}%
-            {% endif %}
-            </td>
             <td class="border-1 border-amber-700 p-3 text-center">
             {{r.date_issued|default_if_none:''}}
             </td>

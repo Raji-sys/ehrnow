@@ -35,13 +35,26 @@ class ItemFilter(django_filters.FilterSet):
 class RecordFilter(django_filters.FilterSet):
     date_issued = django_filters.DateFilter(label="DATE ISSUED",field_name='date_issued',lookup_expr='exact',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     item = django_filters.CharFilter(label="ITEM",field_name='item__name', lookup_expr='iexact')
-    unit = django_filters.CharFilter(label="STORE UNIT",field_name='unit__name', lookup_expr='iexact')
+    unit = django_filters.ModelChoiceFilter(
+    label="STORE UNIT", 
+    queryset=Unit.objects.all(), 
+    widget=forms.Select(attrs={
+        'class': 'w-full text-center text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 text-indigo-800 rounded shadow-sm border border-gray-300 p-2'
+    }))
     vendor = django_filters.CharFilter(label="VENDOR",field_name='item__vendor', lookup_expr='iexact')
     issued_to = django_filters.CharFilter(label="ISSUED TO",field_name='issued_to', lookup_expr='iexact')
     quantity = django_filters.NumberFilter(label="QUANTITY ISSUED",field_name='quantity', lookup_expr='iexact')
-    issued_by = django_filters.CharFilter(label="ISSUED BY",field_name='issued_by__username', lookup_expr='iexact')
-    date_added1 = django_filters.DateFilter(label="DATE ISSUED RANGE 1",field_name='updated_at',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
-    date_added2 = django_filters.DateFilter(label="DATE ISSUED RANGE 2",field_name='updated_at',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    issued_by = django_filters.ModelChoiceFilter(
+        label="ADDED BY",
+        queryset=get_user_model().objects.filter(item_records__isnull=False).distinct().order_by('username'),
+        field_name='issued_by',
+        lookup_expr='exact',
+        widget=forms.Select(attrs={
+            'class': 'w-full text-center text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 text-indigo-800 rounded shadow-sm border border-gray-300 p-2'
+        })
+    )
+    date_added1 = django_filters.DateFilter(label="FROM DATE",field_name='updated_at',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
+    date_added2 = django_filters.DateFilter(label="TO DATE",field_name='updated_at',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     class Meta:
         model = Record

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}INVENTORY{% endblock %}
-
+{% block title %}INVENTORY REPROT{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'inventory:store_inventory' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>inventory report</div>{%endblock%}
 {% block content %}
 <div class="flex justify-center">
 
@@ -40,7 +40,8 @@
     </div>
     </div>
 </div>
-<!-- end of first grid -->    {% if request.GET.urlencode %}
+<!-- end of first grid --> 
+    {% if request.GET.urlencode %}
 <div class="">
 <div class="flex justify-center m-2 gap-2">
     <a class="text-xl text-white focus:opacity-10 focus:border-zinc-600 bg-green-600 px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"
@@ -67,7 +68,7 @@
                 <th scope="col" class=" p-3">TOTAL VALUE</th>
             </tr>
             {% for i in itemfilter.qs %}
-        <tr class="text-xs {% cycle 'bg-white hover:bg-zinc-200' 'bg-zinc-100 hover:bg-zinc-200' %} border-b border-zinc-700">
+        <tr class="text-xs {% cycle 'bg-white hover:bg-zinc-200' 'bg-zinc-100 hover:bg-zinc-200' %} border-b border-zinc-700 uppercase">
             <td class="border-1 border-zinc-700 p-3 text-center">
                 {{i.date_added|default_if_none:''}}
             </td>
@@ -126,6 +127,7 @@
         </tr>
 </tbody>
 </table>
+</div>
 {% endif %}
 
   <!-- end of second grid  -->

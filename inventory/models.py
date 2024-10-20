@@ -50,6 +50,11 @@ class Item(models.Model):
     def current_balance(self):
         return self.qty - self.total_issued
 
+    def balance_percentage(self):
+        if self.qty == 0:
+            return 0
+        return (self.current_balance / self.qty) * 100
+    
     class Meta:
         verbose_name_plural = 'items'
 
@@ -60,7 +65,7 @@ class Record(models.Model):
     issued_to = models.ForeignKey(Department, on_delete=models.CASCADE,  null=True, blank=True)
     quantity = models.DecimalField(null=True, blank=True, decimal_places=2, max_digits=10)
     date_issued = models.DateField(auto_now_add=True)
-    issued_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='records')    
+    issued_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='item_records')    
     balance = models.DecimalField(null=True, blank=True, decimal_places=2, max_digits=10)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -83,11 +88,6 @@ class Record(models.Model):
         
         super().save(*args, **kwargs)
         self.item.save()
-
-    def balance_percentage(self):
-        if self.item.qty == 0:
-            return 0
-        return (self.balance / self.item.qty) * 100
 
     def __str__(self):
         return self.item.name

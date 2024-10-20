@@ -28,7 +28,7 @@
                 <th scope="col" class=" p-3">TOTAL VALUE</th>
             </tr>
             {% for i in po %}
-        <tr class="text-xs {% cycle 'bg-white hover:bg-zinc-200' 'bg-zinc-100 hover:bg-zinc-200' %} border-b border-zinc-700">
+        <tr class="text-xs {% cycle 'bg-white hover:bg-zinc-200' 'bg-zinc-100 hover:bg-zinc-200' %} border-b border-zinc-700 uppercase">
             <td class="border-1 border-zinc-700 p-3 text-center">
             {{i.date_added|default_if_none:''}}
             </td>
@@ -55,7 +55,10 @@
             {{i.qty|default_if_none:''}}
             </td>
             <td class="border-1 border-zinc-700 p-3 text-center">
-            {{i.current_balance|default_if_none:''}}
+            {{i.current_balance|default_if_none:''}} <br>
+                {% if i.balance_percentage <= 35 %}
+                <span class="font-semibold text-rose-600 text-xs">at or below 35%</span>
+                {% endif %}    
             </td>
             <td class="border-1 border-zinc-700 p-3 text-center">
             {{i.total_value|default_if_none:''}}
