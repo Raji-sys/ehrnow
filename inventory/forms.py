@@ -11,7 +11,7 @@ class ItemForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ItemForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.required=True    
+            field.required=False    
             field.widget.attrs.update({'class':'text-center text-sm focus:outline-none border border-blue-300 p-3 rounded shadow-lg hover:shadow-xl'})
 
 
@@ -25,7 +25,7 @@ class RecordForm(forms.ModelForm):
         # Provide the queryset for the 'item' field
         self.fields['item'].queryset = Item.objects.all()
         for field in self.fields.values():
-            field.required=True    
+            field.required=False    
             field.widget.attrs.update({'class':'text-center text-sm focus:outline-none border border-blue-300 p-3 rounded shadow-lg hover:shadow-xl'})
 
     def clean(self):
@@ -59,7 +59,7 @@ class ReStockForm(forms.ModelForm):
         # Provide the queryset for the 'item' field
         self.fields['item'].queryset = Item.objects.all()
         for field in self.fields.values():
-            field.required=True    
+            field.required=False  
             field.widget.attrs.update({'class':'text-center text-sm focus:outline-none border border-blue-300 p-3 rounded shadow-lg hover:shadow-xl'})
 
     def clean(self):

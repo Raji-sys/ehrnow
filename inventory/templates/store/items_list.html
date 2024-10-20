@@ -5,10 +5,10 @@
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'inventory:store_inventory' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>inventory list</div>{%endblock%}
 
 {% block content %}
-<div class="p-2 bg-white w-fit mx-auto flex justify-center rounded-t-xl">
-    <a href="{%url 'inventory:create_item'%}" class="focus:opacity-10 bg-zinc-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-plus fa-lg "></i></a>
-    <a href="{%url 'inventory:item_report' %}" class="focus:opacity-10 bg-zinc-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-file fa-lg"></i></a>
-    <a href="{%url 'inventory:restock' %}" class="focus:opacity-10 bg-zinc-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-plus-circle fa-lg"></i></a>
+<div class="p-2 bg-white w-fit mx-auto flex justify-center rounded-xl">
+    <a href="{%url 'inventory:create_item'%}" class="focus:opacity-10 bg-zinc-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-plus fa-sm "></i></a>
+    <a href="{%url 'inventory:item_report' %}" class="focus:opacity-10 bg-zinc-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-file fa-sm"></i></a>
+    <a href="{%url 'inventory:restock' %}" class="focus:opacity-10 bg-zinc-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-plus-circle fa-sm"></i></a>
 </div>
 <div class="p-1 max-sm:p-1 text-sm rounded-2xl text-center mt-2">    
     <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">

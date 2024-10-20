@@ -1,47 +1,57 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}NOHD STORE{% endblock %}
+{% block title %}INVENTORY{% endblock %}
 
 {% block content %}
-<div class="flex justify-start items-start mt-14 relative">
+<div class="flex justify-center">
 
-    <!-- start of first grid  -->
-    <div class="hidden lg:block fixed top-14 right-2 bottom-2 h-full overflow-y-auto">
-        <!-- Add your styling for the fixed div here -->
-        <div class="flex flex-col justify-center items-center rounded-2xl shadow-2xl bg-zinc-600 p-6 text-white">
-            {% if request.GET.urlencode%}
-    <div class="flex justify-center gap-1">
-    <a class="text-xl text-white focus:opacity-10 focus:border-zinc-600 bg-green-600 
-    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center" href="{% url 'inventory:item_pdf' %}?{{request.GET.urlencode}}">
-    <i class="fa-solid fa-file-pdf fa-lg"></i></a>
-    <a href="?" class="text-xl text-white focus:opacity-10  focus:border-blue-600 bg-white 
-    px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"><i class="fa-solid fa-rotate fa-lg text-zinc-700"></i></a>
-    </div>
-    {%endif%}
-            <form method="get" class="text-xs ">
+<!-- start of first grid -->
+<div class="inline-block bottom-2 w-fit mx-20">
+    <div class="rounded-xl shadow-2xl bg-zinc-600 p-2 text-white">
+        <form method="get" class="text-xs">
+            {% for field in itemfilter.form %}
+            {{field.errors}}
+            {% endfor %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-10 gap-2 text-center">
                 {% for field in itemfilter.form %}
-                {{field.errors}}
-                {% endfor %}
-                <div class="flex flex-col justify-start items-start gap-1 m-2 text-center">
-                    {% for field in itemfilter.form %}
-                        <label class="form-label">{{ field.label_tag }}</label>
-                        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"
-                            class="text-xs text-zinc-700 focus:outline-none border border-blue-300 p-1 rounded shadow-lg hover:shadow-xl">
-                        <span class="form-error">{{ field.errors }}</span>
-                    {% endfor %}
+                <div class="flex flex-col space-y-1">
+                    <label class="">{{ field.label_tag }}</label>
+                    {% if field.field.widget.input_type == 'select' %}
+                    {{ field }}
+                {% else %}
+                    <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
+                           class="text-center text-xs focus:outline-none  text-indigo-800
+                                  rounded shadow-sm  border">
+                {% endif %}                    
+                    <span class="text-red-500 text-xs">{{ field.errors }}</span>
                 </div>
-                <div class="flex justify-center align-middle ">
-                <button type="submit" class="focus:opacity-10 uppercase focus:border-green-600
-            bg-gradient-to-r from-green-700 via-green-500 to-green-700 text-white px-4 py-2 rounded shadow-lg hover:shadow-xl">
-            <i class="fa-solid fa-search fa-lg"></i></button>                     
-        </div>
-            </form>
-        </div>
+                {% endfor %}
+                
+                <div class="mt-6">
+                    <button type="submit"
+                    class="focus:opacity-10 uppercase focus:border-green-600 bg-gradient-to-r from-green-700 
+                    via-green-500 to-green-700 text-white px-6 py-2 rounded shadow-lg hover:shadow-xl">
+                    <i class="fa-solid fa-search fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
-    <!-- end of first grid -->
-
-    {% if request.GET.urlencode %}
-<div class="ml-24 max-w-screen-xl">
+    </div>
+</div>
+<!-- end of first grid -->    {% if request.GET.urlencode %}
+<div class="">
+<div class="flex justify-center m-2 gap-2">
+    <a class="text-xl text-white focus:opacity-10 focus:border-zinc-600 bg-green-600 px-4 py-1 rounded shadow-lg hover:shadow-xl text-center"
+        href="{% url 'inventory:item_pdf' %}?{{request.GET.urlencode}}">
+        <i class="fa-solid fa-file-pdf fa-lg"></i>
+    </a>
+    <a href="?"
+        class="text-xl text-white focus:opacity-10 focus:border-blue-600 bg-white px-4 py-1 rounded shadow-lg hover:shadow-xl text-center">
+        <i class="fa-solid fa-rotate fa-lg text-zinc-700"></i>
+    </a>
+</div>
    <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
         <tbody class="bg-white border-1 shadow-2xl rounded-2xl max-sm:p-4 p-2 overflow-x-auto border-zinc-700">
             <tr class="text-xs bg-zinc-600 text-white">
@@ -49,8 +59,6 @@
                 <th scope="col" class=" p-3">NAME</th>
                 <th scope="col" class=" p-3">VENDOR</th>
                 <th scope="col" class=" p-3">ADDED BY</th>
-                <th scope="col" class=" p-3">INVOICE NUMBER</th>
-                <th scope="col" class=" p-3">STORE RECEIVING VOUCHER</th>
                 <th scope="col" class=" p-3">UNIT</th>
                 <th scope="col" class=" p-3">UNIT PRICE</th>
                 <th scope="col" class=" p-3">EXPIRY DATE</th>
@@ -71,12 +79,6 @@
             </td>
             <td class="border-1 border-zinc-700 p-3 text-center">
                 {{i.added_by|default_if_none:''}}
-            </td>
-            <td class="border-1 border-zinc-700 p-1 text-center">
-            {{i.invoice_number|default_if_none:''}} 
-            </td>
-            <td class="border-1 border-zinc-700 p-1 text-center">
-            {{i.store_receiving_voucher|default_if_none:''}} 
             </td>
             <td class="border-1 border-zinc-700 p-3 text-center">
                 {{i.unit|default_if_none:''}} 
@@ -124,15 +126,6 @@
         </tr>
 </tbody>
 </table>
-{%else%}
-<div class="rounded-2xl bg-white p-10 flex flex-col justify-center item mx-auto">
-    <h1 class="text-green-500 mt-2 text-lg font-semibold text-center">MAKE YOU QUERIES IN THE PROVIDED INPUT FIELDS 
-        <br><br> AND REPORT TABLE WILL APPEAR HERE <hr>
-        <h3 class="text-gray-800 mt-6 text-xs font-bold text-center">then you can <span class=" text-green-500">print out your report</span> or 
-            <span class="text-amber-500 ">refresh the page</span> to generate another report</h3>
-    </h1>
-</div>
-</div>
 {% endif %}
 
   <!-- end of second grid  -->

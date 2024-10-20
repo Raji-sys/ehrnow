@@ -21,6 +21,12 @@ class UnitAdmin(admin.ModelAdmin):
     list_filter = ['name']
     search_fields = ['name']
 
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    search_fields = ['name']
+
 
 @admin.register(ReStock)
 class ReStockAdmin(admin.ModelAdmin):

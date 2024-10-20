@@ -1,9 +1,7 @@
 from .filters import ItemFilter, RecordFilter
 from django.shortcuts import render, redirect
 from .forms import *
-from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from .models import *
 import datetime
 from django.http import HttpResponse, JsonResponse
@@ -12,11 +10,9 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.conf import settings
 import os
-from django.utils.decorators import method_decorator
 from django.core.paginator import Paginator
 from .decorators import superuser_required
-
-
+from django.db import transaction
 
 
 @login_required
@@ -26,7 +22,7 @@ def index(request):
 
 @login_required
 def items_list(request):
-    items = Item.objects.all().order_by('name')
+    items = Item.objects.all().order_by('-updated_at')
     pgn=Paginator(items,10)
     pn=request.GET.get('page')
     po=pgn.get_page(pn)
@@ -75,20 +71,23 @@ def worth(request):
 
 
 @login_required
+@transaction.atomic
 def create_item(request):
     if request.method == 'POST':
         form = ItemForm(request.POST)
         if form.is_valid():
-            new_item=form.save(commit=False)
-            new_item.added_by=request.user
+            new_item = form.save(commit=False)
+            new_item.added_by = request.user
             new_item.save()
-            return redirect('list')
+            return redirect('inventory:list')
     else:
         form = ItemForm()
+    
     return render(request, 'store/create_item.html', {'form': form})
 
 
 @login_required
+@transaction.atomic
 def create_record(request):
     if request.method == 'POST':
         form = RecordForm(request.POST)
@@ -101,13 +100,14 @@ def create_record(request):
             new_record.unit_id = unit_id
             new_record.item_id = item_id
             new_record.save()
-            return redirect('record')
+            return redirect('inventory:record')
     else:
         form = RecordForm()
     return render(request, 'store/create_record.html', {'form': form})
 
 
 @login_required
+@transaction.atomic
 def restock(request):
     if request.method == 'POST':
         form = ReStockForm(request.POST)
@@ -120,7 +120,7 @@ def restock(request):
             new_record.unit_id = unit_id
             new_record.item_id = item_id
             new_record.save()
-            return redirect('list')
+            return redirect('inventory:list')
     else:
         form = ReStockForm()
     return render(request, 'store/restock.html', {'form': form})

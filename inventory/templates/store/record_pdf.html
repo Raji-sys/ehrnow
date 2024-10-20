@@ -110,8 +110,6 @@
                 <th scope="col" class="border-2 border-white p-3">ISSUED TO</th>
                 <th scope="col" class="border-2 border-white p-3">ISSUED BY</th>
                 <th scope="col" class="border-2 border-white p-3">QUANITITY</th>
-                <th scope="col" class="border-2 border-white p-3">SIV</th>
-                <th scope="col" class="border-2 border-white p-3">REQUISITION NUMBER</th>
                 <th scope="col" class="border-2 border-white p-3">BALANCE</th>
                 <th scope="col" class="border-2 border-white p-3">DATE ISSUED</th>
             </tr>
@@ -134,12 +132,6 @@
             </td>
             <td class="border-1 border-amber-700 p-3 text-center">
             {{r.quantity|default_if_none:''}}
-            </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
-            {{r.siv|default_if_none:''}}
-            </td>
-            <td class="border-1 border-amber-700 p-3 text-center">
-            {{r.requisition_number|default_if_none:''}}
             </td>
             <td class="border-1 border-amber-700 p-3 text-center">
             {{r.balance|default_if_none:''}}

@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
 {% block title %}NOHD STORE{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'inventory:list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>restock item</div>{%endblock%}
 {% block content %}
-  <div class="flex justify-center mt-10">
-    <div class=" font-semibold uppercase text-xs shadow-2xl sm:max-w-lg mx-auto md:p-8 overflow-hidden rounded-2xl bg-white mt-8">
-      <section class="text-center border-b-2 border-green-800 p-2 m-2">
-        <p class="text-sm font-bold pt-2">re-stocking</p>
-        </section>
-    <form id="recordForm" action="" method="POST" enctype="multipart/form-data">
+  <div class="flex justify-center">
+    <div class=" uppercase text-xs shadow-2xl sm:max-w-lg mx-auto md:p-8 overflow-hidden rounded-2xl bg-white mt-2">
+        <section class="text-center">        
+            {% if form.non_field_errors %}
+            <div class="text-red-600 text-lg">
+              {{ form.non_field_errors.0 }}
+            </div>
+            {% endif %}
+          </section>
+    <form id="recordForm" action="" method="POST" enctype="multipart/form-data" class="text-xs">
     {% csrf_token %}
     <div class="grid grid-cols-1 gap-2">
         {% if form.non_field_errors %}
@@ -38,21 +43,6 @@
             </div>
         {% endif %}
 
-        <span>INVOICE NUMBER</span>
-        {{ form.invoice_number }}
-        {% if form.invoice_number.errors %}
-            <div class="text-red-600">
-                {{ form.invoice_number.errors.0 }}
-            </div>
-        {% endif %}
-        
-        <span>STORE RECEIVING VOUCHER</span>
-        {{ form.store_receiving_voucher }}
-        {% if form.store_receiving_voucher.errors %}
-            <div class="text-red-600">
-                {{ form.store_receiving_voucher.errors.0 }}
-            </div>
-        {% endif %}
 
         <span>DATE PURCHASED</span>
         {{ form.date_purchased }}
@@ -92,7 +82,7 @@
             // If a unit is selected, fetch items for that unit using AJAX
             if (unitId) {
                 var xhr = new XMLHttpRequest();
-                xhr.open('GET', '/get_items_for_unit/?unit_id=' + unitId, true);
+                xhr.open('GET', '/inventory/get_items_for_unit/?unit_id=' + unitId, true);
                 
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4 && xhr.status == 200) {
