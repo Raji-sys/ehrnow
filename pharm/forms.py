@@ -38,49 +38,39 @@ class RecordForm(forms.ModelForm):
         return cleaned_data
 
 
-class DispenseForm(forms.ModelForm):
-    class Meta:
-        model = Dispensary
-        fields = ['category', 'drug', 'quantity','dispensed']
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})  # Add onchange event
-        for field in self.fields.values():
-            field.required=False    
-            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400  p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
-
-    def clean(self):
-        cleaned_data = super().clean()
-        quantity = cleaned_data.get('quantity')
-        drug = cleaned_data.get('drug')
-        if drug and quantity:
-            total_issued = drug.total_issued + quantity
-            total_purchased_quantity = drug.total_purchased_quantity
-            if total_issued > total_purchased_quantity:
-                raise ValidationError("Not enough drugs in stock.")
-        return cleaned_data
+class DispenseForm(forms.Form):
+    confirm = forms.BooleanField(
+        required=True,
+        initial=True,  # Changed to True since we want it checked by default
+        widget=forms.HiddenInput()  # Simplified widget definition
+    )
 
 
 class PrescriptionForm(forms.ModelForm):
     class Meta:
         model = Prescription
         fields = ['category', 'drug', 'dose']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})  # Add onchange event
+        self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})
         for field in self.fields.values():
-            field.required=False    
-            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400  p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+            field.required = False
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
 
     def clean(self):
         cleaned_data = super().clean()
         quantity = cleaned_data.get('quantity')
         drug = cleaned_data.get('drug')
+        
         if drug and quantity:
-            total_issued = drug.total_issued + quantity
-            total_purchased_quantity = drug.total_purchased_quantity
-            if total_issued > total_purchased_quantity:
-                raise ValidationError("Not enough drugs in stock.")
+            if not drug.has_sufficient_stock(quantity):
+                raise ValidationError(
+                    f"Insufficient stock. Available: {drug.current_balance}, Requested: {quantity}"
+                )
+        
         return cleaned_data
 
 

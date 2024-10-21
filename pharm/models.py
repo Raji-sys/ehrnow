@@ -6,6 +6,7 @@ from ehr.models import PatientData,Paypoint
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.db import transaction
 
 class Unit(models.TextChoices):
     ACCIDENT_AND_EMERGENCY = 'A & E', 'A & E'
@@ -97,13 +98,18 @@ class Drug(models.Model):
 
     @property
     def current_balance(self):
-        return self.total_purchased_quantity - self.total_issued
-
-    def is_available(self):
-        if self.current_balance is not None and self.current_balance <= 0:
-            self.status = False
-            self.save()  # Save the instance after updating the status
-        return self.status
+        # return self.total_purchased_quantity - self.total_issued
+        return max(0, self.total_purchased_quantity - self.total_issued)
+    
+    def has_sufficient_stock(self, requested_quantity):
+        """Check if there's enough stock for the requested quantity"""
+        return self.current_balance >= requested_quantity
+    
+    # def is_available(self):
+    #     if self.current_balance is not None and self.current_balance <= 0:
+    #         self.status = False
+    #         self.save()  # Save the instance after updating the status
+    #     return self.status
 
     class Meta:
         verbose_name_plural = 'drugs'
@@ -147,11 +153,14 @@ class Prescription(models.Model):
     quantity = models.PositiveIntegerField('QTY', null=True, blank=True)
     updated = models.DateTimeField(auto_now_add=True)
     prescribed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='prescribed_by')
+    prescribed_date = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     dose = models.CharField('dosage', max_length=300, null=True, blank=True)
     remark = models.CharField('REMARKS', max_length=100, choices=Unit.choices, null=True, blank=True)
+    is_dispensed = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+    
     @property
     def price(self):
         if self.drug.cost_price and self.quantity:
@@ -159,38 +168,69 @@ class Prescription(models.Model):
 
     def __str__(self):
         return self.patient.file_no
-
+    
+    def can_be_dispensed(self):
+        """Check if the prescription can be dispensed"""
+        if not self.drug or not self.quantity:
+            return False, "Invalid prescription details"
+        if not self.payment or not self.payment.status:
+            return False, "Payment not completed"
+        if self.is_dispensed:
+            return False, "Already dispensed"
+        if not self.drug.has_sufficient_stock(self.quantity):
+            return False, f"Insufficient stock. Available: {self.drug.current_balance}, Requested: {self.quantity}"
+        return True, "OK"
+    
     class Meta:
         verbose_name_plural = 'prescription record'
 
 
 class Dispensary(models.Model):
     patient = models.ForeignKey(PatientData, null=True, blank=True, on_delete=models.CASCADE, related_name='dispensed_drugs')
+    prescription = models.OneToOneField(Prescription, on_delete=models.CASCADE, related_name='dispensary',null=True,blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug_catgory")
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug")
     quantity = models.PositiveIntegerField('QTY TO DISPENSE', null=True, blank=True)
     dispensed_date = models.DateTimeField('DISPENSE DATE', auto_now_add=True)
     dispensed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='dispensed_by')
-    dispensed=models.BooleanField(default=False)
     remark = models.CharField('REMARKS', max_length=100, choices=Unit.choices, null=True, blank=True)
-    quantity_deducted = models.BooleanField(default=False)  # Add this field to track if the quantity has been deducted
+    quantity_deducted = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        if self.pk and self.payment.status == True:
-            # Update existing instance
-            self.drug.total_purchased_quantity -= self.quantity
-            self.drug.save()
-        else:
-            # Create new instance
-            self.drug.total_issued += self.quantity
-            self.drug.save()
+        if not self.quantity_deducted and self.prescription:
+            # Validate prescription can be dispensed
+            can_dispense, message = self.prescription.can_be_dispensed()
+            if not can_dispense:
+                raise ValidationError(message)
+
+            # Set related fields
+            self.drug = self.prescription.drug
+            self.quantity = self.prescription.quantity
+            self.patient = self.prescription.patient
+            self.category = self.drug.category
+
+            # Update quantities using transaction
+            with transaction.atomic():
+                # Recheck stock within transaction to prevent race conditions
+                if not self.drug.has_sufficient_stock(self.quantity):
+                    raise ValidationError(f"Insufficient stock. Available: {self.drug.current_balance}, Requested: {self.quantity}")
+                
+                self.drug.total_purchased_quantity -= self.quantity
+                # self.drug.total_issued += self.quantity
+                self.drug.save()
+                self.quantity_deducted = True
+                
+                # Mark prescription as dispensed
+                self.prescription.is_dispensed = True
+                self.prescription.save()
+
         super().save(*args, **kwargs)
-
+    
     def __str__(self):
-        return f"{self.patient}--{self.drug.name}--{self.dispensed_date}"
-
+        return f"{self.prescription.patient} - {self.prescription.drug}"
     class Meta:
         verbose_name_plural = 'dispensary record'
+
 
 class Purchase(models.Model):
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True,)

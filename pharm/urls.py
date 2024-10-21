@@ -20,14 +20,15 @@ urlpatterns=[
     path('drug_pdf/', views.drug_pdf, name='drug_pdf'),
     path('record_pdf/', views.record_pdf, name='record_pdf'),
 
-    # dispensary
-    path('pharmacy/dispensary/add-dispense/<str:file_no>/', views.create_dispensary, name='add_dispense'),
-    path('pharmacy/dispensary/dispensed/', DispenseListView.as_view(), name='dispensed_list'),
+  # Dispensary
+    path('pharmacy/dispensary/add-dispense/<int:prescription_id>/', views.create_dispensary, name='add_dispense'),
+    path('pharmacy/dispensary/dispensed/', views.DispensaryListView.as_view(), name='dispensed_list'),
     
-    #Prescription
+    # Prescription
     path('pharmacy/prescription/prescribe/<str:file_no>/', views.create_prescription, name='add_prescription'),
-    path('pharmacy/prescription/prescribed/', PrescriptionListView.as_view(), name='prescription_list'),
-    path('pharmacy/prescription/update/<int:pk>/', PrescriptionUpdateView.as_view(), name='update_prescription'),
+    path('pharmacy/prescription/prescribed/', views.PrescriptionListView.as_view(), name='prescription_list'),
+    path('pharmacy/prescription/update/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
+
     path('pharmacy/transaction/', PharmPayListView.as_view(), name='pharmacy_transaction'),
     # path('payment/confirm/<int:dispensary_id>/', views.confirm_payment, name='confirm_payment'),
     # path('dispensary/create/<int:prescription_id>/', views.create_dispensary, name='create_dispensary'),
