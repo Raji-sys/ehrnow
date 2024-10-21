@@ -29,5 +29,7 @@ urlpatterns=[
     path('pharmacy/prescription/prescribed/', PrescriptionListView.as_view(), name='prescription_list'),
     path('pharmacy/prescription/update/<int:pk>/', PrescriptionUpdateView.as_view(), name='update_prescription'),
     path('pharmacy/transaction/', PharmPayListView.as_view(), name='pharmacy_transaction'),
-
+    # path('payment/confirm/<int:dispensary_id>/', views.confirm_payment, name='confirm_payment'),
+    # path('dispensary/create/<int:prescription_id>/', views.create_dispensary, name='create_dispensary'),
+  
 ]

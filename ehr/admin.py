@@ -15,6 +15,12 @@ class DepartmentAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('name',)
 
+@admin.register(PatientData)
+class PatientDataAdmin(admin.ModelAdmin):
+    list_display = ('title','last_name','first_name','other_name','gender','age','updated')
+    search_fields = ('title','last_name','first_name','other_name','gender','age','updated')
+    list_filter = ('title','last_name','first_name','other_name','gender','age','updated')
+
 
 @admin.register(Theatre)
 class TheatreAdmin(admin.ModelAdmin):

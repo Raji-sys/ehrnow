@@ -24,6 +24,17 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+# Create an admin class for the drug model
+@admin.register(Dispensary)
+class DispensaryAdmin(admin.ModelAdmin):
+    list_display = ['id']
+ 
+# Create an admin class for the drug model
+@admin.register(Prescription)
+class PrescriptionAdmin(admin.ModelAdmin):
+    list_display = ['id']
+ 
+
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
     list_display = ('drug', 'quantity_purchased', 'purchase_date')

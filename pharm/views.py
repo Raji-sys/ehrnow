@@ -225,14 +225,14 @@ def create_dispensary(request, file_no):
                     instance = form.save(commit=False)
                     instance.patient = patient
                     instance.dispensed_by = request.user
-                    # paypoint = Paypoint.objects.create(
-                    #     user=request.user,
-                    #     patient=patient,
-                    #     service=instance.drug.name,
-                    #     price=instance.drug.cost_price * instance.quantity,
-                    #     status=False
-                    # )
-                    # instance.payment = paypoint
+                    paypoint = Paypoint.objects.create(
+                        user=request.user,
+                        patient=patient,
+                        service=instance.drug.name,
+                        price=instance.drug.cost_price * instance.quantity,
+                        status=False
+                    )
+                    instance.payment = paypoint
                     instance.save()
             return redirect(reverse_lazy('pharm:prescription_list'))
         else:
@@ -248,36 +248,26 @@ def create_dispensary(request, file_no):
     }
     return render(request, 'dispensary/dispense.html', context)
 
-
+    
 @login_required(login_url='login')
 def create_prescription(request, file_no):
     patient = get_object_or_404(PatientData, file_no=file_no)
     prescription_instances = Prescription.objects.filter(patient=patient)
-    PrescriptionFormSet = modelformset_factory(Prescription, form=PrescriptionForm, extra=5)
-    formset = PrescriptionFormSet(queryset=Dispensary.objects.none())  # Initialize with an empty queryset
+    PrescriptionFormSet = modelformset_factory(Prescription, form=PrescriptionForm, extra=5, exclude=['quantity', 'payment'])
 
     if request.method == 'POST':
         formset = PrescriptionFormSet(request.POST)
         if formset.is_valid():
-            for form in formset:
-                if form.has_changed():
-                    instance = form.save(commit=False)
+            instances = formset.save(commit=False)
+            for instance in instances:
+                if instance.drug:  # Only save if a drug is selected
                     instance.patient = patient
                     instance.prescribed_by = request.user
-
-                    paypoint = Paypoint.objects.create(
-                        user=request.user,
-                        patient=patient,
-                        service=instance.drug.name,
-                        price=instance.drug.cost_price * instance.quantity,
-                        status=False
-                    )
-                    instance.payment = paypoint
                     instance.save()
-            messages.success(request,'drugs prescribed')
+            messages.success(request, 'Drugs prescribed. Patient should visit the pharmacy for costing.')
             return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
-        else:
-            formset = PrescriptionFormSet(queryset=Prescription.objects.none())
+    else:
+        formset = PrescriptionFormSet(queryset=Prescription.objects.none())
 
     context = {
         'formset': formset,
@@ -285,7 +275,7 @@ def create_prescription(request, file_no):
         'prescription_instances': prescription_instances,
     }
     return render(request, 'dispensary/prescription.html', context)
-    
+
 
 class DispenseListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
     model=Dispensary
@@ -332,21 +322,52 @@ class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
         return context
 
 
-class PrescriptionUpdateView(UpdateView):
+# class PrescriptionUpdateView(UpdateView):
+#     model = Prescription
+#     template_name = 'dispensary/update_prescription.html'
+#     form_class = PrescriptionUpdateForm
+#     success_url=reverse_lazy('pharm:prescription_list')
+    
+#     def form_valid(self, form):
+#         if form.is_valid():
+#             form.save()
+#             return super().form_valid(form)
+#         else:
+#             return self.form_invalid(form)
+
+#     def form_invalid(self, form):
+#         messages.error(self.request, 'Error')
+#         return self.render_to_response(self.get_context_data(form=form))
+    
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
     model = Prescription
     template_name = 'dispensary/update_prescription.html'
     form_class = PrescriptionUpdateForm
-    success_url=reverse_lazy('pharm:prescription_list')
-    
+    success_url = reverse_lazy('pharm:prescription_list')
+
     def form_valid(self, form):
-        if form.is_valid():
-            form.save()
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
+        instance = form.save(commit=False)
+        
+        if instance.quantity and instance.drug:
+            paypoint = Paypoint.objects.create(
+                user=self.request.user,
+                patient=instance.patient,
+                service=instance.drug.name,
+                price= instance.drug.cost_price * instance.quantity,
+                status= False
+            )
+            paypoint.save()
+
+            instance.payment = paypoint
+
+        instance.save()
+        messages.success(self.request, 'Prescription updated successfully.')
+        return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Error')
+        messages.error(self.request, 'Error updating prescription.')
         return self.render_to_response(self.get_context_data(form=form))
     
 

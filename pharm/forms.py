@@ -41,7 +41,7 @@ class RecordForm(forms.ModelForm):
 class DispenseForm(forms.ModelForm):
     class Meta:
         model = Dispensary
-        fields = ['category', 'drug', 'quantity']
+        fields = ['category', 'drug', 'quantity','dispensed']
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})  # Add onchange event
@@ -64,7 +64,7 @@ class DispenseForm(forms.ModelForm):
 class PrescriptionForm(forms.ModelForm):
     class Meta:
         model = Prescription
-        fields = ['category', 'drug', 'quantity']
+        fields = ['category', 'drug', 'dose']
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})  # Add onchange event
@@ -87,7 +87,7 @@ class PrescriptionForm(forms.ModelForm):
 class PrescriptionUpdateForm(forms.ModelForm):
     class Meta:
         model = Prescription
-        fields = ['dispensed']
+        fields = ['category','drug','quantity','dose']
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():

@@ -147,14 +147,15 @@ class Prescription(models.Model):
     quantity = models.PositiveIntegerField('QTY', null=True, blank=True)
     updated = models.DateTimeField(auto_now_add=True)
     prescribed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='prescribed_by')
-    dispensed=models.BooleanField(default=False)
+    dose = models.CharField('dosage', max_length=300, null=True, blank=True)
     remark = models.CharField('REMARKS', max_length=100, choices=Unit.choices, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
     @property
     def price(self):
-        return self.drug.cost_price * self.quantity
+        if self.drug.cost_price and self.quantity:
+            return self.drug.cost_price * self.quantity
 
     def __str__(self):
         return self.patient.file_no
@@ -170,6 +171,7 @@ class Dispensary(models.Model):
     quantity = models.PositiveIntegerField('QTY TO DISPENSE', null=True, blank=True)
     dispensed_date = models.DateTimeField('DISPENSE DATE', auto_now_add=True)
     dispensed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='dispensed_by')
+    dispensed=models.BooleanField(default=False)
     remark = models.CharField('REMARKS', max_length=100, choices=Unit.choices, null=True, blank=True)
     quantity_deducted = models.BooleanField(default=False)  # Add this field to track if the quantity has been deducted
 

@@ -64,6 +64,7 @@ class PatientForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PatientForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
+            field.required=True
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
