@@ -1181,11 +1181,27 @@ class PayCreateView(RevenueRequiredMixin, CreateView):
             return next_url
         return super().get_success_url()
 
+from django.http import JsonResponse
+from django.views.generic.edit import UpdateView
+from django.urls import reverse_lazy
+from django.db import transaction
+from django.contrib import messages
+from django.shortcuts import redirect
 
 class PayUpdateView(UpdateView):
     model = Paypoint
     template_name = 'ehr/revenue/update_pay.html'
     form_class = PayUpdateForm
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            data = {
+                'payment_method': self.object.payment_method,
+                'status': self.object.status,
+            }
+            return JsonResponse(data)
+        return super().get(request, *args, **kwargs)
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -1200,7 +1216,7 @@ class PayUpdateView(UpdateView):
         context['service'] = paypoint.service
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         return context
-
+    
     @transaction.atomic
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -1213,13 +1229,98 @@ class PayUpdateView(UpdateView):
                 wallet.add_funds(paypoint.price)
 
             messages.success(self.request, 'TRANSACTION SUCCESSFUL')
-            return super().form_valid(form)
+
+            if paypoint.status:
+                redirect_url = f'/print-receipt/?id={paypoint.id}&next={self.get_success_url()}'
+            else:
+                redirect_url = self.get_success_url()
+
+            if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': True, 'redirect_url': redirect_url})
+            else:
+                return redirect(redirect_url)
+
         except ValidationError as e:
             error_message = str(e)
             if "Insufficient funds" in error_message:
                 error_message = "Insufficient funds in the wallet. Please add funds and try again."
             form.add_error(None, error_message)
-            return self.form_invalid(form)
+            if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'errors': form.errors})
+            else:
+                return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'errors': form.errors})
+        else:
+            return super().form_invalid(form)
+# class PayUpdateView(UpdateView):
+#     model = Paypoint
+#     template_name = 'ehr/revenue/update_pay.html'
+#     form_class = PayUpdateForm
+
+#     def get_success_url(self):
+#         next_url = self.request.GET.get('next')
+#         if next_url:
+#             return next_url
+#         return reverse_lazy("pay_list")
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         paypoint = self.get_object()
+#         context['patient'] = paypoint.patient
+#         context['service'] = paypoint.service
+#         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+#         return context
+    
+#     @transaction.atomic
+#     def form_valid(self, form):
+#         form.instance.user = self.request.user
+#         paypoint = form.save(commit=False)
+#         try:
+#             paypoint.save()
+
+#             if paypoint.service.startswith("Surgery Bill:"):
+#                 wallet, created = Wallet.objects.get_or_create(patient=paypoint.patient)
+#                 wallet.add_funds(paypoint.price)
+
+#             messages.success(self.request, 'TRANSACTION SUCCESSFUL')
+
+#             if paypoint.status:
+#                 # Redirect to the receipt page
+#                 return redirect(f'/print-receipt/?id={paypoint.id}&next={self.get_success_url()}')
+
+#             return super().form_valid(form)
+#         except ValidationError as e:
+#             error_message = str(e)
+#             if "Insufficient funds" in error_message:
+#                 error_message = "Insufficient funds in the wallet. Please add funds and try again."
+#             form.add_error(None, error_message)
+#             return self.form_invalid(form)
+
+    # @transaction.atomic
+    # def form_valid(self, form):
+    #     form.instance.user = self.request.user
+    #     paypoint = form.save(commit=False)
+    #     try:
+    #         paypoint.save()
+
+    #         if paypoint.service.startswith("Surgery Bill:"):
+    #             wallet, created = Wallet.objects.get_or_create(patient=paypoint.patient)
+    #             wallet.add_funds(paypoint.price)
+
+    #         messages.success(self.request, 'TRANSACTION SUCCESSFUL')
+    #         if paypoint.status:  # Only redirect to print if payment was successful
+    #             return redirect(f'/print-receipt/?id={paypoint.id}')
+
+    #         return super().form_valid(form)
+    #     except ValidationError as e:
+    #         error_message = str(e)
+    #         if "Insufficient funds" in error_message:
+    #             error_message = "Insufficient funds in the wallet. Please add funds and try again."
+    #         form.add_error(None, error_message)
+    #         return self.form_invalid(form)
 
 
 class PayListView(ListView):
@@ -1244,54 +1345,53 @@ class PayListView(ListView):
         context['total_worth'] = total_worth
         return context    
     
-# @login_required
-# def receipt_pdf(request):
-#     ndate = datetime.datetime.now()
-#     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
-#     f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
-#     patient = f.first().patient if f.exists() else None
-#     result = ""
-#     for key, value in request.GET.items():
-#         if value:
-#             result += f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
+@login_required
+def receipt_pdf(request):
+    ndate = datetime.datetime.now()
+    filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
+    f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
+    patient = f.first().patient if f.exists() else None
+    result = ""
+    for key, value in request.GET.items():
+        if value:
+            result += f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
 
-#     context = {'f': f, 'pagesize': 'A4','patient':patient,
-#                'orientation': 'landscape', 'result': result}
-#     response = HttpResponse(content_type='application/pdf',
-#                             headers={'Content-Disposition': f'filename="Receipt__{filename}"'})
+    context = {'f': f, 'pagesize': 'A4','patient':patient,
+               'orientation': 'landscape', 'result': result}
+    response = HttpResponse(content_type='application/pdf',
+                            headers={'Content-Disposition': f'filename="Receipt__{filename}"'})
 
-#     buffer = BytesIO()
+    buffer = BytesIO()
 
-#     pisa_status = pisa.CreatePDF(get_template('ehr/revenue/receipt_pdf.html').render(
-#         context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+    pisa_status = pisa.CreatePDF(get_template('ehr/revenue/receipt_pdf.html').render(
+        context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
 
-#     if not pisa_status.err:
-#         pdf = buffer.getvalue()
-#         buffer.close()
-#         response.write(pdf)
-#         return response
-#     return HttpResponse('Error generating PDF', status=500)
+    if not pisa_status.err:
+        pdf = buffer.getvalue()
+        buffer.close()
+        response.write(pdf)
+        return response
+    return HttpResponse('Error generating PDF', status=500)
     
+
 
 def format_currency(amount):
     if amount is None:
         return "N0.00"
     return f"N{amount:,.2f}"
 
-@login_required
-def receipt_pdf(request):
-    # Get the queryset
-    f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
-    
-    # Get the patient from the first Paypoint object
-    patient = f.first().patient if f.exists() else None
 
+@login_required
+def print_receipt_pdf(request):
+    payment_id = request.GET.get('id')
+    payment = get_object_or_404(Paypoint, id=payment_id)
+    patient = payment.patient
+    
+     
     # Create a file-like buffer to receive PDF data
     buffer = BytesIO()
-
-    # Create the PDF object, using the buffer as its "file."
-    p = canvas.Canvas(buffer, pagesize=(3*inch, 11*inch))  # 3 inches wide, 11 inches long
-
+    p = canvas.Canvas(buffer, pagesize=(3*inch, 11*inch))
+    
     # Try to register custom fonts, fall back to standard fonts if not available
     try:
         pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
@@ -1301,10 +1401,10 @@ def receipt_pdf(request):
     except:
         font_name = 'Helvetica'
         font_bold = 'Helvetica-Bold'
-
+    
     # Start drawing from the top of the page
     y = 10.5*inch
-
+    
     # Try to draw logo if available
     logo_path = os.path.join(settings.STATIC_ROOT, 'images', '5.png')
     if os.path.exists(logo_path):
@@ -1312,17 +1412,17 @@ def receipt_pdf(request):
         y -= 0.7*inch
     else:
         y -= 0.2*inch  # Adjust spacing if no logo
-
+    
     # Draw the header
     p.setFont(font_bold, 12)
     p.drawCentredString(1.5*inch, y, "PAYMENT RECEIPT")
     y -= 0.3*inch
-
+    
     # Draw a line
     p.setStrokeColor(grey)
     p.line(0.25*inch, y, 2.75*inch, y)
     y -= 0.2*inch
-
+    
     # Draw patient info
     p.setFont(font_name, 8)
     if patient:
@@ -1330,63 +1430,65 @@ def receipt_pdf(request):
         y -= 0.15*inch
         p.drawString(0.25*inch, y, f"File No: {patient.file_no}")
         y -= 0.2*inch
-
+    
     # Draw a line
     p.line(0.25*inch, y, 2.75*inch, y)
     y -= 0.2*inch
-
+    
     # Draw column headers
     p.setFont(font_bold, 8)
-    p.drawString(0.25*inch, y, "Service")
+    p.drawString(0.25*inch, y, "Item")
     p.drawString(1.75*inch, y, "Price")
     p.drawString(2.25*inch, y, "Date")
     y -= 0.15*inch
-
+    
     # Draw a line
     p.line(0.25*inch, y, 2.75*inch, y)
     y -= 0.1*inch
-
+    
     # Draw payment details
     p.setFont(font_name, 8)
-    total = 0
-    for payment in f:
-        if y < 1*inch:  # If we're near the bottom of the page, start a new page
-            p.showPage()
-            p.setFont(font_name, 8)
-            y = 10.5*inch
-
-        p.drawString(0.25*inch, y, str(payment.service)[:20])  # Truncate long service names
-        p.drawRightString(2.15*inch, y, format_currency(payment.price))
-        p.drawString(2.25*inch, y, payment.updated.strftime("%d/%m"))
-        y -= 0.15*inch
-        total += payment.price or 0  # Use 0 if price is None
-
+    total = payment.price or 0  # For single payment
+    
+    if y < 1*inch:  # If we're near the bottom of the page, start a new page
+        p.showPage()
+        p.setFont(font_name, 8)
+        y = 10.5*inch
+    
+    p.drawString(0.25*inch, y, str(payment.service)[:20])  # Truncate long service names
+    p.drawRightString(2.15*inch, y, format_currency(payment.price))
+    p.drawString(2.25*inch, y, payment.updated.strftime("%d/%m"))
+    y -= 0.15*inch
+    
     # Draw a line
     y -= 0.1*inch
     p.setStrokeColor(black)
     p.line(0.25*inch, y, 2.75*inch, y)
     y -= 0.2*inch
-
+    
     # Draw total
     p.setFont(font_bold, 10)
     p.drawString(0.25*inch, y, "Total:")
     p.drawRightString(2.75*inch, y, format_currency(total))
-
+    
     # Draw footer
     y -= 0.4*inch
     p.setFont(font_name, 7)
     p.drawCentredString(1.5*inch, y, f"Generated: {datetime.datetime.now().strftime('%d-%m-%Y %H:%M')}")
     y -= 0.15*inch
     p.drawCentredString(1.5*inch, y, f"By: {request.user.username.upper()}")
-
-    # Close the PDF object cleanly, and we're done.
+    
+    # Close the PDF object cleanly
     p.showPage()
     p.save()
-
+    
     # FileResponse sets the Content-Disposition header so that browsers
     # present the option to save the file.
     buffer.seek(0)
-    return HttpResponse(buffer, content_type='application/pdf')
+    ndate = datetime.datetime.now()
+    filename = ndate.strftime('on__%d/%m/%Y/at/%I.%M%p.pdf')
+
+    return HttpResponse(buffer, content_type='application/pdf',headers={'Content-Disposition': f'attachment; filename="Receipt__{filename}"'})
 
 
 class PathologyPayListView(ListView):

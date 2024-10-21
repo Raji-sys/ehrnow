@@ -216,7 +216,6 @@ class Dispensary(models.Model):
                     raise ValidationError(f"Insufficient stock. Available: {self.drug.current_balance}, Requested: {self.quantity}")
                 
                 self.drug.total_purchased_quantity -= self.quantity
-                # self.drug.total_issued += self.quantity
                 self.drug.save()
                 self.quantity_deducted = True
                 

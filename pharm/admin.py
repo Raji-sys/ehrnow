@@ -50,7 +50,7 @@ class DrugAdmin(ImportMixin,admin.ModelAdmin):
     form=DrugAdminForm
     # readonly_fields=('total_purchased_quantity',)
     exclude=('added_by','balance','total_value')
-    list_display = ['name','generic_name','brand_name','category','supplier','dosage_form','pack_size','pack_price','cost_price','total_purchased_quantity','current_balance','total_value','total_issue','expiration_date','added_by', 'date_added','updated_at']
+    list_display = ['name','generic_name','brand_name','category','supplier','dosage_form','pack_size','pack_price','cost_price','total_purchased_quantity','current_balance','total_value','total_issued','expiration_date','added_by', 'date_added','updated_at']
     list_filter = ['date_added','category','supplier','added_by']
     search_fields = ['name']
     list_per_page=10

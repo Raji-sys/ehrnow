@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Receipt</title>
+</head>
+<body>
+    <h1>Payment Receipt</h1>
+
+    <p>
+        <a href="{%url 'print_receipt'%}" target="_blank" class="btn btn-primary">Open Receipt in New Tab</a>
+    </p>
+
+    <p>
+        <a href="{{ next_url }}" class="btn btn-secondary">Return to Payment List</a>
+    </p>
+</body>
+</html>

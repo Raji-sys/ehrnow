@@ -5,12 +5,10 @@
 <div class="">
   <span class="shadow-sm shadow-blue-900 gap-2 bg-blue-700 text-white uppercase text-xs border-b-2 border-blue-900 py-2 px-4 rounded-xl mx-2 w-fit">
     <span class=" shadow-white text-xs p-1 rounded-full bg-white text-blue-900">{{pay_total}}</span>&nbsp;transactions 
-        {% if request.GET.urlencode %}
         <span>
             <a href="?" class=" p-2 focus:opacity-10  focus:border-blue-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
                 <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
             </span>
-            {%endif%}
         </span>
       </div>
       <div class="">
@@ -101,12 +99,13 @@
                 {{ p.updated }}
               </td>
             <td class="p-3 whitespace-nowrap">
-                <span class="space-x-4">
-                    <a href="{% url 'update_pay' p.id %}?next={%url 'pharm_pay_list' %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-cash-register fa-2xl text-green-600"></i></a>                    
-                </span>
+              <span class="space-x-4">
+                <a href="#" class="text-blue-500 hover:text-blue-700 open-modal" data-id="{{ p.id }}">
+                    <i class="fa-solid fa-cash-register fa-2xl text-green-600"></i>
+                </a>
+            </span>
               </td>
               <td>
-                
               </td>
             </tr>
             {% empty %}
@@ -140,4 +139,117 @@
 
     </div>
   </div>
+
+  <div id="paymentModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            Update Payment
+                        </h3>
+                        <div class="mt-2">
+                            <form id="paymentForm" method="post" enctype="multipart/form-data" class="uppercase text-xs">
+                                {% csrf_token %}
+                                <div class="mb-4">
+                                    <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                                    <select id="payment_method" name="payment_method" class="text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200 w-full">
+                                        <option value="CASH">CASH</option>
+                                        <option value="WALLET">WALLET</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                    <input type="checkbox" id="status" name="status" class="text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="submit" form="paymentForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Pay
+                </button>
+                <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm close-modal">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('paymentModal');
+    const openButtons = document.querySelectorAll('.open-modal');
+    const closeButton = document.querySelector('.close-modal');
+    const form = document.getElementById('paymentForm');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    let currentPayId;
+
+    openButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            currentPayId = this.getAttribute('data-id');
+            fetchFormData(currentPayId);
+            modal.classList.remove('hidden'); // Show modal
+        });
+    });
+
+    closeButton.addEventListener('click', function() {
+        modal.classList.add('hidden'); // Close modal
+    });
+
+    function fetchFormData(payId) {
+        fetch(`/revenue/update-payment/${payId}/?next={% url "pharm_pay_list" %}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('payment_method').value = data.payment_method || 'CASH';
+                document.getElementById('status').checked = data.status || false;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        
+        // Ensure boolean value for status
+        formData.set('status', document.getElementById('status').checked);
+
+        fetch(`/revenue/update-payment/${currentPayId}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                modal.classList.add('hidden'); // Hide modal after successful submission
+              
+                window.location.href = data.redirect_url;
+            } else {
+                console.error('Form submission errors:', data.errors);
+                // Display errors to the user
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4';
+                errorDiv.innerHTML = `<p class="font-bold">Error</p><p>${JSON.stringify(data.errors)}</p>`;
+                form.prepend(errorDiv);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+
+</script>
+{% endblock %}
 {%endblock%}
