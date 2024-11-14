@@ -20,28 +20,52 @@
             <p>{{form.errors}}</p>
         </div>
             {% endif %}
-  <form method="post" enctype="multipart/form-data" class="text-xs">
-    {% csrf_token %}
-    <div class="uppercase text-cyan-900">
-        <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">enter patient information</p>
-        <div class="grid grid-cols-3 md:grid-cols-4 p-4 gap-4">
-      {% for field in form %}
-        <div class="text-center text-xs">
-            <div class="text-left">
-                <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
-            </div>
-            <div class="text-xs text-left">
-                {{ field }}
-            </div>
-            </div>
-            {%endfor%}
-          </div>
-            <div class="gap-1 flex justify-center align-middle p-2">
-            <input type="submit" value="register" class="text-md focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-            bg-green-700 text-white py-3 px-8 rounded shadow-lg hover:shadow-xl">
-          </div>
-    </div>
-    </form>
+            <form method="post" enctype="multipart/form-data" class="text-xs">
+              {% csrf_token %}
+              <div class="uppercase text-cyan-900">
+                <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">enter patient information</p>
+                
+                <!-- Patient Information Section -->
+                <div class="grid grid-cols-3 md:grid-cols-5 p-2 gap-4">
+                  {% for field in form %}
+                    {% if field.name != "nok_name" and field.name != "nok_phone" and field.name != "nok_addr" and field.name != "nok_rel" and field.name != "nok_addr_if" %}
+                      <div class="text-center text-xs">
+                        <div class="text-left">
+                          <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
+                        </div>
+                        <div class="text-xs text-left">
+                          {{ field }}
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+            
+                <!-- Next of Kin Section -->
+                <div class="border-t border-green-700 mt-4 mb-4">
+                  <p class="text-green-900 text-sm font-bold text-center mt-4">Next of Kin Information</p>
+                </div>
+                
+                <div class="grid grid-cols-3 md:grid-cols-5 p-2 gap-4">
+                  {% for field in form %}
+                    {% if field.name == "nok_name" or field.name == "nok_phone" or field.name == "nok_addr" or field.name == "nok_rel" or field.name == "nok_addr_if" %}
+                      <div class="text-center text-xs">
+                        <div class="text-left">
+                          <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
+                        </div>
+                        <div class="text-xs text-left">
+                          {{ field }}
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+            
+                <div class="gap-1 flex justify-center align-middle p-2">
+                  <input type="submit" value="register" class="text-md focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600 bg-green-700 text-white py-3 px-8 rounded shadow-lg hover:shadow-xl">
+                </div>
+              </div>
+            </form>
     </div>
     <script>
       // Get the select elements

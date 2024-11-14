@@ -50,24 +50,57 @@ class ProfileForm(forms.ModelForm):
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
+# class PatientForm(forms.ModelForm):
+#     class Meta:
+#         model = PatientData
+#         exclude = ['file_no','age','user','updated']
+#         widgets = {
+#             'zone': forms.Select(attrs={'id': 'id_zone'}),
+#             'state': forms.Select(attrs={'id': 'id_state'}),
+#             'lga': forms.Select(attrs={'id': 'id_lga'}),
+#             'dob': forms.DateInput(attrs={'type': 'date'})
+#         }
+    
+#     def __init__(self, *args, **kwargs):
+#         super(PatientForm, self).__init__(*args, **kwargs)
+#         for field in self.fields.values():
+#             # field.required=True
+#             field.widget.attrs.update(
+#                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 class PatientForm(forms.ModelForm):
     class Meta:
         model = PatientData
-        exclude = ['file_no','age','user','updated']
+        exclude = ['file_no', 'age', 'user', 'updated']
         widgets = {
             'zone': forms.Select(attrs={'id': 'id_zone'}),
             'state': forms.Select(attrs={'id': 'id_state'}),
             'lga': forms.Select(attrs={'id': 'id_lga'}),
             'dob': forms.DateInput(attrs={'type': 'date'})
         }
-    
+
     def __init__(self, *args, **kwargs):
         super(PatientForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.required=True
-            field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+        
+        # Add base styling to all fields
+        for field_name, field in self.fields.items():
+            # Get the model field
+            model_field = self.Meta.model._meta.get_field(field_name)
+            
+            # Set required status based on model field
+            field.required = not model_field.blank
 
+            # Add your styling
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+            # Add empty choice only for choice fields that are optional
+            if isinstance(field.widget, forms.Select) and not field.required:
+                if hasattr(field, 'choices'):
+                    choices = list(field.choices)
+                    if choices and choices[0][0] != '':  # Only add if not already present
+                        choices.insert(0, ('', '---Select---'))
+                        field.choices = choices
 
 
 class VisitForm(forms.ModelForm):
