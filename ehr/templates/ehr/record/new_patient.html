@@ -27,10 +27,10 @@
         <div class="grid grid-cols-3 md:grid-cols-4 p-4 gap-4">
       {% for field in form %}
         <div class="text-center text-xs">
-            <div class="">
+            <div class="text-left">
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
             </div>
-            <div class="text-xs">
+            <div class="text-xs text-left">
                 {{ field }}
             </div>
             </div>

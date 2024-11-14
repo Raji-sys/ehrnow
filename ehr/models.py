@@ -344,6 +344,7 @@ class Appointment(models.Model):
     clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
     date = models.DateField(null=True)
+    time = models.TimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
