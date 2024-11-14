@@ -149,7 +149,7 @@ class AppointmentForm(forms.ModelForm):
         exclude=['patient','created','updated']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
-            'time': forms.TimeInput(attrs={'type': 'time'})
+            'time': forms.TimeInput(attrs={'type': 'time','format': '%I:%M %p' })
         }
 
     def __init__(self, *args, **kwargs):

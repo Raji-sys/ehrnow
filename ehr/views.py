@@ -1090,7 +1090,7 @@ class AppointmentListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        appointment = super().get_queryset().order_by('-updated_at')
+        appointment = super().get_queryset().order_by('-updated')
         appointment_filter = AppointmentFilter(self.request.GET, queryset=appointment)
         return appointment_filter.qs
 
