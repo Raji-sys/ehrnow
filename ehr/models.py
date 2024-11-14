@@ -346,7 +346,7 @@ class Appointment(models.Model):
     date = models.DateField(null=True)
     time = models.TimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True)
     
     def str(self):
         f"Appointment for {self.patient.file_no} in {self.clinic} with {self.team} team"

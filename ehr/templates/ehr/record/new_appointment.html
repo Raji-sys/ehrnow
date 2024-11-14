@@ -3,7 +3,7 @@
 {%block title%}NEW APPOINTMENT{%endblock%}
 {%block content %}
 <div class="">
-    <div class="mt-4  mx-2 md:mx-20 rounded-xl bg-white">
+    <div class="mt-4 mx-auto w-fit rounded-xl bg-white">
         <section class="text-center border-cyan-700 p-4 m-2">
             {% for message in messages %}
             <div class="mt-2 ">
@@ -22,15 +22,15 @@
             {% endif %}
   <form method="post" enctype="multipart/form-data" class="text-xs">
     {% csrf_token %}
-    <div class="mb-2 uppercase text-cyan-900 px-10">
+    <div class="mb-2 uppercase text-cyan-900 mx-auto px-10">
         <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">NEW APPOINTMENT</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 p-2 gap-4">
+        <div class="grid grid-cols-1 p-2 gap-4">
       {% for field in form %}
         <div>
-            <div class="flex justify-center">
+            <div class="flex justify-start">
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
             </div>
-            <div class="flex justify-center">
+            <div class="flex justify-start">
                 {{ field }}
             </div>
             </div>

@@ -684,6 +684,7 @@ class PatientFolderView(DetailView):
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
         context['payments'] = patient.patient_payments.all().order_by('-updated')
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
+        context['appointments'] = patient.appointments.all().order_by('-updated')
         context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
         context['hematology_results']=patient.hematology_result.all().order_by('-created')
         context['chempath_results']=patient.chemical_pathology_results.all().order_by('-created')
@@ -1021,15 +1022,17 @@ class AppointmentCreateView(RecordRequiredMixin, CreateView):
     model = Appointment
     form_class = AppointmentForm
     template_name = 'ehr/record/new_appointment.html'
-    success_url = reverse_lazy("appointments")
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         self.object = form.save()
         messages.success(self.request, 'APPOINTMENT ADDED')
+        
         return super().form_valid(form)
 
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
 
 class AppointmentUpdateView(UpdateView):
     model = Appointment
