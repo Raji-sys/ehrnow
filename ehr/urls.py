@@ -50,7 +50,6 @@ urlpatterns = [
     path('record/create-appointment/<str:file_no>/', AppointmentCreateView.as_view(), name='new_appointment'),
     path('record/appointments/', AppointmentListView.as_view(), name='appointments'),
     path('record/appointment/update-appointment/<int:pk>/', AppointmentUpdateView.as_view(), name='update_appointment'),
-    path('record/appointment/new-appointment/', NewAppointmentListView.as_view(), name='new_appt_list'),
 
     path('get-started/service-dash', ServiceView.as_view(), name='service_dash'),
     path('revenue/add-service/', ServiceCreateView.as_view(), name='add_service'),
