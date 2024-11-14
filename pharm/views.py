@@ -26,6 +26,7 @@ from django.views.generic import CreateView, FormView, ListView, DetailView, Upd
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.views.generic.base import TemplateView
+from django.db.models import Q
 
 
 class PharmacyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -301,11 +302,22 @@ class DispensaryListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-dispensed_date')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+
+            )
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        context['query'] = self.request.GET.get('q', '')
         return context
 
 
@@ -323,11 +335,22 @@ class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         queryset = super().get_queryset().filter(is_dispensed=False).order_by('-prescribed_date')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        context['query'] = self.request.GET.get('q', '')
         return context
 
 
