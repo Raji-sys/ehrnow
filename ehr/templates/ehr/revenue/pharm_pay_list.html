@@ -147,9 +147,6 @@
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Update Payment
-                        </h3>
                         <div class="mt-2">
                             <form id="paymentForm" method="post" enctype="multipart/form-data" class="uppercase text-xs">
                                 {% csrf_token %}
@@ -192,34 +189,35 @@ document.addEventListener('DOMContentLoaded', function() {
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     let currentPayId;
 
+    // Open modal and fetch data
     openButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             currentPayId = this.getAttribute('data-id');
-            fetchFormData(currentPayId);
-            modal.classList.remove('hidden'); // Show modal
-        });
-    });
-
-    closeButton.addEventListener('click', function() {
-        modal.classList.add('hidden'); // Close modal
-    });
-
-    function fetchFormData(payId) {
-        fetch(`/revenue/update-payment/${payId}/?next={% url "pharm_pay_list" %}`)
+            
+            fetch(`/revenue/update-payment/${currentPayId}/?next={% url "pharm_pay_list" %}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
             .then(response => response.json())
             .then(data => {
                 document.getElementById('payment_method').value = data.payment_method || 'CASH';
                 document.getElementById('status').checked = data.status || false;
-            })
-            .catch(error => console.error('Error:', error));
-    }
+                modal.classList.remove('hidden');
+            });
+        });
+    });
 
+    // Simple close modal
+    closeButton.addEventListener('click', function() {
+        modal.classList.add('hidden');
+    });
+
+    // Handle form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(form);
-        
-        // Ensure boolean value for status
         formData.set('status', document.getElementById('status').checked);
 
         fetch(`/revenue/update-payment/${currentPayId}/`, {
@@ -233,22 +231,20 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                modal.classList.add('hidden'); // Hide modal after successful submission
-              
-                window.location.href = data.redirect_url;
+                // First hide the modal
+                modal.classList.add('hidden');
+                
+                // Open PDF in new tab
+                window.open(data.redirect_url, '_blank');
+                
+                // Reload the main page to show success message
+                window.location.reload();
             } else {
                 console.error('Form submission errors:', data.errors);
-                // Display errors to the user
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4';
-                errorDiv.innerHTML = `<p class="font-bold">Error</p><p>${JSON.stringify(data.errors)}</p>`;
-                form.prepend(errorDiv);
             }
-        })
-        .catch(error => console.error('Error:', error));
+        });
     });
 });
-
 </script>
 {% endblock %}
 {%endblock%}

@@ -1225,72 +1225,109 @@ class PayCreateView(RevenueRequiredMixin, CreateView):
         return super().get_success_url()
 
 class PayUpdateView(UpdateView):
+    """
+    View for updating payment information and handling payment processing.
+    Supports both AJAX and traditional form submissions.
+    """
     model = Paypoint
     template_name = 'ehr/revenue/update_pay.html'
     form_class = PayUpdateForm
-    
+
     def get(self, request, *args, **kwargs):
+        """
+        Handle GET requests, with special handling for AJAX requests.
+        Returns payment details for AJAX requests, normal form view otherwise.
+        """
         self.object = self.get_object()
+        
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             data = {
                 'payment_method': self.object.payment_method,
                 'status': self.object.status,
             }
             return JsonResponse(data)
+            
         return super().get(request, *args, **kwargs)
 
     def get_success_url(self):
+        """
+        Determine the redirect URL after successful form submission.
+        Prioritizes 'next' parameter if provided.
+        """
         next_url = self.request.GET.get('next')
         if next_url:
             return next_url
         return reverse_lazy("pay_list")
 
     def get_context_data(self, **kwargs):
+        """
+        Add additional context data for the template.
+        Includes patient information, service details, and next URL.
+        """
         context = super().get_context_data(**kwargs)
         paypoint = self.get_object()
-        context['patient'] = paypoint.patient
-        context['service'] = paypoint.service
-        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        
+        context.update({
+            'patient': paypoint.patient,
+            'service': paypoint.service,
+            'next': self.request.GET.get('next', reverse_lazy("pay_list"))
+        })
+        
         return context
-    
+
     @transaction.atomic
     def form_valid(self, form):
+        """
+        Process the form if valid. Handles payment processing and wallet updates.
+        Uses transaction.atomic to ensure database consistency.
+        """
         form.instance.user = self.request.user
         paypoint = form.save(commit=False)
+        
         try:
+            # Save the payment record
             paypoint.save()
-
+            
+            # Handle surgery bill specific logic
             if paypoint.service.startswith("Surgery Bill:"):
                 wallet, created = Wallet.objects.get_or_create(patient=paypoint.patient)
                 wallet.add_funds(paypoint.price)
-
+            
             messages.success(self.request, 'TRANSACTION SUCCESSFUL')
-
+            
+            # Determine redirect URL based on payment status
             if paypoint.status:
                 redirect_url = f'/print-receipt/?id={paypoint.id}&next={self.get_success_url()}'
             else:
                 redirect_url = self.get_success_url()
-
+            
+            # Return appropriate response based on request type
             if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'success': True, 'redirect_url': redirect_url})
-            else:
-                return redirect(redirect_url)
-
+                return JsonResponse({
+                    'success': True,
+                    'redirect_url': redirect_url
+                })
+            return redirect(redirect_url)
+            
         except ValidationError as e:
             error_message = str(e)
             if "Insufficient funds" in error_message:
                 error_message = "Insufficient funds in the wallet. Please add funds and try again."
+            
             form.add_error(None, error_message)
-            if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'success': False, 'errors': form.errors})
-            else:
-                return self.form_invalid(form)
+            return self.form_invalid(form)
 
     def form_invalid(self, form):
+        """
+        Handle invalid form submission.
+        Returns JSON response for AJAX requests, normal form response otherwise.
+        """
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': False, 'errors': form.errors})
-        else:
-            return super().form_invalid(form)
+            return JsonResponse({
+                'success': False,
+                'errors': form.errors
+            })
+        return super().form_invalid(form)
 # class PayUpdateView(UpdateView):
 #     model = Paypoint
 #     template_name = 'ehr/revenue/update_pay.html'
@@ -1524,7 +1561,7 @@ def print_receipt_pdf(request):
     ndate = datetime.datetime.now()
     filename = ndate.strftime('on__%d/%m/%Y/at/%I.%M%p.pdf')
 
-    return HttpResponse(buffer, content_type='application/pdf',headers={'Content-Disposition': f'attachment; filename="Receipt__{filename}"'})
+    return HttpResponse(buffer, content_type='application/pdf',headers={'Content-Disposition': f'inline; filename="Receipt__{filename}"'})
 
 
 class RadiologyPayListView(ListView):
