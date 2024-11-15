@@ -51,6 +51,7 @@ urlpatterns = [
     # hematology 
     path('blood-group/create/<str:file_no>/', BloodGroupCreateView.as_view(), name='create_blood_group'),
     path('blood-group/update/<str:file_no>/<int:test_info_pk>/', BloodGroupUpdateView.as_view(), name='update_blood_group'),
+    path('blood-group/details/<int:pk>/', BloodGroupDetailView.as_view(), name='bg_test_details'),
 
     path('genotype/create/<str:file_no>/', GenotypeCreateView.as_view(), name='create_genotype'),
     path('genotype/update/<str:file_no>/<int:test_info_pk>/', GenotypeUpdateView.as_view(), name='update_genotype'),

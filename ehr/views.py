@@ -1228,7 +1228,7 @@ class PayUpdateView(UpdateView):
     model = Paypoint
     template_name = 'ehr/revenue/update_pay.html'
     form_class = PayUpdateForm
-
+    
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':

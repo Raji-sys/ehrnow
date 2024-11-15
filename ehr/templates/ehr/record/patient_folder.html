@@ -407,6 +407,7 @@
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">input result</th>
+                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">test details</th>
                             </tr>
                           </thead>
                           <tbody class="bg-white divide-y divide-cyan-200">
@@ -418,8 +419,11 @@
                               <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                               <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_blood_group' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                                 <i class="fa-solid fa-edit fa-2xl"></i> </a>
-                          </td>
-                            </tr>
+                              </td>
+                              <td class="p-3 whitespace-nowrap">  <a href="{{test_info.bg_test.get_absolute_url }}" class="text-xs hover:text-green-700">
+                                <i class="fa-solid fa-eye fa-2xl"></i> </a>
+                                </td>            
+                              </tr>
                             {%empty%}
                             <tr>
                               <td colspan="10" class="p-3 text-center">blood group test yet.</td>

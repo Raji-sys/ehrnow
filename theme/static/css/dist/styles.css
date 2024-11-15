@@ -1085,10 +1085,6 @@ select {
   height: 100vh;
 }
 
-.max-h-\[40vh\] {
-  max-height: 40vh;
-}
-
 .max-h-\[50vh\] {
   max-height: 50vh;
 }
@@ -1144,6 +1140,10 @@ select {
 
 .min-w-full {
   min-width: 100%;
+}
+
+.max-w-3xl {
+  max-width: 48rem;
 }
 
 .max-w-4xl {
@@ -1662,6 +1662,11 @@ select {
 .border-cyan-900 {
   --tw-border-opacity: 1;
   border-color: rgb(22 78 99 / var(--tw-border-opacity));
+}
+
+.border-emerald-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(167 243 208 / var(--tw-border-opacity));
 }
 
 .border-emerald-500 {

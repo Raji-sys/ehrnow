@@ -130,15 +130,13 @@ def report_pdf(request):
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')
     f = TestFilter(request.GET, queryset=Testinfo.objects.all()).qs
     
-    username = request.user.first_name.upper() if hasattr(request.user, 'username') else "UNKNOWN USER"
-    user=request.user
 
     result = ""
     for key, value in request.GET.items():
         if value:
-            result += f" {value.upper()}, Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}, By: {username}"
+            result += f" {value.upper()}, Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}"
     
-    context = {'user':user,'f': f,'pagesize': 'A4','orientation': 'potrait', 'result': result,'username': username,'generated_date': ndate.strftime('%d-%B-%Y at %I:%M %p')}
+    context = {'f': f,'pagesize': 'A4','orientation': 'potrait', 'result': result,'generated_date': ndate.strftime('%d-%B-%Y at %I:%M %p')}
     
     # response = HttpResponse(content_type='application/pdf',headers={'Content-Disposition': f'attachment; filename="{filename}"'})
     response = HttpResponse(content_type='application/pdf',headers={'Content-Disposition': f'inline; filename="{filename}"'})
@@ -2021,3 +2019,9 @@ class UrinalysisUpdateView(BaseLabResultUpdateView):
 class PregnancyUpdateView(BaseLabResultUpdateView):
     model = Pregnancy
     form_class = PregnancyForm
+
+
+class BloodGroupDetailView(DetailView):
+    model=BloodGroup
+    context_object_name='bg_test'
+    template_name = "hema/blood_group/bg_details.html"

@@ -220,6 +220,12 @@ class BloodGroup(models.Model):
     test_info = models.OneToOneField(Testinfo, on_delete=models.CASCADE, related_name='bg_test', null=True, blank=True)
     result = models.CharField(null=True, max_length=3, choices=BLOOD_GROUP_CHOICES)
 
+    def get_absolute_url(self):
+        return reverse('results:bg_test_details', args=[self.id])
+
+    def __str__(self):
+        return self.test
+
 
 class Genotype(models.Model):
     GENOTYPE_CHOICES = [
@@ -233,16 +239,6 @@ class Genotype(models.Model):
     test=models.ForeignKey(GenericTest,on_delete=models.CASCADE,null=True, blank=True)
     test_info = models.OneToOneField(Testinfo, on_delete=models.CASCADE, related_name='gt_test',null=True, blank=True)
     result = models.CharField(null=True,choices=GENOTYPE_CHOICES,max_length=2)
-
-
-# class RhesusFactor(models.Model):
-#     RHESUS_CHOICES = [
-#         ('Positive', 'Positive'),
-#         ('Negative', 'Negative'),
-#     ]    
-#     test=models.ForeignKey(GenericTest,on_delete=models.CASCADE,null=True, blank=True)
-#     test_info = models.OneToOneField(Testinfo, on_delete=models.CASCADE, related_name='rh_test',null=True, blank=True)
-#     rhesus_d = models.CharField('rhesus (D)',max_length=8, choices=RHESUS_CHOICES, null=True)
 
 
 # CHEMICAL PATHOLOGY TESTS
