@@ -12,9 +12,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib import messages
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
-from pathology.models import *
-from pathology.views import *
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.utils import timezone
 from datetime import timedelta
 User = get_user_model()
@@ -46,6 +44,14 @@ from django.db import transaction
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.translation import gettext_lazy as _
+from django.template.loader import get_template
+from django.http import JsonResponse
+from django.views.generic.edit import UpdateView, FormView
+from django.urls import reverse_lazy
+from django.db import transaction
+from django.contrib import messages
+from django.shortcuts import redirect
+
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -686,10 +692,6 @@ class PatientFolderView(DetailView):
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
         context['appointments'] = patient.appointments.all().order_by('-updated')
         context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
-        context['hematology_results']=patient.hematology_result.all().order_by('-created')
-        context['chempath_results']=patient.chemical_pathology_results.all().order_by('-created')
-        context['micro_results']=patient.microbiology_results.all().order_by('-created')
-        context['serology_results']=patient.serology_results.all().order_by('-created')
         context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
         context['admission_info'] = patient.admission_info.all().order_by('-updated')
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
@@ -1144,7 +1146,6 @@ class HospitalServicesListView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['medical_record'] = MedicalRecord.objects.all()
-        context['hematology'] = HematologyTest.objects.all()
         context['services'] = Services.objects.all()
         return context
 
@@ -1222,13 +1223,6 @@ class PayCreateView(RevenueRequiredMixin, CreateView):
         if next_url:
             return next_url
         return super().get_success_url()
-
-from django.http import JsonResponse
-from django.views.generic.edit import UpdateView
-from django.urls import reverse_lazy
-from django.db import transaction
-from django.contrib import messages
-from django.shortcuts import redirect
 
 class PayUpdateView(UpdateView):
     model = Paypoint
@@ -1531,63 +1525,6 @@ def print_receipt_pdf(request):
     filename = ndate.strftime('on__%d/%m/%Y/at/%I.%M%p.pdf')
 
     return HttpResponse(buffer, content_type='application/pdf',headers={'Content-Disposition': f'attachment; filename="Receipt__{filename}"'})
-
-
-class PathologyPayListView(ListView):
-    model = Paypoint
-    template_name = 'ehr/revenue/pathology_pay_list.html'
-    # context_object_name = 'hematology_pays'
-    paginate_by = 3
-
-    def get_queryset(self):
-        # We'll handle this in get_context_data
-        return Paypoint.objects.none()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        hematology_pays = Paypoint.objects.filter(hematology_result_payment__isnull=False).order_by('-updated')
-        chempath_pays = Paypoint.objects.filter(chempath_result_payment__isnull=False).order_by('-updated')
-        micro_pays = Paypoint.objects.filter(micro_result_payment__isnull=False).order_by('-updated')
-        serology_pays = Paypoint.objects.filter(serology_result_payment__isnull=False).order_by('-updated')
-
-        hema_pay_total = hematology_pays.count()
-        hema_paid_transactions = hematology_pays.filter(status=True)
-        hema_total_worth = hema_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-        chem_pay_total = chempath_pays.count()
-        chem_paid_transactions = chempath_pays.filter(status=True)
-        chem_total_worth = chem_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-        micro_pay_total = micro_pays.count()
-        micro_paid_transactions = micro_pays.filter(status=True)
-        micro_total_worth = micro_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-        serology_pay_total = serology_pays.count()
-        serology_paid_transactions = serology_pays.filter(status=True)
-        serology_total_worth = serology_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-        # Combined total worth
-        combined_total_worth = hema_total_worth + chem_total_worth + micro_total_worth + serology_total_worth
-
-        context['hematology_pays'] = hematology_pays
-        context['chempath_pays'] = chempath_pays
-        context['micro_pays'] = micro_pays
-        context['serology_pays'] = serology_pays
-
-        context['hema_pay_total'] = hema_pay_total
-        context['chem_pay_total'] = chem_pay_total
-        context['micro_pay_total'] = micro_pay_total
-        context['serology_pay_total'] = serology_pay_total
-
-        context['hema_total_worth'] = hema_total_worth
-        context['chem_total_worth'] = chem_total_worth
-        context['micro_total_worth'] = micro_total_worth
-        context['serology_total_worth'] = serology_total_worth
-        # context['general_total_worth'] = general_total_worth
-        
-        context['combined_total_worth'] = combined_total_worth
-        return context  
 
 
 class RadiologyPayListView(ListView):

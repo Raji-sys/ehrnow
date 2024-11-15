@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     'import_export',
     'fontawesomefree',
     'django_quill',
-    'pathology',
     'pharm',
     'chartjs',
     'inventory',

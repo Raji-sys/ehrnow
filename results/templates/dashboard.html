@@ -4,7 +4,7 @@
 {% block title %}DASHBOARD{% endblock %}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'index' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>PATHOLOGY DASHBOARD</div>{%endblock%}
 {% block content %}
-<section class="max-w-xl mx-auto text-center border-cyan-700 p-2 m-1">
+<section class="w-fit mx-auto text-center border-cyan-700 p-2 m-1">
   {% for message in messages %}
   <div class="">
     <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
@@ -14,10 +14,8 @@
   </div>
   {% endfor %}
 </section>
-<div class="">
-  <div class=" mx-auto">
-    <div class="bg-white rounded-xl shadow-black shadow-2xl">
-    <div class="p-6 md:p-10 text-center grid grid-cols-2 md:grid-cols-6 gap-2">
+    <div class="mx-2 md:mx-auto md:w-fit bg-white rounded-xl shadow-black shadow-2xl">
+    <div class="p-6 md:p-10 gap-6 text-center grid grid-cols-1 md:grid-cols-2">
       <div>
         <a href="{% url 'results:hematology' %}" class="block">
           <div class=" hover:bg-white hover:text-gray-600 text-white bg-emerald-500  rounded-lg shadow-lg p-6 border-2 border-white transition duration-300">
@@ -62,6 +60,4 @@
       </div>
     </div>
   </div>
-  </div>
-</div>
 {% endblock %}

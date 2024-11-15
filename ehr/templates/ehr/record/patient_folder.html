@@ -393,7 +393,7 @@
              
                     <div>
                       <div>
-                    <a href="{% url 'create_blood_group' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+                    <a href="{% url 'results:create_blood_group' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
                         <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
                     </a>
       
@@ -416,7 +416,7 @@
                               <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A'}}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.bg_test.result|default_if_none:'N/A'}}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'update_blood_group' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_blood_group' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                                 <i class="fa-solid fa-edit fa-2xl"></i> </a>
                           </td>
                             </tr>
@@ -433,7 +433,7 @@
                   <!-- new test -->
                   <div>
                     <div>
-                  <a href="{% url 'create_genotype' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+                  <a href="{% url 'results:create_genotype' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
                       <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
                   </a>
                     </div>
@@ -457,7 +457,7 @@
                               <td class="p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                               <td class="p-3 whitespace-nowrap">{{ test_info.gt_test.result|default_if_none:'N/A' }}</td>
                               <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'update_genotype' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_genotype' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                                 <i class="fa-solid fa-edit fa-2xl"></i> </a>
                           </td>
                           </tr>
@@ -478,7 +478,7 @@
                   
                     <div>
                       <div>
-                    <a href="{% url 'create_fbc' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+                    <a href="{% url 'results:create_fbc' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
                         <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
                     </a>
                       </div>
@@ -714,7 +714,7 @@
                                    
                           </td>
                             <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                                <td class="p-3 whitespace-nowrap">  <a href="{% url 'update_fbc' patient.file_no test_info.id %}" class="text-xs  hover:text-green-700">
+                                <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_fbc' patient.file_no test_info.id %}" class="text-xs  hover:text-green-700">
                                   <i class="fa-solid fa-edit fa-2xl"></i> </a>
                             </td>
                             </tr>
@@ -752,7 +752,7 @@
              
                     <div>
                       <div>
-                    <a href="{% url 'create_urea_electrolyte' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+                    <a href="{% url 'results:create_urea_electrolyte' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
                         <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
                     </a>
       
@@ -785,7 +785,7 @@
                               <td class=" p-3 whitespace-nowrap">{{ test_info.ue_test.chloride|default_if_none:'N/A' }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.ue_test.creatinine|default_if_none:'N/A' }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'update_urea_electrolyte' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_urea_electrolyte' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                                 <i class="fa-solid fa-edit fa-2xl"></i> </a>
                           </td>
                             </tr>
@@ -804,7 +804,7 @@
                   <!-- new test  -->
                   <div>
                     <div>
-                      <a href="{%url 'create_liver_function' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_liver_function' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -839,7 +839,7 @@
                             <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.albumin|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.globulin|default_if_none:'N/A'}}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'update_liver_function' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_liver_function' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
                           <tr>
@@ -855,7 +855,7 @@
                 
                   <div>
                     <div>
-                      <a href="{%url 'create_lipid_profile' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_lipid_profile' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -881,7 +881,7 @@
                             <td class=" p-3 whitespace-nowrap">{{ test_info.lp_test.hdl_cholesterol|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.lp_test.ldl_cholesterol|default_if_none:'N/A'}}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated }}</td>
-                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'update_lipid_profile' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:update_lipid_profile' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
                           </tr>
                           {%empty%}
                           <tr>
@@ -898,7 +898,7 @@
                 <!-- new test  -->
                   <div>
                     <div>
-                      <a href="{%url 'create_bone_chemistry' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_bone_chemistry' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -921,7 +921,7 @@
                             <td class=" p-3 whitespace-nowrap">{{ test_info.bc_test.calcium|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.bc_test.inorganic_phosphate|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'update_bone_chemistry' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_bone_chemistry' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
                           <tr>
@@ -937,7 +937,7 @@
                 
                   <div>
                     <div>
-                      <a href="{%url 'create_serum_proteins' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_serum_proteins' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -961,7 +961,7 @@
                             <td class=" p-3 whitespace-nowrap">{{ test_info.sp_test.albumin|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.sp_test.globulin|default_if_none:'N/A'}}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated }}</td>
-                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'update_serum_proteins' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:update_serum_proteins' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
                           </tr>
                           {%empty%}
                           <tr>
@@ -978,7 +978,7 @@
                 <!-- new test  -->
                   <div>
                     <div>
-                      <a href="{%url 'create_cerebro_spinal_fluid' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_cerebro_spinal_fluid' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1001,7 +1001,7 @@
                             <td class=" p-3 whitespace-nowrap">{{ test_info.csf_test.csf_protein|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.csf_test.csf_chloride|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'update_cerebro_spinal_fluid' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_cerebro_spinal_fluid' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
                           <tr>
@@ -1017,7 +1017,7 @@
                 
                   <div>
                     <div>
-                      <a href="{%url 'create_blood_glucose' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_blood_glucose' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1039,7 +1039,7 @@
                             <td class=" p-3 whitespace-nowrap">{{ test_info.bgl_test.test_type|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.bgl_test.result|default_if_none:'N/A'}}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated }}</td>
-                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'update_blood_glucose' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:update_blood_glucose' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
                           </tr>
                           {%empty%}
                           <tr>
@@ -1056,7 +1056,7 @@
                 <!-- new test  -->
                   <div>
                     <div>
-                      <a href="{%url 'create_miscellaneous_chempath_tests' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_miscellaneous_chempath_tests' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1081,7 +1081,7 @@
                             <td class=" p-3 whitespace-nowrap">{{ test_info.misc_test.acid_phosphatase_total|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.acid_phosphatase_prostatic|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'update_miscellaneous_chempath_tests' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_miscellaneous_chempath_tests' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
                           <tr>
@@ -1124,7 +1124,7 @@
              
                     <div>
                       <div>
-                    <a href="{% url 'create_urine_microscopy' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+                    <a href="{% url 'results:create_urine_microscopy' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
                         <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
                     </a>
       
@@ -1157,7 +1157,7 @@
                               <td class=" p-3 whitespace-nowrap">{{ test_info.urine_test.crystals|default_if_none:'N/A' }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.urine_test.ova|default_if_none:'N/A' }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'update_urine_microscopy' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_urine_microscopy' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                                 <i class="fa-solid fa-edit fa-2xl"></i> </a>
                           </td>
                             </tr>
@@ -1174,7 +1174,7 @@
                                 <div>
                                   <!-- HVS Section -->
                                   <div>
-                                    <a href="{% url 'create_hvs' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+                                    <a href="{% url 'results:create_hvs' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
                                       <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
                                     </a>
                                   </div>
@@ -1205,7 +1205,7 @@
                                           <td class="p-3 whitespace-nowrap">{{ test_info.hvs_test.yeast_cells|default_if_none:'N/A' }}</td>
                                           <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                                           <td class="p-3 whitespace-nowrap">
-                                            <a href="{% url 'update_hvs' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                                            <a href="{% url 'results:update_hvs' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                                               <i class="fa-solid fa-edit fa-2xl"></i>
                                             </a>
                                           </td>
@@ -1223,7 +1223,7 @@
                                 <!-- Stool Section -->
                                 <div>
                                   <div>
-                                    <a href="{% url 'create_stool' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+                                    <a href="{% url 'results:create_stool' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
                                       <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
                                     </a>
                                   </div>
@@ -1256,7 +1256,7 @@
                                           <td class="p-3 whitespace-nowrap">{{ test_info.stool_test.cyst|default_if_none:'N/A' }}</td>
                                           <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                                           <td class="p-3 whitespace-nowrap">
-                                            <a href="{% url 'update_stool' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                                            <a href="{% url 'results:update_stool' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                                               <i class="fa-solid fa-edit fa-2xl"></i>
                                             </a>
                                           </td>
@@ -1276,7 +1276,7 @@
       <!-- Blood Culture Section -->
       <div>
         <div>
-          <a href="{% url 'create_blood_culture' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+          <a href="{% url 'results:create_blood_culture' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
           </a>
         </div>
@@ -1299,7 +1299,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.blood_culture_test.result|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">
-                  <a href="{% url 'update_blood_culture' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                  <a href="{% url 'results:update_blood_culture' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                     <i class="fa-solid fa-edit fa-2xl"></i>
                   </a>
                 </td>
@@ -1317,7 +1317,7 @@
       <!-- Occult Blood Section -->
       <div>
         <div>
-          <a href="{% url 'create_occult_blood' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+          <a href="{% url 'results:create_occult_blood' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
           </a>
         </div>
@@ -1340,7 +1340,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.occult_blood_test.result|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">
-                  <a href="{% url 'update_occult_blood' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                  <a href="{% url 'results:update_occult_blood' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                     <i class="fa-solid fa-edit fa-2xl"></i>
                   </a>
                 </td>
@@ -1358,7 +1358,7 @@
       <!-- Sputum MCS Section -->
       <div>
         <div>
-          <a href="{% url 'create_sputum_mcs' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+          <a href="{% url 'results:create_sputum_mcs' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
           </a>
         </div>
@@ -1379,7 +1379,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">
-                  <a href="{% url 'update_sputum_mcs' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                  <a href="{% url 'results:update_sputum_mcs' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                     <i class="fa-solid fa-edit fa-2xl"></i>
                   </a>
                 </td>
@@ -1399,7 +1399,7 @@
       <!-- Gram Stain Section -->
       <div>
         <div>
-          <a href="{% url 'create_gram_stain' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+          <a href="{% url 'results:create_gram_stain' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
           </a>
         </div>
@@ -1442,7 +1442,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.gram_stain_test.other_findings|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">
-                  <a href="{% url 'update_gram_stain' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                  <a href="{% url 'results:update_gram_stain' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                     <i class="fa-solid fa-edit fa-2xl"></i>
                   </a>
                 </td>
@@ -1460,7 +1460,7 @@
       <!-- swab pus aspirate Section -->
       <div>
         <div>
-          <a href="{% url 'create_swab_pus_aspirate_mcs' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+          <a href="{% url 'results:create_swab_pus_aspirate_mcs' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
           </a>
         </div>
@@ -1481,7 +1481,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">
-                  <a href="{% url 'update_swab_pus_aspirate_mcs' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                  <a href="{% url 'results:update_swab_pus_aspirate_mcs' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                     <i class="fa-solid fa-edit fa-2xl"></i>
                   </a>
                 </td>
@@ -1499,7 +1499,7 @@
       <!-- ZN Stain Section -->
       <div>
         <div>
-          <a href="{% url 'create_zn_stain' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+          <a href="{% url 'results:create_zn_stain' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
           </a>
         </div>
@@ -1526,7 +1526,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.zn_stain_test.third_sample|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">
-                  <a href="{% url 'update_zn_stain' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                  <a href="{% url 'results:update_zn_stain' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                     <i class="fa-solid fa-edit fa-2xl"></i>
                   </a>
                 </td>
@@ -1541,12 +1541,10 @@
         </div>
       </div>
       
-      <!-- Previous content remains the same -->
-      
       <!-- Semen Analysis Section -->
       <div>
         <div>
-          <a href="{% url 'create_semen_analysis' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+          <a href="{% url 'results:create_semen_analysis' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
           </a>
         </div>
@@ -1592,7 +1590,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.semen_analysis_test.total_sperm_count|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">
-                  <a href="{% url 'update_semen_analysis' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                  <a href="{% url 'results:update_semen_analysis' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                     <i class="fa-solid fa-edit fa-2xl"></i>
                   </a>
                 </td>
@@ -1610,7 +1608,7 @@
       <!-- Urinalysis Section -->
       <div>
         <div>
-          <a href="{% url 'create_urinalysis' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+          <a href="{% url 'results:create_urinalysis' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
           </a>
         </div>
@@ -1655,7 +1653,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.urinalysis_test.blood|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">
-                  <a href="{% url 'update_urinalysis' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                  <a href="{% url 'results:update_urinalysis' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                     <i class="fa-solid fa-edit fa-2xl"></i>
                   </a>
                 </td>
@@ -1673,7 +1671,7 @@
       <!-- Pregnancy Test Section -->
       <div>
         <div>
-          <a href="{% url 'create_pregnancy_test' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+          <a href="{% url 'results:create_pregnancy_test' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
           </a>
         </div>
@@ -1698,7 +1696,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.nature_of_specimen|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">
-                  <a href="{% url 'update_pregnancy_test' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
+                  <a href="{% url 'results:update_pregnancy_test' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                     <i class="fa-solid fa-edit fa-2xl"></i>
                   </a>
                 </td>
@@ -1740,7 +1738,7 @@
       <!-- Widal Test Results -->
       <div>
         <div>
-          <a href="{% url 'create_widal' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_widal' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1776,7 +1774,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.widal_test.h_antigen_s_paratyphi_c|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.widal_test.diagnostic_titre }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                <td class="p-3 whitespace-nowrap"><a href="{% url 'update_widal' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                <td class="p-3 whitespace-nowrap"><a href="{% url 'results:update_widal' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
               </tr>
               {% empty %}
               <tr>
@@ -1792,7 +1790,7 @@
                   <!-- new test  -->
                     <div>
                       <div>
-                        <a href="{%url 'create_rheumatoid_factor' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                        <a href="{%url 'results:create_rheumatoid_factor' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
                       </div>
                       <div class="overflow-x-auto max-h-[50vh] p-2">
                         <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1813,7 +1811,7 @@
                               <td class=" p-3 whitespace-nowrap">{{ test_info.id }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.rheumatoid_factor_test.result|default_if_none:'N/A' }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                              <td class=" p-3 whitespace-nowrap">  <a href="{%url 'update_rheumatoid_factor' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                              <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_rheumatoid_factor' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
                             </tr>
                             {%empty%}
                             <tr>
@@ -1830,7 +1828,7 @@
       <!-- new test  -->
       <div>
         <div>
-          <a href="{%url 'create_hpb' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{%url 'results:create_hpb' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1850,7 +1848,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.id }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.hpb_test.result|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                <td class="p-3 whitespace-nowrap"><a href="{%url 'update_hpb' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                <td class="p-3 whitespace-nowrap"><a href="{%url 'results:update_hpb' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
               </tr>
               {% empty %}
               <tr>
@@ -1864,7 +1862,7 @@
       <!-- new test  -->
       <div>
         <div>
-          <a href="{%url 'create_hcv' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{%url 'results:create_hcv' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1884,7 +1882,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.id }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.hcv_test.result|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                <td class="p-3 whitespace-nowrap"><a href="{%url 'update_hcv' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                <td class="p-3 whitespace-nowrap"><a href="{%url 'results:update_hcv' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
               </tr>
               {% empty %}
               <tr>
@@ -1902,7 +1900,7 @@
       <!-- new test  -->
       <div>
         <div>
-          <a href="{% url 'create_vdrl' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_vdrl' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1922,7 +1920,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.id }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.vdrl_test.result|default_if_none:'N/A' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                <td class="p-3 whitespace-nowrap"><a href="{%url 'update_vdrl' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                <td class="p-3 whitespace-nowrap"><a href="{%url 'results:update_vdrl' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
               </tr>
               {% empty %}
               <tr>
@@ -1941,7 +1939,7 @@
       <!-- Mantoux Test Results -->
       <div>
         <div>
-          <a href="{% url 'create_mantoux' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_mantoux' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1961,7 +1959,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.id }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.mantoux_test.result }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                <td class="p-3 whitespace-nowrap"><a href="{% url 'update_mantoux' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                <td class="p-3 whitespace-nowrap"><a href="{% url 'results:update_mantoux' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
               </tr>
               {% empty %}
               <tr>
@@ -1976,7 +1974,7 @@
       <!-- ASO Titre Test Results -->
       <div>
         <div>
-          <a href="{% url 'create_aso_titre' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_aso_titre' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1996,7 +1994,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.id }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.aso_titre_test.result }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                <td class="p-3 whitespace-nowrap"><a href="{% url 'update_aso_titre' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                <td class="p-3 whitespace-nowrap"><a href="{% url 'results:update_aso_titre' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
               </tr>
               {% empty %}
               <tr>
@@ -2011,7 +2009,7 @@
       <!-- CRP Test Results -->
       <div>
         <div>
-          <a href="{% url 'create_crp' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_crp' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2031,7 +2029,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.id }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.crp_test.result }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                <td class="p-3 whitespace-nowrap"><a href="{% url 'update_crp' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                <td class="p-3 whitespace-nowrap"><a href="{% url 'results:update_crp' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
               </tr>
               {% empty %}
               <tr>
@@ -2046,7 +2044,7 @@
       <!-- HIV Screening Test Results -->
       <div>
         <div>
-          <a href="{% url 'create_hiv_screening' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_hiv_screening' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2066,7 +2064,7 @@
                 <td class="p-3 whitespace-nowrap">{{ test_info.id }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.hiv_test.result }}</td>
                 <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                <td class="p-3 whitespace-nowrap"><a href="{% url 'update_hiv_screening' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                <td class="p-3 whitespace-nowrap"><a href="{% url 'results:update_hiv_screening' patient.file_no test_info.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
               </tr>
               {% empty %}
               <tr>
@@ -2089,7 +2087,7 @@
             
               <div>
                 <div>
-                  <a href="{% url 'general_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
+                  <a href="{% url 'results:general_test' patient.file_no %}" class="text-xs text-rose-600 hover:text-green-700"><i class="fa-solid fa-syringe fa-2xl"></i></a>
                   </div>
                   <div class="overflow-x-auto px-4 md:px-10 m-4">
                     <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2256,6 +2254,7 @@
       
 
             <!-- to here is lab  -->
+      </div>
       </div>
 
 
@@ -2913,7 +2912,7 @@
                 <td class="p-3 whitespace-nowrap text-center">{{ a.title }}</td>
                 <td class="p-3 whitespace-nowrap text-center">{{ a.updated}}</td>
                 <td class="p-3 whitespace-nowrap text-center">
-                  <a href="{% url 'update_archive' a.id %}" class="text-blue-500 hover:text-blue-700 fa-lg mr-2">
+                  <a href="{% url 'results:update_archive' a.id %}" class="text-blue-500 hover:text-blue-700 fa-lg mr-2">
                     <i class="fas fa-edit"></i>
                   </a>
                   <a href="{% url 'delete_archive' a.id %}" class="text-red-500 hover:text-red-700 fa-lg" onclick="return confirm('Are you sure you want to delete this file?');">

@@ -790,41 +790,6 @@ class GenotypeCreateView(View):
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
 
-# class RhesusCreateView(View):
-#     @transaction.atomic
-#     def get(self, request, file_no):
-#         try:
-#             patient = get_object_or_404(PatientData, file_no=file_no)
-#             generic_test = get_object_or_404(GenericTest, name__iexact='Rhesus Factor')
-            
-#             # Create Paypoint first
-#             payment = Paypoint.objects.create(
-#                 patient=patient,
-#                 status=False,
-#                 unit=generic_test.lab,
-#                 service=generic_test.name,
-#                 price=generic_test.price,
-#             )
-            
-#             # Now create Testinfo with the payment
-#             test_info = Testinfo.objects.create(
-#                 patient=patient,
-#                 collected_by=request.user,
-#                 payment=payment
-#             )
-            
-#             rhesus = RhesusFactor.objects.create(
-#                 test=generic_test,
-#                 test_info=test_info
-#             )
-
-#             messages.success(request, 'Rhesus test created successfully')
-#         except Exception as e:
-#             messages.error(request, f'Error creating Rhesus test: {str(e)}')
-        
-#         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
-
 class FBCCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
