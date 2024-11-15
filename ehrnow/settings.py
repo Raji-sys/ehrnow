@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'pharm',
     'chartjs',
     'inventory',
+    'results',
 ]
 
 MIDDLEWARE = [

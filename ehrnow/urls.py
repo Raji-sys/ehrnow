@@ -12,6 +12,7 @@ urlpatterns = [
     path('pathology/', include('pathology.urls',namespace='pathology')),
     path('pharm/', include('pharm.urls',namespace='pharm')),
     path('inventory/', include('inventory.urls',namespace='inventory')),
+    path('lab/', include('results.urls',namespace='lab')),
     path('',include('ehr.urls')),
     # path('__reload__/', include('django_browser_reload.urls')),
 ]

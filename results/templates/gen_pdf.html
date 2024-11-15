@@ -1,0 +1,310 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Results</title>
+    <style>
+  @page {
+            size: A4 portrait;
+            margin: 1.3cm;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #020b85; 
+            font-weight: 700;
+        }
+        .header {
+            margin-top: 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e63946;
+            padding-bottom: 15px;
+        }
+        .header h1 {
+            color: #e63946;
+            font-size: 28px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            margin-top: 0;
+        }
+        .meta-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 10px;
+            text-align: left;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        table td {
+            /* border: 1px solid #e0e0e0; */
+            padding: 5px;
+            color:black;
+            font-weight: bold;
+            /* color: #1d2bf5;  */
+            text-align: center;
+            border:solid #e63946;
+        }
+        table th {
+            /* background-color: #e63946; */
+            text-align: center;
+            border: solid #e63946;
+            /* background-color: #f0f0f0;   */
+            background-color: #d6d4d4;
+            /* color:black; */
+            padding: 5px;
+            color: #020b85; 
+            font-weight: bold;
+            font-weight: 700;
+        }
+        .test-info {
+            background-color: #d6d4d4;  
+            font-weight: bold;
+            color: black;
+        }
+        .parameters {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .values {
+            background-color: #ffffff;
+        }
+        .result-section {
+            margin-bottom: 30px;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 9px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+        }
+        .patient-info {
+            background-color: #e63946;
+            color: black;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .logo-container{
+            text-align: center;
+            margin-top: 0;
+        }
+        .logo-image{
+            width: 100px;
+            display: flex;
+            align-items: flex-start;
+            margin-top: 0;
+            
+        }
+        p{
+            padding: 0;
+        }
+        .sg{
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="uppercase">
+            <img class="logo-image" src="{% static "images/lg1.png" %}" alt="logo">&nbsp;&nbsp;
+            SUPREME DIAGNOSTIC LABORATORIES</h1>
+        <p>No 301 Hadejia Road, Yankaba, P.O. Box 4982, Kano.<br>
+           Tel: 0805-945-5403, 0703-113-2665 &nbsp;-&nbsp; E-Mail: supremediagnosticlaboratories@gmail.com</p>
+        <p><strong>RC:</strong>2550480</p>
+    </div>
+
+    <div class="meta-info">
+        {% if result %}
+        <p><strong>code:</strong> {{ result|safe }}</p>
+        {% endif %}
+    </div>
+
+    <div class="result-section">
+        {% for item in f %}
+        <div class="patient-info">
+            <table>
+
+                <tr>
+                    <td colspan="2">
+                        <strong>Patient:</strong> {{ item.patient|default:"N/A"|upper }}
+                    </td>
+                    <td colspan="2">
+                        <strong>Hospital/Private:</strong> {{ item.patient.hospital_clinic|default:"N/A"|upper }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <strong>Age:</strong> {{ item.patient.age|default:"N/A"|upper }}
+                    </td>
+                    <td colspan="2">
+                        <strong>Sex:</strong> {{ item.patient.gender|default:"N/A"|upper }}
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+        {% if item.patient.general_results %}
+        <table>
+            <tr class="test-info">
+                <th colspan="4">Test - Result</th>
+            </tr>
+            <tr class="parameters">
+                <th colspan="1">Test</th>
+                <th colspan="2">Result</th>
+                <th colspan="1">Reference Range</th>
+            </tr>
+            {% if item.test_1 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_1|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_1|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_1|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+            {% if item.test_2 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_2|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_2|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_2|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+
+            {% if item.test_3 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_3|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_3|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_3|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+
+            {% if item.test_4 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_4|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_4|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_4|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+
+            {% if item.test_5 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_5|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_5|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_5|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+            
+            {% if item.test_6 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_6|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_6|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_6|default:"N/A" }}</td>
+            </tr>
+            {%endif%}        
+            
+            {% if item.test_7 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_7|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_7|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_7|default:"N/A" }}</td>
+            </tr>
+            {%endif%}          
+            
+            {% if item.test_8 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_8|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_8|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_8|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+            
+            {% if item.test_9 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_9|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_9|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_9|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+            
+            {% if item.test_10 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_10|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_10|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_10|default:"N/A" }}</td>
+            </tr>
+            {%endif%} 
+            
+            {% if item.test_11 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_11|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_11|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_11|default:"N/A" }}</td>
+            </tr>
+            {%endif%}           
+            
+            {% if item.test_12 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_12|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_12|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_12|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+            
+            {% if item.test_13 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_13|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_13|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_13|default:"N/A" }}</td>
+            </tr>
+            {%endif%} 
+            
+            {% if item.test_14 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_14|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_14|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_14|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+
+            {% if item.test_15 is not None %}
+            <tr>
+                <td colspan="1">{{item.test_15|default:"N/A"}}</td>
+                <td colspan="2">{{ item.result_15|default:"N/A" }}</td>
+                <td colspan="1">{{ item.reference_range_15|default:"N/A" }}</td>
+            </tr>
+            {%endif%}
+
+        </table>
+    {% endif %}
+
+    <table>
+        <tr>
+            <td colspan="1">
+                <strong> Nature of specimen:</strong>{{item.nature_of_specimen|default_if_none:'N/A'}}
+            </td>
+            <td colspan="2">
+             <strong>Approved by Med. Lab. Scientist:</strong> {{user.last_name}} {{user.first_name}}
+            </td>
+            <td colspan="1">
+                <strong class="sg">Sign / Stamp:</strong>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+    </div>
+
+</body>
+</html>
