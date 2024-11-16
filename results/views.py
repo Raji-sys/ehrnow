@@ -28,11 +28,13 @@ from reportlab.lib.units import inch
 from reportlab.lib.colors import black, grey
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.db import reset_queries
 reset_queries()
 from ehr.models import PatientData
+from django.utils.http import url_has_allowed_host_and_scheme
+
+
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
         redirect_to = '/'
@@ -152,12 +154,6 @@ def report_pdf(request):
     
     return HttpResponse('Error generating PDF', status=500)
 
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from django.template.loader import get_template
-from datetime import datetime
-from io import BytesIO
-from xhtml2pdf import pisa
 
 @login_required
 def instance_pdf(request, id):
@@ -1890,7 +1886,13 @@ class PregnancyCreateView(View):
 
 class BaseLabResultUpdateView(UpdateView):
     template_name = 'shared_test_form.html'
-
+    def get_success_url(self):
+        messages.success(self.request, f'{self.model.__name__} result added successfully')
+        next_url = self.request.GET.get('next')
+        if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts=None):
+            return next_url
+        return reverse_lazy("results:dashboard")
+    
     def get_object(self, queryset=None):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         test_info = get_object_or_404(Testinfo, patient=patient, pk=self.kwargs['test_info_pk'])
@@ -1902,8 +1904,7 @@ class BaseLabResultUpdateView(UpdateView):
         instance.test_info.cleared = True
         instance.test_info.save()
         instance.save()
-        messages.success(self.request, f'{self.model.__name__} result updated successfully')
-        return redirect('patient_details', file_no=self.kwargs['file_no'])
+        return super().form_valid(form)
 
 
 # hematology 

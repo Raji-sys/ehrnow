@@ -581,17 +581,9 @@
                         <thead class="bg-cyan-50">
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">alkaline phosphatase</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">sgot</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">sgpt</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">gamma_gt</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">total_bilirubin</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">direct_bilirubin</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">t protein</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">albumin</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">globulin</th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
         
                         </thead>
@@ -599,17 +591,11 @@
                           {%for test_info in liver_function %}
                           <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.alkaline_phosphatase|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.sgot|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.sgpt|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.gamma_gt|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.total_bilirubin|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.direct_bilirubin|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.t_protein|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.albumin|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.globulin|default_if_none:'N/A'}}</td>
+                            <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_liver_function' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:instance_pdf' test_info.id %}" class="text-xs hover:text-green-700">
+                              <i class="fa-solid fa-eye fa-2xl"></i> </a>
+                        </td>
                           </tr>
                           {%empty%}
                           <tr>

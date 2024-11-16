@@ -140,6 +140,19 @@ class Testinfo(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if not self.code:
+            prefix = "LAB"
+            last_instance = Testinfo.objects.filter(code__startswith=prefix).order_by('code').last()
+
+            if last_instance:
+                last_number = int(last_instance.code[3:])
+                new_number = last_number + 1    
+            else:
+                new_number = 1
+            self.code = f"{prefix}{new_number:04d}"
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.code} for {self.patient} - {self.updated}"
     def __str__(self):

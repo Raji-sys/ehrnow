@@ -25,6 +25,10 @@
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">
           Report By
         </th>
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+          Result
+        </th>
+
       </tr>
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
@@ -52,8 +56,13 @@
           {{ result.updated }}
         </td>
         <td class="p-3 whitespace-nowrap">
-          {{ request.user }}
+          {{ result.collected_by|default_if_none:'' }}
         </td>
+        <td class="p-3 whitespace-nowrap">
+          <a href="{% url 'results:instance_pdf' result.id %}" class="text-xs hover:text-green-700">
+           <i class="fa-solid fa-eye fa-2xl"></i> </a>
+           </td>            
+
       </tr>
       {% endfor %}
       <tr class="flex justify-center text-center p-1">
