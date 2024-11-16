@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Payment Receipt</title>
-<style>
+    <style>
         @page {
             size: 80mm 297mm; /* Standard thermal paper width (80mm) */
             margin: 3mm 3mm 3mm 3mm; /* Minimal margins */
@@ -60,50 +60,41 @@
             text-align: right;
         }
 </style>
+
 </head>
-<body>
-    <div class="receipt-header">
+<div class="receipt-header">
         <h2>EMR NOW</h2>
         <p>Address Line 1 <br> Phone: (123) 456-7890</p>
         </div>
-    <hr>
+    <hr>    
     <div class="receipt-content">
         <p>Receipt No: {{ receipt_no }}</p>
+        {% if patient %}
         <hr>
         <p>Patient: {{ patient }}</p>
         <p>File No: {{ patient.file_no }}</p>
         <hr>
+        {% endif %}
+                
         <table>
             <thead>
-            <tr>
-                <th>Item</th>
-                <th class="amount">Price</th>
-            </tr>
-            </thead>
-            {% for payment in f %}
-            <tbody>
-            <tr>
-                <td>{{ payment.service }}</td>
-                <td class="amount">{{ payment.price|floatformat:2 }}</td>
-            </tr>
-            </tbody>
-            {% endfor %}
-        </table>
-        <hr>
-            <div class="receipt-total">
-            <table>
                 <tr>
-                    <td>Total:</td>
-                    <td class="amount">{{ total_price|floatformat:2 }}</td>
+                    <th>Item</th>
+                    <th class="amount">Price</th>
                 </tr>
-            </table>
-        </div>
-<hr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ payment.service|truncatechars:20 }}</td>
+                    <td class="amount">{{ payment.price|floatformat:2 }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr>        
         <div class="receipt-footer">
             Generated: {{ generated_date }}<br>
             By: {{ user }}
             <p style="font-size: 7pt;">This is your official receipt</p>
-        </div>
     </div>
 </body>
 </html>

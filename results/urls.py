@@ -13,7 +13,7 @@ urlpatterns = [
 
     path('instance-pdf/<int:id>/', views.instance_pdf, name='instance_pdf'),
 
-    path('get-started/revenue', RevenueView.as_view(), name='revenue'),
+    path('get-started/revenue/lab/', RevenueView.as_view(), name='lab_revenue'),
     
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
@@ -23,7 +23,7 @@ urlpatterns = [
     path('revenue/serology-list/', SerologyPayListView.as_view(), name='serology_pay_list'),
     path('revenue/general-list/', GeneralPayListView.as_view(), name='general_pay_list'),
     path('revenue/receipt/', views.receipt_pdf, name='receipt_pdf'),
-    path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
+    # path('revenue/lab/payment-list/', PayListView.as_view(), name='pay_list'),
 
     path('hematology/', HematologyView.as_view(), name='hematology'),
     path('hematology-list/', HematologyListView.as_view(), name='hematology_list'),

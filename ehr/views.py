@@ -1298,7 +1298,7 @@ class PayUpdateView(UpdateView):
             
             # Determine redirect URL based on payment status
             if paypoint.status:
-                redirect_url = f'/print-receipt/?id={paypoint.id}&next={self.get_success_url()}'
+                redirect_url = f'/revenue/print-receipt/?id={paypoint.id}&next={self.get_success_url()}'
             else:
                 redirect_url = self.get_success_url()
             
@@ -1396,62 +1396,93 @@ class PayUpdateView(UpdateView):
     #         form.add_error(None, error_message)
     #         return self.form_invalid(form)
 
-
 class PayListView(ListView):
-    model=Paypoint
-    template_name='ehr/revenue/transaction.html'
-    context_object_name='pays'
+    model = Paypoint
+    template_name = 'ehr/revenue/transaction.html'
+    context_object_name = 'pays'
     paginate_by = 10
 
     def get_queryset(self):
-        updated = super().get_queryset().filter(status=True).order_by('-updated')
-        pay_filter = PayFilter(self.request.GET, queryset=updated)
+        # Start with an optimized queryset
+        queryset = Paypoint.objects.select_related('patient', 'user').order_by('-updated')
+        
+        # Get filter parameter from URL, default to 'all'
+        status_filter = self.request.GET.get('status', 'all')
+        
+        # Apply status filter if not 'all'
+        if status_filter == 'approved':
+            queryset = queryset.filter(status=True)
+        elif status_filter == 'pending':
+            queryset = queryset.filter(status=False)
+        
+        # Apply other filters from PayFilter
+        pay_filter = PayFilter(self.request.GET, queryset=queryset)
         return pay_filter.qs
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        pay_total = self.get_queryset().count()
-        paid_transactions = self.get_queryset().filter(status=True)
-        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-        context['payFilter'] = PayFilter(self.request.GET, queryset=self.get_queryset())
-        context['pay_total'] = pay_total
-        context['total_worth'] = total_worth
-        return context    
+        
+        # Add annotations for quick access to key metrics
+        summary = Paypoint.objects.aggregate(
+            total_count=Count('id'),
+            approved_count=Count('id', filter=Q(status=True)),
+            pending_count=Count('id', filter=Q(status=False)),
+            total_worth=Sum('price', filter=Q(status=True)),
+            total_pending=Sum('price', filter=Q(status=False))
+        )
+        
+        context.update({
+            'total_count': summary['total_count'],
+            'approved_count': summary['approved_count'],
+            'pending_count': summary['pending_count'],
+            'total_worth': summary['total_worth'] or 0,
+            'total_pending': summary['total_pending'] or 0,
+            'current_filter': self.request.GET.get('status', 'all'),
+            'payFilter': PayFilter(self.request.GET, queryset=self.get_queryset())
+        })
+        
+        # Add date-based metrics
+        today = timezone.now().date()
+        context['today_transactions'] = self.get_queryset().filter(created=today).count()
+        context['today_worth'] = self.get_queryset().filter(
+            created=today, status=True
+        ).aggregate(total=Sum('price'))['total'] or 0
+        
+        return context
     
-@login_required
-def receipt_pdf(request):
-    ndate = datetime.datetime.now()
-    filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
-    f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
-    patient = f.first().patient if f.exists() else None
-    result = ""
-    for key, value in request.GET.items():
-        if value:
-            result += f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
+# @login_required
+# def receipt_pdf(request):
+#     ndate = datetime.datetime.now()
+#     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
+#     f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
+#     patient = f.first().patient if f.exists() else None
+#     result = ""
+#     for key, value in request.GET.items():
+#         if value:
+#             result += f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
 
-    context = {'f': f, 'pagesize': 'A4','patient':patient,
-               'orientation': 'landscape', 'result': result}
-    response = HttpResponse(content_type='application/pdf',
-                            headers={'Content-Disposition': f'filename="Receipt__{filename}"'})
+#     context = {'f': f, 'pagesize': 'A4','patient':patient,
+#                'orientation': 'landscape', 'result': result}
+#     response = HttpResponse(content_type='application/pdf',
+#                             headers={'Content-Disposition': f'filename="Receipt__{filename}"'})
 
-    buffer = BytesIO()
+#     buffer = BytesIO()
 
-    pisa_status = pisa.CreatePDF(get_template('ehr/revenue/receipt_pdf.html').render(
-        context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+#     pisa_status = pisa.CreatePDF(get_template('ehr/revenue/receipt_pdf.html').render(
+#         context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
 
-    if not pisa_status.err:
-        pdf = buffer.getvalue()
-        buffer.close()
-        response.write(pdf)
-        return response
-    return HttpResponse('Error generating PDF', status=500)
+#     if not pisa_status.err:
+#         pdf = buffer.getvalue()
+#         buffer.close()
+#         response.write(pdf)
+#         return response
+#     return HttpResponse('Error generating PDF', status=500)
     
 
 @login_required
 def thermal_receipt(request):
     ndate = datetime.datetime.now()
-    filename = ndate.strftime('receipt__%d_%m_%Y__%I_%M%p.pdf')
+    filename = ndate.strftime('Receipt__%d_%m_%Y__%I_%M%p.pdf')
     f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
     patient = f.first().patient if f.exists() else None
     total_price = f.aggregate(total_price=Sum('price'))['total_price']
@@ -1470,7 +1501,9 @@ def thermal_receipt(request):
         'total_price':total_price,
         'patient': patient,
         'result': result,
-        'receipt_no': f'RCP-{ndate.strftime("%Y%m%d%H%M%S")}'
+        'receipt_no': f'RCP-{ndate.strftime("%Y%m%d%H%M%S")}',
+        'generated_date': datetime.datetime.now().strftime('%d-%m-%Y %H:%M'),
+        'user': request.user.username.upper(),
     })
 
     # Create PDF with custom options
@@ -1494,114 +1527,41 @@ def format_currency(amount):
     return f"N{amount:,.2f}"
 
 
-@login_required
 def print_receipt_pdf(request):
+    ndate = datetime.datetime.now()
     payment_id = request.GET.get('id')
     payment = get_object_or_404(Paypoint, id=payment_id)
     patient = payment.patient
     
-     
-    # Create a file-like buffer to receive PDF data
+    # Prepare context for the template
+    context = {
+        'receipt_no': f'RCP-{ndate.strftime("%Y%m%d%H%M%S")}',
+        'payment': payment,
+        'patient': patient,
+        'total': payment.price or 0,
+        'generated_date': datetime.datetime.now().strftime('%d-%m-%Y %H:%M'),
+        'user': request.user.username.upper(),
+    }
+    
+    # Render the template
+    template = get_template('ehr/revenue/receipt.html')
+    html = template.render(context)
+    
+    # Create PDF
     buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=(3*inch, 11*inch))
+    pisa_status = pisa.CreatePDF(html, dest=buffer)
     
-    # Try to register custom fonts, fall back to standard fonts if not available
-    try:
-        pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
-        pdfmetrics.registerFont(TTFont('VeraBd', 'VeraBd.ttf'))
-        font_name = 'Vera'
-        font_bold = 'VeraBd'
-    except:
-        font_name = 'Helvetica'
-        font_bold = 'Helvetica-Bold'
+    if not pisa_status.err:
+        buffer.seek(0)
+        ndate = datetime.datetime.now()
+        filename = ndate.strftime('on__%d_%m_%Y_at_%I_%M%p.pdf')
+        return HttpResponse(
+            buffer.getvalue(),
+            content_type='application/pdf',
+            headers={'Content-Disposition': f'inline; filename="Receipt__{filename}"'}
+        )
     
-    # Start drawing from the top of the page
-    y = 10.5*inch
-    
-    # Try to draw logo if available
-    logo_path = os.path.join(settings.STATIC_ROOT, 'images', '5.png')
-    if os.path.exists(logo_path):
-        p.drawInlineImage(logo_path, 0.75*inch, y - 0.5*inch, width=1.5*inch, height=0.5*inch)
-        y -= 0.7*inch
-    else:
-        y -= 0.2*inch  # Adjust spacing if no logo
-    
-    # Draw the header
-    p.setFont(font_bold, 12)
-    p.drawCentredString(1.5*inch, y, "PAYMENT RECEIPT")
-    y -= 0.3*inch
-    
-    # Draw a line
-    p.setStrokeColor(grey)
-    p.line(0.25*inch, y, 2.75*inch, y)
-    y -= 0.2*inch
-    
-    # Draw patient info
-    p.setFont(font_name, 8)
-    if patient:
-        p.drawString(0.25*inch, y, f"Patient: {patient}")
-        y -= 0.15*inch
-        p.drawString(0.25*inch, y, f"File No: {patient.file_no}")
-        y -= 0.2*inch
-    
-    # Draw a line
-    p.line(0.25*inch, y, 2.75*inch, y)
-    y -= 0.2*inch
-    
-    # Draw column headers
-    p.setFont(font_bold, 8)
-    p.drawString(0.25*inch, y, "Item")
-    p.drawString(1.75*inch, y, "Price")
-    p.drawString(2.25*inch, y, "Date")
-    y -= 0.15*inch
-    
-    # Draw a line
-    p.line(0.25*inch, y, 2.75*inch, y)
-    y -= 0.1*inch
-    
-    # Draw payment details
-    p.setFont(font_name, 8)
-    total = payment.price or 0  # For single payment
-    
-    if y < 1*inch:  # If we're near the bottom of the page, start a new page
-        p.showPage()
-        p.setFont(font_name, 8)
-        y = 10.5*inch
-    
-    p.drawString(0.25*inch, y, str(payment.service)[:20])  # Truncate long service names
-    p.drawRightString(2.15*inch, y, format_currency(payment.price))
-    p.drawString(2.25*inch, y, payment.updated.strftime("%d/%m"))
-    y -= 0.15*inch
-    
-    # Draw a line
-    y -= 0.1*inch
-    p.setStrokeColor(black)
-    p.line(0.25*inch, y, 2.75*inch, y)
-    y -= 0.2*inch
-    
-    # Draw total
-    p.setFont(font_bold, 10)
-    p.drawString(0.25*inch, y, "Total:")
-    p.drawRightString(2.75*inch, y, format_currency(total))
-    
-    # Draw footer
-    y -= 0.4*inch
-    p.setFont(font_name, 7)
-    p.drawCentredString(1.5*inch, y, f"Generated: {datetime.datetime.now().strftime('%d-%m-%Y %H:%M')}")
-    y -= 0.15*inch
-    p.drawCentredString(1.5*inch, y, f"By: {request.user.username.upper()}")
-    
-    # Close the PDF object cleanly
-    p.showPage()
-    p.save()
-    
-    # FileResponse sets the Content-Disposition header so that browsers
-    # present the option to save the file.
-    buffer.seek(0)
-    ndate = datetime.datetime.now()
-    filename = ndate.strftime('on__%d/%m/%Y/at/%I.%M%p.pdf')
-
-    return HttpResponse(buffer, content_type='application/pdf',headers={'Content-Disposition': f'inline; filename="Receipt__{filename}"'})
+    return HttpResponse('Error generating PDF', status=500)
 
 
 class RadiologyPayListView(ListView):

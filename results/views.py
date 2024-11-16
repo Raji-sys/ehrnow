@@ -449,59 +449,59 @@ class PayUpdateView(UpdateView):
         return context
 
     
-class PayListView(ListView):
-    model = Paypoint
-    template_name = 'revenue/transaction.html'
-    context_object_name = 'pays'
-    paginate_by = 10
+# class PayListView(ListView):
+#     model = Paypoint
+#     template_name = 'revenue/transaction.html'
+#     context_object_name = 'pays'
+#     paginate_by = 10
 
-    def get_queryset(self):
-        # Start with an optimized queryset
-        queryset = Paypoint.objects.select_related('patient', 'user').order_by('-updated')
+#     def get_queryset(self):
+#         # Start with an optimized queryset
+#         queryset = Paypoint.objects.select_related('patient', 'user').order_by('-updated')
         
-        # Get filter parameter from URL, default to 'all'
-        status_filter = self.request.GET.get('status', 'all')
+#         # Get filter parameter from URL, default to 'all'
+#         status_filter = self.request.GET.get('status', 'all')
         
-        # Apply status filter if not 'all'
-        if status_filter == 'approved':
-            queryset = queryset.filter(status=True)
-        elif status_filter == 'pending':
-            queryset = queryset.filter(status=False)
+#         # Apply status filter if not 'all'
+#         if status_filter == 'approved':
+#             queryset = queryset.filter(status=True)
+#         elif status_filter == 'pending':
+#             queryset = queryset.filter(status=False)
         
-        # Apply other filters from PayFilter
-        pay_filter = PayFilter(self.request.GET, queryset=queryset)
-        return pay_filter.qs
+#         # Apply other filters from PayFilter
+#         pay_filter = PayFilter(self.request.GET, queryset=queryset)
+#         return pay_filter.qs
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
         
-        # Add annotations for quick access to key metrics
-        summary = Paypoint.objects.aggregate(
-            total_count=Count('id'),
-            approved_count=Count('id', filter=Q(status=True)),
-            pending_count=Count('id', filter=Q(status=False)),
-            total_worth=Sum('price', filter=Q(status=True)),
-            total_pending=Sum('price', filter=Q(status=False))
-        )
+#         # Add annotations for quick access to key metrics
+#         summary = Paypoint.objects.aggregate(
+#             total_count=Count('id'),
+#             approved_count=Count('id', filter=Q(status=True)),
+#             pending_count=Count('id', filter=Q(status=False)),
+#             total_worth=Sum('price', filter=Q(status=True)),
+#             total_pending=Sum('price', filter=Q(status=False))
+#         )
         
-        context.update({
-            'total_count': summary['total_count'],
-            'approved_count': summary['approved_count'],
-            'pending_count': summary['pending_count'],
-            'total_worth': summary['total_worth'] or 0,
-            'total_pending': summary['total_pending'] or 0,
-            'current_filter': self.request.GET.get('status', 'all'),
-            'payFilter': PayFilter(self.request.GET, queryset=self.get_queryset())
-        })
+#         context.update({
+#             'total_count': summary['total_count'],
+#             'approved_count': summary['approved_count'],
+#             'pending_count': summary['pending_count'],
+#             'total_worth': summary['total_worth'] or 0,
+#             'total_pending': summary['total_pending'] or 0,
+#             'current_filter': self.request.GET.get('status', 'all'),
+#             'payFilter': PayFilter(self.request.GET, queryset=self.get_queryset())
+#         })
         
-        # Add date-based metrics
-        today = timezone.now().date()
-        context['today_transactions'] = self.get_queryset().filter(created=today).count()
-        context['today_worth'] = self.get_queryset().filter(
-            created=today, status=True
-        ).aggregate(total=Sum('price'))['total'] or 0
+#         # Add date-based metrics
+#         today = timezone.now().date()
+#         context['today_transactions'] = self.get_queryset().filter(created=today).count()
+#         context['today_worth'] = self.get_queryset().filter(
+#             created=today, status=True
+#         ).aggregate(total=Sum('price'))['total'] or 0
         
-        return context
+#         return context
 
 def format_currency(amount):
     if amount is None:

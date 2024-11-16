@@ -65,9 +65,9 @@ urlpatterns = [
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
-    path('revenue/receipt/', views.receipt_pdf, name='receipt_pdf'),
+    # path('revenue/receipt/', views.receipt_pdf, name='receipt_pdf'),
     path('revenue/receipt/print/', views.thermal_receipt, name='thermal_receipt'),
-    path('revenue/print_receipt/', views.print_receipt_pdf, name='print_receipt'),
+    path('revenue/print-receipt/', views.print_receipt_pdf, name='print_receipt'),
     #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
     path('nursing-desks/', NursingDeskListView.as_view(), name='nursing_desks_list'),

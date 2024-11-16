@@ -368,7 +368,7 @@ class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
                     user=self.request.user,
                     patient=prescription.patient,
                     service=prescription.drug.name,
-                    unit__iexact='pharmacy',
+                    unit='pharmacy',
                     price=prescription.drug.cost_price * prescription.quantity,
                     status=False
                 )
