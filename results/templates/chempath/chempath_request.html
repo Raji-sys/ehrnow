@@ -17,16 +17,20 @@
           Price
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Payment Status
-        </th>
-        <th class="p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
           Patient
         </th>
-        <th class="p-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
           Date Collected
         </th>
-        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
           Requested By
+        </th>
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+          {% if c.payment.status == False %}
+          Payment Status
+          {%else%}
+          Enter Result
+          {%endif%}
         </th>
         </tr>
     </thead>
@@ -45,26 +49,28 @@
         <td class="p-3 whitespace-nowrap">
           &#x20A6;{{ c.payment.price|default_if_none:'' }}
         </td>
-        {% if c.payment.status == False %}
-            <td class="p-3 whitespace-nowrap text-red-700">
-          <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-            </td>
-        {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
-             <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-           </td>
-        {% endif %}
         <td class="p-3 whitespace-nowrap">
           <a href="{{c.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
                 {{ c.patient|default_if_none:'' }}
                 </a>
-        </td>
+              </td>
         <td class="p-3 whitespace-nowrap">
           {{ c.created|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
           {{ c.collected_by }}
         </td>
+        {% if c.payment.status == False %}
+        <td class="p-3 whitespace-nowrap text-red-700">
+          UNPAID
+      <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
+        </td>
+    {% else %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_urea_electrolyte' c.patient.file_no c.id %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {% endif %}
+
       </tr>
       {% endfor %}
       <tr class="flex justify-center text-center p-1">

@@ -404,10 +404,8 @@
                             <tr class="text-xs">
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Code</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">input result</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">test details</th>
+                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                             </tr>
                           </thead>
                           <tbody class="bg-white divide-y divide-cyan-200">
@@ -415,11 +413,7 @@
                             <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                               <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A'}}</td>
-                              <td class=" p-3 whitespace-nowrap">{{ test_info.bg_test.result|default_if_none:'N/A'}}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_blood_group' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
-                                <i class="fa-solid fa-edit fa-2xl"></i> </a>
-                              </td>
                               <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:instance_pdf' test_info.id %}" class="text-xs hover:text-green-700">
                                 <i class="fa-solid fa-eye fa-2xl"></i> </a>
                                 </td>            
@@ -448,10 +442,8 @@
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">input result</th>
-                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">test details</th>
+                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
                 
                         </thead>
@@ -460,11 +452,7 @@
                           <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                               <td class="p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                               <td class="p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
-                              <td class="p-3 whitespace-nowrap">{{ test_info.gt_test.result|default_if_none:'N/A' }}</td>
                               <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_genotype' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
-                                <i class="fa-solid fa-edit fa-2xl"></i> </a>
-                          </td>
                           <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:instance_pdf' test_info.id %}" class="text-xs hover:text-green-700">
                             <i class="fa-solid fa-eye fa-2xl"></i> </a>
                             </td>            
@@ -497,9 +485,8 @@
                             <tr class="text-xs">
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">input result</th>
+                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                             </tr>
                   
                           </thead>
@@ -508,219 +495,6 @@
                             <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                                 <td class="p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                                 <td class="p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
-                                <td class="p-3 whitespace-nowrap">
-                                  <details>
-      
-                                    <summary class="bg-blue-600 p-2 text-white rounded-lg text-center text-xs cursor-pointer">OPEN RESULT</summary>
-                                   
-                                   <div class=" text-blue-600 h-fit w-fit text-xs overflow-x-auto max-h-[50vh] rounded-md p-4 text-left">
-                                   
-                                    {% if test_info.fbc_test %}         
-                                    <ul class="list-none p-0 m-0">                             
-                                    {% if test_info.fbc_test.hb %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">Hemoglobin:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.hb }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-                                   
-                                    {% if test_info.fbc_test.pcv %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">PCV:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.pcv }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-                                   
-                                    {% if test_info.fbc_test.mchc %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">MCHC:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.mchc }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-                                   
-                                    {% if test_info.fbc_test.rbc %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">RBC:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.rbc }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-                                   
-                                    {% if test_info.fbc_test.mch %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">MCH:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.mch }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-                                   
-                                    {% if test_info.fbc_test.mcv %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">MCV:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.mcv }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-                                   
-                                    {% if test_info.fbc_test.retic %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">Reticulocyte:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.retic }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-                                   
-                                    {% if test_info.fbc_test.platelets %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">Platelets:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.platelets }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-                                   
-                                    {% if test_info.fbc_test.wbc %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">WBC:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.wbc }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-                                   
-                                    {% if test_info.fbc_test.esr %}
-                                   
-                                    <li class="flex justify-between items-center py-1">
-                                    <span class="font-medium">ESR:</span>
-                                    <span class="text-right">{{ test_info.fbc_test.esr }}</span>
-                                    </li>
-                                   
-                                    {% endif %}
-      
-                                   
-                                    {% if test_info.fbc_test.sickle_cells %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">SICKLE CELLS:</span>
-      <span class="text-right">{{ test_info.fbc_test.sickle_cells }}</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.hypochromia %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">HYPOCHROMIA:</span>
-      <span class="text-right">{{ test_info.fbc_test.hypochromia }}</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.polychromasia %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">POLYCHROMASIA:</span>
-      <span class="text-right">{{ test_info.fbc_test.polychromasia }}</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.nucleated_rbc %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">NUCLEATED RBC:</span>
-      <span class="text-right">{{ test_info.fbc_test.nucleated_rbc }}</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.anisocytosis %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">ANISOCYTOSIS:</span>
-      <span class="text-right">{{ test_info.fbc_test.anisocytosis }}</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.macrocytosis %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">MACROCYTOSIS:</span>
-      <span class="text-right">{{ test_info.fbc_test.macrocytosis }}</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.microcytosis %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">MICROCYTOSIS:</span>
-      <span class="text-right">{{ test_info.fbc_test.microcytosis }}</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.poikilocytosis %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">POIKILOCYTOSIS:</span>
-      <span class="text-right">{{ test_info.fbc_test.poikilocytosis }}</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.target_cells %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">TARGET CELLS:</span>
-      <span class="text-right">{{ test_info.fbc_test.target_cells }}</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.neutrophils %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">NEUTROPHILS:</span>
-      <span class="text-right">{{ test_info.fbc_test.neutrophils }}%</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.eosinophils %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">EOSINOPHILS:</span>
-      <span class="text-right">{{ test_info.fbc_test.eosinophils }}%</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.basophils %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">BASOPHILS:</span>
-      <span class="text-right">{{ test_info.fbc_test.basophils }}%</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.trans_lymph %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">TRANSITIONAL LYMPHOCYTES:</span>
-      <span class="text-right">{{ test_info.fbc_test.trans_lymph }}%</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.lymphocytes %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">LYMPHOCYTES:</span>
-      <span class="text-right">{{ test_info.fbc_test.lymphocytes }}%</span>
-      </li>
-      {% endif %}
-      
-      {% if test_info.fbc_test.monocytes %}
-      <li class="flex justify-between items-center py-1">
-      <span class="font-medium">MONOCYTES:</span>
-      <span class="text-right">{{ test_info.fbc_test.monocytes }}%</span>
-      </li>
-      {% endif %}
-                                    </ul>
-                                   
-                                    {% endif %}
-                                   
-                                   </div>
-                                   
-                                   </details>
-                                   
-                          </td>
                             <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
                                 <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_fbc' patient.file_no test_info.id %}" class="text-xs  hover:text-green-700">
                                   <i class="fa-solid fa-edit fa-2xl"></i> </a>
@@ -771,14 +545,8 @@
                             <tr class="text-xs">
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Code</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Urea</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Sodium</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">potassium</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Bicarbonate</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Chloride</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Caretanine</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">input result</th>
+                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                             </tr>
                           </thead>
                           <tbody class="bg-white divide-y divide-cyan-200">
@@ -786,15 +554,9 @@
                             <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                               <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A'}}</td>
-                              <td class=" p-3 whitespace-nowrap">{{ test_info.ue_test.urea|default_if_none:'N/A'}}</td>
-                              <td class=" p-3 whitespace-nowrap">{{ test_info.ue_test.sodium|default_if_none:'N/A' }}</td>
-                              <td class=" p-3 whitespace-nowrap">{{ test_info.ue_test.potassium|default_if_none:'N/A' }}</td>
-                              <td class=" p-3 whitespace-nowrap">{{ test_info.ue_test.bicarbonate|default_if_none:'N/A' }}</td>
-                              <td class=" p-3 whitespace-nowrap">{{ test_info.ue_test.chloride|default_if_none:'N/A' }}</td>
-                              <td class=" p-3 whitespace-nowrap">{{ test_info.ue_test.creatinine|default_if_none:'N/A' }}</td>
                               <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_urea_electrolyte' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
-                                <i class="fa-solid fa-edit fa-2xl"></i> </a>
+                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:instance_pdf' test_info.id %}" class="text-xs hover:text-green-700">
+                                <i class="fa-solid fa-eye fa-2xl"></i> </a>
                           </td>
                             </tr>
                             {%empty%}
