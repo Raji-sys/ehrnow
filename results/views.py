@@ -126,7 +126,7 @@ class ReportView(ListView):
 
 @login_required
 def report_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')
     f = TestFilter(request.GET, queryset=Testinfo.objects.all()).qs
     
@@ -138,7 +138,6 @@ def report_pdf(request):
     
     context = {'f': f,'pagesize': 'A4','orientation': 'potrait', 'result': result,'generated_date': ndate.strftime('%d-%B-%Y at %I:%M %p')}
     
-    # response = HttpResponse(content_type='application/pdf',headers={'Content-Disposition': f'attachment; filename="{filename}"'})
     response = HttpResponse(content_type='application/pdf',headers={'Content-Disposition': f'inline; filename="{filename}"'})
     html = get_template('report_pdf.html').render(context)
     
@@ -152,6 +151,58 @@ def report_pdf(request):
         return response
     
     return HttpResponse('Error generating PDF', status=500)
+
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.template.loader import get_template
+from datetime import datetime
+from io import BytesIO
+from xhtml2pdf import pisa
+
+@login_required
+def instance_pdf(request, id):
+    # Get the specific instance or return 404
+    f = get_object_or_404(Testinfo, id=id)
+    
+    # Generate filename with timestamp
+    ndate = datetime.now()
+    filename = f"record_{id}_{ndate.strftime('%d_%m_%Y_%I_%M%p')}.pdf"
+    
+    # Prepare context for the template
+    context = {
+        'f': f,
+        'pagesize': 'A4',
+        'orientation': 'portrait',
+        'generated_date': ndate.strftime('%d-%B-%Y at %I:%M %p')
+    }
+    
+    # Create HTTP response
+    response = HttpResponse(
+        content_type='application/pdf',
+        headers={'Content-Disposition': f'inline; filename="{filename}"'}
+    )
+    
+    # Get the template and render it with the context
+    template = get_template('report_pdf.html')
+    html = template.render(context)
+    
+    # Create PDF
+    buffer = BytesIO()
+    pisa_status = pisa.CreatePDF(
+        html,
+        dest=buffer,
+        encoding='utf-8',
+        link_callback=fetch_resources
+    )
+    
+    if not pisa_status.err:
+        pdf = buffer.getvalue()
+        buffer.close()
+        response.write(pdf)
+        return response
+    
+    return HttpResponse('Error generating PDF', status=500)
+
 
 class ChempathRequestListView(ListView):
     model=Testinfo

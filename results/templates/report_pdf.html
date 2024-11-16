@@ -104,13 +104,6 @@
             text-align: center;
             margin-top: 0;
         }
-        .logo-image{
-            width: 100px;
-            display: flex;
-            align-items: flex-start;
-            margin-top: 0;
-            
-        }
         p{
             padding: 0;
         }
@@ -122,7 +115,6 @@
 <body>
     <div class="header">
         <h1 class="uppercase">
-            <img class="logo-image" src="{% static "images/lg1.png" %}" alt="logo">&nbsp;&nbsp;
             AudaxDynamics Enterprises</h1>
         <p>No 2828 Kano.<br>
            Tel: 0900-000-0000, 0700-000-0000 &nbsp;-&nbsp; E-Mail: support@audaxdynamics.com</p>
@@ -136,53 +128,50 @@
     </div>
 
     <div class="result-section">
-        {% for item in f %}
         <div class="patient-info">
             <table>
 
                 <tr>
                     <td colspan="2">
-                        <strong>Patient:</strong> {{ item.patient|default:"N/A"|upper }}
+                        <strong>Patient:</strong> {{ f.patient|default:"N/A"|upper }}
                     </td>
                     <td colspan="1">
-                        <strong>Age:</strong> {{ item.patient.age|default:"N/A"|upper }}
+                        <strong>Age:</strong> {{ f.patient.age|default:"N/A"|upper }}
                     </td>
                     <td colspan="1">
-                        <strong>Sex:</strong> {{ item.patient.gender|default:"N/A"|upper }}
+                        <strong>Sex:</strong> {{ f.patient.gender|default:"N/A"|upper }}
                     </td>
                 </tr>
             </table>
         </div>
 <!-- hematology  -->
-        {% if item.bg_test %}
-        <table>
-            <tr class="test-info">
-            </tr>    
-            <tr>
-                <th>Test</th>
-                <th>Result</th>
-            </tr>
-            <tr>
-                <td>{{ item.bg_test.test.name|default:"N/A"|upper }}</td>
-                <td>{{ item.bg_test.result|default:"" }}</td>
-            </tr>
-        </table>
-        {% endif %}
-
-        {% if item.gt_test %}
+        {% if f.bg_test %}
         <table>
             <tr>
                 <th>Test</th>
                 <th>Result</th>
             </tr>
             <tr>
-                <td>{{ item.gt_test.test.name|default:"N/A"|upper }}</td>
-                <td>{{ item.gt_test.result|default:"N/A" }}</td>
+                <td>{{ f.bg_test.test.name|default:"N/A"|upper }}</td>
+                <td>{{ f.bg_test.result|default:"" }}</td>
             </tr>
         </table>
         {% endif %}
 
-        {% if item.fbc_test %}
+        {% if f.gt_test %}
+        <table>
+            <tr>
+                <th>Test</th>
+                <th>Result</th>
+            </tr>
+            <tr>
+                <td>{{ f.gt_test.test.name|default:"N/A"|upper }}</td>
+                <td>{{ f.gt_test.result|default:"N/A" }}</td>
+            </tr>
+        </table>
+        {% endif %}
+
+        {% if f.fbc_test %}
         <table>
             <tr class="test-info">
                 <th colspan="4">Full Blood Count (FBC)</th>
@@ -193,90 +182,90 @@
                 <th>Unit</th>
                 <th>Reference Range</th>
             </tr>
-            {% if item.fbc_test.hb is not None %}
+            {% if f.fbc_test.hb is not None %}
             <tr>
                 <td>Hemoglobin (Hb)</td>
-                <td>{{ item.fbc_test.hb }}</td>
+                <td>{{ f.fbc_test.hb }}</td>
                 <td>g/dL</td>
                 <td>10-16</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.pcv is not None %}
+            {% if f.fbc_test.pcv is not None %}
             <tr>
                 <td>Packed Cell Volume (PCV)</td>
-                <td>{{ item.fbc_test.pcv }}</td>
+                <td>{{ f.fbc_test.pcv }}</td>
                 <td>%</td>
                 <td>30-47</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.mchc is not None %}
+            {% if f.fbc_test.mchc is not None %}
             <tr>
                 <td>MCHC</td>
-                <td>{{ item.fbc_test.mchc }}</td>
+                <td>{{ f.fbc_test.mchc }}</td>
                 <td>g/dL</td>
                 <td>32-36</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.rbc is not None %}
+            {% if f.fbc_test.rbc is not None %}
             <tr>
                 <td>Red Blood Cells (RBC)</td>
-                <td>{{ item.fbc_test.rbc }}</td>
+                <td>{{ f.fbc_test.rbc }}</td>
                 <td>x10^12/L</td>
                 <td>3.5-5.5</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.mch is not None %}
+            {% if f.fbc_test.mch is not None %}
             <tr>
                 <td>MCH</td>
-                <td>{{ item.fbc_test.mch }}</td>
+                <td>{{ f.fbc_test.mch }}</td>
                 <td>pg</td>
                 <td>27-34</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.mcv is not None %}
+            {% if f.fbc_test.mcv is not None %}
             <tr>
                 <td>MCV</td>
-                <td>{{ item.fbc_test.mcv }}</td>
+                <td>{{ f.fbc_test.mcv }}</td>
                 <td>fL</td>
                 <td>80-100</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.platelets is not None %}
+            {% if f.fbc_test.platelets is not None %}
             <tr>
                 <td>Platelets</td>
-                <td>{{ item.fbc_test.platelets }}</td>
+                <td>{{ f.fbc_test.platelets }}</td>
                 <td>x10^9/L</td>
                 <td>128-434</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.retic is not None %}
+            {% if f.fbc_test.retic is not None %}
             <tr>
                 <td>Retic</td>
-                <td>{{ item.fbc_test.retic }}</td>
+                <td>{{ f.fbc_test.retic }}</td>
                 <td>x10^9/L</td>
                 <td>N/A</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.retic_index is not None %}
+            {% if f.fbc_test.retic_index is not None %}
             <tr>
                 <td>Retic Index</td>
-                <td>{{ item.fbc_test.retic_index }}</td>
+                <td>{{ f.fbc_test.retic_index }}</td>
                 <td>x10^9/L</td>
                 <td>N/A</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.wbc is not None %}
+            {% if f.fbc_test.wbc is not None %}
             <tr>
                 <td>White Blood Cells (WBC)</td>
-                <td>{{ item.fbc_test.wbc }}</td>
+                <td>{{ f.fbc_test.wbc }}</td>
                 <td>x10^9/L</td>
                 <td>4.0-11.0</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.esr is not None %}
+            {% if f.fbc_test.esr is not None %}
             <tr>
                 <td>ESR</td>
-                <td>{{ item.fbc_test.esr }}</td>
+                <td>{{ f.fbc_test.esr }}</td>
                 <td>mm/hr (western green)</td>
                 <td>0-20</td>
             </tr>
@@ -291,58 +280,58 @@
                 <th>Feature</th>
                 <th>Present</th>
             </tr>
-            {% if item.fbc_test.sickle_cells is not None %}
+            {% if f.fbc_test.sickle_cells is not None %}
             <tr>
                 <td>Sickle Cells</td>
-                <td>{{ item.fbc_test.sickle_cells }}</td>
+                <td>{{ f.fbc_test.sickle_cells }}</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.hypochromia is not None %}
+            {% if f.fbc_test.hypochromia is not None %}
             <tr>
                 <td>Hypochromia</td>
-                <td>{{ item.fbc_test.hypochromia }}</td>
+                <td>{{ f.fbc_test.hypochromia }}</td>
             </tr>
             {%endif%}
-            {% if item.fbc_test.polychromasia is not None %}
+            {% if f.fbc_test.polychromasia is not None %}
             <tr>
                 <td>Polychromasia</td>
-                <td>{{ item.fbc_test.polychromasia }}</td>
+                <td>{{ f.fbc_test.polychromasia }}</td>
             </tr>
             {%endif%}
-            {% if item.fbc_test.nucleated_rbc is not None %}
+            {% if f.fbc_test.nucleated_rbc is not None %}
             <tr>
                 <td>Nucleated RBC</td>
-                <td>{{ item.fbc_test.nucleated_rbc }}</td>
+                <td>{{ f.fbc_test.nucleated_rbc }}</td>
             </tr>
             {%endif%}
-            {% if item.fbc_test.anisocytosis is not None %}
+            {% if f.fbc_test.anisocytosis is not None %}
             <tr>
                 <td>Anisocytosis</td>
-                <td>{{ item.fbc_test.anisocytosis }}</td>
+                <td>{{ f.fbc_test.anisocytosis }}</td>
             </tr>
             {%endif%}
-            {% if item.fbc_test.macrocytosis is not None %}
+            {% if f.fbc_test.macrocytosis is not None %}
             <tr>
                 <td>Macrocytosis</td>
-                <td>{{ item.fbc_test.macrocytosis }}</td>
+                <td>{{ f.fbc_test.macrocytosis }}</td>
             </tr>
             {%endif%}
-            {% if item.fbc_test.microcytosis is not None %}
+            {% if f.fbc_test.microcytosis is not None %}
             <tr>
                 <td>Microcytosis</td>
-                <td>{{ item.fbc_test.microcytosis }}</td>
+                <td>{{ f.fbc_test.microcytosis }}</td>
             </tr>
             {%endif%}
-            {% if item.fbc_test.poikilocytosis is not None %}
+            {% if f.fbc_test.poikilocytosis is not None %}
             <tr>
                 <td>Poikilocytosis</td>
-                <td>{{ item.fbc_test.poikilocytosis }}</td>
+                <td>{{ f.fbc_test.poikilocytosis }}</td>
             </tr>
             {%endif%}
-            {% if item.fbc_test.target_cells is not None %}
+            {% if f.fbc_test.target_cells is not None %}
             <tr>
                 <td>Target Cells</td>
-                <td>{{ item.fbc_test.target_cells }}</td>
+                <td>{{ f.fbc_test.target_cells }}</td>
             </tr>
             {%endif%}
         </table>
@@ -356,45 +345,45 @@
                 <th>Percentage</th>
                 <th>Reference Range</th>
             </tr>
-            {% if item.fbc_test.neutrophils is not None %}
+            {% if f.fbc_test.neutrophils is not None %}
             <tr>
                 <td colspan="2">Neutrophils</td>
-                <td>{{ item.fbc_test.neutrophils }}%</td>
+                <td>{{ f.fbc_test.neutrophils }}%</td>
                 <td>45-75%</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.eosinophils is not None %}
+            {% if f.fbc_test.eosinophils is not None %}
             <tr>
                 <td colspan="2">Eosinophils</td>
-                <td>{{ item.fbc_test.eosinophils }}%</td>
+                <td>{{ f.fbc_test.eosinophils }}%</td>
                 <td>1-6%</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.basophils is not None %}
+            {% if f.fbc_test.basophils is not None %}
             <tr>
                 <td colspan="2">Basophils</td>
-                <td>{{ item.fbc_test.basophils }}%</td>
+                <td>{{ f.fbc_test.basophils }}%</td>
                 <td>0-1%</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.trans_lymph is not None %}
+            {% if f.fbc_test.trans_lymph is not None %}
             <tr>
                 <td colspan="2">Transitional Lymphocytes</td>
-                <td>{{ item.fbc_test.trans_lymph }}%</td>
+                <td>{{ f.fbc_test.trans_lymph }}%</td>
                 <td>N/A</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.lymphocytes is not None %}
+            {% if f.fbc_test.lymphocytes is not None %}
             <tr>
                 <td colspan="2">Lymphocytes</td>
-                <td>{{ item.fbc_test.lymphocytes }}%</td>
+                <td>{{ f.fbc_test.lymphocytes }}%</td>
                 <td>25-45%</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.monocytes is not None %}
+            {% if f.fbc_test.monocytes is not None %}
             <tr>
                 <td colspan="2">Monocytes</td>
-                <td>{{ item.fbc_test.monocytes }}%</td>
+                <td>{{ f.fbc_test.monocytes }}%</td>
                 <td>2-10%</td>
             </tr>
             {% endif %}
@@ -408,30 +397,30 @@
                 <th>Parameter</th>
                 <th>comments</th>
             </tr>
-            {% if item.fbc_test.rbc_comments is not None %}
+            {% if f.fbc_test.rbc_comments is not None %}
             <tr>
                 <td>RBC's</td>
-                <td>{{ item.fbc_test.rbc_comments }}</td>
+                <td>{{ f.fbc_test.rbc_comments }}</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.wbc_comments is not None %}
+            {% if f.fbc_test.wbc_comments is not None %}
             <tr>
                 <td>WBC's</td>
-                <td>{{ item.fbc_test.wbc_comments }}</td>
+                <td>{{ f.fbc_test.wbc_comments }}</td>
             </tr>
             {% endif %}
-            {% if item.fbc_test.platelets_comments is not None %}
+            {% if f.fbc_test.platelets_comments is not None %}
             <tr>
                 <td>Platelets's</td>
-                <td>{{ item.fbc_test.platelets_comments }}</td>
+                <td>{{ f.fbc_test.platelets_comments }}</td>
             </tr>
             {% endif %}
             </table>
-            {% if item.fbc_test.comment is not None %}
+            {% if f.fbc_test.comment is not None %}
             <table>
             <tr>
                 <th colspan="1">Comment</th>
-                <td colspan="3">{{item.fbc_test.comment}}</td>    
+                <td colspan="3">{{f.fbc_test.comment}}</td>    
             </tr>
             </table>
             {%endif%}
@@ -439,7 +428,7 @@
 
 
 <!-- chempath  -->
-        {% if item.ue_test %}
+        {% if f.ue_test %}
         <table>
             <tr class="test-info">
                 <th colspan="4">Urea and Electrolyte/Creatinine Test</th>
@@ -452,44 +441,44 @@
             </tr>
             <tr>
                 <td>Urea</td>
-                <td>{{ item.ue_test.urea|default:"" }}</td>
+                <td>{{ f.ue_test.urea|default:"" }}</td>
                 <td>mmol/L</td>
                 <td>1.7-8-3</td>
             </tr>
             <tr>
                 <td>Sodium</td>
-                <td>{{ item.ue_test.sodium|default:"" }}</td>
+                <td>{{ f.ue_test.sodium|default:"" }}</td>
                 <td>mmol/L</td>
                 <td>135-145</td>
             </tr>
             <tr>
                 <td>Potassium</td>
-                <td>{{ item.ue_test.potassium|default:"" }}</td>
+                <td>{{ f.ue_test.potassium|default:"" }}</td>
                 <td>mmol/L</td>
                 <td>3.8-5.4</td>
             </tr>
             <tr>
                 <td>Bicarbonate</td>
-                <td>{{ item.ue_test.bicarbonate|default:"" }}</td>
+                <td>{{ f.ue_test.bicarbonate|default:"" }}</td>
                 <td>mmol/L</td>
                 <td>24-32</td>
             </tr>
             <tr>
                 <td>Chloride</td>
-                <td>{{ item.ue_test.chloride|default:"" }}</td>
+                <td>{{ f.ue_test.chloride|default:"" }}</td>
                 <td>mmol/L</td>
                 <td>98-108</td>
             </tr>
             <tr>
                 <td>Creatinine</td>
-                <td>{{ item.ue_test.creatinine|default:"" }}</td>
+                <td>{{ f.ue_test.creatinine|default:"" }}</td>
                 <td>µmol/L</td>
                 <td>53-97(Male)&nbsp;<br>44-80(Female)</td>
             </tr>
         </table>
         {% endif %}
        
-        {% if item.lf_test %}
+        {% if f.lf_test %}
 <table>
     <tr class="test-info">
         <th colspan="4">Liver Function Test</th>
@@ -500,75 +489,75 @@
         <th>Unit</th>
         <th>Reference Range</th>
     </tr>
-    {% if item.lf_test.alkaline_phosphatase is not None %}
+    {% if f.lf_test.alkaline_phosphatase is not None %}
     <tr>
         <td>Alkaline Phosphatase</td>
-        <td>{{ item.lf_test.alkaline_phosphatase }}</td>
+        <td>{{ f.lf_test.alkaline_phosphatase }}</td>
         <td>U/L</td>    
         <td>9-35(Adult)&nbsp;<br>35-100(Child)</td>
 
     </tr>
     {% endif %}
-    {% if item.lf_test.sgot is not None %}
+    {% if f.lf_test.sgot is not None %}
     <tr>
         <td>SGOT (AST)</td>
-        <td>{{ item.lf_test.sgot }}</td>
+        <td>{{ f.lf_test.sgot }}</td>
         <td>U/L</td>
         <td>0-12</td>
     </tr>
     {% endif %}
-    {% if item.lf_test.sgpt is not None %}
+    {% if f.lf_test.sgpt is not None %}
     <tr>
         <td>SGPT (ALT)</td>
-        <td>{{ item.lf_test.sgpt }}</td>
+        <td>{{ f.lf_test.sgpt }}</td>
         <td>U/L</td>
         <td>10-40</td>
     </tr>
     {% endif %}
-    {% if item.lf_test.gamma_gt is not None %}
+    {% if f.lf_test.gamma_gt is not None %}
     <tr>
         <td>Gamma GT</td>
-        <td>{{ item.lf_test.gamma_gt }}</td>
+        <td>{{ f.lf_test.gamma_gt }}</td>
         <td>U/L</td>
         <td>9-48</td>
     </tr>
     {% endif %}
-    {% if item.lf_test.total_bilirubin is not None %}
+    {% if f.lf_test.total_bilirubin is not None %}
     <tr>
         <td>Total Bilirubin</td>
-        <td>{{ item.lf_test.total_bilirubin }}</td>
+        <td>{{ f.lf_test.total_bilirubin }}</td>
         <td>umol/L</td>
         <td> &lt;17 </td>
     </tr>
     {% endif %}
-    {% if item.lf_test.direct_bilirubin is not None %}
+    {% if f.lf_test.direct_bilirubin is not None %}
     <tr>
         <td>Direct Bilirubin</td>
-        <td>{{ item.lf_test.direct_bilirubin }}</td>
+        <td>{{ f.lf_test.direct_bilirubin }}</td>
         <td>umol/L</td>
         <td> &lt;4.3</td>
     </tr>
     {% endif %}
-    {% if item.lf_test.t_protein is not None %}
+    {% if f.lf_test.t_protein is not None %}
 <tr>
     <td>Total Protein</td>
-<td>{{ item.lf_test.t_protein }}</td>
+<td>{{ f.lf_test.t_protein }}</td>
 <td>g/dL</td>
 <td>6.5-8.7</td>
 </tr>
 {% endif %}
-{% if item.lf_test.albumin is not None %}
+{% if f.lf_test.albumin is not None %}
 <tr>
 <td>Albumin</td>
-<td>{{ item.lf_test.albumin }}</td>
+<td>{{ f.lf_test.albumin }}</td>
 <td>g/dL</td>
 <td>3.8-4.4</td>
 </tr>
 {% endif %}
-{% if item.lf_test.globulin is not None %}
+{% if f.lf_test.globulin is not None %}
 <tr>
 <td>Globulin</td>
-<td>{{ item.lf_test.globulin }}</td>
+<td>{{ f.lf_test.globulin }}</td>
 <td>g/dL</td>
 <td>2-3.9</td>
 </tr>
@@ -577,7 +566,7 @@
 </table>
 {% endif %}
 
-{% if item.lp_test %}
+{% if f.lp_test %}
 <table>
     <tr class="test-info">
         <th colspan="4">Lipid Profile</th>
@@ -588,34 +577,34 @@
         <th>Unit</th>
         <th>Reference Range</th>
     </tr>
-    {% if item.lp_test.cholesterol is not None %}
+    {% if f.lp_test.cholesterol is not None %}
     <tr>
         <td>Total Cholesterol</td>
-        <td>{{ item.lp_test.cholesterol }}</td>
+        <td>{{ f.lp_test.cholesterol }}</td>
         <td>mmol/L</td>
         <td>3.89-6.21</td>
     </tr>
     {% endif %}
-    {% if item.lp_test.triglyceride is not None %}
+    {% if f.lp_test.triglyceride is not None %}
     <tr>
         <td>Triglycerides</td>
-        <td>{{ item.lp_test.triglyceride }}</td>
+        <td>{{ f.lp_test.triglyceride }}</td>
         <td>mmol/L</td>
         <td>0.00-1.92</td>
     </tr>
     {% endif %}
-    {% if item.lp_test.hdl_cholesterol is not None %}
+    {% if f.lp_test.hdl_cholesterol is not None %}
     <tr>
         <td>HDL Cholesterol</td>
-        <td>{{ item.lp_test.hdl_cholesterol }}</td>
+        <td>{{ f.lp_test.hdl_cholesterol }}</td>
         <td>mmol/L</td>
         <td>&gt;1.68(Female)<br>&gt;1.42(Female)</td>
     </tr>
     {% endif %}
-    {% if item.lp_test.ldl_cholesterol is not None %}
+    {% if f.lp_test.ldl_cholesterol is not None %}
     <tr>
         <td>LDL Cholesterol</td>
-        <td>{{ item.lp_test.ldl_cholesterol }}</td>
+        <td>{{ f.lp_test.ldl_cholesterol }}</td>
         <td>mmol/L</td>
         <td>&lt;3.90</td>
     </tr>
@@ -623,7 +612,7 @@
 </table>
 {% endif %}
 
-{% if item.bgl_test %}
+{% if f.bgl_test %}
 <table>
     <tr class="test-info">
         <th colspan="4">Blood Glucose Test</th>
@@ -635,15 +624,15 @@
         <th>Reference Range</th>
     </tr>
     <tr>
-        <td>{{ item.bgl_test.get_test_type_display }}</td>
-        <td>{{ item.bgl_test.result|default:"N/A" }}</td>
+        <td>{{ f.bgl_test.get_test_type_display }}</td>
+        <td>{{ f.bgl_test.result|default:"N/A" }}</td>
         <td>mmol/L</td>
         <td>
-            {% if item.bgl_test.test_type == 'FASTING' %}
+            {% if f.bgl_test.test_type == 'FASTING' %}
                 3.0-6.0
-            {% elif item.bgl_test.test_type == 'RANDOM' %}
+            {% elif f.bgl_test.test_type == 'RANDOM' %}
                 3.0-6.11
-            {% elif item.bgl_test.test_type == '2HR_PP' %}
+            {% elif f.bgl_test.test_type == '2HR_PP' %}
                 3.89-6.11
             {% else %}
                 N/A
@@ -653,7 +642,7 @@
 </table>
 {% endif %}
 
-{% if item.sp_test %}
+{% if f.sp_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">Serum Proteins</th>
@@ -664,26 +653,26 @@
 <th>Unit</th>
 <th>Reference Range</th>
 </tr>
-{% if item.sp_test.t_protein is not None %}
+{% if f.sp_test.t_protein is not None %}
 <tr>
 <td>Total Protein</td>
-<td>{{ item.sp_test.t_protein }}</td>
+<td>{{ f.sp_test.t_protein }}</td>
 <td>g/dL</td>
 <td>6.5-8.7</td>
 </tr>
 {% endif %}
-{% if item.sp_test.albumin is not None %}
+{% if f.sp_test.albumin is not None %}
 <tr>
 <td>Albumin</td>
-<td>{{ item.sp_test.albumin }}</td>
+<td>{{ f.sp_test.albumin }}</td>
 <td>g/dL</td>
 <td>3.8-4.4</td>
 </tr>
 {% endif %}
-{% if item.sp_test.globulin is not None %}
+{% if f.sp_test.globulin is not None %}
 <tr>
 <td>Globulin</td>
-<td>{{ item.sp_test.globulin }}</td>
+<td>{{ f.sp_test.globulin }}</td>
 <td>g/dL</td>
 <td>2-3.9</td>
 </tr>
@@ -691,7 +680,7 @@
 </table>
 {% endif %}
 
-{% if item.csf_test %}
+{% if f.csf_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">Cerebro Spinal Fluid</th>
@@ -702,26 +691,26 @@
 <th>Unit</th>
 <th>Reference Range</th>
 </tr>
-{% if item.csf_test.csf_glucose is not None %}
+{% if f.csf_test.csf_glucose is not None %}
 <tr>
 <td>CSF Glucose</td>
-<td>{{ item.csf_test.csf_glucose }}</td>
+<td>{{ f.csf_test.csf_glucose }}</td>
 <td>mmol/L</td>
 <td>2.78-4.44</td>
 </tr>
 {% endif %}
-{% if item.csf_test.csf_protein is not None %}
+{% if f.csf_test.csf_protein is not None %}
 <tr>
 <td>CSF Protein</td>
-<td>{{ item.csf_test.csf_protein }}</td>
+<td>{{ f.csf_test.csf_protein }}</td>
 <td>mg/dL</td>
 <td>150-400</td>
 </tr>
 {% endif %}
-{% if item.csf_test.csf_chloride is not None %}
+{% if f.csf_test.csf_chloride is not None %}
 <tr>
 <td>CSF Chloride</td>
-<td>{{ item.csf_test.csf_chloride }}</td>
+<td>{{ f.csf_test.csf_chloride }}</td>
 <td>mmol/L</td>
 <td>120-130</td>
 </tr>
@@ -729,7 +718,7 @@
 </table>
 {% endif %}
 
-{% if item.bc_test %}
+{% if f.bc_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">Bone Chemistry</th>
@@ -740,26 +729,26 @@
 <th>Unit</th>
 <th>Reference Range</th>
 </tr>
-{% if item.bc_test.alkaline_phosphatase is not None %}
+{% if f.bc_test.alkaline_phosphatase is not None %}
 <tr>
 <td>Alkaline Phosphatase</td>
-<td>{{ item.bc_test.alkaline_phosphatase }}</td>
+<td>{{ f.bc_test.alkaline_phosphatase }}</td>
 <td>U/L</td>
 <td>9-35(Adult)&nbsp;<br>35-100(Child)</td>
 </tr>
 {% endif %}
-{% if item.bc_test.calcium is not None %}
+{% if f.bc_test.calcium is not None %}
 <tr>
 <td>Calcium</td>
-<td>{{ item.bc_test.calcium }}</td>
+<td>{{ f.bc_test.calcium }}</td>
 <td>mmol/L</td>
 <td>2.02-2.60</td>
 </tr>
 {% endif %}
-{% if item.bc_test.inorganic_phosphate is not None %}
+{% if f.bc_test.inorganic_phosphate is not None %}
 <tr>
 <td>Inorganic Phosphate</td>
-<td>{{ item.bc_test.inorganic_phosphate }}</td>
+<td>{{ f.bc_test.inorganic_phosphate }}</td>
 <td>mmol/L</td>
 <td>0.81-1.62(Adult)&nbsp;<br>1.30-2.26(Child)</td>
 </tr>
@@ -767,7 +756,7 @@
 </table>
 {% endif %}
 
-{% if item.misc_test %}
+{% if f.misc_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">Miscellaneous Chempath Tests</th>
@@ -778,43 +767,43 @@
 <th>Unit</th>
 <th>Reference Range</th>
 </tr>
-{% if item.misc_test.uric_acid is not None %}
+{% if f.misc_test.uric_acid is not None %}
 <tr>
 <td>Uric Acid</td>
-<td>{{ item.misc_test.uric_acid }}</td>
+<td>{{ f.misc_test.uric_acid }}</td>
 <td>umol/L</td>
 <td>202-416(Male)&nbsp;<br>142-339(Female)</td>
 
 </tr>
 {% endif %}
-{% if item.misc_test.serum_amylase is not None %}
+{% if f.misc_test.serum_amylase is not None %}
 <tr>
 <td>Serum Amylase</td>
-<td>{{ item.misc_test.serum_amylase }}</td>
+<td>{{ f.misc_test.serum_amylase }}</td>
 <td>U/L</td>
 <td>142-339</td>
 </tr>
 {% endif %}
-{% if item.misc_test.acid_phosphatase_total is not None %}
+{% if f.misc_test.acid_phosphatase_total is not None %}
 <tr>
 <td>Acid Phosphatase Total</td>
-<td>{{ item.misc_test.acid_phosphatase_total }}</td>
+<td>{{ f.misc_test.acid_phosphatase_total }}</td>
 <td>U/L</td>
 <td>&lt;11</td>
 </tr>
 {% endif %}
-{% if item.misc_test.acid_phosphatase_prostatic is not None %}
+{% if f.misc_test.acid_phosphatase_prostatic is not None %}
 <tr>
 <td>Acid Phosphatase Prostatic</td>
-<td>{{ item.misc_test.acid_phosphatase_prostatic }}</td>
+<td>{{ f.misc_test.acid_phosphatase_prostatic }}</td>
 <td>U/L</td>
 <td>&lt;4</td>
 </tr>
 {% endif %}
-{% if item.misc_test.psa is not None %}
+{% if f.misc_test.psa is not None %}
 <tr>
 <td>PSA</td>
-<td>{{ item.misc_test.psa }}</td>
+<td>{{ f.misc_test.psa }}</td>
 <td>ng/ml</td>
 <td>0-4</td>
 </tr>
@@ -823,7 +812,7 @@
 {% endif %}
 
 <!-- microbiology  -->
-{% if item.urine_test %}
+{% if f.urine_test %}
 <table>
     <tr class="test-info">
         <th colspan="4">Urine Microscopy</th>
@@ -832,40 +821,40 @@
         <th colspan="2">Parameter</th>
         <th colspan="2">Result</th>
     </tr>
-    {% if item.urine_test.pus_cells %}
+    {% if f.urine_test.pus_cells %}
     <tr>
         <td colspan="2">Pus Cells</td>
-        <td colspan="2">{{ item.urine_test.pus_cells }}</td>
+        <td colspan="2">{{ f.urine_test.pus_cells }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.rbc %}
+    {% if f.urine_test.rbc %}
     <tr>
         <td colspan="2">RBC</td>
-        <td colspan="2">{{ item.urine_test.rbc }}</td>
+        <td colspan="2">{{ f.urine_test.rbc }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.epithelial_cells %}
+    {% if f.urine_test.epithelial_cells %}
     <tr>
         <td colspan="2">Epithelial Cells</td>
-        <td colspan="2">{{ item.urine_test.epithelial_cells }}</td>
+        <td colspan="2">{{ f.urine_test.epithelial_cells }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.casts %}
+    {% if f.urine_test.casts %}
     <tr>
         <td colspan="2">Casts</td>
-        <td colspan="2">{{ item.urine_test.casts }}</td>
+        <td colspan="2">{{ f.urine_test.casts }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.crystals %}
+    {% if f.urine_test.crystals %}
     <tr>
         <td colspan="2">Crystals</td>
-        <td colspan="2">{{ item.urine_test.crystals }}</td>
+        <td colspan="2">{{ f.urine_test.crystals }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.ova %}
+    {% if f.urine_test.ova %}
     <tr>
         <td colspan="2">Ova</td>
-        <td colspan="2">{{ item.urine_test.ova }}</td>
+        <td colspan="2">{{ f.urine_test.ova }}</td>
     </tr>
     {% endif %}
 
@@ -873,61 +862,61 @@
     <tr class="test-info">
         <th colspan="4">Culture Yielded</th>
     </tr>
-    {% if item.urine_test.no_growth %}
+    {% if f.urine_test.no_growth %}
     <tr><td colspan="4">No Growth</td></tr>
     {%endif%}
-        {% if item.urine_test.e_coli %}
+        {% if f.urine_test.e_coli %}
         <tr><td colspan="4">E. Coli</td></tr>
         {% endif %}
-        {% if item.urine_test.coliform %}
+        {% if f.urine_test.coliform %}
         <tr><td colspan="4">Coliform</td></tr>
         {% endif %}
-        {% if item.urine_test.proteus %}
+        {% if f.urine_test.proteus %}
         <tr><td colspan="4">Proteus</td></tr>
         {% endif %}
-        {% if item.urine_test.staph_aureus %}
+        {% if f.urine_test.staph_aureus %}
         <tr><td colspan="4">Staphylococcus Aureus</td></tr>
         {% endif %}
-        {% if item.urine_test.pseudomonas %}
+        {% if f.urine_test.pseudomonas %}
         <tr><td colspan="4">Pseudomonas</td></tr>
         {% endif %}
-        {% if item.urine_test.streptococcus %}
+        {% if f.urine_test.streptococcus %}
         <tr><td colspan="4">Streptococcus</td></tr>
         {% endif %}
-        {% if item.urine_test.klebsiella %}
+        {% if f.urine_test.klebsiella %}
         <tr><td colspan="4">Klebsiella</td></tr>
         {% endif %}
-        {% if item.urine_test.salmonella %}
+        {% if f.urine_test.salmonella %}
         <tr><td colspan="4">Salmonella</td></tr>
         {% endif %}
-        {% if item.urine_test.str_feacalis %}
+        {% if f.urine_test.str_feacalis %}
         <tr><td colspan="4">Streptococcus Feacalis</td></tr>
         {% endif %}
-        {% if item.urine_test.shigella %}
+        {% if f.urine_test.shigella %}
         <tr><td colspan="4">Shigella</td></tr>
         {% endif %}
-        {% if item.urine_test.c_diphtheriae %}
+        {% if f.urine_test.c_diphtheriae %}
         <tr><td colspan="4">C. Diphtheriae</td></tr>
         {% endif %}
-        {% if item.urine_test.neisseria %}
+        {% if f.urine_test.neisseria %}
         <tr><td colspan="4">Neisseria</td></tr>
         {% endif %}
-        {% if item.urine_test.candida %}
+        {% if f.urine_test.candida %}
         <tr><td colspan="4">Candida</td></tr>
         {% endif %}
-        {% if item.urine_test.haemophilus %}
+        {% if f.urine_test.haemophilus %}
         <tr><td colspan="4">Haemophilus</td></tr>
         {% endif %}
-        {% if item.urine_test.str_pneumonia %}
+        {% if f.urine_test.str_pneumonia %}
         <tr><td colspan="4">Streptococcus Pneumonia</td></tr>
         {% endif %}
-        {% if item.urine_test.str_pyogenes %}
+        {% if f.urine_test.str_pyogenes %}
         <tr><td colspan="4">Streptococcus Pyogenes</td></tr>
         {% endif %}
-        {% if item.urine_test.staph_albus %}
+        {% if f.urine_test.staph_albus %}
         <tr><td colspan="4">Staphylococcus Albus</td></tr>
         {% endif %}
-        {% if item.urine_test.usual_flora %}
+        {% if f.urine_test.usual_flora %}
         <tr><td colspan="4">Usual Flora</td></tr>
         {% endif %}
 
@@ -937,136 +926,136 @@
         <th colspan="2">Antibiotic</th>
         <th colspan="2">Sensitivity</th>
     </tr>
-    {% if item.urine_test.cloxacillin %}
+    {% if f.urine_test.cloxacillin %}
     <tr>
         <td colspan="2">Cloxacillin</td>
-        <td colspan="2">{{ item.urine_test.get_cloxacillin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_cloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.ciprofloxacin %}
+    {% if f.urine_test.ciprofloxacin %}
     <tr>
         <td colspan="2">Ciprofloxacin</td>
-        <td colspan="2">{{ item.urine_test.get_ciprofloxacin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_ciprofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.lincomycin %}
+    {% if f.urine_test.lincomycin %}
     <tr>
         <td colspan="2">Lincomycin</td>
-        <td colspan="2">{{ item.urine_test.get_lincomycin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_lincomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.flucloxacillin %}
+    {% if f.urine_test.flucloxacillin %}
     <tr>
         <td colspan="2">Flucloxacillin</td>
-        <td colspan="2">{{ item.urine_test.get_flucloxacillin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_flucloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.tetracycline %}
+    {% if f.urine_test.tetracycline %}
     <tr>
         <td colspan="2">Tetracycline</td>
-        <td colspan="2">{{ item.urine_test.get_tetracycline_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_tetracycline_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.ampicillin %}
+    {% if f.urine_test.ampicillin %}
     <tr>
         <td colspan="2">Ampicillin</td>
-        <td colspan="2">{{ item.urine_test.get_ampicillin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_ampicillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.erythromycin %}
+    {% if f.urine_test.erythromycin %}
     <tr>
         <td colspan="2">Erythromycin</td>
-        <td colspan="2">{{ item.urine_test.get_erythromycin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_erythromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.roxithromycin %}
+    {% if f.urine_test.roxithromycin %}
     <tr>
         <td colspan="2">Roxithromycin</td>
-        <td colspan="2">{{ item.urine_test.get_roxithromycin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_roxithromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.augmentin %}
+    {% if f.urine_test.augmentin %}
     <tr>
         <td colspan="2">Augmentin</td>
-        <td colspan="2">{{ item.urine_test.get_augmentin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_augmentin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.cotrimoxazole %}
+    {% if f.urine_test.cotrimoxazole %}
     <tr>
         <td colspan="2">Cotrimoxazole</td>
-        <td colspan="2">{{ item.urine_test.get_cotrimoxazole_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_cotrimoxazole_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.cephalexin %}
+    {% if f.urine_test.cephalexin %}
     <tr>
         <td colspan="2">Cephalexin</td>
-        <td colspan="2">{{ item.urine_test.get_cephalexin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_cephalexin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.dalacin_c %}
+    {% if f.urine_test.dalacin_c %}
     <tr>
         <td colspan="2">Dalacin C</td>
-        <td colspan="2">{{ item.urine_test.get_dalacin_c_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_dalacin_c_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.gentamycin %}
+    {% if f.urine_test.gentamycin %}
     <tr>
         <td colspan="2">Gentamycin</td>
-        <td colspan="2">{{ item.urine_test.get_gentamycin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_gentamycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.streptomycin %}
+    {% if f.urine_test.streptomycin %}
     <tr>
         <td colspan="2">Streptomycin</td>
-        <td colspan="2">{{ item.urine_test.get_streptomycin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_streptomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.ceftriaxone %}
+    {% if f.urine_test.ceftriaxone %}
     <tr>
         <td colspan="2">Ceftriaxone</td>
-        <td colspan="2">{{ item.urine_test.get_ceftriaxone_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_ceftriaxone_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.chloramphenicol %}
+    {% if f.urine_test.chloramphenicol %}
     <tr>
         <td colspan="2">Chloramphenicol</td>
-        <td colspan="2">{{ item.urine_test.get_chloramphenicol_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_chloramphenicol_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.nitrofurantoin %}
+    {% if f.urine_test.nitrofurantoin %}
     <tr>
         <td colspan="2">Nitrofurantoin</td>
-        <td colspan="2">{{ item.urine_test.get_nitrofurantoin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_nitrofurantoin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.nalidixic_acid %}
+    {% if f.urine_test.nalidixic_acid %}
     <tr>
         <td colspan="2">Nalidixic Acid</td>
-        <td colspan="2">{{ item.urine_test.get_nalidixic_acid_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_nalidixic_acid_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.cefuroxime %}
+    {% if f.urine_test.cefuroxime %}
     <tr>
         <td colspan="2">Cefuroxime</td>
-        <td colspan="2">{{ item.urine_test.get_cefuroxime_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_cefuroxime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.ceftazidime %}
+    {% if f.urine_test.ceftazidime %}
     <tr>
         <td colspan="2">Ceftazidime</td>
-        <td colspan="2">{{ item.urine_test.get_ceftazidime_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_ceftazidime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.ofloxacin %}
+    {% if f.urine_test.ofloxacin %}
     <tr>
         <td colspan="2">Ofloxacin</td>
-        <td colspan="2">{{ item.urine_test.get_ofloxacin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_ofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.urine_test.pefloxacin %}
+    {% if f.urine_test.pefloxacin %}
     <tr>
         <td colspan="2">Pefloxacin</td>
-        <td colspan="2">{{ item.urine_test.get_pefloxacin_display }}</td>
+        <td colspan="2">{{ f.urine_test.get_pefloxacin_display }}</td>
     </tr>
     {% endif %}
 </table>
@@ -1076,7 +1065,7 @@
 </tr>
     {% endif %}
 
-{% if item.hvs_test %}
+{% if f.hvs_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">High Vaginal Swab</th>
@@ -1085,34 +1074,34 @@
 <th colspan="2">Parameter</th>
 <th colspan="2">Result</th>
 </tr>
-{% if item.hvs_test.pus_cells %}
+{% if f.hvs_test.pus_cells %}
 <tr>
 <td colspan="2">Pus Cells</td>
-<td colspan="2">{{ item.hvs_test.pus_cells }}</td>
+<td colspan="2">{{ f.hvs_test.pus_cells }}</td>
 </tr>
 {% endif %}
-{% if item.hvs_test.rbc %}
+{% if f.hvs_test.rbc %}
 <tr>
 <td colspan="2">RBC</td>
-<td colspan="2">{{ item.hvs_test.rbc }}</td>
+<td colspan="2">{{ f.hvs_test.rbc }}</td>
 </tr>
 {% endif %}
-{% if item.hvs_test.epithelial_cells %}
+{% if f.hvs_test.epithelial_cells %}
 <tr>
 <td colspan="2">Epithelial Cells</td>
-<td colspan="2">{{ item.hvs_test.epithelial_cells }}</td>
+<td colspan="2">{{ f.hvs_test.epithelial_cells }}</td>
 </tr>
 {% endif %}
-{% if item.hvs_test.t_vaginalis %}
+{% if f.hvs_test.t_vaginalis %}
 <tr>
 <td colspan="2">T. vaginalis</td>
-<td colspan="2">{{ item.hvs_test.t_vaginalis }}</td>
+<td colspan="2">{{ f.hvs_test.t_vaginalis }}</td>
 </tr>
 {% endif %}
-{% if item.hvs_test.yeast_cells %}
+{% if f.hvs_test.yeast_cells %}
 <tr>
 <td colspan="2">Yeast Cells</td>
-<td colspan="2">{{ item.hvs_test.yeast_cells }}</td>
+<td colspan="2">{{ f.hvs_test.yeast_cells }}</td>
 </tr>
 {% endif %}
 
@@ -1120,63 +1109,63 @@
     <tr class="test-info">
         <th colspan="4">Culture Yielded</th>
     </tr>
-    {% if item.hvs_test.no_growth %}
+    {% if f.hvs_test.no_growth %}
     <tr>
         <td colspan="4">No Growth</td>
     </tr>
     {%endif%}
-        {% if item.hvs_test.e_coli %}
+        {% if f.hvs_test.e_coli %}
         <tr><td colspan="4">E. Coli</td></tr>
         {% endif %}
-        {% if item.hvs_test.coliform %}
+        {% if f.hvs_test.coliform %}
         <tr><td colspan="4">Coliform</td></tr>
         {% endif %}
-        {% if item.hvs_test.proteus %}
+        {% if f.hvs_test.proteus %}
         <tr><td colspan="4">Proteus</td></tr>
         {% endif %}
-        {% if item.hvs_test.staph_aureus %}
+        {% if f.hvs_test.staph_aureus %}
         <tr><td colspan="4">Staphylococcus Aureus</td></tr>
         {% endif %}
-        {% if item.hvs_test.pseudomonas %}
+        {% if f.hvs_test.pseudomonas %}
         <tr><td colspan="4">Pseudomonas</td></tr>
         {% endif %}
-        {% if item.hvs_test.streptococcus %}
+        {% if f.hvs_test.streptococcus %}
         <tr><td colspan="4">Streptococcus</td></tr>
         {% endif %}
-        {% if item.hvs_test.klebsiella %}
+        {% if f.hvs_test.klebsiella %}
         <tr><td colspan="4">Klebsiella</td></tr>
         {% endif %}
-        {% if item.hvs_test.salmonella %}
+        {% if f.hvs_test.salmonella %}
         <tr><td colspan="4">Salmonella</td></tr>
         {% endif %}
-        {% if item.hvs_test.str_feacalis %}
+        {% if f.hvs_test.str_feacalis %}
         <tr><td colspan="4">Streptococcus Feacalis</td></tr>
         {% endif %}
-        {% if item.hvs_test.shigella %}
+        {% if f.hvs_test.shigella %}
         <tr><td colspan="4">Shigella</td></tr>
         {% endif %}
-        {% if item.hvs_test.c_diphtheriae %}
+        {% if f.hvs_test.c_diphtheriae %}
         <tr><td colspan="4">C. Diphtheriae</td></tr>
         {% endif %}
-        {% if item.hvs_test.neisseria %}
+        {% if f.hvs_test.neisseria %}
         <tr><td colspan="4">Neisseria</td></tr>
         {% endif %}
-        {% if item.hvs_test.candida %}
+        {% if f.hvs_test.candida %}
         <tr><td colspan="4">Candida</td></tr>
         {% endif %}
-        {% if item.hvs_test.haemophilus %}
+        {% if f.hvs_test.haemophilus %}
         <tr><td colspan="4">Haemophilus</td></tr>
         {% endif %}
-        {% if item.hvs_test.str_pneumonia %}
+        {% if f.hvs_test.str_pneumonia %}
         <tr><td colspan="4">Streptococcus Pneumonia</td></tr>
         {% endif %}
-        {% if item.hvs_test.str_pyogenes %}
+        {% if f.hvs_test.str_pyogenes %}
         <tr><td colspan="4">Streptococcus Pyogenes</td></tr>
         {% endif %}
-        {% if item.hvs_test.staph_albus %}
+        {% if f.hvs_test.staph_albus %}
         <tr><td colspan="4">Staphylococcus Albus</td></tr>
         {% endif %}
-        {% if item.hvs_test.usual_flora %}
+        {% if f.hvs_test.usual_flora %}
         <tr><td colspan="4">Usual Flora</td></tr>
         {% endif %}
 
@@ -1185,136 +1174,136 @@
         <th colspan="2">Antibiotic</th>
         <th colspan="2">Sensitivity</th>
     </tr>
-    {% if item.hvs_test.cloxacillin %}
+    {% if f.hvs_test.cloxacillin %}
     <tr>
         <td colspan="2">Cloxacillin</td>
-        <td colspan="2">{{ item.hvs_test.get_cloxacillin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_cloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.ciprofloxacin %}
+    {% if f.hvs_test.ciprofloxacin %}
     <tr>
         <td colspan="2">Ciprofloxacin</td>
-        <td colspan="2">{{ item.hvs_test.get_ciprofloxacin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_ciprofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.lincomycin %}
+    {% if f.hvs_test.lincomycin %}
     <tr>
         <td colspan="2">Lincomycin</td>
-        <td colspan="2">{{ item.hvs_test.get_lincomycin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_lincomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.flucloxacillin %}
+    {% if f.hvs_test.flucloxacillin %}
     <tr>
         <td colspan="2">Flucloxacillin</td>
-        <td colspan="2">{{ item.hvs_test.get_flucloxacillin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_flucloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.tetracycline %}
+    {% if f.hvs_test.tetracycline %}
     <tr>
         <td colspan="2">Tetracycline</td>
-        <td colspan="2">{{ item.hvs_test.get_tetracycline_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_tetracycline_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.ampicillin %}
+    {% if f.hvs_test.ampicillin %}
     <tr>
         <td colspan="2">Ampicillin</td>
-        <td colspan="2">{{ item.hvs_test.get_ampicillin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_ampicillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.erythromycin %}
+    {% if f.hvs_test.erythromycin %}
     <tr>
         <td colspan="2">Erythromycin</td>
-        <td colspan="2">{{ item.hvs_test.get_erythromycin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_erythromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.roxithromycin %}
+    {% if f.hvs_test.roxithromycin %}
     <tr>
         <td colspan="2">Roxithromycin</td>
-        <td colspan="2">{{ item.hvs_test.get_roxithromycin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_roxithromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.augmentin %}
+    {% if f.hvs_test.augmentin %}
     <tr>
         <td colspan="2">Augmentin</td>
-        <td colspan="2">{{ item.hvs_test.get_augmentin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_augmentin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.cotrimoxazole %}
+    {% if f.hvs_test.cotrimoxazole %}
     <tr>
         <td colspan="2">Cotrimoxazole</td>
-        <td colspan="2">{{ item.hvs_test.get_cotrimoxazole_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_cotrimoxazole_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.cephalexin %}
+    {% if f.hvs_test.cephalexin %}
     <tr>
         <td colspan="2">Cephalexin</td>
-        <td colspan="2">{{ item.hvs_test.get_cephalexin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_cephalexin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.dalacin_c %}
+    {% if f.hvs_test.dalacin_c %}
     <tr>
         <td colspan="2">Dalacin C</td>
-        <td colspan="2">{{ item.hvs_test.get_dalacin_c_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_dalacin_c_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.gentamycin %}
+    {% if f.hvs_test.gentamycin %}
     <tr>
         <td colspan="2">Gentamycin</td>
-        <td colspan="2">{{ item.hvs_test.get_gentamycin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_gentamycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.streptomycin %}
+    {% if f.hvs_test.streptomycin %}
     <tr>
         <td colspan="2">Streptomycin</td>
-        <td colspan="2">{{ item.hvs_test.get_streptomycin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_streptomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.ceftriaxone %}
+    {% if f.hvs_test.ceftriaxone %}
     <tr>
         <td colspan="2">Ceftriaxone</td>
-        <td colspan="2">{{ item.hvs_test.get_ceftriaxone_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_ceftriaxone_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.chloramphenicol %}
+    {% if f.hvs_test.chloramphenicol %}
     <tr>
         <td colspan="2">Chloramphenicol</td>
-        <td colspan="2">{{ item.hvs_test.get_chloramphenicol_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_chloramphenicol_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.nitrofurantoin %}
+    {% if f.hvs_test.nitrofurantoin %}
     <tr>
         <td colspan="2">Nitrofurantoin</td>
-        <td colspan="2">{{ item.hvs_test.get_nitrofurantoin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_nitrofurantoin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.nalidixic_acid %}
+    {% if f.hvs_test.nalidixic_acid %}
     <tr>
         <td colspan="2">Nalidixic Acid</td>
-        <td colspan="2">{{ item.hvs_test.get_nalidixic_acid_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_nalidixic_acid_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.cefuroxime %}
+    {% if f.hvs_test.cefuroxime %}
     <tr>
         <td colspan="2">Cefuroxime</td>
-        <td colspan="2">{{ item.hvs_test.get_cefuroxime_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_cefuroxime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.ceftazidime %}
+    {% if f.hvs_test.ceftazidime %}
     <tr>
         <td colspan="2">Ceftazidime</td>
-        <td colspan="2">{{ item.hvs_test.get_ceftazidime_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_ceftazidime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.ofloxacin %}
+    {% if f.hvs_test.ofloxacin %}
     <tr>
         <td colspan="2">Ofloxacin</td>
-        <td colspan="2">{{ item.hvs_test.get_ofloxacin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_ofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.hvs_test.pefloxacin %}
+    {% if f.hvs_test.pefloxacin %}
     <tr>
         <td colspan="2">Pefloxacin</td>
-        <td colspan="2">{{ item.hvs_test.get_pefloxacin_display }}</td>
+        <td colspan="2">{{ f.hvs_test.get_pefloxacin_display }}</td>
     </tr>
     {% endif %}
 </table>
@@ -1325,7 +1314,7 @@
 {% endif %}
 
 
-{% if item.stool_test %}
+{% if f.stool_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">Stool Analysis</th>
@@ -1334,109 +1323,109 @@
 <th colspan="2">Parameter</th>
 <th colspan="2">Result</th>
 </tr>
-{% if item.stool_test.consistency %}
+{% if f.stool_test.consistency %}
 <tr>
 <td colspan="2">Consistency</td>
-<td colspan="2">{{ item.stool_test.consistency }}</td>
+<td colspan="2">{{ f.stool_test.consistency }}</td>
 </tr>
 {% endif %}
-{% if item.stool_test.color %}
+{% if f.stool_test.color %}
 <tr>
 <td colspan="2">Color</td>
-<td colspan="2">{{ item.stool_test.color }}</td>
+<td colspan="2">{{ f.stool_test.color }}</td>
 </tr>
 {% endif %}
-{% if item.stool_test.mucus %}
+{% if f.stool_test.mucus %}
 <tr>
 <td colspan="2">Mucus</td>
-<td colspan="2">{{ item.stool_test.mucus }}</td>
+<td colspan="2">{{ f.stool_test.mucus }}</td>
 </tr>
 {% endif %}
-{% if item.stool_test.blood %}
+{% if f.stool_test.blood %}
 <tr>
 <td colspan="2">Blood</td>
-<td colspan="2">{{ item.stool_test.blood }}</td>
+<td colspan="2">{{ f.stool_test.blood }}</td>
 </tr>
 {% endif %}
-{% if item.stool_test.ova %}
+{% if f.stool_test.ova %}
 <tr>
 <td colspan="2">Ova</td>
-<td colspan="2">{{ item.stool_test.ova }}</td>
+<td colspan="2">{{ f.stool_test.ova }}</td>
 </tr>
 {% endif %}
-{% if item.stool_test.cyst %}
+{% if f.stool_test.cyst %}
 <tr>
 <td colspan="2">Cyst</td>
-<td colspan="2">{{ item.stool_test.cyst }}</td>
+<td colspan="2">{{ f.stool_test.cyst }}</td>
 </tr>
 {% endif %}
-{% if item.stool_test.others %}
+{% if f.stool_test.others %}
 <tr>
 <td colspan="2">Others</td>
-<td colspan="2">{{ item.stool_test.others }}</td>
+<td colspan="2">{{ f.stool_test.others }}</td>
 </tr>
 {% endif %}
     <!-- Culture Yielded Section -->
     <tr class="test-info">
         <th colspan="4">Culture Yielded</th>
     </tr>
-    {% if item.stool_test.no_growth %}
+    {% if f.stool_test.no_growth %}
     <tr>
         <td colspan="4">No Growth</td>
     </tr>
     {%endif%}
-        {% if item.stool_test.e_coli %}
+        {% if f.stool_test.e_coli %}
         <tr><td colspan="4">E. Coli</td></tr>
         {% endif %}
-        {% if item.stool_test.coliform %}
+        {% if f.stool_test.coliform %}
         <tr><td colspan="4">Coliform</td></tr>
         {% endif %}
-        {% if item.stool_test.proteus %}
+        {% if f.stool_test.proteus %}
         <tr><td colspan="4">Proteus</td></tr>
         {% endif %}
-        {% if item.stool_test.staph_aureus %}
+        {% if f.stool_test.staph_aureus %}
         <tr><td colspan="4">Staphylococcus Aureus</td></tr>
         {% endif %}
-        {% if item.stool_test.pseudomonas %}
+        {% if f.stool_test.pseudomonas %}
         <tr><td colspan="4">Pseudomonas</td></tr>
         {% endif %}
-        {% if item.stool_test.streptococcus %}
+        {% if f.stool_test.streptococcus %}
         <tr><td colspan="4">Streptococcus</td></tr>
         {% endif %}
-        {% if item.stool_test.klebsiella %}
+        {% if f.stool_test.klebsiella %}
         <tr><td colspan="4">Klebsiella</td></tr>
         {% endif %}
-        {% if item.stool_test.salmonella %}
+        {% if f.stool_test.salmonella %}
         <tr><td colspan="4">Salmonella</td></tr>
         {% endif %}
-        {% if item.stool_test.str_feacalis %}
+        {% if f.stool_test.str_feacalis %}
         <tr><td colspan="4">Streptococcus Feacalis</td></tr>
         {% endif %}
-        {% if item.stool_test.shigella %}
+        {% if f.stool_test.shigella %}
         <tr><td colspan="4">Shigella</td></tr>
         {% endif %}
-        {% if item.stool_test.c_diphtheriae %}
+        {% if f.stool_test.c_diphtheriae %}
         <tr><td colspan="4">C. Diphtheriae</td></tr>
         {% endif %}
-        {% if item.stool_test.neisseria %}
+        {% if f.stool_test.neisseria %}
         <tr><td colspan="4">Neisseria</td></tr>
         {% endif %}
-        {% if item.stool_test.candida %}
+        {% if f.stool_test.candida %}
         <tr><td colspan="4">Candida</td></tr>
         {% endif %}
-        {% if item.stool_test.haemophilus %}
+        {% if f.stool_test.haemophilus %}
         <tr><td colspan="4">Haemophilus</td></tr>
         {% endif %}
-        {% if item.stool_test.str_pneumonia %}
+        {% if f.stool_test.str_pneumonia %}
         <tr><td colspan="4">Streptococcus Pneumonia</td></tr>
         {% endif %}
-        {% if item.stool_test.str_pyogenes %}
+        {% if f.stool_test.str_pyogenes %}
         <tr><td colspan="4">Streptococcus Pyogenes</td></tr>
         {% endif %}
-        {% if item.stool_test.staph_albus %}
+        {% if f.stool_test.staph_albus %}
         <tr><td colspan="4">Staphylococcus Albus</td></tr>
         {% endif %}
-        {% if item.stool_test.usual_flora %}
+        {% if f.stool_test.usual_flora %}
         <tr><td colspan="4">Usual Flora</td></tr>
         {% endif %}
 
@@ -1445,136 +1434,136 @@
         <th colspan="2">Antibiotic</th>
         <th colspan="2">Sensitivity</th>
     </tr>
-    {% if item.stool_test.cloxacillin %}
+    {% if f.stool_test.cloxacillin %}
     <tr>
         <td colspan="2">Cloxacillin</td>
-        <td colspan="2">{{ item.stool_test.get_cloxacillin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_cloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.ciprofloxacin %}
+    {% if f.stool_test.ciprofloxacin %}
     <tr>
         <td colspan="2">Ciprofloxacin</td>
-        <td colspan="2">{{ item.stool_test.get_ciprofloxacin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_ciprofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.lincomycin %}
+    {% if f.stool_test.lincomycin %}
     <tr>
         <td colspan="2">Lincomycin</td>
-        <td colspan="2">{{ item.stool_test.get_lincomycin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_lincomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.flucloxacillin %}
+    {% if f.stool_test.flucloxacillin %}
     <tr>
         <td colspan="2">Flucloxacillin</td>
-        <td colspan="2">{{ item.stool_test.get_flucloxacillin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_flucloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.tetracycline %}
+    {% if f.stool_test.tetracycline %}
     <tr>
         <td colspan="2">Tetracycline</td>
-        <td colspan="2">{{ item.stool_test.get_tetracycline_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_tetracycline_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.ampicillin %}
+    {% if f.stool_test.ampicillin %}
     <tr>
         <td colspan="2">Ampicillin</td>
-        <td colspan="2">{{ item.stool_test.get_ampicillin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_ampicillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.erythromycin %}
+    {% if f.stool_test.erythromycin %}
     <tr>
         <td colspan="2">Erythromycin</td>
-        <td colspan="2">{{ item.stool_test.get_erythromycin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_erythromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.roxithromycin %}
+    {% if f.stool_test.roxithromycin %}
     <tr>
         <td colspan="2">Roxithromycin</td>
-        <td colspan="2">{{ item.stool_test.get_roxithromycin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_roxithromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.augmentin %}
+    {% if f.stool_test.augmentin %}
     <tr>
         <td colspan="2">Augmentin</td>
-        <td colspan="2">{{ item.stool_test.get_augmentin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_augmentin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.cotrimoxazole %}
+    {% if f.stool_test.cotrimoxazole %}
     <tr>
         <td colspan="2">Cotrimoxazole</td>
-        <td colspan="2">{{ item.stool_test.get_cotrimoxazole_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_cotrimoxazole_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.cephalexin %}
+    {% if f.stool_test.cephalexin %}
     <tr>
         <td colspan="2">Cephalexin</td>
-        <td colspan="2">{{ item.stool_test.get_cephalexin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_cephalexin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.dalacin_c %}
+    {% if f.stool_test.dalacin_c %}
     <tr>
         <td colspan="2">Dalacin C</td>
-        <td colspan="2">{{ item.stool_test.get_dalacin_c_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_dalacin_c_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.gentamycin %}
+    {% if f.stool_test.gentamycin %}
     <tr>
         <td colspan="2">Gentamycin</td>
-        <td colspan="2">{{ item.stool_test.get_gentamycin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_gentamycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.streptomycin %}
+    {% if f.stool_test.streptomycin %}
     <tr>
         <td colspan="2">Streptomycin</td>
-        <td colspan="2">{{ item.stool_test.get_streptomycin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_streptomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.ceftriaxone %}
+    {% if f.stool_test.ceftriaxone %}
     <tr>
         <td colspan="2">Ceftriaxone</td>
-        <td colspan="2">{{ item.stool_test.get_ceftriaxone_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_ceftriaxone_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.chloramphenicol %}
+    {% if f.stool_test.chloramphenicol %}
     <tr>
         <td colspan="2">Chloramphenicol</td>
-        <td colspan="2">{{ item.stool_test.get_chloramphenicol_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_chloramphenicol_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.nitrofurantoin %}
+    {% if f.stool_test.nitrofurantoin %}
     <tr>
         <td colspan="2">Nitrofurantoin</td>
-        <td colspan="2">{{ item.stool_test.get_nitrofurantoin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_nitrofurantoin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.nalidixic_acid %}
+    {% if f.stool_test.nalidixic_acid %}
     <tr>
         <td colspan="2">Nalidixic Acid</td>
-        <td colspan="2">{{ item.stool_test.get_nalidixic_acid_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_nalidixic_acid_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.cefuroxime %}
+    {% if f.stool_test.cefuroxime %}
     <tr>
         <td colspan="2">Cefuroxime</td>
-        <td colspan="2">{{ item.stool_test.get_cefuroxime_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_cefuroxime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.ceftazidime %}
+    {% if f.stool_test.ceftazidime %}
     <tr>
         <td colspan="2">Ceftazidime</td>
-        <td colspan="2">{{ item.stool_test.get_ceftazidime_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_ceftazidime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.ofloxacin %}
+    {% if f.stool_test.ofloxacin %}
     <tr>
         <td colspan="2">Ofloxacin</td>
-        <td colspan="2">{{ item.stool_test.get_ofloxacin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_ofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.stool_test.pefloxacin %}
+    {% if f.stool_test.pefloxacin %}
     <tr>
         <td colspan="2">Pefloxacin</td>
-        <td colspan="2">{{ item.stool_test.get_pefloxacin_display }}</td>
+        <td colspan="2">{{ f.stool_test.get_pefloxacin_display }}</td>
     </tr>
     {% endif %}
 </table>
@@ -1585,75 +1574,75 @@
 {% endif %}
 
 
-{% if item.swab_pus_aspirate_test %}
+{% if f.swab_pus_aspirate_test %}
 <table>
 
 <tr class="test-info">
 <th colspan="2">Option</th>
-<td colspan="2">{{item.swab_pus_aspirate_test.options}}</td>
+<td colspan="2">{{f.swab_pus_aspirate_test.options}}</td>
 </tr>
 
     <!-- Culture Yield Section -->
     <tr class="test-info">
         <th colspan="4">Culture Yielded</th>
     </tr>
-    {% if item.swab_pus_aspirate_test.no_growth %}
+    {% if f.swab_pus_aspirate_test.no_growth %}
     <tr>
         <td colspan="4">No Growth</td>
     </tr>
     {%endif%}
-        {% if item.swab_pus_aspirate_test.e_coli %}
+        {% if f.swab_pus_aspirate_test.e_coli %}
         <tr><td colspan="4">E. Coli</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.coliform %}
+        {% if f.swab_pus_aspirate_test.coliform %}
         <tr><td colspan="4">Coliform</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.proteus %}
+        {% if f.swab_pus_aspirate_test.proteus %}
         <tr><td colspan="4">Proteus</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.staph_aureus %}
+        {% if f.swab_pus_aspirate_test.staph_aureus %}
         <tr><td colspan="4">Staphylococcus Aureus</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.pseudomonas %}
+        {% if f.swab_pus_aspirate_test.pseudomonas %}
         <tr><td colspan="4">Pseudomonas</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.streptococcus %}
+        {% if f.swab_pus_aspirate_test.streptococcus %}
         <tr><td colspan="4">Streptococcus</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.klebsiella %}
+        {% if f.swab_pus_aspirate_test.klebsiella %}
         <tr><td colspan="4">Klebsiella</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.salmonella %}
+        {% if f.swab_pus_aspirate_test.salmonella %}
         <tr><td colspan="4">Salmonella</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.str_feacalis %}
+        {% if f.swab_pus_aspirate_test.str_feacalis %}
         <tr><td colspan="4">Streptococcus Feacalis</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.shigella %}
+        {% if f.swab_pus_aspirate_test.shigella %}
         <tr><td colspan="4">Shigella</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.c_diphtheriae %}
+        {% if f.swab_pus_aspirate_test.c_diphtheriae %}
         <tr><td colspan="4">C. Diphtheriae</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.neisseria %}
+        {% if f.swab_pus_aspirate_test.neisseria %}
         <tr><td colspan="4">Neisseria</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.candida %}
+        {% if f.swab_pus_aspirate_test.candida %}
         <tr><td colspan="4">Candida</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.haemophilus %}
+        {% if f.swab_pus_aspirate_test.haemophilus %}
         <tr><td colspan="4">Haemophilus</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.str_pneumonia %}
+        {% if f.swab_pus_aspirate_test.str_pneumonia %}
         <tr><td colspan="4">Streptococcus Pneumonia</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.str_pyogenes %}
+        {% if f.swab_pus_aspirate_test.str_pyogenes %}
         <tr><td colspan="4">Streptococcus Pyogenes</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.staph_albus %}
+        {% if f.swab_pus_aspirate_test.staph_albus %}
         <tr><td colspan="4">Staphylococcus Albus</td></tr>
         {% endif %}
-        {% if item.swab_pus_aspirate_test.usual_flora %}
+        {% if f.swab_pus_aspirate_test.usual_flora %}
         <tr><td colspan="4">Usual Flora</td></tr>
         {% endif %}
 
@@ -1662,136 +1651,136 @@
         <th colspan="2">Antibiotic</th>
         <th colspan="2">Sensitivity</th>
     </tr>
-    {% if item.swab_pus_aspirate_test.cloxacillin %}
+    {% if f.swab_pus_aspirate_test.cloxacillin %}
     <tr>
         <td colspan="2">Cloxacillin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_cloxacillin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_cloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.ciprofloxacin %}
+    {% if f.swab_pus_aspirate_test.ciprofloxacin %}
     <tr>
         <td colspan="2">Ciprofloxacin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_ciprofloxacin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_ciprofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.lincomycin %}
+    {% if f.swab_pus_aspirate_test.lincomycin %}
     <tr>
         <td colspan="2">Lincomycin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_lincomycin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_lincomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.flucloxacillin %}
+    {% if f.swab_pus_aspirate_test.flucloxacillin %}
     <tr>
         <td colspan="2">Flucloxacillin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_flucloxacillin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_flucloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.tetracycline %}
+    {% if f.swab_pus_aspirate_test.tetracycline %}
     <tr>
         <td colspan="2">Tetracycline</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_tetracycline_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_tetracycline_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.ampicillin %}
+    {% if f.swab_pus_aspirate_test.ampicillin %}
     <tr>
         <td colspan="2">Ampicillin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_ampicillin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_ampicillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.erythromycin %}
+    {% if f.swab_pus_aspirate_test.erythromycin %}
     <tr>
         <td colspan="2">Erythromycin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_erythromycin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_erythromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.roxithromycin %}
+    {% if f.swab_pus_aspirate_test.roxithromycin %}
     <tr>
         <td colspan="2">Roxithromycin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_roxithromycin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_roxithromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.augmentin %}
+    {% if f.swab_pus_aspirate_test.augmentin %}
     <tr>
         <td colspan="2">Augmentin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_augmentin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_augmentin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.cotrimoxazole %}
+    {% if f.swab_pus_aspirate_test.cotrimoxazole %}
     <tr>
         <td colspan="2">Cotrimoxazole</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_cotrimoxazole_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_cotrimoxazole_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.cephalexin %}
+    {% if f.swab_pus_aspirate_test.cephalexin %}
     <tr>
         <td colspan="2">Cephalexin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_cephalexin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_cephalexin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.dalacin_c %}
+    {% if f.swab_pus_aspirate_test.dalacin_c %}
     <tr>
         <td colspan="2">Dalacin C</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_dalacin_c_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_dalacin_c_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.gentamycin %}
+    {% if f.swab_pus_aspirate_test.gentamycin %}
     <tr>
         <td colspan="2">Gentamycin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_gentamycin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_gentamycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.streptomycin %}
+    {% if f.swab_pus_aspirate_test.streptomycin %}
     <tr>
         <td colspan="2">Streptomycin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_streptomycin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_streptomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.ceftriaxone %}
+    {% if f.swab_pus_aspirate_test.ceftriaxone %}
     <tr>
         <td colspan="2">Ceftriaxone</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_ceftriaxone_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_ceftriaxone_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.chloramphenicol %}
+    {% if f.swab_pus_aspirate_test.chloramphenicol %}
     <tr>
         <td colspan="2">Chloramphenicol</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_chloramphenicol_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_chloramphenicol_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.nitrofurantoin %}
+    {% if f.swab_pus_aspirate_test.nitrofurantoin %}
     <tr>
         <td colspan="2">Nitrofurantoin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_nitrofurantoin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_nitrofurantoin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.nalidixic_acid %}
+    {% if f.swab_pus_aspirate_test.nalidixic_acid %}
     <tr>
         <td colspan="2">Nalidixic Acid</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_nalidixic_acid_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_nalidixic_acid_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.cefuroxime %}
+    {% if f.swab_pus_aspirate_test.cefuroxime %}
     <tr>
         <td colspan="2">Cefuroxime</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_cefuroxime_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_cefuroxime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.ceftazidime %}
+    {% if f.swab_pus_aspirate_test.ceftazidime %}
     <tr>
         <td colspan="2">Ceftazidime</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_ceftazidime_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_ceftazidime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.ofloxacin %}
+    {% if f.swab_pus_aspirate_test.ofloxacin %}
     <tr>
         <td colspan="2">Ofloxacin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_ofloxacin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_ofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.swab_pus_aspirate_test.pefloxacin %}
+    {% if f.swab_pus_aspirate_test.pefloxacin %}
     <tr>
         <td colspan="2">Pefloxacin</td>
-        <td colspan="2">{{ item.swab_pus_aspirate_test.get_pefloxacin_display }}</td>
+        <td colspan="2">{{ f.swab_pus_aspirate_test.get_pefloxacin_display }}</td>
     </tr>
     {% endif %}
 </table>
@@ -1802,78 +1791,78 @@
 {% endif %}
 
 
-{% if item.blood_culture_test and item.blood_culture_test.result %}
+{% if f.blood_culture_test and f.blood_culture_test.result %}
 <table>
     <tr class="test-info">
         <th>Test</th>
         <th>Result</th>
     </tr>
     <tr>
-        <td>{{ item.blood_culture_test.test.name }}</td>
-        <td>{{ item.blood_culture_test.result }}</td>
+        <td>{{ f.blood_culture_test.test.name }}</td>
+        <td>{{ f.blood_culture_test.result }}</td>
     </tr>
 
     <!-- Culture Yielded Section -->
     <tr class="test-info">
         <th colspan="2">Culture Yielded</th>
     </tr>
-    {% if item.blood_culture_test.no_growth %}
+    {% if f.blood_culture_test.no_growth %}
     <tr>
         <td colspan="2">No Growth</td>
     </tr>
     {%endif%}
-        {% if item.blood_culture_test.e_coli %}
+        {% if f.blood_culture_test.e_coli %}
         <tr><td colspan="2">E. Coli</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.coliform %}
+        {% if f.blood_culture_test.coliform %}
         <tr><td colspan="2">Coliform</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.proteus %}
+        {% if f.blood_culture_test.proteus %}
         <tr><td colspan="2">Proteus</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.staph_aureus %}
+        {% if f.blood_culture_test.staph_aureus %}
         <tr><td colspan="2">Staphylococcus Aureus</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.pseudomonas %}
+        {% if f.blood_culture_test.pseudomonas %}
         <tr><td colspan="2">Pseudomonas</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.streptococcus %}
+        {% if f.blood_culture_test.streptococcus %}
         <tr><td colspan="2">Streptococcus</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.klebsiella %}
+        {% if f.blood_culture_test.klebsiella %}
         <tr><td colspan="2">Klebsiella</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.salmonella %}
+        {% if f.blood_culture_test.salmonella %}
         <tr><td colspan="2">Salmonella</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.str_feacalis %}
+        {% if f.blood_culture_test.str_feacalis %}
         <tr><td colspan="2">Streptococcus Feacalis</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.shigella %}
+        {% if f.blood_culture_test.shigella %}
         <tr><td colspan="2">Shigella</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.c_diphtheriae %}
+        {% if f.blood_culture_test.c_diphtheriae %}
         <tr><td colspan="2">C. Diphtheriae</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.neisseria %}
+        {% if f.blood_culture_test.neisseria %}
         <tr><td colspan="2">Neisseria</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.candida %}
+        {% if f.blood_culture_test.candida %}
         <tr><td colspan="2">Candida</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.haemophilus %}
+        {% if f.blood_culture_test.haemophilus %}
         <tr><td colspan="2">Haemophilus</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.str_pneumonia %}
+        {% if f.blood_culture_test.str_pneumonia %}
         <tr><td colspan="2">Streptococcus Pneumonia</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.str_pyogenes %}
+        {% if f.blood_culture_test.str_pyogenes %}
         <tr><td colspan="2">Streptococcus Pyogenes</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.staph_albus %}
+        {% if f.blood_culture_test.staph_albus %}
         <tr><td colspan="2">Staphylococcus Albus</td></tr>
         {% endif %}
-        {% if item.blood_culture_test.usual_flora %}
+        {% if f.blood_culture_test.usual_flora %}
         <tr><td colspan="2">Usual Flora</td></tr>
         {% endif %}
 
@@ -1882,130 +1871,130 @@
         <th>Antibiotic</th>
         <th>Sensitivity</th>
     </tr>
-    {% if item.blood_culture_test.cloxacillin %}
+    {% if f.blood_culture_test.cloxacillin %}
     <tr>
         <td>Cloxacillin</td>
-        <td>{{ item.blood_culture_test.get_cloxacillin_display }}</td>
+        <td>{{ f.blood_culture_test.get_cloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.ciprofloxacin %}
+    {% if f.blood_culture_test.ciprofloxacin %}
     <tr>
         <td>Ciprofloxacin</td>
-        <td>{{ item.blood_culture_test.get_ciprofloxacin_display }}</td>
+        <td>{{ f.blood_culture_test.get_ciprofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.lincomycin %}
+    {% if f.blood_culture_test.lincomycin %}
     <tr>
         <td>Lincomycin</td>
-        <td>{{ item.blood_culture_test.get_lincomycin_display }}</td>
+        <td>{{ f.blood_culture_test.get_lincomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.flucloxacillin %}
+    {% if f.blood_culture_test.flucloxacillin %}
     <tr>
         <td>Flucloxacillin</td>
-        <td>{{ item.blood_culture_test.get_flucloxacillin_display }}</td>
+        <td>{{ f.blood_culture_test.get_flucloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.tetracycline %}
+    {% if f.blood_culture_test.tetracycline %}
     <tr>
         <td>Tetracycline</td>
-        <td>{{ item.blood_culture_test.get_tetracycline_display }}</td>
+        <td>{{ f.blood_culture_test.get_tetracycline_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.ampicillin %}
+    {% if f.blood_culture_test.ampicillin %}
     <tr>
         <td>Ampicillin</td>
-        <td>{{ item.blood_culture_test.get_ampicillin_display }}</td>
+        <td>{{ f.blood_culture_test.get_ampicillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.erythromycin %}
+    {% if f.blood_culture_test.erythromycin %}
     <tr>
         <td>Erythromycin</td>
-        <td>{{ item.blood_culture_test.get_erythromycin_display }}</td>
+        <td>{{ f.blood_culture_test.get_erythromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.roxithromycin %}
+    {% if f.blood_culture_test.roxithromycin %}
     <tr>
         <td>Roxithromycin</td>
-        <td>{{ item.blood_culture_test.get_roxithromycin_display }}</td>
+        <td>{{ f.blood_culture_test.get_roxithromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.augmentin %}
+    {% if f.blood_culture_test.augmentin %}
     <tr>
         <td>Augmentin</td>
-        <td>{{ item.blood_culture_test.get_augmentin_display }}</td>
+        <td>{{ f.blood_culture_test.get_augmentin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.cotrimoxazole %}
+    {% if f.blood_culture_test.cotrimoxazole %}
     <tr>
         <td>Cotrimoxazole</td>
-        <td>{{ item.blood_culture_test.get_cotrimoxazole_display }}</td>
+        <td>{{ f.blood_culture_test.get_cotrimoxazole_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.cephalexin %}
+    {% if f.blood_culture_test.cephalexin %}
     <tr>
         <td>Cephalexin</td>
-        <td>{{ item.blood_culture_test.get_cephalexin_display }}</td>
+        <td>{{ f.blood_culture_test.get_cephalexin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.dalacin_c %}
+    {% if f.blood_culture_test.dalacin_c %}
     <tr>
         <td>Dalacin C</td>
-        <td>{{ item.blood_culture_test.get_dalacin_c_display }}</td>
+        <td>{{ f.blood_culture_test.get_dalacin_c_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.gentamycin %}
+    {% if f.blood_culture_test.gentamycin %}
     <tr>
         <td>Gentamycin</td>
-        <td>{{ item.blood_culture_test.get_gentamycin_display }}</td>
+        <td>{{ f.blood_culture_test.get_gentamycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.streptomycin %}
+    {% if f.blood_culture_test.streptomycin %}
     <tr>
         <td>Streptomycin</td>
-        <td>{{ item.blood_culture_test.get_streptomycin_display }}</td>
+        <td>{{ f.blood_culture_test.get_streptomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.ceftriaxone %}
+    {% if f.blood_culture_test.ceftriaxone %}
     <tr>
         <td>Ceftriaxone</td>
-        <td>{{ item.blood_culture_test.get_ceftriaxone_display }}</td>
+        <td>{{ f.blood_culture_test.get_ceftriaxone_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.chloramphenicol %}
+    {% if f.blood_culture_test.chloramphenicol %}
     <tr>
         <td>Chloramphenicol</td>
-        <td>{{ item.blood_culture_test.get_chloramphenicol_display }}</td>
+        <td>{{ f.blood_culture_test.get_chloramphenicol_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.nitrofurantoin %}
+    {% if f.blood_culture_test.nitrofurantoin %}
     <tr>
         <td>Nitrofurantoin</td>
-        <td>{{ item.blood_culture_test.get_nitrofurantoin_display }}</td>
+        <td>{{ f.blood_culture_test.get_nitrofurantoin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.nalidixic_acid %}
+    {% if f.blood_culture_test.nalidixic_acid %}
     <tr>
         <td>Nalidixic Acid</td>
-        <td>{{ item.blood_culture_test.get_nalidixic_acid_display }}</td>
+        <td>{{ f.blood_culture_test.get_nalidixic_acid_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.cefuroxime %}
+    {% if f.blood_culture_test.cefuroxime %}
     <tr>
         <td>Cefuroxime</td>
-        <td>{{ item.blood_culture_test.get_cefuroxime_display }}</td>
+        <td>{{ f.blood_culture_test.get_cefuroxime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.ceftazidime %}
+    {% if f.blood_culture_test.ceftazidime %}
     <tr>
         <td>Ceftazidime</td>
-        <td>{{ item.blood_culture_test.get_ceftazidime_display }}</td>
+        <td>{{ f.blood_culture_test.get_ceftazidime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.blood_culture_test.ofloxacin %}
+    {% if f.blood_culture_test.ofloxacin %}
     <tr>
         <td>Ofloxacin</td>
-        <td>{{ item.blood_culture_test.get_ofloxacin_display }}</td>
+        <td>{{ f.blood_culture_test.get_ofloxacin_display }}</td>
     </tr>
     {% endif %}
 </table>
@@ -2017,90 +2006,90 @@
 
 
 
-{% if item.occult_blood_test and item.occult_blood_test.result %}
+{% if f.occult_blood_test and f.occult_blood_test.result %}
 <table>
     <tr class="test-info">
         <th>Test</th>
         <th>Result</th>
     </tr>
 <tr>
-<td>{{ item.occult_blood_test.test.name }}</td>
-<td>{{ item.occult_blood_test.get_result_display }}</td>
+<td>{{ f.occult_blood_test.test.name }}</td>
+<td>{{ f.occult_blood_test.get_result_display }}</td>
 </tr>
 
 {% endif %}
 
-{% if item.sputum_mcs_test and item.sputum_mcs_test.result %}
+{% if f.sputum_mcs_test and f.sputum_mcs_test.result %}
 <table>
 <tr class="test-info">
     <th>Test</th>
     <th>Result</th>
 </tr>
 <tr>
-<td>{{ item.sputum_mcs_test.test.name}}</td>
-<td>{{ item.sputum_mcs_test.result}}</td>
+<td>{{ f.sputum_mcs_test.test.name}}</td>
+<td>{{ f.sputum_mcs_test.result}}</td>
 </tr>
     <!-- Culture Yielded Section -->
     <tr class="test-info">
         <th colspan="2">Culture Yielded</th>
     </tr>
-    {% if item.sputum_mcs_test.no_growth %}
+    {% if f.sputum_mcs_test.no_growth %}
     <tr>
         <td colspan="2">No Growth</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.e_coli %}
+    {% if f.sputum_mcs_test.e_coli %}
         <tr><td colspan="2">E. Coli</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.coliform %}
+        {% if f.sputum_mcs_test.coliform %}
         <tr><td colspan="2">Coliform</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.proteus %}
+        {% if f.sputum_mcs_test.proteus %}
         <tr><td colspan="2">Proteus</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.staph_aureus %}
+        {% if f.sputum_mcs_test.staph_aureus %}
         <tr><td colspan="2">Staphylococcus Aureus</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.pseudomonas %}
+        {% if f.sputum_mcs_test.pseudomonas %}
         <tr><td colspan="2">Pseudomonas</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.streptococcus %}
+        {% if f.sputum_mcs_test.streptococcus %}
         <tr><td colspan="2">Streptococcus</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.klebsiella %}
+        {% if f.sputum_mcs_test.klebsiella %}
         <tr><td colspan="2">Klebsiella</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.salmonella %}
+        {% if f.sputum_mcs_test.salmonella %}
         <tr><td colspan="2">Salmonella</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.str_feacalis %}
+        {% if f.sputum_mcs_test.str_feacalis %}
         <tr><td colspan="2">Streptococcus Feacalis</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.shigella %}
+        {% if f.sputum_mcs_test.shigella %}
         <tr><td colspan="2">Shigella</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.c_diphtheriae %}
+        {% if f.sputum_mcs_test.c_diphtheriae %}
         <tr><td colspan="2">C. Diphtheriae</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.neisseria %}
+        {% if f.sputum_mcs_test.neisseria %}
         <tr><td colspan="2">Neisseria</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.candida %}
+        {% if f.sputum_mcs_test.candida %}
         <tr><td colspan="2">Candida</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.haemophilus %}
+        {% if f.sputum_mcs_test.haemophilus %}
         <tr><td colspan="2">Haemophilus</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.str_pneumonia %}
+        {% if f.sputum_mcs_test.str_pneumonia %}
         <tr><td colspan="2">Streptococcus Pneumonia</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.str_pyogenes %}
+        {% if f.sputum_mcs_test.str_pyogenes %}
         <tr><td colspan="2">Streptococcus Pyogenes</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.staph_albus %}
+        {% if f.sputum_mcs_test.staph_albus %}
         <tr><td colspan="2">Staphylococcus Albus</td></tr>
         {% endif %}
-        {% if item.sputum_mcs_test.usual_flora %}
+        {% if f.sputum_mcs_test.usual_flora %}
         <tr><td colspan="2">Usual Flora</td></tr>
         {% endif %}
 
@@ -2109,130 +2098,130 @@
         <th>Antibiotic</th>
         <th>Sensitivity</th>
     </tr>
-    {% if item.sputum_mcs_test.cloxacillin %}
+    {% if f.sputum_mcs_test.cloxacillin %}
     <tr>
         <td>Cloxacillin</td>
-        <td>{{ item.sputum_mcs_test.get_cloxacillin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_cloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.ciprofloxacin %}
+    {% if f.sputum_mcs_test.ciprofloxacin %}
     <tr>
         <td>Ciprofloxacin</td>
-        <td>{{ item.sputum_mcs_test.get_ciprofloxacin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_ciprofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.lincomycin %}
+    {% if f.sputum_mcs_test.lincomycin %}
     <tr>
         <td>Lincomycin</td>
-        <td>{{ item.sputum_mcs_test.get_lincomycin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_lincomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.flucloxacillin %}
+    {% if f.sputum_mcs_test.flucloxacillin %}
     <tr>
         <td>Flucloxacillin</td>
-        <td>{{ item.sputum_mcs_test.get_flucloxacillin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_flucloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.tetracycline %}
+    {% if f.sputum_mcs_test.tetracycline %}
     <tr>
         <td>Tetracycline</td>
-        <td>{{ item.sputum_mcs_test.get_tetracycline_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_tetracycline_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.ampicillin %}
+    {% if f.sputum_mcs_test.ampicillin %}
     <tr>
         <td>Ampicillin</td>
-        <td>{{ item.sputum_mcs_test.get_ampicillin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_ampicillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.erythromycin %}
+    {% if f.sputum_mcs_test.erythromycin %}
     <tr>
         <td>Erythromycin</td>
-        <td>{{ item.sputum_mcs_test.get_erythromycin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_erythromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.roxithromycin %}
+    {% if f.sputum_mcs_test.roxithromycin %}
     <tr>
         <td>Roxithromycin</td>
-        <td>{{ item.sputum_mcs_test.get_roxithromycin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_roxithromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.augmentin %}
+    {% if f.sputum_mcs_test.augmentin %}
     <tr>
         <td>Augmentin</td>
-        <td>{{ item.sputum_mcs_test.get_augmentin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_augmentin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.cotrimoxazole %}
+    {% if f.sputum_mcs_test.cotrimoxazole %}
     <tr>
         <td>Cotrimoxazole</td>
-        <td>{{ item.sputum_mcs_test.get_cotrimoxazole_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_cotrimoxazole_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.cephalexin %}
+    {% if f.sputum_mcs_test.cephalexin %}
     <tr>
         <td>Cephalexin</td>
-        <td>{{ item.sputum_mcs_test.get_cephalexin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_cephalexin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.dalacin_c %}
+    {% if f.sputum_mcs_test.dalacin_c %}
     <tr>
         <td>Dalacin C</td>
-        <td>{{ item.sputum_mcs_test.get_dalacin_c_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_dalacin_c_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.gentamycin %}
+    {% if f.sputum_mcs_test.gentamycin %}
     <tr>
         <td>Gentamycin</td>
-        <td>{{ item.sputum_mcs_test.get_gentamycin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_gentamycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.streptomycin %}
+    {% if f.sputum_mcs_test.streptomycin %}
     <tr>
         <td>Streptomycin</td>
-        <td>{{ item.sputum_mcs_test.get_streptomycin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_streptomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.ceftriaxone %}
+    {% if f.sputum_mcs_test.ceftriaxone %}
     <tr>
         <td>Ceftriaxone</td>
-        <td>{{ item.sputum_mcs_test.get_ceftriaxone_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_ceftriaxone_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.chloramphenicol %}
+    {% if f.sputum_mcs_test.chloramphenicol %}
     <tr>
         <td>Chloramphenicol</td>
-        <td>{{ item.sputum_mcs_test.get_chloramphenicol_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_chloramphenicol_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.nitrofurantoin %}
+    {% if f.sputum_mcs_test.nitrofurantoin %}
     <tr>
         <td>Nitrofurantoin</td>
-        <td>{{ item.sputum_mcs_test.get_nitrofurantoin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_nitrofurantoin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.nalidixic_acid %}
+    {% if f.sputum_mcs_test.nalidixic_acid %}
     <tr>
         <td>Nalidixic Acid</td>
-        <td>{{ item.sputum_mcs_test.get_nalidixic_acid_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_nalidixic_acid_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.cefuroxime %}
+    {% if f.sputum_mcs_test.cefuroxime %}
     <tr>
         <td>Cefuroxime</td>
-        <td>{{ item.sputum_mcs_test.get_cefuroxime_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_cefuroxime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.ceftazidime %}
+    {% if f.sputum_mcs_test.ceftazidime %}
     <tr>
         <td>Ceftazidime</td>
-        <td>{{ item.sputum_mcs_test.get_ceftazidime_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_ceftazidime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.sputum_mcs_test.ofloxacin %}
+    {% if f.sputum_mcs_test.ofloxacin %}
     <tr>
         <td>Ofloxacin</td>
-        <td>{{ item.sputum_mcs_test.get_ofloxacin_display }}</td>
+        <td>{{ f.sputum_mcs_test.get_ofloxacin_display }}</td>
     </tr>
     {% endif %}
 </table>
@@ -2242,7 +2231,7 @@
 </tr>
 {% endif %}
 
-{% if item.gram_stain_test %}
+{% if f.gram_stain_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">Gram Stain</th>
@@ -2252,12 +2241,12 @@
 </tr>
 <tr>
 <td colspan="4">
-   {% if item.gram_stain_test.urine %}Urine{% endif %}
-   {% if item.gram_stain_test.hvs %}High Vaginal Swab{% endif %}
-   {% if item.gram_stain_test.swab %}Swab{% endif %}
-   {% if item.gram_stain_test.pus %}Pus{% endif %}
-   {% if item.gram_stain_test.aspirate %}Aspirate{% endif %}
-   {% if item.gram_stain_test.sputum %}Sputum{% endif %}
+   {% if f.gram_stain_test.urine %}Urine{% endif %}
+   {% if f.gram_stain_test.hvs %}High Vaginal Swab{% endif %}
+   {% if f.gram_stain_test.swab %}Swab{% endif %}
+   {% if f.gram_stain_test.pus %}Pus{% endif %}
+   {% if f.gram_stain_test.aspirate %}Aspirate{% endif %}
+   {% if f.gram_stain_test.sputum %}Sputum{% endif %}
 </td>
 </tr>
 
@@ -2267,28 +2256,28 @@
 <tr>
 <td colspan="4">
    <ul class=" p-0">
-   {% if item.gram_stain_test.gram_positive_cocci %}<li>Gram Positive Cocci</li>{% endif %}
-   {% if item.gram_stain_test.gram_negative_cocci %}<li>Gram Negative Cocci</li>{% endif %}
-   {% if item.gram_stain_test.gram_positive_rods %}<li>Gram Positive Rods</li>{% endif %}
-   {% if item.gram_stain_test.gram_negative_rods %}<li>Gram Negative Rods</li>{% endif %}
-   {% if item.gram_stain_test.gram_positive_clusters %}<li>Gram Positive Clusters</li>{% endif %}
-   {% if item.gram_stain_test.gram_negative_clusters %}<li>Gram Negative Clusters</li>{% endif %}
-   {% if item.gram_stain_test.gram_positive_chains %}<li>Gram Positive Chains</li>{% endif %}
-   {% if item.gram_stain_test.gram_negative_chains %}<li>Gram Negative Chains</li>{% endif %}
+   {% if f.gram_stain_test.gram_positive_cocci %}<li>Gram Positive Cocci</li>{% endif %}
+   {% if f.gram_stain_test.gram_negative_cocci %}<li>Gram Negative Cocci</li>{% endif %}
+   {% if f.gram_stain_test.gram_positive_rods %}<li>Gram Positive Rods</li>{% endif %}
+   {% if f.gram_stain_test.gram_negative_rods %}<li>Gram Negative Rods</li>{% endif %}
+   {% if f.gram_stain_test.gram_positive_clusters %}<li>Gram Positive Clusters</li>{% endif %}
+   {% if f.gram_stain_test.gram_negative_clusters %}<li>Gram Negative Clusters</li>{% endif %}
+   {% if f.gram_stain_test.gram_positive_chains %}<li>Gram Positive Chains</li>{% endif %}
+   {% if f.gram_stain_test.gram_negative_chains %}<li>Gram Negative Chains</li>{% endif %}
    </ul>
 </td>
 </tr>
 
-{% if item.gram_stain_test.other_findings %}
+{% if f.gram_stain_test.other_findings %}
 <tr>
 <th colspan="2">Other Findings</th>
-<td colspan="2">{{ item.gram_stain_test.other_findings }}</td>
+<td colspan="2">{{ f.gram_stain_test.other_findings }}</td>
 </tr>
 {% endif %}
 
 {% endif %}
 
-{% if item.zn_stain_test %}
+{% if f.zn_stain_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">ZN Stain</th>
@@ -2297,28 +2286,28 @@
 <th colspan="2">Sample</th>
 <th colspan="2">Result</th>
 </tr>
-{% if item.zn_stain_test.first_sample %}
+{% if f.zn_stain_test.first_sample %}
 <tr>
 <td colspan="2">First Sample</td>
-<td colspan="2">{{ item.zn_stain_test.first_sample }}</td>
+<td colspan="2">{{ f.zn_stain_test.first_sample }}</td>
 </tr>
 {% endif %}
-{% if item.zn_stain_test.second_sample %}
+{% if f.zn_stain_test.second_sample %}
 <tr>
 <td colspan="2">Second Sample</td>
-<td colspan="2">{{ item.zn_stain_test.second_sample }}</td>
+<td colspan="2">{{ f.zn_stain_test.second_sample }}</td>
 </tr>
 {% endif %}
-{% if item.zn_stain_test.third_sample %}
+{% if f.zn_stain_test.third_sample %}
 <tr>
 <td colspan="2">Third Sample</td>
-<td colspan="2">{{ item.zn_stain_test.third_sample }}</td>
+<td colspan="2">{{ f.zn_stain_test.third_sample }}</td>
 </tr>
 {% endif %}
 
 {% endif %}
 
-{% if item.semen_analysis_test %}
+{% if f.semen_analysis_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">Semen Analysis</th>
@@ -2328,93 +2317,93 @@
 <th colspan="2">Result</th>
 <th>Reference Range</th>
 </tr>
-{% if item.semen_analysis_test.time_produced %}
+{% if f.semen_analysis_test.time_produced %}
 <tr>
 <td>Time Produced</td>
-<td colspan="2">{{ item.semen_analysis_test.time_produced }}</td>
+<td colspan="2">{{ f.semen_analysis_test.time_produced }}</td>
 <td>-</td>
 </tr>
 {% endif %}
-{% if item.semen_analysis_test.time_examined %}
+{% if f.semen_analysis_test.time_examined %}
 <tr>
 <td>Time Examined</td>
-<td colspan="2">{{ item.semen_analysis_test.time_examined }}</td>
+<td colspan="2">{{ f.semen_analysis_test.time_examined }}</td>
 <td>-</td>
 </tr>
 {% endif %}
-{% if item.semen_analysis_test.color %}
+{% if f.semen_analysis_test.color %}
 <tr>
 <td>Color</td>
-<td colspan="2">{{ item.semen_analysis_test.color }}</td>
+<td colspan="2">{{ f.semen_analysis_test.color }}</td>
 <td>Greyish white</td>
 </tr>
 {% endif %}
-{% if item.semen_analysis_test.volume %}
+{% if f.semen_analysis_test.volume %}
 <tr>
 <td>Volume</td>
-<td colspan="2">{{ item.semen_analysis_test.volume }}</td>
+<td colspan="2">{{ f.semen_analysis_test.volume }}</td>
 <td>≥ 1.5 ml</td>
 </tr>
 {% endif %}
-{% if item.semen_analysis_test.viscosity %}
+{% if f.semen_analysis_test.viscosity %}
 <tr>
 <td>Viscosity</td>
-<td colspan="2">{{ item.semen_analysis_test.viscosity }}</td>
+<td colspan="2">{{ f.semen_analysis_test.viscosity }}</td>
 <td>Normal</td>
 </tr>
 {% endif %}
-{% if item.semen_analysis_test.consistency %}
+{% if f.semen_analysis_test.consistency %}
 <tr>
 <td>Consistency</td>
-<td colspan="2">{{ item.semen_analysis_test.consistency }}</td>
+<td colspan="2">{{ f.semen_analysis_test.consistency }}</td>
 <td>Normal</td>
 </tr>
 {% endif %}
 <tr class="test-info">
     <th colspan="4">Motility</th>
 </tr>
-{% if item.semen_analysis_test.motility_active %}
+{% if f.semen_analysis_test.motility_active %}
 <tr>    
 <td>Active Motility</td>
-<td colspan="2">{{ item.semen_analysis_test.motility_active }}</td>
+<td colspan="2">{{ f.semen_analysis_test.motility_active }}</td>
 <td>≥ 50%</td>
 </tr>
 {% endif %}
-{% if item.semen_analysis_test.motility_moderate %}
+{% if f.semen_analysis_test.motility_moderate %}
 <tr>
 <td>Moderate Motility</td>
-<td colspan="2">{{ item.semen_analysis_test.motility_moderate }}</td>
+<td colspan="2">{{ f.semen_analysis_test.motility_moderate }}</td>
 <td>≥ 40%</td>
 </tr>
 {% endif %}
-{% if item.semen_analysis_test.motility_sluggish %}
+{% if f.semen_analysis_test.motility_sluggish %}
 <tr>
 <td>Sluggish Motility</td>
-<td colspan="2">{{ item.semen_analysis_test.motility_sluggish }}</td>
+<td colspan="2">{{ f.semen_analysis_test.motility_sluggish }}</td>
 <td>≤ 20%</td>
 </tr>
 {% endif %}
 <tr class="test-info">
     <th colspan="4">Morphology</th>
 </tr>
-{% if item.semen_analysis_test.morphology_normal %}
+{% if f.semen_analysis_test.morphology_normal %}
 <tr>
 <td>Normal Morphology</td>
-<td colspan="2">{{ item.semen_analysis_test.morphology_normal }}</td>
+<td colspan="2">{{ f.semen_analysis_test.morphology_normal }}</td>
 <td>≥ 60%</td>
 </tr>
 {% endif %}
-{% if item.semen_analysis_test.morphology_abnormal %}
+{% if f.semen_analysis_test.morphology_abnormal %}
 <tr>
 <td>Abnormal Morphology</td>
-<td colspan="2">{{ item.semen_analysis_test.morphology_abnormal }}</td>
+<td colspan="2">{{ f.semen_analysis_test.morphology_abnormal }}</td>
 <td>≤ 20%</td>
 </tr>
 {% endif %}
-{% if item.semen_analysis_test.total_sperm_count %}
+{% if f.semen_analysis_test.total_sperm_count %}
 <tr>
 <td>Total Sperm Count</td>
-<td colspan="2">{{ item.semen_analysis_test.total_sperm_count }}</td>
+<td colspan="2">{{ f.semen_analysis_test.total_sperm_count }}</td>
 <td>≥ 20 - 100 x 10^6/ml</td>
 </tr>
 {% endif %}
@@ -2422,63 +2411,63 @@
 <tr class="test-info">
     <th colspan="4">Culture Yielded</th>
 </tr>
-{% if item.semen_analysis_test.no_growth %}
+{% if f.semen_analysis_test.no_growth %}
     <tr>
         <td colspan="4">No Growth</td>
     </tr>
     {% endif %}
-        {% if item.semen_analysis_test.e_coli %}
+        {% if f.semen_analysis_test.e_coli %}
         <tr><td colspan="4">E. Coli</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.coliform %}
+        {% if f.semen_analysis_test.coliform %}
         <tr><td colspan="4">Coliform</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.proteus %}
+        {% if f.semen_analysis_test.proteus %}
         <tr><td colspan="4">Proteus</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.staph_aureus %}
+        {% if f.semen_analysis_test.staph_aureus %}
         <tr><td colspan="4">Staphylococcus Aureus</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.pseudomonas %}
+        {% if f.semen_analysis_test.pseudomonas %}
         <tr><td colspan="4">Pseudomonas</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.streptococcus %}
+        {% if f.semen_analysis_test.streptococcus %}
         <tr><td colspan="4">Streptococcus</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.klebsiella %}
+        {% if f.semen_analysis_test.klebsiella %}
         <tr><td colspan="4">Klebsiella</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.salmonella %}
+        {% if f.semen_analysis_test.salmonella %}
         <tr><td colspan="4">Salmonella</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.str_feacalis %}
+        {% if f.semen_analysis_test.str_feacalis %}
         <tr><td colspan="4">Streptococcus Feacalis</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.shigella %}
+        {% if f.semen_analysis_test.shigella %}
         <tr><td colspan="4">Shigella</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.c_diphtheriae %}
+        {% if f.semen_analysis_test.c_diphtheriae %}
         <tr><td colspan="4">C. Diphtheriae</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.neisseria %}
+        {% if f.semen_analysis_test.neisseria %}
         <tr><td colspan="4">Neisseria</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.candida %}
+        {% if f.semen_analysis_test.candida %}
         <tr><td colspan="4">Candida</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.haemophilus %}
+        {% if f.semen_analysis_test.haemophilus %}
         <tr><td colspan="4">Haemophilus</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.str_pneumonia %}
+        {% if f.semen_analysis_test.str_pneumonia %}
         <tr><td colspan="4">Streptococcus Pneumonia</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.str_pyogenes %}
+        {% if f.semen_analysis_test.str_pyogenes %}
         <tr><td colspan="4">Streptococcus Pyogenes</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.staph_albus %}
+        {% if f.semen_analysis_test.staph_albus %}
         <tr><td colspan="4">Staphylococcus Albus</td></tr>
         {% endif %}
-        {% if item.semen_analysis_test.usual_flora %}
+        {% if f.semen_analysis_test.usual_flora %}
         <tr><td colspan="4">Usual Flora</td></tr>
         {% endif %}
 
@@ -2487,130 +2476,130 @@
         <th colspan="2">Antibiotic</th>
         <th colspan="2">Sensitivity</th>
     </tr>
-    {% if item.semen_analysis_test.cloxacillin %}
+    {% if f.semen_analysis_test.cloxacillin %}
     <tr>
         <td colspan="2">Cloxacillin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_cloxacillin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_cloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.ciprofloxacin %}
+    {% if f.semen_analysis_test.ciprofloxacin %}
     <tr>
         <td colspan="2">Ciprofloxacin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_ciprofloxacin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_ciprofloxacin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.lincomycin %}
+    {% if f.semen_analysis_test.lincomycin %}
     <tr>
         <td colspan="2">Lincomycin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_lincomycin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_lincomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.flucloxacillin %}
+    {% if f.semen_analysis_test.flucloxacillin %}
     <tr>
         <td colspan="2">Flucloxacillin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_flucloxacillin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_flucloxacillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.tetracycline %}
+    {% if f.semen_analysis_test.tetracycline %}
     <tr>
         <td colspan="2">Tetracycline</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_tetracycline_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_tetracycline_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.ampicillin %}
+    {% if f.semen_analysis_test.ampicillin %}
     <tr>
         <td colspan="2">Ampicillin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_ampicillin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_ampicillin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.erythromycin %}
+    {% if f.semen_analysis_test.erythromycin %}
     <tr>
         <td colspan="2">Erythromycin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_erythromycin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_erythromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.roxithromycin %}
+    {% if f.semen_analysis_test.roxithromycin %}
     <tr>
         <td colspan="2">Roxithromycin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_roxithromycin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_roxithromycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.augmentin %}
+    {% if f.semen_analysis_test.augmentin %}
     <tr>
         <td colspan="2">Augmentin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_augmentin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_augmentin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.cotrimoxazole %}
+    {% if f.semen_analysis_test.cotrimoxazole %}
     <tr>
         <td colspan="2">Cotrimoxazole</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_cotrimoxazole_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_cotrimoxazole_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.cephalexin %}
+    {% if f.semen_analysis_test.cephalexin %}
     <tr>
         <td colspan="2">Cephalexin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_cephalexin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_cephalexin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.dalacin_c %}
+    {% if f.semen_analysis_test.dalacin_c %}
     <tr>
         <td colspan="2">Dalacin C</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_dalacin_c_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_dalacin_c_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.gentamycin %}
+    {% if f.semen_analysis_test.gentamycin %}
     <tr>
         <td colspan="2">Gentamycin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_gentamycin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_gentamycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.streptomycin %}
+    {% if f.semen_analysis_test.streptomycin %}
     <tr>
         <td colspan="2">Streptomycin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_streptomycin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_streptomycin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.ceftriaxone %}
+    {% if f.semen_analysis_test.ceftriaxone %}
     <tr>
         <td colspan="2">Ceftriaxone</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_ceftriaxone_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_ceftriaxone_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.chloramphenicol %}
+    {% if f.semen_analysis_test.chloramphenicol %}
     <tr>
         <td colspan="2">Chloramphenicol</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_chloramphenicol_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_chloramphenicol_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.nitrofurantoin %}
+    {% if f.semen_analysis_test.nitrofurantoin %}
     <tr>
         <td colspan="2">Nitrofurantoin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_nitrofurantoin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_nitrofurantoin_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.nalidixic_acid %}
+    {% if f.semen_analysis_test.nalidixic_acid %}
     <tr>
         <td colspan="2">Nalidixic Acid</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_nalidixic_acid_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_nalidixic_acid_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.cefuroxime %}
+    {% if f.semen_analysis_test.cefuroxime %}
     <tr>
         <td colspan="2">Cefuroxime</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_cefuroxime_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_cefuroxime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.ceftazidime %}
+    {% if f.semen_analysis_test.ceftazidime %}
     <tr>
         <td colspan="2">Ceftazidime</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_ceftazidime_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_ceftazidime_display }}</td>
     </tr>
     {% endif %}
-    {% if item.semen_analysis_test.ofloxacin %}
+    {% if f.semen_analysis_test.ofloxacin %}
     <tr>
         <td colspan="2">Ofloxacin</td>
-        <td colspan="2">{{ item.semen_analysis_test.get_ofloxacin_display }}</td>
+        <td colspan="2">{{ f.semen_analysis_test.get_ofloxacin_display }}</td>
     </tr>
     {% endif %}
 </table>
@@ -2620,7 +2609,7 @@
 </tr>
 {% endif %}
 
-{% if item.urinalysis_test %}
+{% if f.urinalysis_test %}
 <table>
 <tr class="test-info">
 <th colspan="4">Urinalysis</th>
@@ -2629,82 +2618,82 @@
 <th colspan="2">Parameter</th>
 <th colspan="2">Result</th>
 </tr>
-{% if item.urinalysis_test.color %}
+{% if f.urinalysis_test.color %}
 <tr>
 <td colspan="2">Color</td>
-<td colspan="2">{{ item.urinalysis_test.color }}</td>
+<td colspan="2">{{ f.urinalysis_test.color }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.appearance %}
+{% if f.urinalysis_test.appearance %}
 <tr>
 <td colspan="2">Appearance</td>
-<td colspan="2">{{ item.urinalysis_test.appearance }}</td>
+<td colspan="2">{{ f.urinalysis_test.appearance }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.specific_gravity %}
+{% if f.urinalysis_test.specific_gravity %}
 <tr>
 <td colspan="2">Specific Gravity</td>
-<td colspan="2">{{ item.urinalysis_test.specific_gravity }}</td>
+<td colspan="2">{{ f.urinalysis_test.specific_gravity }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.ph %}
+{% if f.urinalysis_test.ph %}
 <tr>
 <td colspan="2">pH</td>
-<td colspan="2">{{ item.urinalysis_test.ph }}</td>
+<td colspan="2">{{ f.urinalysis_test.ph }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.protein %}
+{% if f.urinalysis_test.protein %}
 <tr>
 <td colspan="2">Protein</td>
-<td colspan="2">{{ item.urinalysis_test.protein }}</td>
+<td colspan="2">{{ f.urinalysis_test.protein }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.glucose %}
+{% if f.urinalysis_test.glucose %}
 <tr>
 <td colspan="2">Glucose</td>
-<td colspan="2">{{ item.urinalysis_test.glucose }}</td>
+<td colspan="2">{{ f.urinalysis_test.glucose }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.ketones %}
+{% if f.urinalysis_test.ketones %}
 <tr>
 <td colspan="2">Ketones</td>
-<td colspan="2">{{ item.urinalysis_test.ketones }}</td>
+<td colspan="2">{{ f.urinalysis_test.ketones }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.bilirubin %}
+{% if f.urinalysis_test.bilirubin %}
 <tr>
 <td colspan="2">Bilirubin</td>
-<td colspan="2">{{ item.urinalysis_test.bilirubin }}</td>
+<td colspan="2">{{ f.urinalysis_test.bilirubin }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.urobilinogen %}
+{% if f.urinalysis_test.urobilinogen %}
 <tr>
 <td colspan="2">Urobilinogen</td>
-<td colspan="2">{{ item.urinalysis_test.urobilinogen }}</td>
+<td colspan="2">{{ f.urinalysis_test.urobilinogen }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.nitrites %}
+{% if f.urinalysis_test.nitrites %}
 <tr>
 <td colspan="2">Nitrites</td>
-<td colspan="2">{{ item.urinalysis_test.nitrites }}</td>
+<td colspan="2">{{ f.urinalysis_test.nitrites }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.leukocyte_esterase %}
+{% if f.urinalysis_test.leukocyte_esterase %}
 <tr>
 <td colspan="2">Leukocyte Esterase</td>
-<td colspan="2">{{ item.urinalysis_test.leukocyte_esterase }}</td>
+<td colspan="2">{{ f.urinalysis_test.leukocyte_esterase }}</td>
 </tr>
 {% endif %}
-{% if item.urinalysis_test.blood %}
+{% if f.urinalysis_test.blood %}
 <tr>
 <td colspan="2">Blood</td>
-<td colspan="2">{{ item.urinalysis_test.blood }}</td>
+<td colspan="2">{{ f.urinalysis_test.blood }}</td>
 </tr>
 {% endif %}
 </table>
 {% endif %}
 
-{% if item.pregnancy_test %}
+{% if f.pregnancy_test %}
 <table>
     <tr class="parameters">
         <th colspan="2">Test</th>
@@ -2712,14 +2701,14 @@
     </tr>
     <tr>
         <td colspan="2">Pregnancy Test</td>
-        <td colspan="2">{{ item.pregnancy_test.result|default:"N/A" }}</td>
+        <td colspan="2">{{ f.pregnancy_test.result|default:"N/A" }}</td>
     </tr>
 
 </table>
 {% endif %}
 
 <!-- serology  -->
-{% if item.widal_test %}
+{% if f.widal_test %}
 <table>
 <tr class="test-info">
 <th colspan="3">Widal Test</th>
@@ -2729,421 +2718,421 @@
 <th>O</th>
 <th>H</th>
 </tr>
-{% if item.widal_test.o_antigen_s_typhi_d is not None or item.widal_test.h_antigen_s_typhi_d is not None %}
+{% if f.widal_test.o_antigen_s_typhi_d is not None or f.widal_test.h_antigen_s_typhi_d is not None %}
 <tr>
 <td>S. typhi D</td>
-<td>{{ item.widal_test.o_antigen_s_typhi_d }}</td>
-<td>{{ item.widal_test.h_antigen_s_typhi_d }}</td>
+<td>{{ f.widal_test.o_antigen_s_typhi_d }}</td>
+<td>{{ f.widal_test.h_antigen_s_typhi_d }}</td>
 </tr>
 {% endif %}
-{% if item.widal_test.o_antigen_s_paratyphi_a is not None or item.widal_test.h_antigen_s_paratyphi_a is not None %}
+{% if f.widal_test.o_antigen_s_paratyphi_a is not None or f.widal_test.h_antigen_s_paratyphi_a is not None %}
 <tr>
 <td>S. paratyphi A</td>
-<td>{{ item.widal_test.o_antigen_s_paratyphi_a }}</td>
-<td>{{ item.widal_test.h_antigen_s_paratyphi_a }}</td>
+<td>{{ f.widal_test.o_antigen_s_paratyphi_a }}</td>
+<td>{{ f.widal_test.h_antigen_s_paratyphi_a }}</td>
 </tr>
 {% endif %}
-{% if item.widal_test.o_antigen_s_paratyphi_b is not None or item.widal_test.h_antigen_s_paratyphi_b is not None %}
+{% if f.widal_test.o_antigen_s_paratyphi_b is not None or f.widal_test.h_antigen_s_paratyphi_b is not None %}
 <tr>
 <td>S. paratyphi B</td>
-<td>{{ item.widal_test.o_antigen_s_paratyphi_b }}</td>
-<td>{{ item.widal_test.h_antigen_s_paratyphi_b }}</td>
+<td>{{ f.widal_test.o_antigen_s_paratyphi_b }}</td>
+<td>{{ f.widal_test.h_antigen_s_paratyphi_b }}</td>
 </tr>
 {% endif %}
-{% if item.widal_test.o_antigen_s_paratyphi_c is not None or item.widal_test.h_antigen_s_paratyphi_c is not None %}
+{% if f.widal_test.o_antigen_s_paratyphi_c is not None or f.widal_test.h_antigen_s_paratyphi_c is not None %}
 <tr>
 <td>S. paratyphi C</td>
-<td>{{ item.widal_test.o_antigen_s_paratyphi_c }}</td>
-<td>{{ item.widal_test.h_antigen_s_paratyphi_c }}</td>
+<td>{{ f.widal_test.o_antigen_s_paratyphi_c }}</td>
+<td>{{ f.widal_test.h_antigen_s_paratyphi_c }}</td>
 </tr>
 {% endif %}
-{% if item.widal_test.diagnostic_titre is not None %}
+{% if f.widal_test.diagnostic_titre is not None %}
 <tr>
-<td colspan="3">Diagnostic titre: {{ item.widal_test.diagnostic_titre }}</td>
+<td colspan="3">Diagnostic titre: {{ f.widal_test.diagnostic_titre }}</td>
 </tr>
 {% endif %}
-{% if item.widal_test.malaria_parasite is not None %}
+{% if f.widal_test.malaria_parasite is not None %}
 <tr>
-<td colspan="3">Malaria parasite: {{ item.widal_test.malaria_parasite }}</td>
+<td colspan="3">Malaria parasite: {{ f.widal_test.malaria_parasite }}</td>
 </tr>
 {%endif%}
 </table>
 {% endif %}
 
-{% if item.rheumatoid_factor_test %}
+{% if f.rheumatoid_factor_test %}
 <table>
 <tr class="parameters">
 <th>Test</th>
 <th>Result</th>
 </tr>
-{% if item.rheumatoid_factor_test.result is not None %}
+{% if f.rheumatoid_factor_test.result is not None %}
 <tr>
 <td>Rheumatoid Factor</td>
-<td>{{ item.rheumatoid_factor_test.result }}</td>
+<td>{{ f.rheumatoid_factor_test.result }}</td>
 </tr>
 {% endif %}
 </table>
 {% endif %}
 
-{% if item.hpb_test %}
+{% if f.hpb_test %}
 <table>
 
 <tr class="parameters">
 <th>Test</th>
 <th>Result</th>
 </tr>
-{% if item.hpb_test.result is not None %}
+{% if f.hpb_test.result is not None %}
 <tr>
 <td>HbsAg</td>
-<td>{{ item.hpb_test.result }}</td>
+<td>{{ f.hpb_test.result }}</td>
 </tr>
 {% endif %}
 </table>
 {% endif %}
 
-{% if item.hcv_test %}
+{% if f.hcv_test %}
 <table>
 <tr class="parameters">
 <th>Test</th>
 <th>Result</th>
 </tr>
-{% if item.hcv_test.result is not None %}
+{% if f.hcv_test.result is not None %}
 <tr>
 <td>HCV</td>
-<td>{{ item.hcv_test.result }}</td>
+<td>{{ f.hcv_test.result }}</td>
 </tr>
 {% endif %}
 </table>
 {% endif %}
 
-{% if item.vdrl_test %}
+{% if f.vdrl_test %}
 <table>
 
 <tr class="parameters">
 <th>Test</th>
 <th>Result</th>
 </tr>
-{% if item.vdrl_test.result is not None %}
+{% if f.vdrl_test.result is not None %}
 <tr>
 <td>VDRL</td>
-<td>{{ item.vdrl_test.result }}</td>
+<td>{{ f.vdrl_test.result }}</td>
 </tr>
 {% endif %}
 </table>
 {% endif %}
 
-{% if item.mantoux_test %}
+{% if f.mantoux_test %}
 <table>
 
 <tr class="parameters">
 <th>Test</th>
 <th>Result</th>
 </tr>
-{% if item.mantoux_test.result is not None %}
+{% if f.mantoux_test.result is not None %}
 <tr>
 <td>Mantoux</td>
-<td>{{ item.mantoux_test.result }}</td>
+<td>{{ f.mantoux_test.result }}</td>
 </tr>
 {% endif %}
 </table>
 {% endif %}
 
 
-{% if item.aso_titre_test %}
+{% if f.aso_titre_test %}
 <table>
 <tr class="parameters">
 <th>Test</th>
 <th>Result</th>
 </tr>
-{% if item.aso_titre_test.result is not None %}
+{% if f.aso_titre_test.result is not None %}
 <tr>
 <td>ASO Titre</td>
-<td>{{ item.aso_titre_test.result }}</td>
+<td>{{ f.aso_titre_test.result }}</td>
 </tr>
 {% endif %}
 </table>
 {% endif %}
 
-{% if item.crp_test %}
+{% if f.crp_test %}
 <table>
 <tr class="parameters">
 <th>Test</th>
 <th>Result</th>
 </tr>
-{% if item.crp_test.result is not None %}
+{% if f.crp_test.result is not None %}
 <tr>
 <td>CRP</td>
-<td>{{ item.crp_test.result }}</td>
+<td>{{ f.crp_test.result }}</td>
 </tr>
 {% endif %}
 </table>
 {% endif %}
 
-{% if item.hiv_test %}
+{% if f.hiv_test %}
 <table>
 <tr class="parameters">
 <th>Test</th>
 <th>Result</th>
 </tr>
-{% if item.hiv_test.result is not None %}
+{% if f.hiv_test.result is not None %}
 <tr>
 <td>HIV Screening</td>
-<td>{{ item.hiv_test.result }}</td>
+<td>{{ f.hiv_test.result }}</td>
 </tr>
 {% endif %}
 </table>
 {% endif %}
 
 
-{%if item.ue_test.comment %}
+{%if f.ue_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.ue_test.comment}}</td>    
+        <td colspan="3">{{f.ue_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
 
-{%if item.lf_test.comment %}
+{%if f.lf_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.lf_test.comment}}</td>    
+        <td colspan="3">{{f.lf_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.lp_test.comment %}
+{%if f.lp_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.lp_test.comment}}</td>    
+        <td colspan="3">{{f.lp_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.bgl_test.comment %}
+{%if f.bgl_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.bgl_test.comment}}</td>    
+        <td colspan="3">{{f.bgl_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.sp_test.comment %}
+{%if f.sp_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.sp_test.comment}}</td>    
+        <td colspan="3">{{f.sp_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.csf_test.comment %}
+{%if f.csf_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.csf_test.comment}}</td>    
+        <td colspan="3">{{f.csf_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.bc_test.comment %}
+{%if f.bc_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.bc_test.comment}}</td>    
+        <td colspan="3">{{f.bc_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.misc_test.comment %}
+{%if f.misc_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.misc_test.comment}}</td>    
+        <td colspan="3">{{f.misc_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.swab_pus_aspirate_test.comment %}
+{%if f.swab_pus_aspirate_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.swab_pus_aspirate_test.comment}}</td>    
+        <td colspan="3">{{f.swab_pus_aspirate_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.urine_test.comment %}
+{%if f.urine_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.urine_test.comment}}</td>    
+        <td colspan="3">{{f.urine_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.hvs_test.comment %}
+{%if f.hvs_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.hvs_test.comment}}</td>    
+        <td colspan="3">{{f.hvs_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.stool_test.comment %}
+{%if f.stool_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.stool_test.comment}}</td>    
+        <td colspan="3">{{f.stool_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.blood_culture_test.comment %}
+{%if f.blood_culture_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.blood_culture_test.comment}}</td>    
+        <td colspan="3">{{f.blood_culture_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.occult_blood_test.comment %}
+{%if f.occult_blood_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.occult_blood_test.comment}}</td>    
+        <td colspan="3">{{f.occult_blood_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.sputum_mcs_test.comment %}
+{%if f.sputum_mcs_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.sputum_mcs_test.comment}}</td>    
+        <td colspan="3">{{f.sputum_mcs_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.gram_stain_test.comment %}
+{%if f.gram_stain_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.gram_stain_test.comment}}</td>    
+        <td colspan="3">{{f.gram_stain_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.zn_stain_test.comment %}
+{%if f.zn_stain_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.zn_stain_test.comment}}</td>    
+        <td colspan="3">{{f.zn_stain_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.semen_analysis_test.comment %}
+{%if f.semen_analysis_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.semen_analysis_test.comment}}</td>    
+        <td colspan="3">{{f.semen_analysis_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.urinalysis_test.comment %}
+{%if f.urinalysis_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.urinalysis_test.comment}}</td>    
+        <td colspan="3">{{f.urinalysis_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.widal_test.comment %}
+{%if f.widal_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.widal_test.comment}}</td>    
+        <td colspan="3">{{f.widal_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.rheumatoid_factor_test.comment %}
+{%if f.rheumatoid_factor_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.rheumatoid_factor_test.comment}}</td>    
+        <td colspan="3">{{f.rheumatoid_factor_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.hpb_test.comment %}
+{%if f.hpb_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.hpb_test.comment}}</td>    
+        <td colspan="3">{{f.hpb_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.hcv_test.comment %}
+{%if f.hcv_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.hcv_test.comment}}</td>    
+        <td colspan="3">{{f.hcv_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.vdrl_test.comment %}
+{%if f.vdrl_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.vdrl_test.comment}}</td>    
+        <td colspan="3">{{f.vdrl_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.mantoux_test.comment %}
+{%if f.mantoux_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.mantoux_test.comment}}</td>    
+        <td colspan="3">{{f.mantoux_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.aso_titre_test.comment %}
+{%if f.aso_titre_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.aso_titre_test.comment}}</td>    
+        <td colspan="3">{{f.aso_titre_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.crp_test.comment %}
+{%if f.crp_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.crp_test.comment}}</td>    
+        <td colspan="3">{{f.crp_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
 
-{%if item.hiv_test.comment %}
+{%if f.hiv_test.comment %}
 <table>
     <tr>
         <th colspan="1">Comment</th>
-        <td colspan="3">{{item.hiv_test.comment}}</td>    
+        <td colspan="3">{{f.hiv_test.comment}}</td>    
     </tr>
 </table>
 {%endif%}
@@ -3152,7 +3141,7 @@
 <table>
     <tr>
         <td colspan="1">
-            <strong> Nature of specimen:</strong>{{item.nature_of_specimen|default_if_none:'N/A'}}
+            <strong> Nature of specimen:</strong>{{f.nature_of_specimen|default_if_none:'N/A'}}
         </td>
         <td colspan="2">
          <strong>Approved by Med. Lab. Scientist:</strong> {{user.last_name}} {{user.first_name}}
@@ -3162,7 +3151,6 @@
         </td>
     </tr>
 </table>
-        {% endfor %}
         
     </div>
 

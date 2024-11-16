@@ -42,17 +42,12 @@ class TestFilter(django_filters.FilterSet):
         widget=forms.DateInput(attrs={'type': 'date'}),
         input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y']
     )
-    patient_no = django_filters.NumberFilter(
+    patient_no = django_filters.CharFilter(
         label='pn',
         field_name="patient__file_no",
         lookup_expr='exact'
     )
-    test = django_filters.CharFilter(
-        label='test',
-        field_name="test__name",
-        lookup_expr='iexact'
-    )
 
     class Meta:
         model = Testinfo
-        fields = ['id','collected', 'patient_no', 'test']
+        fields = ['id','collected', 'patient_no',]

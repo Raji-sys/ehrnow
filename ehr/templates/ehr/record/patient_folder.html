@@ -420,7 +420,7 @@
                               <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_blood_group' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                                 <i class="fa-solid fa-edit fa-2xl"></i> </a>
                               </td>
-                              <td class="p-3 whitespace-nowrap">  <a href="{{test_info.bg_test.get_absolute_url }}" class="text-xs hover:text-green-700">
+                              <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:instance_pdf' test_info.id %}" class="text-xs hover:text-green-700">
                                 <i class="fa-solid fa-eye fa-2xl"></i> </a>
                                 </td>            
                               </tr>
@@ -451,6 +451,7 @@
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
                           <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">input result</th>
+                          <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">test details</th>
                           </tr>
                 
                         </thead>
@@ -464,6 +465,9 @@
                               <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_genotype' patient.file_no test_info.id %}" class="text-xs hover:text-green-700">
                                 <i class="fa-solid fa-edit fa-2xl"></i> </a>
                           </td>
+                          <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:instance_pdf' test_info.id %}" class="text-xs hover:text-green-700">
+                            <i class="fa-solid fa-eye fa-2xl"></i> </a>
+                            </td>            
                           </tr>
                           {% empty %}
                           <tr>

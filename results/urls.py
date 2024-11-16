@@ -11,6 +11,8 @@ urlpatterns = [
     path('report/', ReportView.as_view(), name='report'),
     path('print-pdf/', views.report_pdf, name='report_pdf'),
 
+    path('instance-pdf/<int:id>/', views.instance_pdf, name='instance_pdf'),
+
     path('get-started/revenue', RevenueView.as_view(), name='revenue'),
     
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
