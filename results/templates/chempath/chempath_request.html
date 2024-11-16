@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {%load static %}
+{% block title %}CHEMPATH REQUEST LISTS{% endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'results:chempath' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>CHEMPATH REQUEST LIST</div>{%endblock%}
 {% block content %}
 <div class="">
@@ -110,6 +111,10 @@
     {% endif %}
     {% endif %}
 
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8" class="p-3 text-center text-sm text-gray-500">No request found</td>
       </tr>
       {% endfor %}
       <tr class="flex justify-center text-center p-1">

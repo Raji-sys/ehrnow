@@ -496,8 +496,8 @@
                                 <td class="p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                                 <td class="p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class="p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                                <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_fbc' patient.file_no test_info.id %}" class="text-xs  hover:text-green-700">
-                                  <i class="fa-solid fa-edit fa-2xl"></i> </a>
+                                <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:instance_pdf' test_info.id %}" class="text-xs  hover:text-green-700">
+                                  <i class="fa-solid fa-eye fa-2xl"></i> </a>
                             </td>
                             </tr>
                             {% empty %}
@@ -667,7 +667,7 @@
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:instance' test_info.id %}" class=" hover:text-green-700">
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:instance_pdf' test_info.id %}" class=" hover:text-green-700">
                               <i class="fa-solid fa-eye fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
@@ -741,7 +741,8 @@
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_instance_pdf' test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:instance_pdf' test_info.id %}" class=" hover:text-green-700">
+                              <i class="fa-solid fa-eye fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
                           <tr>
@@ -777,7 +778,8 @@
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated }}</td>
-                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:instance_pdf' test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:instance_pdf' test_info.id %}" class=" hover:text-green-700">
+                              <i class="fa-solid fa-eye fa-2xl"></i></a></td>
                           </tr>
                           {%empty%}
                           <tr>
@@ -813,7 +815,8 @@
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:instance_pdf' test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:instance_pdf' test_info.id %}" class=" hover:text-green-700">
+                              <i class="fa-solid fa-eye fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
                           <tr>

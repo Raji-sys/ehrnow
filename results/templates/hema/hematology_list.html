@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {%load static %}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'results:hematology' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>LATEST HEMATOLOGY RESULT LIST</div>{%endblock%}
+{% block title %}HEMATOLOGY RESULT LIST{% endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'results:hematology' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>LATEST HEMATOLOGY RESULTS LIST</div>{%endblock%}
 {% block content %}
 <div class="mt-4">
   <div class="md:mx-20 mx-2 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
@@ -61,7 +62,11 @@
             <i class="fa-solid fa-eye fa-2xl"></i> </a>
             </td>            
       </tr>
-      {% endfor %}
+      {% empty %}
+      <tr>
+        <td colspan="8" class="p-3 text-center text-sm text-gray-500">No results found</td>
+      </tr>
+     {% endfor %}
       <tr class="flex justify-center text-center p-1">
         <td class="">        
      <div class="text-center flex justify-center items-center">

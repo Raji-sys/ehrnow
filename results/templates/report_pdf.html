@@ -19,12 +19,9 @@
         .header {
             margin-top: 0;
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e63946;
-            padding-bottom: 15px;
         }
         .header h1 {
-            color: #e63946;
+            color: #034a2a;
             font-size: 28px;
             margin-bottom: 5px;
             font-weight: 700;
@@ -52,12 +49,12 @@
             font-weight: bold;
             /* color: #1d2bf5;  */
             text-align: center;
-            border:solid #e63946;
+            border:solid #034a2a;
         }
         table th {
-            /* background-color: #e63946; */
+            /* background-color: #034a2a;; */
             text-align: center;
-            border: solid #e63946;
+            border: solid #034a2a;
             /* background-color: #f0f0f0;   */
             background-color: #d6d4d4;
             /* color:black; */
@@ -93,7 +90,7 @@
             padding-top: 10px;
         }
         .patient-info {
-            background-color: #e63946;
+            background-color: #034a2a;
             color: black;
             padding: 10px;
             border-radius: 4px;
@@ -115,18 +112,8 @@
 <body>
     <div class="header">
         <h1 class="uppercase">
-            AudaxDynamics Enterprises</h1>
-        <p>No 2828 Kano.<br>
-           Tel: 0900-000-0000, 0700-000-0000 &nbsp;-&nbsp; E-Mail: support@audaxdynamics.com</p>
-        <p><strong>BN:</strong>000000</p>
+            LAB RESULT</h1>
     </div>
-
-    <div class="meta-info">
-        {% if result %}
-        <p><strong>code:</strong> {{ result|safe }}</p>
-        {% endif %}
-    </div>
-
     <div class="result-section">
         <div class="patient-info">
             <table>
@@ -3140,14 +3127,12 @@
 
 <table>
     <tr>
-        <td colspan="1">
-            <strong> Nature of specimen:</strong>{{f.nature_of_specimen|default_if_none:'N/A'}}
+        <td colspan="2">
+            <strong> Nature of specimen:</strong>{{f.nature_of_specimen|default_if_none:'N/A'|upper}}
         </td>
         <td colspan="2">
-         <strong>Approved by Med. Lab. Scientist:</strong> {{user.last_name}} {{user.first_name}}
-        </td>
-        <td colspan="1">
-            <strong class="sg">Sign / Stamp:</strong>
+         <strong>Approved by Med. Lab. Scientist:</strong> {{f.approved_by|default_if_none:"N/A"|upper}}
+         <!-- <strong>Approved by Med. Lab. Scientist:</strong> {{ user.last_name}} {{user.first_name}} -->
         </td>
     </tr>
 </table>

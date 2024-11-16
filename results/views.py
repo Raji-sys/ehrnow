@@ -17,7 +17,7 @@ from django.contrib.auth import get_user_model
 from io import BytesIO
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-import datetime
+from datetime import datetime
 from django.conf import settings
 import os
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -1883,6 +1883,7 @@ class BaseLabResultUpdateView(UpdateView):
         instance = form.save(commit=False)
         instance.test_info.nature_of_specimen = self.request.POST.get('nature_of_specimen')
         instance.test_info.cleared = True
+        instance.test_info.approved_by = self.request.user
         instance.test_info.save()
         instance.save()
         return super().form_valid(form)
@@ -1897,11 +1898,6 @@ class BloodGroupUpdateView(BaseLabResultUpdateView):
 class GenotypeUpdateView(BaseLabResultUpdateView):
     model = Genotype
     form_class = GenotypeForm
-
-
-# class RhesusUpdateView(BaseLabResultUpdateView):
-#     model = RhesusFactor
-#     form_class = RhesusFactorForm
 
 
 class FBCUpdateView(BaseLabResultUpdateView):

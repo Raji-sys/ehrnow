@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {%load static %}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'results:hematology' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>HEMATOLOGY REQUEST LIST</div>{%endblock%}
+{% block title %}HEMATOLOGY REQUESTS LIST{% endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'results:hematology' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>HEMATOLOGY REQUESTS LIST</div>{%endblock%}
 {% block content %}
 <div class="">
   <div class="mt-2 mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
@@ -17,17 +18,22 @@
           Price
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Payment Status
-        </th>
-        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Patient
         </th>
-        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
           Date Collected
         </th>
-        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
           Requested By
         </th>
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+          {% if c.payment.status == False %}
+          Payment Status
+          {%else%}
+          Enter Result
+          {%endif%}
+        </th>
+
       </tr>
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
@@ -45,28 +51,41 @@
         <td class="p-3 whitespace-nowrap">
           &#x20A6;{{ r.payment.price|default_if_none:'' }}
         </td>
-        {% if r.payment.status == False %}
-            <td class="p-3 whitespace-nowrap text-red-700">
-          <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-            </td>
-        {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
-             <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-           </td>
-        {% endif %}
-        <td class="p-3 whitespace-nowrap text-blue-500">
-          <a href="{{r.patient.get_absolute_url}}">
-                  {{ r.patient|default_if_none:'' }}
+        <td class="p-3 whitespace-nowrap">
+          <a href="{{r.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+                {{ r.patient|default_if_none:'' }}
                 </a>
-        </td>
+              </td>
         <td class="p-3 whitespace-nowrap">
           {{ r.created|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
-          {{ r.collected_by|default_if_none:'' }}
+          {{ r.collected_by }}
         </td>
-        <td>
+        {% if r.payment.status == False %}
+        <td class="p-3 whitespace-nowrap text-red-700">
+          UNPAID
+      <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
+        </td>
+    {% else %}
+    {%if r.payment.service == 'Blood Group' %}
+    <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_blood_group' r.patient.file_no r.id %}?next={% url 'results:hematology_request' %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+    {%elif r.payment.service == 'Genotype' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_genotype' r.patient.file_no r.id %}?next={% url 'results:hematology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif r.payment.service == 'Full Blood Count' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_fbc' r.patient.file_no r.id %}?next={% url 'results:hematology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {% endif %}
+    {% endif %}
        </tr>
+       {% empty %}
+       <tr>
+         <td colspan="8" class="p-3 text-center text-sm text-gray-500">No request found</td>
+       </tr>
+
       {% endfor %}
       <tr class="flex justify-center text-center p-1">
         <td class="">        

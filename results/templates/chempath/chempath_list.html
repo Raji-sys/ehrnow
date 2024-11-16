@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {%load static %}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'results:chempath' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>LATEST CHEMPATH RESULT LIST</div>{%endblock%}
+{% block title %}CHEMPATH RESULTS LIST{% endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'results:chempath' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>LATEST CHEMPATH RESULTS LIST</div>{%endblock%}
 {% block content %}
 <div class="mt-2 p-1">
   <div class="md:mx-20 mx-2 rounded-xl p-1 shadow-black shadow-sm bg-gray-50">
@@ -62,7 +63,10 @@
           <a href="{% url 'results:instance_pdf' result.id %}" class="text-xs hover:text-green-700">
            <i class="fa-solid fa-eye fa-2xl"></i> </a>
            </td>            
-
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8" class="p-3 text-center text-sm text-gray-500">No request found</td>
       </tr>
       {% endfor %}
       <tr class="flex justify-center text-center p-1">
