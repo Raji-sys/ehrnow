@@ -9,7 +9,7 @@
         <span>
             <a href="?" class=" p-2 focus:opacity-10  focus:border-emerald-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
                 <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
-                <a class="text-md text-white focus:opacity-10  bg-cyan-700 m-1 p-2 rounded w-fit" href="{% url 'receipt_pdf' %}?{{request.GET.urlencode}}">
+                <a class="text-md text-white focus:opacity-10  bg-cyan-700 m-1 p-2 rounded w-fit" href="{% url 'thermal_receipt' %}?{{request.GET.urlencode}}">
                   <i class="fa-solid fa-print fa-xl"></i></a>
             </span>
             {%endif%}

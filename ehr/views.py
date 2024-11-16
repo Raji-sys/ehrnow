@@ -800,7 +800,8 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
         payment = Paypoint.objects.create(
             patient=patient,
             status=False,
-            service=visit.record, 
+            service=visit.record,
+            unit='record',
             price=visit.record.price,
         )
         visit.payment = payment
@@ -1447,6 +1448,45 @@ def receipt_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
     
 
+@login_required
+def thermal_receipt(request):
+    ndate = datetime.datetime.now()
+    filename = ndate.strftime('receipt__%d_%m_%Y__%I_%M%p.pdf')
+    f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
+    patient = f.first().patient if f.exists() else None
+    total_price = f.aggregate(total_price=Sum('price'))['total_price']
+
+    # Generate header info
+    result = ""
+    for key, value in request.GET.items():
+        if value:
+            result += f" {value.upper()} receipt, Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')} By: {request.user.username.upper()}"
+    # Calculate total price
+
+    
+    template = get_template('ehr/revenue/thermal_receipt.html')
+    html = template.render({
+        'f': f,
+        'total_price':total_price,
+        'patient': patient,
+        'result': result,
+        'receipt_no': f'RCP-{ndate.strftime("%Y%m%d%H%M%S")}'
+    })
+
+    # Create PDF with custom options
+    response = HttpResponse(content_type='application/pdf',
+                          headers={'Content-Disposition': f'filename="{filename}"'})
+    pisa_status = pisa.CreatePDF(
+        html,
+        dest=response,
+        encoding='utf-8',
+        link_callback=fetch_resources,
+    )
+
+    if pisa_status.err:
+        return HttpResponse('Error generating PDF', status=500)
+    
+    return response
 
 def format_currency(amount):
     if amount is None:

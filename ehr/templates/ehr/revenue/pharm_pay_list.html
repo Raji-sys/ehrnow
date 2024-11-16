@@ -54,9 +54,6 @@
                 PRICE
               </th>
               <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
-                PAYMENT STATUS
-              </th>
-              <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                 TRANSACTION DATE 
               </th>
               <th class="p-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
@@ -85,18 +82,10 @@
                 &#x20A6;{{p.price}} 
               </td>
 
-              {% if p.status == False %}
-              <td class="p-3 whitespace-nowrap text-red-700">
-            <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-              </td>
-          {% else %}
-              <td class="p-3 whitespace-nowrap text-green-700">
-               <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-             </td>
-          {% endif %}
               <td class="p-3 whitespace-nowrap">
                 {{ p.updated }}
               </td>
+              {% if p.status == False %}
             <td class="p-3 whitespace-nowrap">
               <span class="space-x-4">
                 <a href="#" class="text-blue-500 hover:text-blue-700 open-modal" data-id="{{ p.id }}">
@@ -104,6 +93,12 @@
                 </a>
             </span>
               </td>
+              {% else %}
+              <td class="p-3 whitespace-nowrap text-green-700">
+                <i class="fa-solid fa-thumbs-up fa-2xl"></i>
+               PAID
+             </td>
+              {%endif%}
               <td>
               </td>
             </tr>

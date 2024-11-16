@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: 80mm 297mm; /* Standard thermal paper width (80mm) */
+            margin: 3mm 3mm 3mm 3mm; /* Minimal margins */
+            @frame header_frame {
+                -pdf-frame-content: header_content;
+                top: 3mm;
+                margin-left: 3mm;
+                margin-right: 3mm;
+                height: 30mm;
+            }
+            @frame content_frame {
+                top: 15mm;
+                margin-left: 3mm;
+                margin-right: 3mm;
+                height: 260mm;
+            }
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            line-height: 1.2;
+            text-align: center;
+        }
+        .receipt-header {
+            text-align: center;
+            padding-bottom: 1px;
+            margin-bottom: 1px;
+        }
+        .receipt-content {
+            padding: 1px 0;
+        }
+        .receipt-item {
+            margin: 3px 0;
+        }
+        .receipt-total {
+            padding: 5px 0;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .receipt-footer {
+            text-align: center;
+            font-size: 8pt;
+            padding-top: 2px;
+        }
+        table {
+            width: 100%;
+            font-size: 9pt;
+        }
+        td, th {
+            padding: 2px;
+            text-align: left;
+        }
+        .amount {
+            text-align: right;
+        }
+</style>
+</head>
+<body>
+    <div class="receipt-header">
+        <h2>YOUR HOSPITAL NAME</h2>
+        <p>Address Line 1 <br> Phone: (123) 456-7890</p>
+        </div>
+    <hr>
+    <div class="receipt-content">
+        <p>Receipt No: {{ receipt_no }}</p>
+        <hr>
+        <p>Patient: {{ patient }}</p>
+        <p>File No: {{ patient.file_no }}</p>
+        <hr>
+        <table>
+            <tr>
+                <th>Item</th>
+                <th class="amount">Amount</th>
+            </tr>
+            {% for payment in f %}
+            <tr>
+                <td>{{ payment.service }}</td>
+                <td class="amount">{{ payment.price|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+<hr>
+            <div class="receipt-total">
+            <table>
+                <tr>
+                    <td>Total Amount:</td>
+                    <td class="amount">{{ total_price|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Payment Method:</td>
+                    <td class="amount">{{ f.first.payment_method }}</td>
+                </tr>
+            </table>
+        </div>
+<hr>
+        <div class="receipt-footer">
+            {% if result %}
+        <p> {{ result|safe }}</p>
+        {% endif %}
+            <p style="font-size: 7pt;">This is your official receipt</p>
+        </div>
+    </div>
+</body>
+</html>
