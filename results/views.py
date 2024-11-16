@@ -744,25 +744,6 @@ class BaseTestView(LoginRequiredMixin):
         context = super().get_context_data(**kwargs)
         return context
 
-
-class BaseLabResultUpdateView(BaseTestView, UpdateView):
-    def get_object(self, queryset=None):
-        # Fetch the patient using the file_no
-        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        # Return the specific test object related to this patient
-        return get_object_or_404(self.model, test_info__patient=patient, pk=self.kwargs['pk'])
-
-    def form_valid(self, form):
-        # Mark the test as cleared
-        form.instance.test_info.cleared = True
-        form.instance.test_info.save()
-
-        # Add a success message
-        messages.success(self.request, f'{form.instance.test.name} result updated successfully')
-
-        # Redirect to the patient's profile page after saving
-        return redirect('patient_details', file_no=self.kwargs['file_no'])
-
 # hematology 
 class BloodGroupCreateView(View):
     @transaction.atomic
@@ -1108,7 +1089,7 @@ class MiscellaneousChempathTestsCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Miscellaneous Chempath Tests  created successfully')
+            messages.success(request, 'Miscellaneous Chempath Tests created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Miscellaneous Chempath Tests: {str(e)}')
         

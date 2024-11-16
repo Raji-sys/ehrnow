@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
-
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{{ request.GET.next }}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>enter test result</div>{%endblock%}
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
         <div class="p-8">
-            <h2 class="text-xl font-semibold text-emerald-800 mb-6 text-center uppercase border-b-2">enter test result</h2>
             {% if form.errors %}
                 <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
                     <p class="font-bold">Please correct the following errors:</p>
@@ -18,9 +17,9 @@
                     </ul>
                 </div>
             {% endif %}
-            <form method="post" class="space-y-6">
+            <form method="post" class="space-y-6 text-xs">
                 {% csrf_token %}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     {% for field in form %}
                         <div class="space-y-2">
                             <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
@@ -77,7 +76,7 @@
                             </a>
                         {% endif %}
                         <button type="submit" 
-                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                                class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
                             Save
                         </button>
                     </div>

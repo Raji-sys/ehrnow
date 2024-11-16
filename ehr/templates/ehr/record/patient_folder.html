@@ -441,7 +441,7 @@
                 
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
                           <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
@@ -484,7 +484,7 @@
                   
                             <tr class="text-xs">
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                             </tr>
@@ -581,7 +581,7 @@
                         <thead class="bg-cyan-50">
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
@@ -619,12 +619,9 @@
                 
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">cholesterol</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">triglyceride</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">hdl_cholesterol</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">ldl_cholesterol</th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
                 
                         </thead>
@@ -632,12 +629,10 @@
                           {%for test_info in lipid_profile %}
                           <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lp_test.cholesterol|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lp_test.triglyceride|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lp_test.hdl_cholesterol|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lp_test.ldl_cholesterol|default_if_none:'N/A'}}</td>
+                            <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated }}</td>
-                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:update_lipid_profile' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:instance_pdf' test_info.id %}" class=" hover:text-green-700">
+                              <i class="fa-solid fa-eye fa-2xl"></i></a></td>
                           </tr>
                           {%empty%}
                           <tr>
@@ -661,23 +656,19 @@
                         <thead class="bg-cyan-50">
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">alkaline phosphatase</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">calcium</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">inorganic phosphate</th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
-        
                         </thead>
                         <tbody class="bg-white divide-y divide-cyan-200">
                           {%for test_info in bone_chemistry %}
                           <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.bc_test.alkaline_phosphatase|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.bc_test.calcium|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.bc_test.inorganic_phosphate|default_if_none:'N/A' }}</td>
+                            <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_bone_chemistry' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:instance' test_info.id %}" class=" hover:text-green-700">
+                              <i class="fa-solid fa-eye fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
                           <tr>
@@ -701,11 +692,9 @@
                 
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">t protein</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">albumin</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">globulin</th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
                 
                         </thead>
@@ -713,11 +702,10 @@
                           {%for test_info in serum_proteins %}
                           <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.sp_test.t_protein|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.sp_test.albumin|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.sp_test.globulin|default_if_none:'N/A'}}</td>
+                            <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated }}</td>
-                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:update_serum_proteins' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:instance_pdf'  test_info.id %}" class=" hover:text-green-700">
+                              <i class="fa-solid fa-eye fa-2xl"></i></a></td>
                           </tr>
                           {%empty%}
                           <tr>
@@ -741,11 +729,9 @@
                         <thead class="bg-cyan-50">
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">csf glucose</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">csf protein</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">csf chloride</th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
         
                         </thead>
@@ -753,11 +739,9 @@
                           {%for test_info in cerebro_spinal_fluid %}
                           <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.csf_test.csf_glucose|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.csf_test.csf_protein|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.csf_test.csf_chloride|default_if_none:'N/A' }}</td>
+                            <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_cerebro_spinal_fluid' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_instance_pdf' test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
                           <tr>
@@ -781,10 +765,9 @@
                 
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">test type</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
                 
                         </thead>
@@ -792,10 +775,9 @@
                           {%for test_info in blood_glucose %}
                           <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.bgl_test.test_type|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.bgl_test.result|default_if_none:'N/A'}}</td>
+                            <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated }}</td>
-                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:update_blood_glucose' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
+                            <td class=" p-3 whitespace-nowrap"> <a href="{%url 'results:instance_pdf' test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td>
                           </tr>
                           {%empty%}
                           <tr>
@@ -819,12 +801,9 @@
                         <thead class="bg-cyan-50">
                           <tr class="text-xs">
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">uric acid</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">serum amylase</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">acid phosphatase total</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">acid phosphatase prostatic</th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                             <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
-                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
+                            <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                           </tr>
         
                         </thead>
@@ -832,12 +811,9 @@
                           {%for test_info in miscellaneous_chempath_tests %}
                           <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                             <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.misc_test.uric_acid|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.misc_test.serum_amylase|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.misc_test.acid_phosphatase_total|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">{{ test_info.lf_test.acid_phosphatase_prostatic|default_if_none:'N/A' }}</td>
+                            <td class=" p-3 whitespace-nowrap">{{ test_info.id|default_if_none:'N/A' }}</td>
                             <td class=" p-3 whitespace-nowrap">{{ test_info.updated|default_if_none:'N/A' }}</td>
-                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_miscellaneous_chempath_tests' patient.file_no test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+                            <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:instance_pdf' test_info.id %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
                           </tr>
                           {%empty%}
                           <tr>
@@ -1553,7 +1529,7 @@
                           <thead class="bg-cyan-50">
                             <tr class="text-xs">
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                              <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
                               <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
@@ -1591,7 +1567,7 @@
             <thead class="bg-cyan-50">
               <tr class="text-xs">
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
@@ -1625,7 +1601,7 @@
             <thead class="bg-cyan-50">
               <tr class="text-xs">
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
@@ -1663,7 +1639,7 @@
             <thead class="bg-cyan-50">
               <tr class="text-xs">
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
@@ -1702,7 +1678,7 @@
             <thead class="bg-cyan-50">
               <tr class="text-xs">
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
@@ -1737,7 +1713,7 @@
             <thead class="bg-cyan-50">
               <tr class="text-xs">
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
@@ -1772,7 +1748,7 @@
             <thead class="bg-cyan-50">
               <tr class="text-xs">
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
@@ -1807,7 +1783,7 @@
             <thead class="bg-cyan-50">
               <tr class="text-xs">
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">code</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">id</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">result</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider"></th>
