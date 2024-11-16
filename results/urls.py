@@ -58,9 +58,6 @@ urlpatterns = [
     path('genotype/create/<str:file_no>/', GenotypeCreateView.as_view(), name='create_genotype'),
     path('genotype/update/<str:file_no>/<int:test_info_pk>/', GenotypeUpdateView.as_view(), name='update_genotype'),
 
-    # path('rhesus/create/<str:file_no>/', RhesusCreateView.as_view(), name='create_rhesus'),
-    # path('rhesus/update/<str:file_no>/<int:test_info_pk>/', RhesusUpdateView.as_view(), name='update_rhesus'),
-
     path('fbc/create/<str:file_no>/', FBCCreateView.as_view(), name='create_fbc'),
     path('fbc/update/<str:file_no>/<int:test_info_pk>/', FBCUpdateView.as_view(), name='update_fbc'),
 

@@ -17,17 +17,22 @@
           Price
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Payment Status
-        </th>
-        <th class="p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
           Patient
         </th>
-        <th class="p-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
           Date Collected
         </th>
-        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
           Requested By
         </th>
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+          {% if c.payment.status == False %}
+          Payment Status
+          {%else%}
+          Enter Result
+          {%endif%}
+        </th>
+
       </tr>
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
@@ -45,28 +50,78 @@
         <td class="p-3 whitespace-nowrap">
           &#x20A6;{{ m.payment.price|default_if_none:'' }}
         </td>
-        {% if m.payment.status == False %}
-            <td class="p-3 whitespace-nowrap text-red-700">
-          <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-            </td>
-        {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
-             <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-           </td>
-        {% endif %}
         <td class="p-3 whitespace-nowrap">
           <a href="{{m.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
                 {{ m.patient|default_if_none:'' }}
                 </a>
-        </td>
+              </td>
         <td class="p-3 whitespace-nowrap">
           {{ m.created|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
           {{ m.collected_by }}
         </td>
-
-      </tr>
+        {% if m.payment.status == False %}
+        <td class="p-3 whitespace-nowrap text-red-700">
+          UNPAID
+      <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
+        </td>
+    {% else %}
+    {%if m.payment.service == 'Urine MCS' %}
+    <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_urine_urine_microscopy' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class=" hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i></a>
+    </td> 
+    {%elif m.payment.service == 'HVS MCS' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_hvs' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'Stool MCS' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_stool' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'Blood Culture' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_blood_culture' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'Occult Blood' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_occult_blood' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'Sputum MCS' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_sputum_mcs' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'SWAB PUS ASPIRATE (MCS)' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_swab_pus_aspirate_mcs' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'Gram Stain' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_gram_stain' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'ZN Stain' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_zn_stain' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'Semen Analysis' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_semen_analysis' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'Urinalysis' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_urinalysis' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif m.payment.service == 'Pregnancy Test' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_pregnancy_test' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {% endif %}
+    {% endif %}
+       </tr>
+       {% empty %}
+       <tr>
+         <td colspan="8" class="p-3 text-center text-sm text-gray-500">No request found</td>
+       </tr>
             {% endfor %}
             <tr class="flex justify-center text-center p-1">
               <td class="">        

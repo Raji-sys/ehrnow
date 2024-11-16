@@ -10,21 +10,23 @@
       <tr class="text-xs bg-emerald-100 text-center">
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">S/N</th>
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">id</th>
-        <th class="p-3  font-medium text-rose-500 uppercase tracking-wider">
-          Test
-        </th>
-        <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Patient
+        </th>
+        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
+          Test
         </th>
         <th class="p-3 font-medium text-green-700 uppercase tracking-wider">
           Status
         </th>
-
-        <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Date Reported
         </th>
-        <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Report By
+        </th>
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+          Result
         </th>
       </tr>
     </thead>
@@ -37,24 +39,31 @@
       <td class="p-3 whitespace-nowrap">
         {{ result.id }}
       </td>
-        <td class="p-3 whitespace-nowrap text-rose-500">
-          {{ result.payment.service }}
-        </td>
-        <td class="p-3 whitespace-nowrap">
-          <a href="{{result.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-
-          {{ result.patient }}
-          </a>
+      <td class="p-3 whitespace-nowrap">
+        <a href="{{result.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+        {{ result.patient }}
+        </a>
+      </td>
+        <td class="p-3 whitespace-nowrap text-rose-400">
+            {{ result.payment.service }}
         </td>
         <td class="p-3 whitespace-nowrap text-green-600">
-         {%if result.cleared %} cleared {%endif%}
-          </td>
+          {%if result.cleared %} cleared {%endif%}
+           </td>
         <td class="p-3 whitespace-nowrap">
-          {{ result.updated }}
+          {{ result.updated|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
-          {{ request.user }}
+          {{ result.collected_by|default_if_none:'' }}
         </td>
+        <td class="p-3 whitespace-nowrap">
+           <a href="{% url 'results:instance_pdf' result.id %}" class="text-xs hover:text-green-700">
+            <i class="fa-solid fa-eye fa-2xl"></i> </a>
+            </td>            
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8" class="p-3 text-center text-sm text-gray-500">No results found</td>
       </tr>
       {% endfor %}
       <tr class="flex justify-center text-center p-1">

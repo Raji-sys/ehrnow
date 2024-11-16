@@ -17,17 +17,23 @@
           Price
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Payment Status
-        </th>
-        <th class="p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
           Patient
         </th>
-        <th class="p-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
           Date Collected
         </th>
-        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+        <th class="p-3  text-xs font-medium text-gray-500 uppercase tracking-wider">
           Requested By
         </th>
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+          {% if c.payment.status == False %}
+          Payment Status
+          {%else%}
+          Enter Result
+          {%endif%}
+        </th>
+
+
       </tr>
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
@@ -45,27 +51,65 @@
         <td class="p-3 whitespace-nowrap">
           &#x20A6;{{ s.payment.price|default_if_none:'' }}
         </td>
-        {% if s.payment.status == False %}
-            <td class="p-3 whitespace-nowrap text-red-700">
-          <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-            </td>
-        {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
-             <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-           </td>
-        {% endif %}
         <td class="p-3 whitespace-nowrap">
           <a href="{{s.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-
-          {{ s.patient }}
-          </a>
+                {{ s.patient|default_if_none:'' }}
+                </a>
+              </td>
         <td class="p-3 whitespace-nowrap">
           {{ s.created|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
           {{ s.collected_by }}
         </td>
-      </tr>
+        {% if s.payment.status == False %}
+        <td class="p-3 whitespace-nowrap text-red-700">
+          UNPAID
+      <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
+        </td>
+    {% else %}
+    {%if s.payment.service == 'MP/Widal' %}
+    <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_widal' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
+    {%elif s.payment.service == 'Rheumatoid Factor' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_rheumatoid factor' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif s.payment.service == 'Hepatitis B' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_hpb' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif s.payment.service == 'Hepatitis C' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_hcv' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif s.payment.service == 'VDRL' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_vdrl' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif s.payment.service == 'Mantoux' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_mantoux' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif s.payment.service == 'Aso Titre' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_aso_titre' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif s.payment.service == 'CRP' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_crp' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {%elif s.payment.service == 'HIV Screening' %}
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_hiv_screening' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
+      <i class="fa-solid fa-edit fa-2xl"></i> </a>
+  </td>
+    {% endif %}
+    {% endif %}
+       </tr>
+       {% empty %}
+       <tr>
+         <td colspan="8" class="p-3 text-center text-sm text-gray-500">No request found</td>
+       </tr>
+
       {% endfor %}
       <tr class="flex justify-center text-center p-1">
         <td class="">        

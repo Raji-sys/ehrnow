@@ -768,7 +768,6 @@ class BloodGroupCreateView(View):
                 payment=payment
             )
             
-            
             blood_group = BloodGroup.objects.create(
                 test=generic_test,
                 test_info=test_info
@@ -1165,7 +1164,6 @@ class WidalCreateView(View):
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
     
-
 class RheumatoidFactorCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
@@ -1199,7 +1197,6 @@ class RheumatoidFactorCreateView(View):
             messages.error(request, f'Error creating Rheumatoid Factor test: {str(e)}')
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
 
 class HepatitisBCreateView(View):
     @transaction.atomic
@@ -1235,7 +1232,6 @@ class HepatitisBCreateView(View):
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
-
 class HepatitisCCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
@@ -1269,7 +1265,6 @@ class HepatitisCCreateView(View):
             messages.error(request, f'Error creating Hepatitis C test: {str(e)}')
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
 
 class VDRLCreateView(View):
     @transaction.atomic
@@ -1305,7 +1300,6 @@ class VDRLCreateView(View):
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
-
 class MantouxCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
@@ -1339,7 +1333,6 @@ class MantouxCreateView(View):
             messages.error(request, f'Error creating Mantoux test: {str(e)}')
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
 
 class AsoTitreCreateView(View):
     @transaction.atomic
@@ -1375,7 +1368,6 @@ class AsoTitreCreateView(View):
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
-
 class CRPCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
@@ -1409,7 +1401,6 @@ class CRPCreateView(View):
             messages.error(request, f'Error creating CRP test: {str(e)}')
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
 
 class HIVScreeningCreateView(View):
     @transaction.atomic
@@ -1481,7 +1472,6 @@ class UrineMicroscopyCreateView(View):
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
-
 class HVSCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
@@ -1515,7 +1505,6 @@ class HVSCreateView(View):
             messages.error(request, f'Error creating HVS test: {str(e)}')
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
 
 class StoolCreateView(View):
     @transaction.atomic
@@ -1619,7 +1608,6 @@ class BloodCultureCreateView(View):
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
-
 class OccultBloodCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
@@ -1653,7 +1641,6 @@ class OccultBloodCreateView(View):
             messages.error(request, f'Error creating Occult Blood test: {str(e)}')
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
 
 class SputumMCSCreateView(View):
     @transaction.atomic
@@ -1689,7 +1676,6 @@ class SputumMCSCreateView(View):
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
-
 class GramStainCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
@@ -1723,7 +1709,6 @@ class GramStainCreateView(View):
             messages.error(request, f'Error creating Gram Stain test: {str(e)}')
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
 
 class ZNStainCreateView(View):
     @transaction.atomic
@@ -1759,7 +1744,6 @@ class ZNStainCreateView(View):
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
-
 class SemenAnalysisCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
@@ -1794,7 +1778,6 @@ class SemenAnalysisCreateView(View):
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
-
 class UrinalysisCreateView(View):
     @transaction.atomic
     def get(self, request, file_no):
@@ -1828,7 +1811,6 @@ class UrinalysisCreateView(View):
             messages.error(request, f'Error creating Urinalysis test: {str(e)}')
         
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
 
 class PregnancyCreateView(View):
     @transaction.atomic
