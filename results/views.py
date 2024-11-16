@@ -8,7 +8,6 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponse
 from .models import *
 from .forms import *
@@ -33,6 +32,7 @@ from django.db import reset_queries
 reset_queries()
 from ehr.models import PatientData
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.http import JsonResponse
 
 
 def log_anonymous_required(view_function, redirect_to=None):
@@ -428,80 +428,63 @@ class PayCreateView(CreateView):
             return next_url
         return super().get_success_url()
 
+# class PayUpdateView(UpdateView):
+#     model = Paypoint
+#     template_name = 'revenue/update_pay.html'
+#     form_class = PayUpdateForm
+
+#     def get_success_url(self):
+#         messages.success(self.request, 'TRANSACTION SUCCESSFULLY')
+#         next_url = self.request.GET.get('next')
+#         if next_url:
+#             return next_url
+#         return reverse_lazy("pay_list")
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         paypoint = self.get_object()
+#         context['patient'] = paypoint.patient
+#         context['service'] = paypoint.service
+#         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+#         return context
+
 class PayUpdateView(UpdateView):
     model = Paypoint
     template_name = 'revenue/update_pay.html'
     form_class = PayUpdateForm
 
+    def form_valid(self, form):
+        try:
+            self.object = form.save()
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Transaction was updated successfully!',
+                    'redirect_url': self.get_success_url(),
+                })
+        except Exception as e:
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': f'Error updating transaction: {str(e)}'
+                })
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': 'Please correct the errors below.',
+                'errors': form.errors
+            })
+        return super().form_invalid(form)
+
     def get_success_url(self):
-        messages.success(self.request, 'TRANSACTION SUCCESSFULLY')
         next_url = self.request.GET.get('next')
         if next_url:
             return next_url
         return reverse_lazy("pay_list")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        paypoint = self.get_object()
-        context['patient'] = paypoint.patient
-        context['service'] = paypoint.service
-        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-        return context
-
-    
-# class PayListView(ListView):
-#     model = Paypoint
-#     template_name = 'revenue/transaction.html'
-#     context_object_name = 'pays'
-#     paginate_by = 10
-
-#     def get_queryset(self):
-#         # Start with an optimized queryset
-#         queryset = Paypoint.objects.select_related('patient', 'user').order_by('-updated')
-        
-#         # Get filter parameter from URL, default to 'all'
-#         status_filter = self.request.GET.get('status', 'all')
-        
-#         # Apply status filter if not 'all'
-#         if status_filter == 'approved':
-#             queryset = queryset.filter(status=True)
-#         elif status_filter == 'pending':
-#             queryset = queryset.filter(status=False)
-        
-#         # Apply other filters from PayFilter
-#         pay_filter = PayFilter(self.request.GET, queryset=queryset)
-#         return pay_filter.qs
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-        
-#         # Add annotations for quick access to key metrics
-#         summary = Paypoint.objects.aggregate(
-#             total_count=Count('id'),
-#             approved_count=Count('id', filter=Q(status=True)),
-#             pending_count=Count('id', filter=Q(status=False)),
-#             total_worth=Sum('price', filter=Q(status=True)),
-#             total_pending=Sum('price', filter=Q(status=False))
-#         )
-        
-#         context.update({
-#             'total_count': summary['total_count'],
-#             'approved_count': summary['approved_count'],
-#             'pending_count': summary['pending_count'],
-#             'total_worth': summary['total_worth'] or 0,
-#             'total_pending': summary['total_pending'] or 0,
-#             'current_filter': self.request.GET.get('status', 'all'),
-#             'payFilter': PayFilter(self.request.GET, queryset=self.get_queryset())
-#         })
-        
-#         # Add date-based metrics
-#         today = timezone.now().date()
-#         context['today_transactions'] = self.get_queryset().filter(created=today).count()
-#         context['today_worth'] = self.get_queryset().filter(
-#             created=today, status=True
-#         ).aggregate(total=Sum('price'))['total'] or 0
-        
-#         return context
 
 def format_currency(amount):
     if amount is None:
@@ -623,69 +606,76 @@ class HemaPayListView(ListView):
     model = Paypoint
     template_name = 'revenue/hema_pay_list.html'
     paginate_by = 10
+    context_object_name = 'hematology_pays'  # Add this to match your template
 
     def get_queryset(self):
-        return Paypoint.objects.none()
+        return Paypoint.objects.filter(
+            test_payments__isnull=False,
+            unit__iexact='Hematology'
+        ).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        hematology_pays = Paypoint.objects.filter(test_payments__isnull=False,unit__iexact='Hematology').order_by('-updated')
-
+        hematology_pays=self.get_queryset()
         hema_pay_total = hematology_pays.count()
         hema_paid_transactions = hematology_pays.filter(status=True)
         hema_total_worth = hema_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-
-        context['hematology_pays'] = hematology_pays
 
         context['hema_pay_total'] = hema_pay_total
 
         context['hema_total_worth'] = hema_total_worth
         return context
 
-
+      
 class MicroPayListView(ListView):
     model = Paypoint
     template_name = 'revenue/micro_pay_list.html'
     paginate_by = 10
+    context_object_name = 'micro_pays'  # Add this to match your template
 
     def get_queryset(self):
-        return Paypoint.objects.none()
+        return Paypoint.objects.filter(
+            test_payments__isnull=False,
+            unit__iexact='Microbiology'
+        ).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        micro_pays = Paypoint.objects.filter(test_payments__isnull=False,unit__iexact='Microbiology').order_by('-updated')
-
+        # Get the full queryset for calculations
+        micro_pays = self.get_queryset()
         micro_pay_total = micro_pays.count()
         micro_paid_transactions = micro_pays.filter(status=True)
         micro_total_worth = micro_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-        context['micro_pays'] = micro_pays
+        
+        # Add additional context
         context['micro_pay_total'] = micro_pay_total
         context['micro_total_worth'] = micro_total_worth
-        return context  
-
+        return context
 
 class ChempathPayListView(ListView):
     model = Paypoint
     template_name = 'revenue/chempath_pay_list.html'
     paginate_by = 10
+    context_object_name = 'chempath_pays'  # Add this to match template
 
     def get_queryset(self):
-        return Paypoint.objects.none()
+        return Paypoint.objects.filter(
+            test_payments__isnull=False,
+            unit__iexact='Chemical Pathology'
+        ).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        chempath_pays = Paypoint.objects.filter(test_payments__isnull=False,unit__iexact='Chemical Pathology').order_by('-updated')
-
+        # Get the full queryset for calculations
+        chempath_pays = self.get_queryset()
+        
         chem_pay_total = chempath_pays.count()
         chem_paid_transactions = chempath_pays.filter(status=True)
-        chem_total_worth = chem_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+        chem_total_worth = chem_paid_transactions.aggregate(
+            total_worth=Sum('price'))['total_worth'] or 0
 
-        context['chempath_pays'] = chempath_pays
+        # Add additional context
         context['chem_pay_total'] = chem_pay_total
         context['chem_total_worth'] = chem_total_worth
         return context
@@ -695,23 +685,28 @@ class SerologyPayListView(ListView):
     model = Paypoint
     template_name = 'revenue/serology_pay_list.html'
     paginate_by = 10
+    context_object_name = 'serology_pays'  # Add this to match template
 
     def get_queryset(self):
-        return Paypoint.objects.none()
+        return Paypoint.objects.filter(
+            test_payments__isnull=False,
+            unit__iexact='Serology'
+        ).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        serology_pays = Paypoint.objects.filter(test_payments__isnull=False,unit__iexact='Serology').order_by('-updated')
-
+        # Get the full queryset for calculations
+        serology_pays = self.get_queryset()
+        
         serology_pay_total = serology_pays.count()
         serology_paid_transactions = serology_pays.filter(status=True)
-        serology_total_worth = serology_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+        serology_total_worth = serology_paid_transactions.aggregate(
+            total_worth=Sum('price'))['total_worth'] or 0
 
-        context['serology_pays'] = serology_pays
+        # Add additional context
         context['serology_pay_total'] = serology_pay_total
         context['serology_total_worth'] = serology_total_worth
-        return context  
+        return context
 
 
 class GeneralPayListView(ListView):
