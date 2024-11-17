@@ -157,6 +157,7 @@ class PatientData(models.Model):
     faith = (('ISLAM', 'ISLAM'), ('CHRISTIANITY', 'CHRISTIANITY'),('TRADITIONAL', 'TRADITIONAL'),('OTHER','OTHER'))
     religion = models.CharField(choices=faith, max_length=100, null=True,blank=True)
     tribes = (('HAUSA', 'Hausa'),
+        ('YORUBA','Yoruba'),
         ('IGBO', 'Igbo'),
         ('IBIRA', 'Ibira'),
         ('FULANI', 'Fulani'),

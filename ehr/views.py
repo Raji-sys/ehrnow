@@ -770,7 +770,8 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
     model = VisitRecord
     form_class = VisitForm
     template_name = 'ehr/record/visit.html'
-        
+    
+    
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['file_no'] = self.kwargs['file_no']
@@ -819,9 +820,10 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
         
         return super().form_valid(form)
 
+    # def get_success_url(self):
+    #     return self.object.patient.get_absolute_url()
     def get_success_url(self):
-        return self.object.patient.get_absolute_url()
-
+        return reverse_lazy('patient_list')
 
 class VisitPayListView(ListView):
     model = Paypoint

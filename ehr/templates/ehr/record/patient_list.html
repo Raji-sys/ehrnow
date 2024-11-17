@@ -76,6 +76,9 @@
               <th class="p-3 text-emerald-500 uppercase tracking-wider">
                 EDIT
               </th>
+              <th class="p-3 text-emerald-500 uppercase tracking-wider">
+                VISIT
+              </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-emerald-200">
@@ -112,8 +115,13 @@
               </td>
             <td class="p-3 whitespace-nowrap">
                 <span class="space-x-4">
-                    <a href="{% url 'update_patient' p.pk %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib "></i></a>
+                    <a href="{% url 'update_patient' p.pk %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib fa-xl"></i></a>
                 </span>
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                <span class="space-x-4">
+                  <a href="{% url 'visit_record' p.file_no %}" class="text-emerald-500 hover:text-emerald-700"><i class="fa-solid fa-plus-circle fa-xl"></i></a>
+              </span>
               </td>
             </tr>
             
