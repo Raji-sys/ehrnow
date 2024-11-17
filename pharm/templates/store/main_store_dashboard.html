@@ -1,34 +1,34 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Main Store Dashboard{% endblock %}
+{% block title %}Pharmacy Store{% endblock %}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'pharm:index' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PHARMACY MAIN STORE MANAGEMENT</div>{%endblock%}
 {% block content %}
 <div class="container mx-auto p-4">
-    <div class="bg-gray-50 rounded-lg shadow-xl overflow-hidden mt-6">
+    <div class="bg-gray-50 rounded-lg shadow-xl overflow-hidden mt-4">
     <div class="bg-gradient-to-r from-cyan-600 to-emerald-600 p-4 text-center mb-2">
-        <span class="text-lg font-bold text-white uppercase tracking-wider">MAIN STORE MANAGEMENT</span>
     </div>
                 <div class="grid md:grid-cols-5 grid-cols-1 gap-4 text-xs uppercase p-10">
-                    <a href="{% url 'list' %}" class="w-full md:w-auto">
-                        <div class="bg-cyan-600 hover:bg-white hover:text-cyan-700 hover:border hover:border-cyan-600 text-white py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
+                    <a href="{% url 'pharm:list' %}" class="w-full md:w-auto">
+                        <div class="bg-cyan-600 hover:bg-white hover:text-cyan-700 hover:border hover:border-cyan-600 text-white py-5 px-10 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
                             <i class="fa fa-solid fa-pills fa-2x mr-2"></i>
-                            <span>Store Inventory</span>
+                            <span>Inventory</span>
                         </div>
                     </a>
-                    <a href="{% url 'record' %}" class="w-full md:w-auto">
-                        <div class="bg-amber-600 hover:bg-white hover:text-amber-700 hover:border hover:border-amber-600 text-white py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
+                    <a href="{% url 'pharm:record' %}" class="w-full md:w-auto">
+                        <div class="bg-amber-600 hover:bg-white hover:text-amber-700 hover:border hover:border-amber-600 text-white py-5 px-10 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
                             <i class="fa fa-solid fa-clipboard-list fa-2x mr-2"></i>
-                            <span>Store Record</span>
+                            <span>Record</span>
                         </div>
                     </a>
-                    <a href="{% url 'restocked' %}" class="w-full md:w-auto">
-                        <div class="bg-blue-600 hover:bg-white hover:text-blue-700 hover:border hover:border-blue-600 text-white py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
+                    <a href="{% url 'pharm:restocked' %}" class="w-full md:w-auto">
+                        <div class="bg-blue-600 hover:bg-white hover:text-blue-700 hover:border hover:border-blue-600 text-white py-5 px-10 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
                             <i class="fa fa-solid fa-recycle fa-2x mr-2"></i>
-                            <span>Store Restocking</span>
+                            <span>Restocking</span>
                         </div>
                     </a>
                    <div class="relative ">
-                        <a href="{% url 'expiry_notification' %}" class="md:w-auto text-xs uppercase">
-                            <div class="bg-rose-600 hover:bg-white hover:text-rose-600 border border-rose-600 hover:border hover:border-rose-600 text-white p-3 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
+                        <a href="{% url 'pharm:expiry_notification' %}" class="md:w-auto text-xs uppercase">
+                            <div class="bg-rose-600 hover:bg-white hover:text-rose-600 border border-rose-600 hover:border hover:border-rose-600 text-white py-5 px-10 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
                                 <i class="fa fa-solid fa-warning fa-2x mr-2"></i>
                                 <span>expiry notice</span>
                             </div>
@@ -39,8 +39,8 @@
                             </span>
                         {% endif %}
                     </div>
-                    <a href="{% url 'main_store_value' %}" class="w-full md:w-auto">
-                        <div class="bg-green-600 hover:bg-white hover:text-green-700 hover:border hover:border-green-600 text-white py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
+                    <a href="{% url 'pharm:main_store_value' %}" class="w-full md:w-auto">
+                        <div class="bg-green-600 hover:bg-white hover:text-green-700 hover:border hover:border-green-600 text-white py-5 px-10 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
                             <i class="fa fa-solid fa-calculator fa-2x mr-2"></i>
                             <span>Stock Value</span>
                         </div>

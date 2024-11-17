@@ -1,16 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Drugs Issuance Record{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'pharm:record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Issue Drugs to Units</div>{%endblock%}
 {% block content %}
 <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-6">
     <div class="bg-amber-100 shadow-xl rounded-lg overflow-hidden">
-      <div class="bg-amber-600 flex justify-center gap-4 text-white align-middle text-xl py-2">
-        <div>
-          <a href="{% url 'record' %}" ><i class="text-white fa-solid fa-arrow-left"></i></a>    
-        </div>
-        <div>
-          <h2 class=" text-white text-center uppercase text-lg">Issue Drugs to Units</h2>
-        </div>
-      </div>
+      
       {% if formset.non_form_errors %}
   <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative uppercase" role="alert">
     {% for error in formset.non_form_errors %}

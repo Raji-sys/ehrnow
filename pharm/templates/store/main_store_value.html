@@ -2,15 +2,8 @@
 {% load humanize %}
 {% load static %}
 {% block title %}Store Inventory Value{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'pharm:main_store' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>MAIN STORE STOCK VALUE</div>{%endblock%}
 {% block content %}
-<div class="flex justify-center p-4 gap-4 text-xl">
-  <div>
-    <a href="{% url 'main_store' %}" ><i class="fa-solid fa-arrow-left"></i></a>
-  </div>
-  <div>
-    <h1 class="text-xl md:text-2xl text-cyan-800 text-center uppercase">MAIN STORE STOCK VALUE</h1>
-  </div>
-</div>
 <div class="w-full max-w-2xl mx-auto px-2 sm:px-3 lg:px-4 py-6">
     <div class="bg-gradient-to-r from-cyan-600 to-emerald-700 p-8 rounded-3xl shadow-lg">
       <div class="text-center">

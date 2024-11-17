@@ -1,16 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Restocking Record{% endblock %}
-
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'pharm:restocked' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Restock Drugs</div>{%endblock%}
 {% block content %}
-<div class="flex justify-center p-4 gap-4 text-xl">
-<div>
-    <a href="{% url 'restocked' %}" ><i class="fa-solid fa-arrow-left"></i></a>    
-</div>
-<div>
-    <h1 class="text-lg  text-blue-800 text-center uppercase">Restocking Report</h1>
-</div>
-</div>
 <div class="max-w-7xl mx-auto px-4 ">
     <div class="flex justify-end items-center m-2 space-x-2">
         {% if request.GET.urlencode %}

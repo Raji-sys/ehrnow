@@ -1,16 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Drugs Restocking{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'pharm:restocked' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Restock Drugs</div>{%endblock%}
+
 {% block content %}
 <div class="py-4 px-4 sm:px-6 lg:px-6 max-w-7xl mx-auto">
     <div class="bg-blue-100 shadow-xl rounded-lg overflow-hidden">
-      <div class="bg-blue-600 py-3 flex justify-center gap-4 text-xl text-white">
-        <div>
-          <a href="{% url 'restocked' %}" ><i class="text-white fa-solid fa-arrow-left"></i></a>    
-        </div>
-        <div>
-          <h2 class="text-lg  text-white text-center uppercase">Restock Drugs</h2>
-        </div>
-      </div>
       <form id="recordForm" action="" method="POST" enctype="multipart/form-data" class="p-3 text-xs text-center">
         {% csrf_token %}
         {{ formset.management_form }}

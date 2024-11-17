@@ -2,13 +2,11 @@
 {% load humanize %}
 {% load static %}
 {% block title %}Inventory Worth{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'pharm:main_store' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Live Inventory Value</div>{%endblock%}
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 uppercase ">
     <div class="bg-white bg-opacity-50  shadow-lg rounded-lg overflow-hidden">
         <div class="bg-gradient-to-r from-cyan-600 to-emerald-600 px-6 py-4 border-b-2">
-            <h3 class="text-lg font-bold text-white uppercase tracking-wider text-center">
-                Live Inventory Value
-            </h3>
             <p class="text-emerald-100 text-xs mt-1 text-center">
                 <span class="bg-white text-emerald-700 text-xs px-2 py-1 rounded-full"> As of: {{ today }}</span>
             </p>
@@ -16,7 +14,7 @@
                 These values are updated in real-time based on current inventory levels and prices
             </p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-gray-200">
             <div class="bg-gradient-to-br from-blue-500 to-blue-700 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition-shadow duration-300 " >
                 <i class="fas fa-warehouse text-white text-3xl mb-2"></i>
                 <h2 class="text-lg font-bold text-gray-100">
