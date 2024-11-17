@@ -385,12 +385,8 @@ class PharmPayListView(ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        # Get pharmacy-specific queryset using pharm_payment__isnull=False
-        updated = super().get_queryset().filter(
-            pharm_payment__isnull=False
-        ).order_by('-updated')
+        updated = super().get_queryset().filter(pharm_payment__isnull=False).order_by('-updated')
         
-        # Apply the filter and return the queryset
         pay_filter = PayFilter(self.request.GET, queryset=updated)
         return pay_filter.qs
     
@@ -398,7 +394,6 @@ class PharmPayListView(ListView):
         context = super().get_context_data(**kwargs)
         pay_total = self.get_queryset().count()
 
-        # Calculate total worth only for paid transactions
         paid_transactions = self.get_queryset().filter(status=True)
         total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
 

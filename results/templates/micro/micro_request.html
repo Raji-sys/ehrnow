@@ -68,7 +68,7 @@
         </td>
     {% else %}
     {%if m.payment.service == 'Urine MCS' %}
-    <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_urine_urine_microscopy' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class=" hover:text-green-700">
+    <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_urine_microscopy' m.patient.file_no m.id %}?next={% url 'results:micro_request' %}" class=" hover:text-green-700">
       <i class="fa-solid fa-edit fa-2xl"></i></a>
     </td> 
     {%elif m.payment.service == 'HVS MCS' %}

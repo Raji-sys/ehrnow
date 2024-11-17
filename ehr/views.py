@@ -838,8 +838,11 @@ class VisitPayListView(ListView):
         return reverse_lazy("pay_list")
     
     def get_queryset(self):
-        return Paypoint.objects.filter(record_payment__isnull=False).order_by('-updated')
-
+        updated = super().get_queryset().filter(record_payment__isnull=False).order_by('-updated')
+        
+        pay_filter = PayFilter(self.request.GET, queryset=updated)
+        return pay_filter.qs
+ 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pay_total = self.get_queryset().count()
@@ -847,6 +850,7 @@ class VisitPayListView(ListView):
         paid_transactions = self.get_queryset().filter(status=True)
         total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
 
+        context['payFilter'] = PayFilter(self.request.GET, queryset=self.get_queryset())
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
@@ -1331,6 +1335,7 @@ class PayUpdateView(UpdateView):
                 'errors': form.errors
             })
         return super().form_invalid(form)
+
 # class PayUpdateView(UpdateView):
 #     model = Paypoint
 #     template_name = 'ehr/revenue/update_pay.html'
@@ -1446,62 +1451,27 @@ class PayListView(ListView):
         # Add date-based metrics
         today = timezone.now().date()
         context['today_transactions'] = self.get_queryset().filter(created=today).count()
-        context['today_worth'] = self.get_queryset().filter(
-            created=today, status=True
-        ).aggregate(total=Sum('price'))['total'] or 0
+        context['today_worth'] = self.get_queryset().filter(created=today, status=True).aggregate(total=Sum('price'))['total'] or 0
         
         return context
     
-# @login_required
-# def receipt_pdf(request):
-#     ndate = datetime.datetime.now()
-#     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
-#     f = PayFilter(request.GET, queryset=Paypoint.objects.all()).qs
-#     patient = f.first().patient if f.exists() else None
-#     result = ""
-#     for key, value in request.GET.items():
-#         if value:
-#             result += f" {value.upper()}<br>Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')}</br>By: {request.user.username.upper()}"
 
-#     context = {'f': f, 'pagesize': 'A4','patient':patient,
-#                'orientation': 'landscape', 'result': result}
-#     response = HttpResponse(content_type='application/pdf',
-#                             headers={'Content-Disposition': f'filename="Receipt__{filename}"'})
-
-#     buffer = BytesIO()
-
-#     pisa_status = pisa.CreatePDF(get_template('ehr/revenue/receipt_pdf.html').render(
-#         context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
-
-#     if not pisa_status.err:
-#         pdf = buffer.getvalue()
-#         buffer.close()
-#         response.write(pdf)
-#         return response
-#     return HttpResponse('Error generating PDF', status=500)
-    
-
+# FOR ALL TRANSACTION SEARCH 
 @login_required
 def thermal_receipt(request):
     ndate = datetime.datetime.now()
     filename = ndate.strftime('Receipt__%d_%m_%Y__%I_%M%p.pdf')
-    base_queryset = Paypoint.objects.filter(
-        status=True
-    )
+    base_queryset = Paypoint.objects.filter(status=True)
     
     # Then apply the filter
     f = PayFilter(request.GET, queryset=base_queryset).qs
-
     patient = f.first().patient if f.exists() else None
     total_price = f.aggregate(total_price=Sum('price'))['total_price']
 
-    # Generate header info
     result = ""
     for key, value in request.GET.items():
         if value:
             result += f" {value.upper()} receipt, Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')} By: {request.user.username.upper()}"
-    # Calculate total price
-
     
     template = get_template('ehr/revenue/thermal_receipt.html')
     html = template.render({
@@ -1514,15 +1484,8 @@ def thermal_receipt(request):
         'user': request.user.username.upper(),
     })
 
-    # Create PDF with custom options
-    response = HttpResponse(content_type='application/pdf',
-                          headers={'Content-Disposition': f'filename="{filename}"'})
-    pisa_status = pisa.CreatePDF(
-        html,
-        dest=response,
-        encoding='utf-8',
-        link_callback=fetch_resources,
-    )
+    response = HttpResponse(content_type='application/pdf',headers={'Content-Disposition': f'filename="{filename}"'})
+    pisa_status = pisa.CreatePDF(html,dest=response,encoding='utf-8',link_callback=fetch_resources,)
 
     if pisa_status.err:
         return HttpResponse('Error generating PDF', status=500)
@@ -1581,12 +1544,64 @@ def pharm_receipt(request):
     if pisa_status.err:
         return HttpResponse('Error generating PDF', status=500)
     return response
+
+
+@login_required
+def record_receipt(request):
+    ndate = datetime.datetime.now()
+    filename = ndate.strftime('Receipt__%d_%m_%Y__%I_%M%p.pdf')
+    
+    # Start with pharmacy payments and status=True
+    base_queryset = Paypoint.objects.filter(record_payment__isnull=False,status=True)
+    
+    # Then apply the filter
+    f = PayFilter(request.GET, queryset=base_queryset).qs
+    
+    patient = f.first().patient if f.exists() else None
+    total_price = f.aggregate(total_price=Sum('price'))['total_price']
+    
+    # Generate header info
+    result = ""
+    for key, value in request.GET.items():
+        if value:
+            result += f" {value.upper()} receipt, Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')} By: {request.user.username.upper()}"
+    
+    # Calculate total price
+    template = get_template('ehr/revenue/thermal_receipt.html')
+    html = template.render({
+        'f': f,
+        'total_price': total_price,
+        'patient': patient,
+        'result': result,
+        'receipt_no': f'RCP-{ndate.strftime("%Y%m%d%H%M%S")}',
+        'generated_date': datetime.datetime.now().strftime('%d-%m-%Y %H:%M'),
+        'user': request.user.username.upper(),
+    })
+    
+    # Create PDF with custom options
+    response = HttpResponse(
+        content_type='application/pdf',
+        headers={'Content-Disposition': f'filename="{filename}"'}
+    )
+    
+    pisa_status = pisa.CreatePDF(
+        html,
+        dest=response,
+        encoding='utf-8',
+        link_callback=fetch_resources,
+    )
+    
+    if pisa_status.err:
+        return HttpResponse('Error generating PDF', status=500)
+    return response
+
 def format_currency(amount):
     if amount is None:
         return "N0.00"
     return f"N{amount:,.2f}"
 
 
+# FOR NORMAL PAYMENT
 def print_receipt_pdf(request):
     ndate = datetime.datetime.now()
     payment_id = request.GET.get('id')

@@ -10,10 +10,7 @@
       <i class="fa-solid fa-arrow-left fa-lg"></i>
     </a>
     <span class="text-sm font-semibold">ALL TRANSACTIONS</span>
-    <a href="{%url 'wallet_transactions' %}" 
-    class="px-3 py-1 text-xs rounded bg-sky-600 text-white">
-    all wallet
-  </a>
+
   </div>
 
   <!-- Middle section: Filter buttons -->
@@ -30,6 +27,10 @@
        class="px-3 py-1 text-xs rounded {% if current_filter == 'pending' %}bg-sky-600 text-white{% else %}bg-sky-100 text-sky-600{% endif %}">
       Pending ({{ pending_count }})
     </a>
+    <a href="{%url 'wallet_transactions' %}" 
+    class="px-3 py-1 text-xs rounded bg-sky-600 text-white">
+    Wallet transactions
+  </a>
   </div>
 
   <!-- Right section: Transaction stats -->
@@ -50,7 +51,7 @@
         <a href="?" class="text-sky-600 hover:text-sky-700">
             <i class="fa-solid fa-rotate fa-xl"></i>
         </a>
-        <a href="{% url 'pharm_receipt' %}?{{request.GET.urlencode}}" 
+        <a href="{% url 'thermal_receipt' %}?{{request.GET.urlencode}}" 
            class="text-sky-600 hover:text-sky-700" 
            target="_blank"
            uk-tooltip="note, only paid items will appear on the receipt">

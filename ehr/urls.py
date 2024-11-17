@@ -66,13 +66,17 @@ urlpatterns = [
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
     # path('revenue/receipt/', views.receipt_pdf, name='receipt_pdf'),
+    
     path('revenue/receipt/print/', views.thermal_receipt, name='thermal_receipt'),
     path('revenue/receipt/pharm/', views.pharm_receipt, name='pharm_receipt'),
+    path('revenue/receipt/record/', views.record_receipt, name='record_receipt'),
+
     path('revenue/print-receipt/', views.print_receipt_pdf, name='print_receipt'),
     #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
     path('nursing-desks/', NursingDeskListView.as_view(), name='nursing_desks_list'),
     path('nursing-station/<int:pk>/', NursingStationDetailView.as_view(), name='nursing_station_detail'),
+    
     # AE
     # path('nursing/nursing-station-ae/', AENursingDeskView.as_view(), name='nursing_station_ae'),
     # Consultation

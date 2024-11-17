@@ -15,15 +15,11 @@ urlpatterns = [
 
     path('get-started/revenue/lab/', RevenueView.as_view(), name='lab_revenue'),
     
-    path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
-    path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
     path('revenue/hema-list/', HemaPayListView.as_view(), name='hema_pay_list'),
     path('revenue/micro-list/', MicroPayListView.as_view(), name='micro_pay_list'),
     path('revenue/chempath-list/', ChempathPayListView.as_view(), name='chempath_pay_list'),
     path('revenue/serology-list/', SerologyPayListView.as_view(), name='serology_pay_list'),
     path('revenue/general-list/', GeneralPayListView.as_view(), name='general_pay_list'),
-    path('revenue/receipt/', views.receipt_pdf, name='receipt_pdf'),
-    # path('revenue/lab/payment-list/', PayListView.as_view(), name='pay_list'),
 
     path('hematology/', HematologyView.as_view(), name='hematology'),
     path('hematology-list/', HematologyListView.as_view(), name='hematology_list'),
