@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}{{ store.name }} - BULK LOCKER{% endblock %}
+{% block content %}
+    <div class="container mx-auto p-4 ">
+        <!-- Drugs Available in Store Table -->
+        <div class="flex justify-center p-4 gap-4 text-xl">
+       <div>
+           <a href="{% url 'unit_dashboard' store.pk %}" ><i class="fa-solid fa-arrow-left"></i></a>
+       </div>
+       <div>
+           <h2 class="text-lg text-center text-teal-700 uppercase">{{ store.name }} bulk locker</h2>
+       </div>
+        </div>
+
+        <div class="flex gap-4 justify-between items-center m-2 space-x-2">
+
+            <div>
+                <h3 class="text-sm uppercase">locker worth: <span class="text-green-700">&#x20A6;{{total_worth}}</span></h3>
+            </div>
+            
+            <div class="">
+            <a href="{% url 'dispensary_record' store.id%}"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-xs lg:text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 
+            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+            <i class="fas fa-prescription-bottle-medical mr-2 lg:fa-2xl"></i> Send to Dispensary
+            </a>&nbsp;
+            <a href="{% url 'unitissue_report' store.id %}"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-xs lg:text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fas fa-file-pdf mr-2 lg:fa-2xl"></i> Bulk Locker Report
+            </a>
+            </div>
+
+        </div>
+        
+        <div class="mt-4 bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="overflow-x-auto max-h-[65vh]">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-orange-500">
+                        <tr class="text-xs text-center text-white uppercase">
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">#</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Date Received</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Generic Drug</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Strength</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Trade Drug</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Cost Price</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Balance QTY</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Total Value</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Initial Expiry Date</th>
+                            <!-- <th scope="col" class="px-4 py-2 font-medium tracking-wider">Last Restock Date</th> -->
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">New Expiry Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for i in page_obj %}
+                        <tr class="{% cycle 'bg-white' 'bg-orange-50' %} text-xs text-center">
+                            <td class="px-4 py-2 text-gray-700">{{ forloop.counter }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ i.updated_at|default_if_none:'N/A'}}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ i.drug.generic_name|default_if_none:'N/A'|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ i.drug.strength|default_if_none:'N/A'|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ i.drug.trade_name|default_if_none:'N/A'|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">&#x20A6;{{ i.drug.cost_price|default_if_none:'N/A'|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ i.quantity|default_if_none:''|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">&#x20A6;{{ i.total_value|floatformat:2|intcomma }}</td>
+                            <td class="px-4 py-2 font-medium 
+                            {% if i.drug.expiration_date <= today %}text-rose-700
+                            {% elif i.drug.expiration_date <= one_month_later %}text-rose-700
+                            {% elif i.drug.expiration_date <= three_months_later %}text-yellow-500
+                            {% elif i.drug.expiration_date <= six_months_later %}text-blue-500
+                            {% else %}text-gray-800{% endif %}">
+                            {% if i.drug.expiration_date %}
+                                {{ i.drug.expiration_date|date:"M-Y" }}
+                                {% if i.drug.expiration_date <= today %}
+                                    <br><small class="text-rose-700">(Expired!)</small>
+                                {% elif i.drug.expiration_date <= one_month_later %}
+                                    <br><small class="text-orange-600">(less than 31 to expire!)</small>
+                                {% elif i.drug.expiration_date <= three_months_later %}
+                                    <br><small>(3 months to expire)</small>
+                                {% elif i.drug.expiration_date <= six_months_later %}
+                                    <br><small class="text-blue-500">(6 months to expire)</small>
+                                {% endif %}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                                                
+                            <!-- <td class="px-4 py-2 font-medium text-gray-800">
+                                {% if i.restock_info %}
+                                    {{ i.restock_info.date|date:"M d, Y" }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td> -->
+                            <td class="px-4 py-2 font-medium 
+                            {% if i.restock_info and i.restock_info.expiration_date %}
+                                {% if i.restock_info.expiration_date <= today %}text-rose-700
+                                {% elif i.restock_info.expiration_date <= one_month_later %}text-orange-700
+                                {% elif i.restock_info.expiration_date <= three_months_later %}text-yellow-500
+                                {% elif i.restock_info.expiration_date <= six_months_later %}text-blue-500
+                                {% else %}text-gray-800{% endif %}
+                            {% else %}text-gray-800{% endif %}">
+                            
+                            {% if i.restock_info and i.restock_info.expiration_date %}
+                                {{ i.restock_info.expiration_date|date:"M-Y" }}
+                                {% if i.restock_info.expiration_date <= today %}
+                                    <br><small class="text-rose-700">(Expired!)</small>
+                                {% elif i.restock_info.expiration_date <= one_month_later %}
+                                    <br><small class="text-orange-600">(1 month to expire!)</small>
+                                {% elif i.restock_info.expiration_date <= three_months_later %}
+                                    <br><small class="text-yellow-500">(3 months to expire)</small>
+                                {% elif i.restock_info.expiration_date <= six_months_later %}
+                                    <br><small class="text-blue-500">(6 months to expire)</small>
+                                {% endif %}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        
+                        </tr>
+                        {% endfor %}
+                    </tbody>                
+                </table>
+            </div>
+        </div>
+
+<!-- Pagination and Back Button -->
+<div class="mt-4 flex items-center justify-between">
+    <div>
+        <p class="text-sm text-gray-600">
+            Showing page <span class="font-medium">{{ page_obj.number }}</span> of <span class="font-medium">{{ page_obj.paginator.num_pages }}</span>
+        </p>
+    </div>
+    <div class="flex space-x-2">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700">
+                <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% endif %}
+    </div>
+</div>
+    </div>
+{% endblock %}

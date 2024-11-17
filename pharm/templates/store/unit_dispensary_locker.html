@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}{{ store.name }} - DISPENSARY LOCKER{% endblock %}
+{% block content %}
+    <div class="container mx-auto p-4">
+        <div class="flex justify-center p-4 gap-4 text-xl">
+            <div>
+                <a href="{% url 'unit_dashboard' store.pk %}" ><i class="fa-solid fa-arrow-left"></i></a>
+            </div>
+            <div>
+                <h2 class="text-center text-teal-700 uppercase text-lg">{{ store.name }} dispensary locker</h2>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center m-2 space-x-2 gap-14">
+            <div>
+              <h3 class="text-sm uppercase">locker worth: <span class="text-green-700">&#x20A6;{{total_worth}}</span></h3>
+            </div>
+
+            <div class="">
+            <a href="{% url 'dispense' store.dispensary_locker.id %}"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-xs lg:text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                <i class="fas fa-pills lg:fa-2xl mr-2"></i> Dispense Drugs
+            </a>
+            <a href="{% url 'dispensed_list' store.dispensary_locker.id %}"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-xs lg:text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+            <i class="fas fa-file-archive mr-2 lg:fa-2xl"></i> Dispensary Record
+            </a>
+            <!-- <a href="{% url 'dispense_report' store.dispensary_locker.id %}"
+        class="inline-flex items-center px-4 py-2 border border-transparent text-xs lg:text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i class="fas fa-file-pdf mr-2 lg:fa-2xl"></i> Dispensary Report
+            </a> -->
+            </div>
+
+        </div>
+        <!-- Unit Issue Records Table -->
+        <div class="mt-4 bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="overflow-x-auto max-h-[65vh]">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-fuchsia-500">
+                        <tr class="text-xs text-center text-white uppercase">
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">#</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Date restocked</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Generic Drug</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Strength</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Trade Drug</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Balance QTY</th>
+                            <th scope="col" class="px-4 py-2 font-medium tracking-wider">Selling Price</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for r in page_obj %}
+                        <tr class="{% cycle 'bg-white' 'bg-fuchsia-50' %} text-xs text-center">
+                            <td class="px-4 py-2 text-gray-700">{{ forloop.counter }}</td>
+                            <td class="px-4 py-2 text-gray-700">{{ r.updated|default_if_none:"N/A" }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ r.drug.generic_name|default_if_none:'N/A'|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ r.drug.strength|default_if_none:'N/A'|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ r.drug.trade_name|default_if_none:'N/A'|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ r.quantity|default_if_none:''|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">&#x20A6;{{ r.drug.selling_price|default_if_none:'N/A'|upper }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+<!-- Pagination and Back Button -->
+<div class="mt-4 flex items-center justify-between">
+    <div>
+        <p class="text-sm text-gray-600">
+            Showing page <span class="font-medium">{{ page_obj.number }}</span> of <span class="font-medium">{{ page_obj.paginator.num_pages }}</span>
+        </p>
+    </div>
+    <div class="flex space-x-2">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-white bg-fuchsia-600 hover:bg-fuchsia-700">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-white bg-fuchsia-600 hover:bg-fuchsia-700">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-white bg-fuchsia-600 hover:bg-fuchsia-700">
+                <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-white bg-fuchsia-600 hover:bg-fuchsia-700">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% endif %}
+    </div>
+</div>
+    </div>
+{% endblock %}
