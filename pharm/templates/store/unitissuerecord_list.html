@@ -1,6 +1,17 @@
     {% extends "base.html" %}
 
     {% block content %}
+    <section class="text-center border-cyan-700 p-1 m-1">
+        {% for message in messages %}
+        <div class="">
+          <div class="bg-yellow-100 rounded-2xl text-sm p-4 w-fit mx-auto" uk-alert>
+            <a href class="uk-alert-close font-bold" uk-close></a>
+            <p class="text-green-700 font-semibold">{{ message }}</p> 
+          </div>
+        </div>
+        {% endfor %}
+      </section>
+
     <div class="container mx-auto p-4">
         <h2 class="text-2xl font-semibold text-purple-800">Unit Issue Records</h2>        
         <div class="mt-4 bg-gray-100 shadow overflow-hidden sm:rounded-lg">

@@ -2,10 +2,10 @@
 {% load static %}
 {% block title %}DISPENSARY RECORD{% endblock %}
 {% if dispensary_locker %}
-{%block page_title%}<div class="flex justify-center uppercase"><a href="{% url 'pharm:unit_dispensary' dispensary_locker.unit.id %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ dispensary_locker.unit.name }} Dispensary Record</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{% url 'pharm:unit_dashboard' dispensary_locker.unit.id %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ dispensary_locker.unit.name }} Dispensary Record</div>{%endblock%}
 {% endif %}
 {% block content %}
-<div class="p-2 mx-auto w-fit shadow-2xl overflow-hidden mt-4 rounded-xl bg-gray-200">
+<div class="p-2 mx-20 w-fit shadow-2xl overflow-hidden mt-4 rounded-xl bg-gray-200">
      <!-- Filter Form -->
     <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-4">
         <div class="px-4 py-5 sm:p-6">

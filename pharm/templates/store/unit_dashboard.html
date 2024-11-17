@@ -4,7 +4,14 @@
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'pharm:store_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{store.name}} DASHBOARD</div>{%endblock%}
 {%block content %}
    <div class="md:mx-auto mt-4 rounded-xl w-fit ounded-2xl p-6 md:p-10 mx-2 shadow-xl bg-white">
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <a href="{% url 'pharm:prescription_list' store.pk  %}" class="block group">
+        <div class="bg-amber-600 group-hover:bg-white text-white group-hover:text-amber-600 rounded-xl shadow-md group-hover:shadow-lg border-2 border-amber-200 transition duration-300 h-full flex flex-col justify-center items-center p-4">
+          <i class="fas fa-file-prescription text-4xl mb-3 transition-transform group-hover:scale-110"></i>
+          <div class="font-medium text-xs text-center">INCOMING PRESCRIPTION</div>
+        </div>
+      </a>
+
       <a href="{% url 'pharm:unit_bulk_locker' store.pk %}" class="block group">
         <div class="bg-blue-600 group-hover:bg-white text-white group-hover:text-blue-600 rounded-xl shadow-md group-hover:shadow-lg border-2 border-blue-200 transition duration-300 h-full flex flex-col justify-center items-center p-4">
           <i class="fas fa-warehouse text-4xl mb-3 transition-transform group-hover:scale-110"></i>
@@ -16,6 +23,12 @@
         <div class="bg-purple-600 group-hover:bg-white text-white group-hover:text-purple-600 rounded-xl shadow-md group-hover:shadow-lg border-2 border-purple-200 transition duration-300 h-full flex flex-col justify-center items-center p-4">
           <i class="fas fa-prescription-bottle-alt text-4xl mb-3 transition-transform group-hover:scale-110"></i>
           <div class="font-medium text-xs text-center">DISPENSARY LOCKER</div>
+        </div>
+      </a>
+      <a href=" {% url 'pharm:dispensed_list' store.dispensary_locker.id %}" class="block group">
+        <div class="bg-sky-600 group-hover:bg-white text-white group-hover:text-sky-600 rounded-xl shadow-md group-hover:shadow-lg border-2 border-sky-200 transition duration-300 h-full flex flex-col justify-center items-center p-4">
+          <i class="fas fa-file-archive text-4xl mb-3 transition-transform group-hover:scale-110"></i>
+          <div class="font-medium text-xs text-center">DISPENSARY RECORD</div>
         </div>
       </a>
       <a href="{% url 'pharm:unit_transfer' store.pk %}" class="block group">
@@ -44,18 +57,5 @@
       </a>
     </div>
   </div>
-  <div class="w-fit mx-auto  mt-4 rounded-xl  p-2 shadow-black shadow-2xl bg-zinc-200 text-center">
-    <div class="grid grid-cols-1 md:flex md:flex-row p-4 md:justify-center md:items-center gap-6 md:gap-10 uppercase">
-      <a href="{% url 'pharm:prescription_list' store.pk %}" class="">
-          <div class="text-xs text-white px-16 py-8 bg-amber-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-zinc-600 focus:opacity-10">
-              incoming prescriptions
-          </div>
-      </a>
-      <a href="{% url 'pharm:dispense_list' store.pk %}" class="">
-          <div class="text-xs text-white px-16 py-8 bg-green-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-green-600 focus:opacity-10">
-              dispensed list
-          </div>
-      </a>
-  </div>
-        </div>
+
 {%endblock%}

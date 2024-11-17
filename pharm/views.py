@@ -285,7 +285,7 @@ def create_record(request):
                     
                     if any_saved:
                         messages.success(request, 'Drugs issued successfully.')
-                        return redirect('record')
+                        return redirect('pharm:record')
                     else:
                         messages.warning(request, 'No drugs were issued. Please fill in at least one form.')
             except ValidationError as e:
@@ -302,7 +302,7 @@ class RecordUpdateView(LoginRequiredMixin, UpdateView):
     model = Record
     form_class = RecordForm
     template_name = 'store/update_record.html'
-    success_url = reverse_lazy('record')
+    success_url = reverse_lazy('pharm:record')
 
     def form_valid(self, form):
         try:
@@ -800,7 +800,7 @@ def unitissuerecord(request, unit_id):
                             locker_inventory.quantity += instance.quantity
                             locker_inventory.save()
                     messages.success(request, 'Successfully Transfered')
-                    return redirect('unit_transfer', pk=unit_id)
+                    return redirect('pharm:unit_transfer', pk=unit_id)
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
     else:
@@ -883,7 +883,7 @@ def dispensaryissuerecord(request, unit_id):
                             locker_inventory.quantity += instance.quantity
                             locker_inventory.save()
                     messages.success(request, 'Dispensary Locker Restocked Successfully')
-                    return redirect('unit_bulk_locker', pk=unit_id)
+                    return redirect('pharm:unit_bulk_locker', pk=unit_id)
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
         else:
@@ -1066,30 +1066,6 @@ class UnitIssueRecordListView(LoginRequiredMixin,UnitGroupRequiredMixin,ListView
     def get_queryset(self):
         return DispenseRecord.objects.all().order_by('-date_issued')
     
-
-# @login_required
-# def dispenserecord(request, dispensary_id):
-#     dispensary = get_object_or_404(DispensaryLocker, id=dispensary_id)
-#     DispensaryFormSet = modelformset_factory(DispenseRecord, form=DispenseRecordForm, extra=2)
-    
-#     if request.method == 'POST':
-#         formset = DispensaryFormSet(request.POST, queryset=DispenseRecord.objects.none(), form_kwargs={'dispensary': dispensary})
-#         if formset.is_valid():
-#             try:
-#                 with transaction.atomic():
-#                     instances = formset.save(commit=False)
-#                     for instance in instances:
-#                         instance.dispensary = dispensary
-#                         instance.dispensed_by = request.user
-#                         instance.save()
-
-#                     messages.success(request, 'Drugs dispensed successfully')
-#                     return redirect('unit_dispensary', pk=dispensary.unit.id)
-#             except Exception as e:
-#                 messages.error(request, f"An error occurred: {str(e)}")
-#     else:
-#         formset = DispensaryFormSet(queryset=DispenseRecord.objects.none(), form_kwargs={'dispensary': dispensary})
-#     return render(request, 'store/dispense_form.html', {'formset': formset, 'dispensary': dispensary})
 
 @login_required
 def dispenserecord(request, dispensary_id, patient_id):
@@ -1558,51 +1534,6 @@ def create_prescription(request, file_no ):
     }
     return render(request, 'dispensary/prescription.html', context)
 
-@login_required
-def create_dispensary(request, prescription_id):
-    prescription = get_object_or_404(Prescription, id=prescription_id)
-    
-    if request.method == 'POST':
-        form = DispenseForm(request.POST)
-        if form.is_valid() and form.cleaned_data['confirm']:
-            try:
-                # Check if prescription can be dispensed
-                can_dispense, message = prescription.can_be_dispensed()
-                if not can_dispense:
-                    messages.error(request, message)
-                    return redirect('pharm:prescription_list')
-
-                # Create Dispensary instance
-                dispensary = Dispensary.objects.create(
-                    prescription=prescription,
-                    dispensed_by=request.user
-                )
-
-                messages.success(request, 'Drug dispensed successfully.')
-                return redirect('pharm:prescription_list')
-
-            except ValidationError as e:
-                messages.error(request, str(e))
-                return redirect('pharm:prescription_list')
-            except Exception as e:
-                messages.error(request, f'An error occurred: {str(e)}')
-                return redirect('pharm:prescription_list')
-    else:
-        form = DispenseForm()
-        
-        # Check if prescription can be dispensed before showing the form
-        can_dispense, message = prescription.can_be_dispensed()
-        if not can_dispense:
-            messages.error(request, message)
-            return redirect('pharm:prescription_list')
-
-    context = {
-        'form': form,
-        'prescription': prescription,
-        'current_stock': prescription.drug.current_balance if prescription.drug else 0,
-    }
-    return render(request, 'dispensary/confirm_dispense.html', context)
-
 
 class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
     model = Prescription
@@ -1634,36 +1565,6 @@ class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['store'] = get_object_or_404(Unit, pk=self.kwargs['store_pk'])
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-        context['query'] = self.request.GET.get('q', '')
-        return context
-
-class DispensaryListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
-    model = Dispensary
-    template_name = 'dispensary/dispense_list.html'
-    context_object_name = 'dispensed'
-    paginate_by = 10
-
-    def get_queryset(self):
-        store_pk = self.kwargs.get('store_pk')
-        queryset = super().get_queryset().filter(
-            prescription__unit_id=store_pk
-        ).order_by('-dispensed_date')
-        
-        query = self.request.GET.get('q')
-        if query:
-            queryset = queryset.filter(
-                Q(patient__first_name__icontains=query) |
-                Q(patient__last_name__icontains=query) |
-                Q(patient__other_name__icontains=query) |
-                Q(patient__file_no__icontains=query)|
-                Q(patient__phone__icontains=query)|
-                Q(patient__title__icontains=query)
-            )
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['store'] = get_object_or_404(Unit, pk=self.kwargs['store_pk'])
         context['query'] = self.request.GET.get('q', '')
         return context
 
@@ -1721,30 +1622,6 @@ class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
         context['prescription'] = self.object  # Pass the prescription object to the template
         return context
 
-
-# class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
-#     model = Prescription
-#     form_class = PrescriptionUpdateForm
-#     template_name = 'dispensary/update_prescription.html'
-#     success_url = reverse_lazy('pharm:prescription_list')
-
-#     def form_valid(self, form):
-#         prescription = form.save(commit=False)
-#         if prescription.quantity and prescription.drug:
-#             if not prescription.payment:
-#                 paypoint = Paypoint.objects.create(
-#                     user=self.request.user,
-#                     patient=prescription.patient,
-#                     service=prescription.drug.name,
-#                     unit='pharmacy',
-#                     price=prescription.drug.cost_price * prescription.quantity,
-#                     status=False
-#                 )
-#                 prescription.payment = paypoint
-#         prescription.save()
-#         messages.success(self.request, 'Prescription updated successfully.')
-#         return super().form_valid(form)
-    
 class PharmPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/pharm_pay_list.html'

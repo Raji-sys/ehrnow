@@ -21,7 +21,7 @@
                     {{ form.non_field_errors }}
                 </div>
                 {% endif %}
-                <div class="grid grid-cols-1 gap-2 md:grid-cols-4 border-t p-2">
+                <div class="grid grid-cols-1 gap-2 md:grid-cols-3 border-t p-2">
                     {% for field in form.visible_fields %}
                     <div class="space-y-1">
                         <label class="block text-xs font-medium text-gray-700">{{ field.label }}</label>
@@ -48,7 +48,7 @@
     function initializePage() {
       function load_drugs(index) {
         const categoryId = document.getElementsByName(`form-${index}-category`)[0].value;
-        const url = `/get_drugs_by_category/${categoryId}/`;
+        const url = `/pharm/get_drugs_by_category/${categoryId}/`;
     
         fetch(url)
           .then(response => response.json())

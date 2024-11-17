@@ -59,9 +59,6 @@ urlpatterns=[
     path('main-store-worth/', StoreWorthView.as_view(), name='main_store_value'),
     path('unit-worth/<int:pk>', UnitWorthView.as_view(), name='unit_value'),
 
-  # Dispensary
-    path('pharmacy/dispensary/dispensed/<int:store_pk>/', views.DispensaryListView.as_view(), name='dispense_list'),
-    path('pharmacy/dispensary/add-dispense/<int:prescription_id>/', views.create_dispensary, name='add_dispense'),
     
     # Prescription
     path('pharmacy/prescription/prescribed/<int:store_pk>/', views.PrescriptionListView.as_view(), name='prescription_list'),
@@ -69,7 +66,9 @@ urlpatterns=[
     path('pharmacy/prescription/update/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
 
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
-    path('unit/dispensary/<int:dispensary_id>/dispense/', views.dispenserecord, name='dispense'),
+
+  # Dispensary
+    path('unit/dispensary/<int:dispensary_id>/dispense/<int:patient_id>', views.dispenserecord, name='dispense'),
     path('unit/dispensary/dispensed-list/<int:pk>/', DispenseRecordView.as_view(), name='dispensed_list'),
     path('dispense-report/<int:pk>/', views.dispense_report, name='dispense_report'),
     path('dispense-pdf/', views.dispense_pdf, name='dispense_pdf'),

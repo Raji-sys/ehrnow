@@ -3,6 +3,17 @@
 {% block title %}{{ store.name }} - EXPIRED AND DAMAGED DRUGS {% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{% url 'pharm:unit_dashboard' store.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ store.name }} EXPIRED AND DAMAGED Records</div>{%endblock%}
 {% block content %}
+<section class="text-center border-cyan-700 p-1 m-1">
+    {% for message in messages %}
+    <div class="">
+      <div class="bg-yellow-100 rounded-2xl text-sm p-4 w-fit mx-auto" uk-alert>
+        <a href class="uk-alert-close font-bold" uk-close></a>
+        <p class="text-green-700 font-semibold">{{ message }}</p> 
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
 <div class="p-2 mx-auto w-fit shadow-2xl overflow-hidden mt-4 rounded-xl bg-white">
         <div class="flex justify-end items-center m-2 space-x-2">
             <a href="{% url 'pharm:box_record_create' store.id %}"
