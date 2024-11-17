@@ -14,7 +14,7 @@ from import_export import fields, resources
 class DrugAdminForm(forms.ModelForm):
     class Meta:
         model = Drug
-        fields = ['generic_name','trade_name','strength','category','supplier','dosage_form','pack_size','cost_price','total_purchased_quantity','expiration_date']  
+        fields = ['name','trade_name','strength','category','supplier','dosage_form','pack_size','cost_price','total_purchased_quantity','expiration_date']  
 
 
 @admin.register(Category)
@@ -30,7 +30,7 @@ class DrugResource(resources.ModelResource):
     class Meta:
         model = Drug
         import_id_fields = ('id',)
-        fields = ('id', 'date_added', 'supply_date', 'strength', 'generic_name', 'trade_name', 'category', 'supplier', 'dosage_form', 'pack_size', 'cost_price', 'selling_price', 'total_purchased_quantity', 'expiration_date', 'added_by', 'entered_expiry_period', 'updated_at')
+        fields = ('id', 'date_added', 'supply_date', 'strength', 'name', 'trade_name', 'category', 'supplier', 'dosage_form', 'pack_size', 'cost_price', 'selling_price', 'total_purchased_quantity', 'expiration_date', 'added_by', 'entered_expiry_period', 'updated_at')
 
     def before_import_row(self, row, **kwargs):
         if 'expiration_date' in row and row['expiration_date']:
@@ -56,9 +56,9 @@ class DrugAdmin(ImportMixin, ExportMixin, admin.ModelAdmin):
     resource_class = DrugResource
     form = DrugAdminForm
     exclude = ('added_by', 'balance', 'total_value')
-    list_display = ['generic_name','trade_name','strength','category','supplier','dosage_form','pack_size','cost_price','total_purchased_quantity','current_balance','total_value','expiration_date','added_by', 'supply_date','updated_at']
+    list_display = ['name','trade_name','strength','category','supplier','dosage_form','pack_size','cost_price','total_purchased_quantity','current_balance','total_value','expiration_date','added_by', 'supply_date','updated_at']
     list_filter = ['supply_date','category','supplier','added_by']
-    search_fields = ['generic_name']
+    search_fields = ['name']
     list_per_page=10
 
     def total_value(self, obj):

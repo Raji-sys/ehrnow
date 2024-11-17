@@ -37,8 +37,12 @@
   <div class="md:flex md:justify-center grid grid-cols-1 align-middle gap-4 p-4">
     <input type="submit" value="cost" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
 bg-green-700 text-white py-2 px-4 rounded shadow-lg hover:shadow-xl">
-    <a href="{%url 'pharm:prescription_list' %}" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-    bg-rose-700 text-white py-2 px-4 rounded shadow-lg hover:shadow-xl">cancel</a>
+<a href="{% url 'pharm:prescription_list' store_pk=prescription.unit.pk %}" 
+   class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+   bg-rose-700 text-white py-2 px-4 rounded shadow-lg hover:shadow-xl">
+   Cancel
+</a>
+
   </div>
   </form>
   </div>

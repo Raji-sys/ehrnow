@@ -1,17 +1,10 @@
 {% extends "base.html" %}
 {% block title %}{{ unit.name }} | RETURN DRUGS FORM{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{% url 'pharm:return_drugs_list' unit.id %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ unit.name }} return drugs form</div>{%endblock%}
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-        <div class="flex justify-center p-4 gap-4 text-xl">
-            <div>
-                <a href="{% url 'return_drugs_list' unit.id %}"><i class="fa-solid fa-arrow-left"></i></a>
-            </div>
-            <div>
-                <h2 class="text-center text-teal-700 uppercase text-lg">{{ unit.name }} return drugs form</h2>
-            </div>
-        </div>
-        {% if messages %}
+           {% if messages %}
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
             {% for message in messages %}
             <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>

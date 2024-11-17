@@ -119,7 +119,7 @@ class Drug(models.Model):
     date_added = models.DateField(auto_now_add=True,null=True)
     supply_date = models.DateField(null=True)
     strength = models.CharField('STRENGTH',max_length=100, null=True, blank=True)
-    generic_name = models.CharField('GENERIC NAME',max_length=100, null=True, blank=True)
+    name = models.CharField('GENERIC NAME',max_length=100, null=True, blank=True)
     trade_name = models.CharField('TRADE NAME',max_length=100, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name='drug_category')
     supplier = models.CharField('SUPPLIER',max_length=100, null=True, blank=True)
@@ -143,7 +143,7 @@ class Drug(models.Model):
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return self.generic_name
+        return self.name
 
     @classmethod
     def total_store_quantity(cls):
@@ -260,7 +260,7 @@ class UnitStore(models.Model):
         return self.quantity * self.drug.cost_price
 
     def __str__(self):
-        return f"{self.quantity} of {self.drug.generic_name} in {self.unit.name}"
+        return f"{self.quantity} of {self.drug.name} in {self.unit.name}"
 
 class DispensaryLocker(models.Model):
     unit = models.OneToOneField(Unit, on_delete=models.CASCADE, related_name='dispensary_locker')
@@ -319,52 +319,8 @@ class UnitIssueRecord(models.Model):
         super().save(*args, **kwargs)
 
 
-class DispenseRecord(models.Model):
-    dispensary = models.ForeignKey(DispensaryLocker, on_delete=models.CASCADE, related_name='issuing_dispensary')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name='dispensary_category')
-    drug = models.ForeignKey(Drug, on_delete=models.CASCADE, related_name='dispense_drugs')
-    quantity = models.PositiveIntegerField('QTY ISSUED', null=True, blank=True)
-    patient_info = models.CharField(max_length=100,null=True)
-    dispensed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    dispense_date = models.DateTimeField(auto_now=True)
-    updated = models.DateField(auto_now=True)
-    
-    def clean(self):
-        pass    
-    
-    def save(self, *args, **kwargs):
-        dispense_locker = LockerInventory.objects.get(locker=self.dispensary, drug=self.drug)
-        if self.quantity > dispense_locker.quantity:
-            raise ValidationError(_("Not enough drugs in the unit store."), code='invalid_quantity')
-        # Deduct from the dispensary locker
-        dispense_locker.quantity -= self.quantity
-        dispense_locker.save()
-        super().save(*args, **kwargs)
-
-
-class ReturnedDrugs(models.Model):
-    unit = models.ForeignKey('Unit', on_delete=models.CASCADE, related_name='returned_drugs',null=True)  # New field
-    patient_info = models.CharField(max_length=100,null=True)
-    category = models.ForeignKey('Category', on_delete=models.CASCADE, null=True, blank=True, related_name='returned_category')
-    drug = models.ForeignKey('Drug', on_delete=models.CASCADE, null=True)
-    quantity = models.IntegerField(null=True)
-    date = models.DateField(null=True)
-    received_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='drug_returning')
-    updated = models.DateTimeField(auto_now=True)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.drug.total_purchased_quantity += self.quantity
-        self.drug.save()
-
-    def __str__(self):
-        return f"{self.quantity} of {self.drug} returned to {self.unit} on {self.date}"
-
-    class Meta:
-        verbose_name_plural = 'returned drugs record'
-
-
 class Prescription(models.Model):
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='dispense_unit',null=True,blank=True)
     patient = models.ForeignKey(PatientData, null=True, blank=True, on_delete=models.CASCADE, related_name='prescribed_drugs')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="prescribed_drug_catgory")
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="prescribed_drug")
@@ -404,8 +360,53 @@ class Prescription(models.Model):
         verbose_name_plural = 'prescription record'
 
 
-class Dispensary(models.Model):
+class DispenseRecord(models.Model):
+    dispensary = models.ForeignKey(DispensaryLocker, on_delete=models.CASCADE, related_name='issuing_dispensary')
     patient = models.ForeignKey(PatientData, null=True, blank=True, on_delete=models.CASCADE, related_name='dispensed_drugs')
+    prescription = models.OneToOneField(Prescription, on_delete=models.CASCADE, related_name='dispensary_rel',null=True,blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name='dispensary_category')
+    drug = models.ForeignKey(Drug, on_delete=models.CASCADE, related_name='dispense_drugs')
+    quantity = models.PositiveIntegerField('QTY ISSUED', null=True, blank=True)
+    dispensed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    dispense_date = models.DateTimeField(auto_now=True)
+    updated = models.DateField(auto_now=True)
+    
+    def clean(self):
+        pass    
+    
+    def save(self, *args, **kwargs):
+        dispense_locker = LockerInventory.objects.get(locker=self.dispensary, drug=self.drug)
+        if self.quantity > dispense_locker.quantity:
+            raise ValidationError(_("Not enough drugs in the unit store."), code='invalid_quantity')
+        # Deduct from the dispensary locker
+        dispense_locker.quantity -= self.quantity
+        dispense_locker.save()
+        super().save(*args, **kwargs)
+
+
+class ReturnedDrugs(models.Model):
+    unit = models.ForeignKey('Unit', on_delete=models.CASCADE, related_name='returned_drugs',null=True)  # New field
+    patient_info = models.CharField(max_length=100,null=True)
+    category = models.ForeignKey('Category', on_delete=models.CASCADE, null=True, blank=True, related_name='returned_category')
+    drug = models.ForeignKey('Drug', on_delete=models.CASCADE, null=True)
+    quantity = models.IntegerField(null=True)
+    date = models.DateField(null=True)
+    received_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='drug_returning')
+    updated = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.drug.total_purchased_quantity += self.quantity
+        self.drug.save()
+
+    def __str__(self):
+        return f"{self.quantity} of {self.drug} returned to {self.unit} on {self.date}"
+
+    class Meta:
+        verbose_name_plural = 'returned drugs record'
+
+class Dispensary(models.Model):
+    patient = models.ForeignKey(PatientData, null=True, blank=True, on_delete=models.CASCADE, related_name='dispensed')
     prescription = models.OneToOneField(Prescription, on_delete=models.CASCADE, related_name='dispensary',null=True,blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug_catgory")
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True, blank=True, related_name="dispensary_drug")
@@ -448,21 +449,3 @@ class Dispensary(models.Model):
         return f"{self.prescription.patient} - {self.prescription.drug}"
     class Meta:
         verbose_name_plural = 'dispensary record'
-
-
-class Purchase(models.Model):
-    drug = models.ForeignKey(Drug, on_delete=models.CASCADE, null=True,)
-    quantity_purchased = models.IntegerField()
-    # expiration_date = models.DateField(null=True, blank=True)
-    purchase_date = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.drug.total_purchased_quantity += self.quantity_purchased
-        self.drug.save()
-
-    def __str__(self):
-        return f"{self.quantity_purchased} of {self.drug.name} purchased on {self.purchase_date}"
-
-    class Meta:
-        verbose_name_plural = 'purchases record'

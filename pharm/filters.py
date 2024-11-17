@@ -1,6 +1,6 @@
 from tabnanny import verbose
 import django_filters
-from .models import Dispensary, Drug, Category, Record, Prescription
+from .models import Drug, Category, Record, Prescription
 from django import forms
 import django_filters
 from .models import *
@@ -404,16 +404,16 @@ class ReturnDrugFilter(django_filters.FilterSet):
 
 
 
-class DispenseFilter(django_filters.FilterSet):
-    patient_no=django_filters.CharFilter(label='FILE NUMBER', field_name="patient__file_no",lookup_expr='exact')
-    dispense_date1 = django_filters.DateFilter(label="DIS DATE R1",field_name='dispensed_date',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
-    dipsense_date2 = django_filters.DateFilter(label="DIS DATE R2",field_name='dispensed_date',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
-    drug = django_filters.CharFilter(label="DRUG",field_name='drug__name', lookup_expr='iexact')
-    dispensed_by = django_filters.CharFilter(label="DISPENSED BY",field_name='dispensed_by__username', lookup_expr='iexact')
+# class DispenseFilter(django_filters.FilterSet):
+#     patient_no=django_filters.CharFilter(label='FILE NUMBER', field_name="patient__file_no",lookup_expr='exact')
+#     dispense_date1 = django_filters.DateFilter(label="DIS DATE R1",field_name='dispensed_date',lookup_expr='gte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+#     dipsense_date2 = django_filters.DateFilter(label="DIS DATE R2",field_name='dispensed_date',lookup_expr='lte',widget=forms.DateInput(attrs={'type':'date'}),input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])    
+#     drug = django_filters.CharFilter(label="DRUG",field_name='drug__name', lookup_expr='iexact')
+#     dispensed_by = django_filters.CharFilter(label="DISPENSED BY",field_name='dispensed_by__username', lookup_expr='iexact')
 
-    class Meta:
-        model = Dispensary
-        exclude=['remark','quantity','quantity_deducted','category','patient','payment','dispensed_date']
+#     class Meta:
+#         model = Dispensary
+#         exclude=['remark','quantity','quantity_deducted','category','patient','payment','dispensed_date']
 
 
 class PrescriptionFilter(django_filters.FilterSet):

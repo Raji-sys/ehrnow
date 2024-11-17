@@ -6,8 +6,6 @@ app_name='pharm'
 
 urlpatterns=[
     path('pharmacy/',views.index, name='index'),
-    path('pharmacy/inventory/',views.pharm_inventory, name='pharm_inventory'),
-    path('pharmacy/dispensary/',DispensaryView.as_view(), name='dispensary'),
     
     #Inventory
     path('main-store/', MainStoreDashboardView.as_view(), name='main_store'),
@@ -62,12 +60,12 @@ urlpatterns=[
     path('unit-worth/<int:pk>', UnitWorthView.as_view(), name='unit_value'),
 
   # Dispensary
+    path('pharmacy/dispensary/dispensed/<int:store_pk>/', views.DispensaryListView.as_view(), name='dispense_list'),
     path('pharmacy/dispensary/add-dispense/<int:prescription_id>/', views.create_dispensary, name='add_dispense'),
-    path('pharmacy/dispensary/dispensed/', views.DispensaryListView.as_view(), name='dispensed_list'),
     
     # Prescription
+    path('pharmacy/prescription/prescribed/<int:store_pk>/', views.PrescriptionListView.as_view(), name='prescription_list'),
     path('pharmacy/prescription/prescribe/<str:file_no>/', views.create_prescription, name='add_prescription'),
-    path('pharmacy/prescription/prescribed/', views.PrescriptionListView.as_view(), name='prescription_list'),
     path('pharmacy/prescription/update/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
 
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
