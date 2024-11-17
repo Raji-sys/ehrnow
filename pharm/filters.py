@@ -2,7 +2,7 @@ from tabnanny import verbose
 import django_filters
 from .models import Dispensary, Drug, Category, Record, Prescription
 from django import forms
-
+from ehr.models import Paypoint
 
 class DrugFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(label="DRUG",field_name='name', lookup_expr='iexact')    
@@ -60,3 +60,32 @@ class PrescriptionFilter(django_filters.FilterSet):
     class Meta:
         model = Prescription
         exclude=['updated','remark','quantity','category','patient','payment','category','dispensed','status']
+
+# class PharmPayFilter(django_filters.FilterSet):
+#     patient = django_filters.CharFilter(
+#         label='FILE NO',
+#         field_name="patient__file_no",
+#         lookup_expr='iexact'
+#     )
+#     service = django_filters.CharFilter(
+#         label='DRUG',
+#         field_name="service",
+#         lookup_expr='iexact'
+#     )
+#     updated1 = django_filters.DateFilter(
+#         label="DATE1",
+#         field_name="updated",
+#         lookup_expr='lte',
+#         widget=forms.DateInput(attrs={'type': 'date'}),
+#         input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y']
+#     )
+#     updated2 = django_filters.DateFilter(
+#         label="DATE2",
+#         field_name="updated",
+#         lookup_expr='gte',
+#         widget=forms.DateInput(attrs={'type': 'date'}),
+#         input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y']
+#     )
+#     class Meta:
+#         model = Paypoint
+#         fields = ['patient','service',]

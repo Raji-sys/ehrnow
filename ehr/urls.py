@@ -62,11 +62,12 @@ urlpatterns = [
     path('revenue/radiology-list/', RadiologyPayListView.as_view(), name='radiology_pay_list'),
     path('revenue/visit-list/', VisitPayListView.as_view(), name='visit_pay_list'),
     path('revenue/billing-list/', BillingPayListView.as_view(), name='bill_pay_list'),
-    path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
+
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
     # path('revenue/receipt/', views.receipt_pdf, name='receipt_pdf'),
     path('revenue/receipt/print/', views.thermal_receipt, name='thermal_receipt'),
+    path('revenue/receipt/pharm/', views.pharm_receipt, name='pharm_receipt'),
     path('revenue/print-receipt/', views.print_receipt_pdf, name='print_receipt'),
     #VITALS
     path('nursing-station/vital_signs/<str:file_no>/', VitalSignCreateView.as_view(), name='vital_signs'),
@@ -141,7 +142,7 @@ urlpatterns = [
    
     #wallet
     path('patient/<int:patient_pk>/fund-wallet/', FundWalletView.as_view(), name='fund_wallet'),
-    path('revenue/wallet/transactions/', AllTransactionsListView.as_view(), name='all_transactions'),
+    path('revenue/wallet/transactions/', AllTransactionsListView.as_view(), name='wallet_transactions'),
     # path('patient/<str:file_no>/transactions/', PatientTransactionsListView.as_view(), name='patient_transactions'),
     path('patient/add-archive/<str:file_no>/',ArchiveCreateView.as_view(),name='new_archive'),
     path('patient/updated-archive/<int:pk>/',ArchiveUpdateView.as_view(),name='update_archive'),

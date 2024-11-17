@@ -10,6 +10,10 @@
       <i class="fa-solid fa-arrow-left fa-lg"></i>
     </a>
     <span class="text-sm font-semibold">ALL TRANSACTIONS</span>
+    <a href="{%url 'wallet_transactions' %}" 
+    class="px-3 py-1 text-xs rounded bg-sky-600 text-white">
+    all wallet
+  </a>
   </div>
 
   <!-- Middle section: Filter buttons -->
@@ -42,13 +46,16 @@
     </span>
     {% endif %}
     {% if request.GET.urlencode %}
-    <div class="flex space-x-2">
-      <a href="?" class="text-sky-600 hover:text-sky-700">
-        <i class="fa-solid fa-rotate"></i>
-      </a>
-      <a href="{% url 'thermal_receipt' %}?{{request.GET.urlencode}}" class="text-sky-600 hover:text-sky-700">
-        <i class="fa-solid fa-print"></i>
-      </a>
+    <div class="flex space-x-2 mx-2">
+        <a href="?" class="text-sky-600 hover:text-sky-700">
+            <i class="fa-solid fa-rotate fa-xl"></i>
+        </a>
+        <a href="{% url 'pharm_receipt' %}?{{request.GET.urlencode}}" 
+           class="text-sky-600 hover:text-sky-700" 
+           target="_blank"
+           uk-tooltip="note, only paid items will appear on the receipt">
+            <i class="fa-solid fa-print fa-xl"></i>
+        </a>
     </div>
     {% endif %}
   </div>

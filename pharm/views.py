@@ -378,19 +378,22 @@ class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-
 class PharmPayListView(ListView):
     model = Paypoint
-    template_name = 'dispensary/pharmacy_transaction.html'
+    template_name = 'ehr/revenue/pharm_pay_list.html'
     context_object_name = 'pharm_pays'
     paginate_by = 10
-
+    
     def get_queryset(self):
-        updated = super().get_queryset().filter(pharm_payment__isnull=False).order_by('-updated')
+        # Get pharmacy-specific queryset using pharm_payment__isnull=False
+        updated = super().get_queryset().filter(
+            pharm_payment__isnull=False
+        ).order_by('-updated')
+        
+        # Apply the filter and return the queryset
         pay_filter = PayFilter(self.request.GET, queryset=updated)
         return pay_filter.qs
-        # return Paypoint.objects.filter(pharm_payment__isnull=False).order_by('-updated')
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pay_total = self.get_queryset().count()

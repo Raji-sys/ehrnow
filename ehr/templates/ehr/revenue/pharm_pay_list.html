@@ -1,18 +1,32 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}PHARMACY TRANSACTION HISTORY{%endblock%}
-{%block page_title%}<div class="flex justify-center p-2"> <div><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PHARMACY TRANSACTION HISTORY</div>
+{%block page_title%}<div class="flex justify-center p-2"> <div><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PHARMACY TRANSACTION</div>
 <div class="">
   <span class="shadow-sm shadow-blue-900 gap-2 bg-blue-700 text-white uppercase text-xs border-b-2 border-blue-900 py-2 px-4 rounded-xl mx-2 w-fit">
     <span class=" shadow-white text-xs p-1 rounded-full bg-white text-blue-900">{{pay_total}}</span>&nbsp;transactions 
-        </span>
-      </div>
+    </span>
+  </div>
       <div class="">
         <span class="uppercase text-xs font-semibold bg-green-200 p-1 rounded">
       Total Worth: <span class="text-green-700 uppercase text-xs font-bold">
         &#x20A6;{{ total_worth|floatformat:2 }}
       </span>
     </span>
+  </div>
+    <div>
+      {% if request.GET.urlencode %}
+      <div class="flex space-x-2 mx-2">
+          <a href="?" class="text-sky-600 hover:text-sky-700">
+              <i class="fa-solid fa-rotate fa-xl"></i>
+          </a>
+          <a href="{% url 'pharm_receipt' %}?{{request.GET.urlencode}}" 
+          class="text-sky-600 hover:text-sky-700"
+          target="_blank">
+          <i class="fa-solid fa-print fa-xl"></i>
+        </a>
+      </div>
+      {% endif %}
     </div>
 </div>
 {%endblock%}
@@ -30,6 +44,30 @@
         {% endfor %}
       </section> 
     <div class=" mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-blue-50">
+      <div class="text-sky-900">
+        <form method="get" class="text-xs text-center">
+          {% for field in payFilter.form %}
+          {{field.errors}}
+          {% endfor %}
+            <div class="text-center flex flex-row flex-wrap gap-1 justify-center">
+                {% for field in payFilter.form %}
+                <div class="flex justify-center items-start flex-col">
+                  <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
+                  <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
+                  {%if field.value%} value="{{field.value}}"{%endif%}
+                  class="text-center text-xs focus:outline-none w-fit text-sky-950
+                  rounded shadow-sm shadow-sky-900 border-sky-900 border">
+                  <span class="form-error">{{ field.errors }}</span>
+                </div>
+                  {% endfor %}
+                  <div class="mt-4 flex justify-center align-middle ">
+                    <button type="submit" class="shadow-sm shadow-sky-900 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-sky-600 bg-sky-600 text-white rounded hover:border-sky-700 ">
+                      <i class="fa-solid fa-search fa-xl "></i>
+                  </button>
+                    </div>
+                  </div>
+                  </form>
+    </div>
       <div class="overflow-x-auto px-4 md:px-10 m-4">
         <table class="min-w-full divide-y divide-blue-200">
           <thead class="bg-blue-50">
@@ -222,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentPayId = this.getAttribute('data-id');
             messagesContainer.classList.add('hidden'); // Hide any existing messages
             
-            fetch(`/revenue/update-payment/${currentPayId}/?next={% url "pharm_pay_list" %}`, {
+            fetch(`/revenue/update-payment/${currentPayId}/?next={% url "pharm:pharm_pay_list" %}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }

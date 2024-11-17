@@ -276,8 +276,8 @@ class Paypoint(models.Model):
     unit = models.CharField(max_length=100, null=True, blank=True)  
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     status=models.BooleanField(default=False)
+    created = models.DateField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    created = models.DateField(auto_now=True)
     PAYMENT_METHODS = [
         ('CASH', 'CASH'),
         ('WALLET', 'WALLET'),
