@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PRESCRIPTION SHEET</title>
+</head>
+<body>
+    <div class="prescriptions-container">
+        <div class="header">
+            <h1 class="uppercase">EMR NOW PRESCRIPTION SHEET</h1>
+            <h4 class="uppercase">TEST CLINICS AND SURGERY</h4>
+            <div class="header-line"></div>
+        </div>
+        
+        <div class="result-section">
+            <div class="patient-info">
+                <table>
+                    <tr>
+                        <td class="prescription-meta">
+                            <div><span class="patient-name">{{ patient|default:"N/A"|upper }}</span></div>
+                        </td>
+                        <td class="prescription-meta">
+                            <div><strong>Age:</strong> {{ patient.age|default:"N/A"|upper }}</div>
+                        </td>
+                        <td class="prescription-meta">
+                            <div><strong>Sex:</strong> {{ patient.gender|default:"N/A"|upper }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="prescription-meta">
+                            {% if prescriptions.first %}
+                            <div><strong>Prescribed by:</strong> {{prescriptions.first.prescribed_by|default_if_none:"N/A"|upper}}</div>
+                            {% endif %}
+                        </td>
+                        <td class="prescription-meta">
+                            {% if prescriptions.first %}
+                            <div><strong>Sent to:</strong> {{ prescriptions.first.unit|default:"N/A" }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="prescription-meta">
+                            {% if prescriptions.first %}
+                            <div><strong>On:</strong> {{ prescriptions.first.prescribed_date|default:"N/A" }}</div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+    
+            <table class="prescription-table">
+                <thead>
+                    <tr class="parameters">
+                        <th>DRUG</th>
+                        <th>CATEGORY</th>
+                        <th> DOSE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in prescriptions %}
+                    <tr class="value">
+                        <td>{{ f.drug|default:"N/A"|upper }}</td>
+                        <td>{{ f.category|default:"N/A" }}</td>
+                        <td>{{ f.dose|default:"N/A" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <div class="generated-info">
+                Generated on: {{ generated_date }}
+            </div>
+            <div class="prescription-date">
+                Prescription Date: {{ prescription_date }}
+            </div>
+        </div>
+    </div>
+    
+    <style>
+
+        @page {
+            size: A4 portrait;
+            margin: 1cm;
+            margin-top: 2cm;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 10px;
+            line-height: 1.4;
+            color: #020b85; 
+            font-weight: 700;
+        }
+
+        .prescriptions-container {
+            padding: 14px;
+            max-width: 21cm;
+            margin: 0 auto;
+            background: white;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+            border-bottom: 2px solid #1e40af;
+            padding-bottom: 15px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #1e40af;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .uppercase {
+            text-transform: uppercase;
+        }
+
+        .patient-info {
+            margin-bottom: 30px;
+            background-color: #f0f7ff;
+            padding: 10px;
+            border: 1px solid #cce3ff;
+            border-radius: 4px;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #1e40af;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .patient-info table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .patient-info td {
+            padding: 4px;
+            vertical-align: top;
+        }
+
+        .patient-info strong {
+            color: #1e40af;
+            font-weight: 600;
+            margin-right: 5px;
+            display: inline-block;
+            min-width: 100px;
+        }
+
+        .patient-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        .prescription-meta {
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .prescription-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            border: 1px solid #cce3ff;
+        }
+
+        .parameters {
+            background-color: #1e40af;
+            color: white;
+        }
+
+        .parameters th {
+            padding: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .value td {
+            padding: 8px;
+            border-bottom: 1px solid #cce3ff;
+            font-size: 0.95em;
+            line-height: 1.4;
+            text-align: center;
+
+        }
+
+        .value:last-child td {
+            border-bottom: none;
+        }
+
+        .value:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            font-size: 0.9em;
+            color: #64748b;
+        }
+
+        .generated-info, .prescription-date {
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+
+            .prescriptions-container {
+                padding: 0;
+                max-width: none;
+            }
+
+            .patient-info {
+                border: 1px solid #000;
+                background-color: transparent;
+            }
+
+            .prescription-table {
+                border: 1px solid #000;
+            }
+
+            .parameters {
+                background-color: #f0f0f0 !important;
+                color: #000 !important;
+            }
+
+            .parameters th {
+                border-bottom: 1px solid #000;
+            }
+
+            .value td {
+                border-bottom: 1px solid #000;
+            }
+
+            .value:nth-child(even) {
+                background-color: transparent;
+            }
+
+        }
+    </style>
+</body>
+</html>

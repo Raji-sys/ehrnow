@@ -5,7 +5,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from .models import *
-import datetime
+from datetime import datetime
 from django.http import HttpResponse
 from io import BytesIO
 from django.template.loader import get_template
@@ -1621,6 +1621,71 @@ class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['prescription'] = self.object  # Pass the prescription object to the template
         return context
+
+from datetime import datetime
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.template.loader import get_template
+from django.contrib.auth.decorators import login_required
+from io import BytesIO
+from xhtml2pdf import pisa
+from datetime import datetime
+from django.utils.dateparse import parse_date
+
+@login_required
+def prescription_pdf(request, file_no, date):
+    # Get the patient by file_no instead of id
+    patient = get_object_or_404(PatientData, file_no=file_no)
+    
+    # Parse the date string (assuming format YYYY-MM-DD)
+    target_date = parse_date(date)
+    
+    # Get all prescriptions for this patient on the specified date
+    prescriptions = patient.prescribed_drugs.filter(
+        prescribed_date__date=target_date
+    ).order_by('-prescribed_date')
+    
+    if not prescriptions.exists():
+        return HttpResponse('No prescriptions found for this date', status=404)
+    
+    # Generate filename using file_no
+    ndate = datetime.now()
+    filename = f"prescriptions_{file_no}_{date}_{ndate.strftime('%I_%M%p')}.pdf"
+    
+    # Rest of your PDF generation code remains the same
+    context = {
+        'prescriptions': prescriptions,
+        'patient': patient,
+        'pagesize': 'A4',
+        'orientation': 'portrait',
+        'generated_date': ndate.strftime('%d-%B-%Y at %I:%M %p'),
+        'prescription_date': target_date.strftime('%d-%B-%Y')
+    }
+    
+    # Create HTTP response
+    response = HttpResponse(
+        content_type='application/pdf',
+        headers={'Content-Disposition': f'inline; filename="{filename}"'}
+    )
+    
+    template = get_template('store/prescription_pdf.html')
+    html = template.render(context)
+    
+    buffer = BytesIO()
+    pisa_status = pisa.CreatePDF(
+        html,
+        dest=buffer,
+        encoding='utf-8',
+        link_callback=fetch_resources
+    )
+    
+    if not pisa_status.err:
+        pdf = buffer.getvalue()
+        buffer.close()
+        response.write(pdf)
+        return response
+    
+    return HttpResponse('Error generating PDF', status=500)
 
 class PharmPayListView(ListView):
     model = Paypoint

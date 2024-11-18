@@ -691,7 +691,10 @@ class PatientFolderView(DetailView):
         context['payments'] = patient.patient_payments.all().order_by('-updated')
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
         context['appointments'] = patient.appointments.all().order_by('-updated')
-        context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
+        # context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
+        prescribed_drugs = patient.prescribed_drugs.all().order_by('-updated')
+        context['prescribed_drugs'] = prescribed_drugs
+        
         context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
         context['admission_info'] = patient.admission_info.all().order_by('-updated')
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
@@ -763,6 +766,8 @@ class PatientFolderView(DetailView):
         # Calculate the total amount
         total_amount = paid_transactions.aggregate(total_amount=Sum('price'))['total_amount'] or 0
         context['total_amount'] = total_amount    
+        context['prescription_dates'] = prescribed_drugs.dates('prescribed_date', 'day', order='DESC')
+  
         return context
    
 

@@ -328,7 +328,7 @@ class Prescription(models.Model):
     quantity = models.PositiveIntegerField('QTY', null=True, blank=True)
     updated = models.DateTimeField(auto_now_add=True)
     prescribed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='prescribed_by')
-    prescribed_date = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    prescribed_date = models.DateTimeField(auto_now=True,null=True,blank=True)
     dose = models.CharField('dosage', max_length=300, null=True, blank=True)
     remark = models.CharField('REMARKS', max_length=100, null=True, blank=True)
     is_dispensed = models.BooleanField(default=False)

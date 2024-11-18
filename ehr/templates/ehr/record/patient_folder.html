@@ -1850,27 +1850,22 @@
             <thead class="bg-cyan-50">
               <tr class="text-xs">
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Prescribed Drugs</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Dose</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Quantity</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Prescribed</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Prescription Sheet</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
-              {% for p in prescribed_drugs %}
+              {% for date in prescription_dates %}
               <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                <td class=" p-3 whitespace-nowrap">{{ p.drug|default_if_none:''}}</td>
-                <td class=" p-3 whitespace-nowrap">{{ p.dose|default_if_none:''}}</td>
-                <td class=" p-3 whitespace-nowrap">{{ p.quantity|default_if_none:''}}</td>
-                <td class=" p-3 whitespace-nowrap">{{ p.updated}}</td>
+                <td class=" p-3 whitespace-nowrap"><a href="{% url 'pharm:prescription_pdf' patient.file_no date|date:'Y-m-d' %}" class="btn btn-sm btn-primary">
+                 <i class="fas fa-file-pdf"></i> Prescriptions for {{ date|date:"d-M-Y" }} VISIT</a></td>
               </tr>
               {%empty%}
               <div class="p-2 text-xs">
                   <p>No prescriptions yet</p>
               </div>
-             {%endfor%}
-          </tbody>
+         {% endfor %}
+                       </tbody>
           </table>
         </div>
      </div>

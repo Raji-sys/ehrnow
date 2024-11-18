@@ -7,7 +7,9 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 1.3cm;
+            margin: 1cm;
+            margin-top: 2cm;
+
         }
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -16,10 +18,22 @@
             color: #020b85; 
             font-weight: 700;
         }
-        .header {
-            margin-top: 0;
-            text-align: center;
+        .lab-container {
+            padding: 14px;
+            max-width: 21cm;
+            margin: 0 auto;
+            background: white;
+            position: relative;
         }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+            border-bottom: 2px solid  #034a2a;
+            padding-bottom: 15px;
+        }
+
         .header h1 {
             color: #034a2a;
             font-size: 28px;
@@ -110,9 +124,12 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1 class="uppercase">
-            LAB RESULT</h1>
+    <div class="prescriptions-container">
+        <div class="header">
+            <h1 class="uppercase">EMR NOW PATHOLOGY INVESTIGATION SHEET</h1>
+           <h4 class="uppercase">TEST CLINICS AND SURGERY</h4>
+           <div class="header-line"></div>
+
     </div>
     <div class="result-section">
         <div class="patient-info">
