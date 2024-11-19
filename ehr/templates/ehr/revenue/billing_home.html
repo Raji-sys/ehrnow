@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{%block title%}SURGERY BILLING{%endblock%}
+
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'revenue' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>SURGERY BILLING</div>{%endblock%}
+{%block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+  <div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden mt-1">
+    <div class="grid grid-cols-2 gap-6 p-8 bg-gray-100 uppercase">
+        <a href="{%url 'bill_pay_list'  %}"class="group">
+            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 text-center hover:bg-cyan-50 transform hover:-translate-y-1">
+                
+                <div class="text-xs font-medium text-gray-800 group-hover:text-cyan-700">Normal Bills</div>
+            </div>
+        </a>
+        <a href="{%url 'private_bill_pay_list'  %}"class="group">
+        <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 p-6 text-center hover:bg-cyan-50 transform hover:-translate-y-1">
+
+          <div class="text-xs font-medium text-gray-800 group-hover:text-cyan-700">Private Bills</div>
+        </div>
+      </a>
+
+    </div>
+
+  </div>
+</div>
+{%endblock%}

@@ -51,7 +51,7 @@
 
                 <td class="p-3 whitespace-nowrap text-sm">
                   {% if p.status == False %}
-                  <span class="text-red-600"><i class="fa-solid fa-x"></i> </span>
+                  <span class="text-red-600"> </span>
                   <a href="{% url 'update_pay' p.id %}?next={% url 'revenue' %}" class="ml-2 text-indigo-600 hover:text-indigo-900">
                     <i class="fa-solid fa-cash-register"></i> 
                   </a>

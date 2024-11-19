@@ -301,6 +301,11 @@ class RevenueView(RevenueRequiredMixin,TemplateView):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+class BillingHomeView(RevenueRequiredMixin,TemplateView):
+    template_name = "ehr/revenue/billing_home.html"
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicDashView(DoctorNurseRecordRequiredMixin, ListView):
     model=Clinic
     context_object_name= 'clinics'
@@ -1823,7 +1828,8 @@ class RadiologyTestCreateView(LoginRequiredMixin, CreateView):
         payment = Paypoint.objects.create(
             patient=patient,
             status=False,
-            service=radiology_result.test, 
+            service=radiology_result.test,
+            unit='radiology',
             price=radiology_result.test.price,
         )
         radiology_result.payment = payment 
@@ -1941,6 +1947,7 @@ class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
             user=self.request.user,
             patient=patient,
             service=f"Surgery Bill:-{bill.id}",
+            unit='surgery bill',
             price=total_amount,
             status=False
         )
@@ -2262,7 +2269,8 @@ class PrivateBillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView
         paypoint = Paypoint.objects.create(
             user=self.request.user,
             patient=patient,
-            service=f"Surgery Bill-{private_bill.id}",
+            service=f"Private Surgery Bill:-{private_bill.id}",
+            unit='Private Surgery Bill',
             price=total_amount,
             status=False
         )
@@ -2287,11 +2295,7 @@ class PrivateBillDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['private_billing_items'] = PrivateBilling.objects.filter(private_bill=self.object).select_related('item')
-        
-        # Get the latest TheatreBooking for the patient
-        theatre_booking = TheatreBooking.objects.filter(patient=self.object.patient).order_by('-date').first()
-        context['theatre_booking'] = theatre_booking
-        
+                
         return context
         
 
@@ -2306,7 +2310,8 @@ class PrivateBillingPayListView(ListView):
         if next_url:
             return next_url
         return reverse_lazy("pay_list")
-    
+
+        
     def get_queryset(self):
         return Paypoint.objects.filter(service__startswith='Private Surgery Bill:-').order_by('-updated')
 
@@ -2330,7 +2335,7 @@ class PrivateBillListView(DoctorRequiredMixin, LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return PrivateBill.objects.filter(user=self.request.user).prefetch_related('items').order_by('-created')
+        return PrivateBill.objects.filter(user=self.request.user).prefetch_related('private_items').order_by('-created')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

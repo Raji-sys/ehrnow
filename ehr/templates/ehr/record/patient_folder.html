@@ -2020,7 +2020,7 @@
                     <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                     <td class=" p-3 whitespace-nowrap">&#x20A6;{{ s.total_amount }}</td>
                     <td class=" p-3 whitespace-nowrap">
-                      {% if s.items.first.payment.status %}
+                      {% if s.private_items.first.payment.status %}
                       <span class="text-green-500">Paid</span>
                   {% else %}
                       <span class="text-red-500">Unpaid</span>
@@ -2028,7 +2028,7 @@
                     </td>
                     <td class=" p-3 whitespace-nowrap">{{ s.user }}</td>
                     <td class=" p-3 whitespace-nowrap">{{ s.created }}</td>
-                    <td class=" p-3 whitespace-nowrap"> <a href="{% url 'private_bill_detail' s.id %}" class="text-blue-500 hover:underline">View Details</a></td>
+                    <td class=" p-3 whitespace-nowrap"> <a href="{% url 'private_bill_detail' s.id %}" class="text-blue-500 hover:underline"><i class="fa-solid fa-eye fa-2xl"></i></a></td>
                       </tr>
                   {%empty%}
                   <div class="p-2">
@@ -2072,7 +2072,7 @@
                     </td>
                     <td class=" p-3 whitespace-nowrap">{{ s.user }}</td>
                     <td class=" p-3 whitespace-nowrap">{{ s.created }}</td>
-                    <td class=" p-3 whitespace-nowrap"> <a href="{% url 'bill_detail' s.id %}" class="text-blue-500 hover:underline">View Details</a></td>
+                    <td class=" p-3 whitespace-nowrap"> <a href="{% url 'bill_detail' s.id %}" class="text-blue-500 hover:underline"><i class="fa-solid fa-eye fa-2xl"></i></a></td>
                       </tr>
                   {%empty%}
                   <div class="p-2">

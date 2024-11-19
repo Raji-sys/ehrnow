@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Bill List{% endblock %}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'bill_pay_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>THEATRE BILLING LIST</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>SURGERY BILL LIST</div>{%endblock%}
 {% block content %}
 <div class="md:mx-20 mx-2">
     <div class="md:max-w-7xl md:mx-auto mx-2">
@@ -16,6 +16,7 @@
                         <th class="p-4 text-center">File no</th>
                         <th class="p-4 text-center">Date</th>
                         <th class="p-4 text-center">Amount</th>
+                        <th class="p-4 text-center">Status</th>
                         <th class="p-4 text-center">Bill Details</th>
                     </tr>
                 </thead>
@@ -38,6 +39,11 @@
                         </td>
                         <td class="p-4 text-center">
                             &#x20A6;{{ bill.total_amount }}
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="{% if bill.items.first.payment.status %}text-green-600{% else %}text-red-600{% endif %} font-bold uppercase">
+                                {% if bill.items.first.payment.status %} <i class="fa fa-check-circle"></i> {% else %}Unpaid{% endif %}
+                            </span>
                         </td>
                         <td class="p-4 text-center">
                             <div class="">
