@@ -8,8 +8,8 @@
   <table class="min-w-full divide-y divide-gray-500">
     <thead class="bg-gray-100">
       <tr class="text-xs text-center bg-emerald-100">
-        <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">S/N</th>
-        <th class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">id</th>
+        <th class="p-3  text-xs font-medium text-gray-500 uppercase tracking-wider">S/N</th>
+        <th class="p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">id</th>
         <th class="p-3  text-xs font-medium text-rose-500 uppercase tracking-wider">
           Test
         </th>
@@ -64,8 +64,7 @@
         </td>
         {% if s.payment.status == False %}
         <td class="p-3 whitespace-nowrap text-red-700">
-          UNPAID
-      <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
+      <i class="fa-solid fa-xmark-circl text-red-700 fa-2xl"></i>
         </td>
     {% else %}
     {%if s.payment.service == 'MP/Widal' %}

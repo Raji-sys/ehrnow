@@ -74,8 +74,7 @@
         </td>
         {% if c.payment.status == False %}
         <td class="p-3 whitespace-nowrap text-red-700">
-          UNPAID
-      <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
+      <i class="fa-solid fa-xmark-circle text-red-700 fa-2xl"></i>
         </td>
     {% else %}
     {%if c.payment.service == 'Liver Function' %}
@@ -97,7 +96,7 @@
       <i class="fa-solid fa-edit fa-2xl"></i> </a>
   </td>
     {%elif c.payment.service == 'Cerebro Spinal Fluid' %}
-    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_cerebro spinal fluid' c.patient.file_no c.id %}?next={% url 'results:chempath_request' %}" class="text-xs hover:text-green-700">
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_cerebro_spinal_fluid' c.patient.file_no c.id %}?next={% url 'results:chempath_request' %}" class="text-xs hover:text-green-700">
       <i class="fa-solid fa-edit fa-2xl"></i> </a>
   </td>
     {%elif c.payment.service == 'Miscellaneous Chempath Tests' %}
