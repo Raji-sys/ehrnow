@@ -1924,11 +1924,30 @@ class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
         else:
             return self.form_invalid(form)
 
+    # @transaction.atomic
+    # def formset_valid(self, formset):
+    #     patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+    #     latest_theatre_booking = TheatreBooking.objects.filter(patient=patient).order_by('-date').last()
+    #     bill = Bill.objects.create(user=self.request.user, patient=patient,theatre_booking=latest_theatre_booking)
+    #       # Find the latest theatre booking for this patient
     @transaction.atomic
     def formset_valid(self, formset):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        bill = Bill.objects.create(user=self.request.user, patient=patient)
         
+        # Use a fresh queryset and explicitly select the latest booking
+        latest_theatre_booking = (
+            TheatreBooking.objects
+            .filter(patient=patient)
+            .order_by('-date', '-id')  # Add secondary sort on ID to break ties
+            .distinct()
+            .first()
+        )
+    
+        bill = Bill.objects.create(
+            user=self.request.user, 
+            patient=patient,
+            theatre_booking=latest_theatre_booking
+        )
         total_amount = 0
         instances = formset.save(commit=False)
         

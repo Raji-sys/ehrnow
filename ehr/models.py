@@ -509,11 +509,28 @@ class Theatre(models.Model):
         return self.name
     
 
+class TheatreBooking(models.Model):
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_bookings')
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
+    theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
+    diagnosis=models.CharField(max_length=200,null=True,blank=True)
+    operation_planned=models.CharField(max_length=200,null=True,blank=True)
+    date = models.DateField(null=True)
+    blood_requirement=models.CharField(max_length=200,null=True,blank=True)
+    note=QuillField(null=True, blank=True)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Bill for:{self.patient}"
+
 class Bill(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='surgery_bill',null=True)
     created = models.DateTimeField(auto_now_add=True,null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
+    theatre_booking = models.ForeignKey(TheatreBooking, null=True, blank=True, on_delete=models.SET_NULL)
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):
@@ -635,22 +652,6 @@ class WalletTransaction(models.Model):
     def __str__(self):
         return f"{self.get_transaction_type_display()} of {self.amount} for {self.wallet.patient}"
     
-
-class TheatreBooking(models.Model):
-    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='theatre_bookings')
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
-    theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
-    diagnosis=models.CharField(max_length=200,null=True,blank=True)
-    operation_planned=models.CharField(max_length=200,null=True,blank=True)
-    date = models.DateField(null=True)
-    blood_requirement=models.CharField(max_length=200,null=True,blank=True)
-    note=QuillField(null=True, blank=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
-    updated = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return self.patient
 
 class MedicalIllness(models.Model):
     name=models.CharField(max_length=100,null=True)
