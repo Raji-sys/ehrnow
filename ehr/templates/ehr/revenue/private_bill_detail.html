@@ -17,13 +17,15 @@
         <strong>AGE:</strong> {{ private_bill.patient.age }}&nbsp;
 </p>
         <p class="text-xs border-b border-gray-400">
-    {% if theatre_booking %}
-        <strong>DIAGNOSIS:</strong> {{ theatre_booking.diagnosis }}&nbsp;
-        <strong>OPERATION PLANNED:</strong> {{ theatre_booking.operation_planned }}&nbsp;</p>
+            <strong>DIAGNOSIS:</strong> {{ private_bill.theatre_booking.diagnosis }}&nbsp;
+            <strong>OPERATION PLANNED:</strong> {{ private_bill.theatre_booking.operation_planned }}&nbsp;
+        </p>
         <p class="text-xs border-b border-gray-400">
-        <strong>TEAM:</strong> {{ theatre_booking.team }}
-        <strong>SURGERY DATE:</strong> {{ theatre_booking.date }}</p>
-    {% endif %}
+            <strong>TEAM:</strong> {{private_bill.theatre_booking.team }}
+            <strong>THEATRE:</strong> {{ private_bill.theatre_booking.theatre }}
+            <strong>DATE:</strong> {{ private_bill.theatre_booking.date }}
+        </p>
+
             <div class="flex justify-between">
                 <div>
                     <a href="{% url 'private_bill_pdf' private_bill.id %}" class="text-green-600 hover:text-green-800" target="_blank">

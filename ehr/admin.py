@@ -30,6 +30,12 @@ class TheatreAdmin(admin.ModelAdmin):
 
 
 @admin.register(Billing)
+class BillingAdmin(admin.ModelAdmin):
+    list_display = ('id',)
+    search_fields = ('id',)
+    list_filter = ('id',)
+
+@admin.register(Bill)
 class BillAdmin(admin.ModelAdmin):
     list_display = ('id',)
     search_fields = ('id',)

@@ -534,7 +534,7 @@ class Bill(models.Model):
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"Surgery Billing"
+        return f"Surgery Bill"
 
 
 class TheatreItemCategory(models.Model):
@@ -565,7 +565,7 @@ class Billing(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.item.name} (x{self.quantity})"
+        return f"{self.bill.patient.file_no} {self.item.name} (x{self.quantity})"
 
     @property
     def total_item_price(self):
@@ -587,6 +587,7 @@ class PrivateBill(models.Model):
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='private_bill',null=True)
     created = models.DateTimeField(auto_now_add=True,null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
+
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):

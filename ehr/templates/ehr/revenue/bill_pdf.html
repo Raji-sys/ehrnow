@@ -111,8 +111,8 @@
             </p>
             {% if theatre_booking %}
             <hr>
-            <p><strong>DIAGNOSIS:</strong> {{ theatre_booking.diagnosis|upper }}&nbsp;&nbsp;<strong>OPERATION PLANNED:</strong> {{ theatre_booking.operation_planned|upper }} 
-             &nbsp;&nbsp;<strong>TEAM:</strong> {{theatre_booking.team}}&nbsp;&nbsp;<strong>DATE:</strong> {{ theatre_booking.date }}</p>
+            <p><strong>DIAGNOSIS:</strong> {{ bill.theatre_booking.diagnosis|upper }}&nbsp;&nbsp;<strong>OPERATION PLANNED:</strong> {{ bill.theatre_booking.operation_planned|upper }} 
+             &nbsp;&nbsp;<strong>TEAM:</strong> {{bill.theatre_booking.team}}&nbsp;&nbsp;&nbsp;&nbsp;<strong>THEATRE:</strong> {{ bill.theatre_booking.theatre }}</p><strong>DATE:</strong> {{ bill.theatre_booking.date }}</p>
                 {% else %}
                 <p><strong>No theatre booking information available.</strong></p>
                 {% endif %}
