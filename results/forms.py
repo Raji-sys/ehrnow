@@ -7,19 +7,21 @@ from django.forms import DateInput
 
 class GeneralTestForm(forms.ModelForm):
     class Meta:
-        model=GeneralTestResult
-        fields=['test_1','test_2','test_3','test_4','test_5','test_6','test_7','test_8','test_9','test_10','test_11','test_12','test_12','test_13','test_14','test_15','price']
+        model = GeneralTestResult
+        fields = ['test_1', 'test_2', 'test_3', 'test_4', 'test_5', 'test_6', 'test_7', 'test_8', 'test_9', 'test_10', 'test_11', 'test_12', 'test_12', 'test_13', 'test_14', 'test_15', 'price']
 
     def __init__(self, *args, **kwargs):
         super(GeneralTestForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.required=False    
-            field.widget.attrs.update({'class':'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+        for field_name, field in self.fields.items():
+            if field_name!= 'price':
+                field.required = False
+            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
 
 class GeneralTestResultForm(forms.ModelForm):
     class Meta:
         model=GeneralTestResult
-        exclude=['result_code','patient','collected','collected_by','updated_by','created','updated','payment','price']
+        exclude = ['test_info',]
 
     def __init__(self, *args, **kwargs):
         super(GeneralTestResultForm, self).__init__(*args, **kwargs)
@@ -116,38 +118,6 @@ class GenotypeForm(forms.ModelForm):
             test_info.cleared = self.cleaned_data.get('cleared')
             test_info.save()
         return genotype
-
-
-# class RhesusFactorForm(forms.ModelForm):
-#     class Meta:
-#         model = RhesusFactor
-#         fields = ['rhesus_d']
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         if self.instance and self.instance.test_info:
-#             self.fields['nature_of_specimen'] = forms.CharField(
-#                 initial=self.instance.test_info.nature_of_specimen,
-#                 required=False
-#             )
-#             self.fields['cleared'] = forms.BooleanField(
-#                 initial=self.instance.test_info.cleared,
-#                 required=False
-#             )
-#         for field in self.fields.values():
-#             field.widget.attrs.update({
-#                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'
-#             })
-
-#     def save(self, commit=True):
-#         rhesus = super().save(commit=False)
-#         if commit:
-#             rhesus.save()
-#             test_info = rhesus.test_info
-#             test_info.nature_of_specimen = self.cleaned_data.get('nature_of_specimen')
-#             test_info.cleared = self.cleaned_data.get('cleared')
-#             test_info.save()
-#         return rhesus
 
 
 class FBCForm(forms.ModelForm):

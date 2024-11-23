@@ -750,7 +750,7 @@ class PatientFolderView(DetailView):
 
 
 
-        context['general_results']=patient.general_results.all().order_by('-created')
+        context['general_results']=patient.test_info.filter(general_results__isnull=False).order_by('-created')
          # Check if the patient has a wallet
         if hasattr(patient, 'wallet'):
             # Retrieve wallet transactions

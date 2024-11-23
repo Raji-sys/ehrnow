@@ -23,94 +23,7 @@ class SerialNumberField(models.CharField):
         del kwargs["unique"]
         return name, path, args, kwargs
 
-    
-class GeneralTestResult(models.Model):
-    test_1 = models.CharField(max_length=1000, null=True)
-    result_1 = models.CharField(max_length=1000, null=True)
-    reference_range_1 = models.CharField(max_length=1000, null=True)
-    test_2 = models.CharField(max_length=1000, null=True)
-    result_2 = models.CharField(max_length=1000, null=True)
-    reference_range_2 = models.CharField(max_length=1000, null=True)
-    test_3 = models.CharField(max_length=1000, null=True)
-    result_3 = models.CharField(max_length=1000, null=True)
-    reference_range_3 = models.CharField(max_length=1000, null=True)    
-    test_4 = models.CharField(max_length=1000, null=True)
-    result_4 = models.CharField(max_length=1000, null=True)
-    reference_range_4 = models.CharField(max_length=1000, null=True)
-    test_5 = models.CharField(max_length=1000, null=True)
-    result_5 = models.CharField(max_length=1000, null=True)
-    reference_range_5 = models.CharField(max_length=1000, null=True)
-    test_6 = models.CharField(max_length=1000, null=True)
-    result_6 = models.CharField(max_length=1000, null=True)
-    reference_range_6 = models.CharField(max_length=1000, null=True)
-    test_7 = models.CharField(max_length=1000, null=True)
-    result_7 = models.CharField(max_length=1000, null=True)
-    reference_range_7 = models.CharField(max_length=1000, null=True)
-    test_8 = models.CharField(max_length=1000, null=True)
-    result_8 = models.CharField(max_length=1000, null=True)
-    reference_range_8 = models.CharField(max_length=1000, null=True)
-    test_9 = models.CharField(max_length=1000, null=True)
-    result_9 = models.CharField(max_length=1000, null=True)
-    reference_range_9 = models.CharField(max_length=1000, null=True)
-    test_10 = models.CharField(max_length=1000, null=True)
-    result_10 = models.CharField(max_length=1000, null=True)
-    reference_range_10 = models.CharField(max_length=1000, null=True)
-    test_11 = models.CharField(max_length=1000, null=True)
-    result_11 = models.CharField(max_length=1000, null=True)
-    reference_range_11 = models.CharField(max_length=1000, null=True)
-    test_12 = models.CharField(max_length=1000, null=True)
-    result_12 = models.CharField(max_length=1000, null=True)
-    reference_range_12 = models.CharField(max_length=1000, null=True)
-    test_13 = models.CharField(max_length=1000, null=True)
-    result_13 = models.CharField(max_length=1000, null=True)
-    reference_range_13 = models.CharField(max_length=1000, null=True)
-    test_14 = models.CharField(max_length=1000, null=True)
-    result_14 = models.CharField(max_length=1000, null=True)
-    reference_range_14 = models.CharField(max_length=1000, null=True)
-    test_15 = models.CharField(max_length=1000, null=True)
-    result_15 = models.CharField(max_length=1000, null=True)
-    reference_range_15 = models.CharField(max_length=1000, null=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name='general_result_payment')
-    price = models.DecimalField(max_digits=100, decimal_places=2, null=True,blank=True)
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='general_results', null=True, blank=True) 
-    result_code = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
-    cleared=models.BooleanField(default=False)
-    # result = QuillField(null=True, blank=True)
-    comments = models.CharField(max_length=500,null=True, blank=True)
-    nature_of_specimen = models.CharField(max_length=300, null=True, blank=True)
-    collected = models.DateField(auto_now_add=True, null=True, blank=True)
-    collected_by = models.ForeignKey(User, null=True, blank=True, related_name='general_results_collected', on_delete=models.SET_NULL)
-    updated_by = models.ForeignKey(User, null=True, blank=True, related_name='general_results_reported', on_delete=models.SET_NULL)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
- 
-    def save(self, *args, **kwargs):
-        if not self.result_code:
-            last_instance = self.__class__.objects.order_by('result_code').last()
 
-            if last_instance:
-                last_result_code = int(last_instance.result_code.removeprefix('GEN'))
-                new_result_code = f"GEN{last_result_code + 1:03d}"
-            else:
-                new_result_code = "GEN001"
-
-            self.result_code = new_result_code
-
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        parts = []
-        if self.patient:
-            parts.append(str(self.patient))
-        if self.name:
-            parts.append(str(self.name))
-        if self.result:
-            parts.append(str(self.result))
-        return " - ".join(parts)
-
-    def __str__(self):
-        if self.patient:
-            return f"{self.patient}"
 
 class GenericTest(models.Model):
     LABS = [
@@ -159,6 +72,58 @@ class Testinfo(models.Model):
         return f"{self.code} - {self.patient}"
 
 
+class GeneralTestResult(models.Model):
+    test_info = models.OneToOneField(Testinfo, on_delete=models.CASCADE, related_name='general_results', null=True, blank=True)
+    price = models.DecimalField(max_digits=100, decimal_places=2, null=True, blank=False)
+    cleared = models.BooleanField(default=False)
+    nature_of_specimen = models.CharField(max_length=300, null=True, blank=True)
+    test_1 = models.CharField(max_length=1000, null=True)
+    result_1 = models.CharField(max_length=1000, null=True)
+    reference_range_1 = models.CharField(max_length=1000, null=True)
+    test_2 = models.CharField(max_length=1000, null=True)
+    result_2 = models.CharField(max_length=1000, null=True)
+    reference_range_2 = models.CharField(max_length=1000, null=True)
+    test_3 = models.CharField(max_length=1000, null=True)
+    result_3 = models.CharField(max_length=1000, null=True)
+    reference_range_3 = models.CharField(max_length=1000, null=True)    
+    test_4 = models.CharField(max_length=1000, null=True)
+    result_4 = models.CharField(max_length=1000, null=True)
+    reference_range_4 = models.CharField(max_length=1000, null=True)
+    test_5 = models.CharField(max_length=1000, null=True)
+    result_5 = models.CharField(max_length=1000, null=True)
+    reference_range_5 = models.CharField(max_length=1000, null=True)
+    test_6 = models.CharField(max_length=1000, null=True)
+    result_6 = models.CharField(max_length=1000, null=True)
+    reference_range_6 = models.CharField(max_length=1000, null=True)
+    test_7 = models.CharField(max_length=1000, null=True)
+    result_7 = models.CharField(max_length=1000, null=True)
+    reference_range_7 = models.CharField(max_length=1000, null=True)
+    test_8 = models.CharField(max_length=1000, null=True)
+    result_8 = models.CharField(max_length=1000, null=True)
+    reference_range_8 = models.CharField(max_length=1000, null=True)
+    test_9 = models.CharField(max_length=1000, null=True)
+    result_9 = models.CharField(max_length=1000, null=True)
+    reference_range_9 = models.CharField(max_length=1000, null=True)
+    test_10 = models.CharField(max_length=1000, null=True)
+    result_10 = models.CharField(max_length=1000, null=True)
+    reference_range_10 = models.CharField(max_length=1000, null=True)
+    test_11 = models.CharField(max_length=1000, null=True)
+    result_11 = models.CharField(max_length=1000, null=True)
+    reference_range_11 = models.CharField(max_length=1000, null=True)
+    test_12 = models.CharField(max_length=1000, null=True)
+    result_12 = models.CharField(max_length=1000, null=True)
+    reference_range_12 = models.CharField(max_length=1000, null=True)
+    test_13 = models.CharField(max_length=1000, null=True)
+    result_13 = models.CharField(max_length=1000, null=True)
+    reference_range_13 = models.CharField(max_length=1000, null=True)
+    test_14 = models.CharField(max_length=1000, null=True)
+    result_14 = models.CharField(max_length=1000, null=True)
+    reference_range_14 = models.CharField(max_length=1000, null=True)
+    test_15 = models.CharField(max_length=1000, null=True)
+    result_15 = models.CharField(max_length=1000, null=True)
+    reference_range_15 = models.CharField(max_length=1000, null=True)
+ 
+        
 # HEMATOLOGY TEST 
 class FBC(models.Model):
     test = models.ForeignKey(GenericTest, on_delete=models.CASCADE, null=True, blank=True)

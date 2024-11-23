@@ -303,23 +303,30 @@ class GeneralTestCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        form.instance.patient = patient
-        form.instance.collected_by = self.request.user
+        test_info = Testinfo.objects.create(patient=patient, collected_by=self.request.user)
+        form.instance.test_info = test_info
 
         general_result = form.save(commit=False)
         payment = Paypoint.objects.create(
             patient=patient,
             status=False,
-            service=general_result.id, 
+            service=general_result.test_info.code, 
+            unit='general',
             price=general_result.price,
+        )         
+        test_info = Testinfo.objects.create(
+            patient=patient,
+            payment=payment
         )
-        general_result.payment = payment 
+
+        general_result.test_info.payment = payment 
         general_result.save()
         messages.success(self.request, 'general added successfully')
         return super().form_valid(form)
+
     
     def get_success_url(self):
-        return self.object.patient.get_absolute_url()
+        return self.object.test_info.patient.get_absolute_url()
 
 
 class GeneralResultCreateView(LoginRequiredMixin, UpdateView):
@@ -327,21 +334,23 @@ class GeneralResultCreateView(LoginRequiredMixin, UpdateView):
     form_class = GeneralTestResultForm
     template_name = 'general/general_result.html'
     context_object_name = 'result'
-    success_url=reverse_lazy('general_request')
 
 
     def get_object(self, queryset=None):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        return GeneralTestResult.objects.get(patient=patient, pk=self.kwargs['pk'])
+        return GeneralTestResult.objects.get(test_info__patient=patient, pk=self.kwargs['pk'])
 
     def form_valid(self, form):
-        form.instance.updated_by = self.request.user
+        form.instance.test_info.updated_by = self.request.user
         general_result = form.save(commit=False)
-        # general_result.result = form.cleaned_data['result']
         general_result.save()
         messages.success(self.request, 'general result updated successfully')
-        return super().form_valid(form)
 
+        return super().form_valid(form)
+    def get_success_url(self):
+        return self.object.test_info.patient.get_absolute_url()
+
+# 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class GeneralReportView(ListView):
@@ -429,29 +438,7 @@ class PathologyPayListView(ListView):
         context['pathology_total_worth'] = pathology_total_worth
         return context
 
-      
-class GeneralPayListView(ListView):
-    model = Paypoint
-    template_name = 'revenue/general_pay_list.html'
-    paginate_by = 10
-
-    def get_queryset(self):
-        return Paypoint.objects.none()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        general_pays = Paypoint.objects.filter(general_result_payment__isnull=False).order_by('-updated')
- 
-        general_pay_total = general_pays.count()
-        general_paid_transactions = general_pays.filter(status=True)
-        general_total_worth = general_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-        context['general_pays'] = general_pays
-        context['general_pay_total'] = general_pay_total
-        context['general_total_worth'] = general_total_worth
-        return context  
-
-    
+          
 class BaseTestView(LoginRequiredMixin):
     template_name = 'shared_test_form.html'
 
@@ -1585,6 +1572,10 @@ class BaseLabResultUpdateView(UpdateView):
         instance.save()
         return super().form_valid(form)
 
+
+class BloodGroupUpdateView(BaseLabResultUpdateView):
+    model = BloodGroup
+    form_class = BloodGroupForm
 
 # hematology 
 class BloodGroupUpdateView(BaseLabResultUpdateView):

@@ -11,12 +11,8 @@ urlpatterns = [
     path('report/', ReportView.as_view(), name='report'),
     path('print-pdf/', views.report_pdf, name='report_pdf'),
 
-    path('instance-pdf/<int:id>/', views.instance_pdf, name='instance_pdf'),
-
-    path('get-started/revenue/lab/', RevenueView.as_view(), name='lab_revenue'),
-    
-    path('revenue/pathology-pay-list/', PathologyPayListView.as_view(), name='pathology_pay_list'),
-    path('revenue/general-list/', GeneralPayListView.as_view(), name='general_pay_list'),
+    path('instance-pdf/<int:id>/', views.instance_pdf, name='instance_pdf'),    
+    path('revenue/pathology-pay-list/', PathologyPayListView.as_view(), name='lab_revenue'),
 
     path('hematology/', HematologyView.as_view(), name='hematology'),
     path('hematology-list/', HematologyListView.as_view(), name='hematology_list'),

@@ -1686,63 +1686,63 @@
                         <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 text-xs">
                           <td class="p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                           <td class="p-3 whitespace-nowrap">
-                            {%if g.test_1 is not None %}
-                            {{ g.test_1|default_if_none:'' }} <br>
+                            {%if g.general_results.test_1 is not None %}
+                            {{ g.general_results.test_1|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_2 is not None %}
-                            {{ g.test_2|default_if_none:'' }} <br>
+                            {%if g.general_results.test_2 is not None %}
+                            {{ g.general_results.test_2|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_3 is not None %}
-                            {{ g.test_3|default_if_none:'' }} <br>
+                            {%if g.general_results.test_3 is not None %}
+                            {{ g.general_results.test_3|default_if_none:'' }} <br>
                             {%endif%}
-                            {%if g.test_4 is not None %}
-                            {{ g.test_4|default_if_none:'' }} <br>
+                            {%if g.general_results.test_4 is not None %}
+                            {{ g.general_results.test_4|default_if_none:'' }} <br>
                             {%endif%}
                             
-                            {%if g.test_5 is not None %}
-                            {{ g.test_5|default_if_none:'' }} <br>
+                            {%if g.general_results.test_5 is not None %}
+                            {{ g.general_results.test_5|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_6 is not None %}
-                            {{ g.test_6|default_if_none:'' }} <br>
+                            {%if g.general_results.test_6 is not None %}
+                            {{ g.general_results.test_6|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_7 is not None %}
-                            {{ g.test_7|default_if_none:'' }} <br>
+                            {%if g.general_results.test_7 is not None %}
+                            {{ g.general_results.test_7|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_8 is not None %}
-                            {{ g.test_8|default_if_none:'' }} <br>
+                            {%if g.general_results.test_8 is not None %}
+                            {{ g.general_results.test_8|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_9 is not None %}
-                            {{ g.test_9|default_if_none:'' }} <br>
+                            {%if g.general_results.test_9 is not None %}
+                            {{ g.general_results.test_9|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_10 is not None %}
-                            {{ g.test_10|default_if_none:'' }} <br>
+                            {%if g.general_results.test_10 is not None %}
+                            {{ g.general_results.test_10|default_if_none:'' }} <br>
                             {%endif%}
                             
-                            {%if g.test_11 is not None %}
-                            {{ g.test_11|default_if_none:'' }} <br>
+                            {%if g.general_results.test_11 is not None %}
+                            {{ g.general_results.test_11|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_12 is not None %}
-                            {{ g.test_12|default_if_none:'' }} <br>
+                            {%if g.general_results.test_12 is not None %}
+                            {{ g.general_results.test_12|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_13 is not None %}
-                            {{ g.test_13|default_if_none:'' }} <br>
+                            {%if g.general_results.test_13 is not None %}
+                            {{ g.general_results.test_13|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_14 is not None %}
-                            {{ g.test_14|default_if_none:'' }} <br>
+                            {%if g.general_results.test_14 is not None %}
+                            {{ g.general_results.test_14|default_if_none:'' }} <br>
                             {%endif%}
                   
-                            {%if g.test_15 is not None %}
-                            {{ g.test_15|default_if_none:'' }}
+                            {%if g.general_results.test_15 is not None %}
+                            {{ g.general_results.test_15|default_if_none:'' }}
                             {%endif%}
             
                                                                                           
@@ -1750,75 +1750,75 @@
                           </td>
                           <td class="p-3 whitespace-nowrap">{{ g.collected|default_if_none:'N/A' }}</td>
                           <td class="p-3 whitespace-nowrap">
-                            {%if g.result_1 is not None%}
-                            {{ g.result_1|default_if_none:'' }} <br>
+                            {%if g.general_results.result_1 is not None%}
+                            {{ g.general_results.result_1|default_if_none:'' }} <br>
                             {%endif%}
                             
-                            {%if g.result_2 is not None%}
-                            {{ g.result_2|default_if_none:'' }} <br>
+                            {%if g.general_results.result_2 is not None%}
+                            {{ g.general_results.result_2|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_3 is not None%}
-                            {{ g.result_3|default_if_none:'' }}   <br>
+                            {%if g.general_results.result_3 is not None%}
+                            {{ g.general_results.result_3|default_if_none:'' }}   <br>
                             {%endif%}
             
-                            {%if g.result_4 is not None%}
-                            {{ g.result_4|default_if_none:'' }} <br>
+                            {%if g.general_results.result_4 is not None%}
+                            {{ g.general_results.result_4|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_5 is not None%}
-                            {{ g.result_5|default_if_none:'' }} <br>
+                            {%if g.general_results.result_5 is not None%}
+                            {{ g.general_results.result_5|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_6 is not None%}
-                            {{ g.result_6|default_if_none:'' }} <br>
+                            {%if g.general_results.result_6 is not None%}
+                            {{ g.general_results.result_6|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_7 is not None%}
-                            {{ g.result_7|default_if_none:'' }} <br>
+                            {%if g.general_results.result_7 is not None%}
+                            {{ g.general_results.result_7|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_8 is not None%}
-                            {{ g.result_8|default_if_none:'' }} <br>
+                            {%if g.general_results.result_8 is not None%}
+                            {{ g.general_results.result_8|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_9 is not None%}
-                            {{ g.result_9|default_if_none:'' }} <br>
+                            {%if g.general_results.result_9 is not None%}
+                            {{ g.general_results.result_9|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_10 is not None%}
-                            {{ g.result_10|default_if_none:'' }} <br>
+                            {%if g.general_results.result_10 is not None%}
+                            {{ g.general_results.result_10|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_11 is not None%}
-                            {{ g.result_11|default_if_none:'' }} <br>
+                            {%if g.general_results.result_11 is not None%}
+                            {{ g.general_results.result_11|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_12 is not None%}
-                            {{ g.result_12|default_if_none:'' }} <br>
+                            {%if g.general_results.result_12 is not None%}
+                            {{ g.general_results.result_12|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_13 is not None%}
-                            {{ g.result_13|default_if_none:'' }} <br>
+                            {%if g.general_results.result_13 is not None%}
+                            {{ g.general_results.result_13|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_14 is not None%}
-                            {{ g.result_14|default_if_none:'' }} <br>
+                            {%if g.general_results.result_14 is not None%}
+                            {{ g.general_results.result_14|default_if_none:'' }} <br>
                             {%endif%}
             
-                            {%if g.result_15 is not None%}
-                            {{ g.result_15|default_if_none:'' }} <br>
+                            {%if g.general_results.result_15 is not None%}
+                            {{ g.general_results.result_15|default_if_none:'' }} <br>
                             {%endif%}
             
                           </td>
-                          <td class="p-3 whitespace-nowrap">{{ g.nature_of_specimen|default_if_none:'N/A' }}</td>
-                          {%if g.cleared %}
+                          <td class="p-3 whitespace-nowrap">{{ g.general_results.nature_of_specimen|default_if_none:'N/A' }}</td>
+                          {%if g.general_results.cleared %}
                           <td class=" p-3 whitespace-nowrap">{{ g.updated|default_if_none:'N/A' }}</td>
                           {%else%}
                           <td class=" p-3 whitespace-nowrap"></td>
                           {%endif%}      
                       <td class="p-3 whitespace-nowrap">
-                            <a href="{% url 'general_result' g.patient.file_no g.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a>
+                            <a href="{% url 'results:general_result' g.patient.file_no g.general_results.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a>
                           </td>
                         </tr>
                         {% endfor %}
