@@ -405,7 +405,7 @@ def general_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-class HemaPayListView(ListView):
+class PathologyPayListView(ListView):
     model = Paypoint
     template_name = 'revenue/pathology_pay_list.html'
     paginate_by = 10
@@ -430,87 +430,6 @@ class HemaPayListView(ListView):
         return context
 
       
-class MicroPayListView(ListView):
-    model = Paypoint
-    template_name = 'revenue/micro_pay_list.html'
-    paginate_by = 10
-    context_object_name = 'micro_pays'  # Add this to match your template
-
-    def get_queryset(self):
-        return Paypoint.objects.filter(
-            test_payments__isnull=False,
-            unit__iexact='Microbiology'
-        ).order_by('-updated')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Get the full queryset for calculations
-        micro_pays = self.get_queryset()
-        micro_pay_total = micro_pays.count()
-        micro_paid_transactions = micro_pays.filter(status=True)
-        micro_total_worth = micro_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-        
-        # Add additional context
-        context['micro_pay_total'] = micro_pay_total
-        context['micro_total_worth'] = micro_total_worth
-        return context
-
-class ChempathPayListView(ListView):
-    model = Paypoint
-    template_name = 'revenue/chempath_pay_list.html'
-    paginate_by = 10
-    context_object_name = 'chempath_pays'  # Add this to match template
-
-    def get_queryset(self):
-        return Paypoint.objects.filter(
-            test_payments__isnull=False,
-            unit__iexact='Chemical Pathology'
-        ).order_by('-updated')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Get the full queryset for calculations
-        chempath_pays = self.get_queryset()
-        
-        chem_pay_total = chempath_pays.count()
-        chem_paid_transactions = chempath_pays.filter(status=True)
-        chem_total_worth = chem_paid_transactions.aggregate(
-            total_worth=Sum('price'))['total_worth'] or 0
-
-        # Add additional context
-        context['chem_pay_total'] = chem_pay_total
-        context['chem_total_worth'] = chem_total_worth
-        return context
-
-
-class SerologyPayListView(ListView):
-    model = Paypoint
-    template_name = 'revenue/serology_pay_list.html'
-    paginate_by = 10
-    context_object_name = 'serology_pays'  # Add this to match template
-
-    def get_queryset(self):
-        return Paypoint.objects.filter(
-            test_payments__isnull=False,
-            unit__iexact='Serology'
-        ).order_by('-updated')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Get the full queryset for calculations
-        serology_pays = self.get_queryset()
-        
-        serology_pay_total = serology_pays.count()
-        serology_paid_transactions = serology_pays.filter(status=True)
-        serology_total_worth = serology_paid_transactions.aggregate(
-            total_worth=Sum('price'))['total_worth'] or 0
-
-        # Add additional context
-        context['serology_pay_total'] = serology_pay_total
-        context['serology_total_worth'] = serology_total_worth
-        return context
-
-
 class GeneralPayListView(ListView):
     model = Paypoint
     template_name = 'revenue/general_pay_list.html'
@@ -521,7 +440,6 @@ class GeneralPayListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         general_pays = Paypoint.objects.filter(general_result_payment__isnull=False).order_by('-updated')
  
         general_pay_total = general_pays.count()

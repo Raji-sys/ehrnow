@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentPayId = this.getAttribute('data-id');
             messagesContainer.classList.add('hidden'); // Hide any existing messages
             
-            fetch(`/revenue/update-payment/${currentPayId}/?next={% url "results:hema_pay_list" %}`, {
+            fetch(`/revenue/update-payment/${currentPayId}/?next={% url "results:pathology_pay_list" %}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
