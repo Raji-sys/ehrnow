@@ -22,6 +22,10 @@ class PatientDataAdmin(admin.ModelAdmin):
     list_filter = ('title','last_name','first_name','other_name','gender','age','updated')
 
 
+@admin.register(Paypoint)
+class PaypointAdmin(admin.ModelAdmin):
+    list_display = ('patient','service','price','status')
+
 @admin.register(Theatre)
 class TheatreAdmin(admin.ModelAdmin):
     list_display = ('name',)

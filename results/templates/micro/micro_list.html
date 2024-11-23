@@ -54,7 +54,7 @@
           {{ result.updated|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
-          {{ result.collected_by|default_if_none:'' }}
+          {{ result.approved_by|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
            <a href="{% url 'results:instance_pdf' result.id %}" class="text-xs hover:text-green-700">

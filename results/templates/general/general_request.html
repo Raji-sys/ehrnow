@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {%load static %}
+{% block title %}GENERAL REQUEST{% endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'results:general' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>GENERAL REQUEST LIST</div>{%endblock%}
 {% block content %}
 <div class="mt-4">
@@ -10,14 +11,11 @@
       <tr class="text-xs text-center bg-emerald-100">
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">S/N</th>
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">ID</th>
-        <th class="p-3  text-xs font-medium text-rose-500 uppercase tracking-wider">
+        <th class="p-3  text-xs font-medium text-rose-700 uppercase tracking-wider">
           Test
         </th>
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">
           Price
-        </th>
-        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Payment Status
         </th>
         <th class="p-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
           Patient
@@ -43,7 +41,7 @@
       <td class="p-3 whitespace-nowrap">
         {{ g.id|default_if_none:'' }}
       </td>
-        <td class="p-3 whitespace-nowrap text-rose-500">
+        <td class="p-3 whitespace-nowrap text-rose-700">
           {%if g.test_1 is not None %}
           {{ g.test_1|default_if_none:'' }} <br>
           {%endif%}
@@ -107,33 +105,25 @@
         <td class="p-3 whitespace-nowrap">
           &#x20A6;{{ g.price|default_if_none:'' }}
         </td>
-        {% if g.payment.status == False %}
-            <td class="p-3 whitespace-nowrap text-red-700">
-          <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
-            </td>
-        {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
-             <i class="fa-solid fa-thumbs-up fa-2xl"></i>
-           </td>
-        {% endif %}
         <td class="p-3 whitespace-nowrap">
-          <a href="{{g.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-                {{ g.patient|default_if_none:'' }}
+          <a href="{{g.test_info.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+                {{ g.test_info.patient|default_if_none:'' }}
                 </a>
         </td>
         <td class="p-3 whitespace-nowrap">
-          {{ g.created|default_if_none:'' }}
+          {{ g.test_info.created|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
-          {{ g.collected_by }}
+          {{ g.test_info.collected_by }}
         </td>
         <td>
-          {% if g.payment.status == True %}
-          <a href="{% url 'general_result' g.patient.file_no g.id %}" class="text-green-500 hover:text-blue-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
-          {%else%}
-          <i class="fa-solid fa-xmark-square text-red-700 fa-2xl"></i>
-          {%endif%}
-        </td>
+          {% if g.test_info.payment.status == True %}
+              <a href="{%url 'results:general_result' g.test_info.patient.file_no g.id %}" class="text-green-500 hover:text-blue-700">
+                  <i class="fa-solid fa-plus-square fa-2xl"></i></a>
+          {% else %}
+              <i class="fa-solid fa-xmark-square text-red-700 fa-2xl"></i>
+          {% endif %}
+      </td>
 
       </tr>
       {% endfor %}

@@ -61,6 +61,9 @@
                 Collected By
               </th>
               <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
+                Approved By
+              </th>
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
                 Result
               </th>
             </tr>
@@ -89,6 +92,9 @@
               </td>
               <td class="p-3 whitespace-nowrap">
                 {{ i.collected_by|default_if_none:'' }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ i.approved_by|default_if_none:'' }}
               </td>
               <td class="p-3 whitespace-nowrap">
                 <a href="{% url 'results:instance_pdf' i.id %}" class="text-xs hover:text-green-700">

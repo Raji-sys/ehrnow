@@ -35,7 +35,7 @@ urlpatterns = [
     path('general-list/',GeneralListView.as_view(),name='general_list'),
     path('general-request/',GeneralRequestListView.as_view(),name='general_request'),
     path('general-test/create/<str:file_no>/',GeneralTestCreateView.as_view(), name='general_test'),
-    path('general-result/create/<str:file_no>/<int:pk>/',GeneralResultCreateView.as_view(), name='general_result'),
+    path('general-result/create/<str:file_no>/<int:pk>/',GeneralResultUpdateView.as_view(), name='general_result'),
     path('general-report/', GeneralReportView.as_view(), name='general_report'),
     path('general-pdf/', views.general_report_pdf, name='general_report_pdf'),
 

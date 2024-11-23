@@ -22,18 +22,12 @@ import os
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count,Sum,Q
 User = get_user_model()
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
-from reportlab.lib.colors import black, grey
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 from django.db import transaction
 from django.db import reset_queries
 reset_queries()
 from ehr.models import PatientData
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.http import JsonResponse
-
+from datetime import datetime
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -280,7 +274,7 @@ class GeneralRequestListView(ListView):
 
     def get_queryset(self):
         queryset=super().get_queryset()
-        queryset = queryset.filter(cleared=False).order_by('-updated')
+        queryset = queryset.filter(cleared=False).order_by('-test_info__updated')
         return queryset
     
 
@@ -292,7 +286,7 @@ class GeneralListView(ListView):
 
     def get_queryset(self):
         queryset=super().get_queryset()
-        queryset=queryset.filter(payment__status=True,cleared=True).order_by('-updated')
+        queryset=queryset.filter(test_info__payment__status=True,cleared=True).order_by('-test_info__updated')
         return queryset
 
 
@@ -300,40 +294,45 @@ class GeneralTestCreateView(LoginRequiredMixin, CreateView):
     model=GeneralTestResult
     form_class = GeneralTestForm
     template_name = 'general/general_result.html'
+    
+    def get_success_url(self):
+        return self.object.test_info.patient.get_absolute_url()
 
     def form_valid(self, form):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        test_info = Testinfo.objects.create(patient=patient, collected_by=self.request.user)
+        
+        # Create test_info only once
+        test_info = Testinfo.objects.create(
+            patient=patient,
+            collected_by=self.request.user
+        )
         form.instance.test_info = test_info
 
         general_result = form.save(commit=False)
         payment = Paypoint.objects.create(
             patient=patient,
             status=False,
-            service=general_result.test_info.code, 
+            service=test_info.code,  # Use the test_info we created above
             unit='general',
             price=general_result.price,
         )         
-        test_info = Testinfo.objects.create(
-            patient=patient,
-            payment=payment
-        )
 
-        general_result.test_info.payment = payment 
+        # Update the existing test_info instead of creating a new one
+        test_info.payment = payment
+        test_info.save()
+
         general_result.save()
         messages.success(self.request, 'general added successfully')
         return super().form_valid(form)
 
-    
-    def get_success_url(self):
-        return self.object.test_info.patient.get_absolute_url()
 
 
-class GeneralResultCreateView(LoginRequiredMixin, UpdateView):
+class GeneralResultUpdateView(LoginRequiredMixin, UpdateView):
     model=GeneralTestResult
     form_class = GeneralTestResultForm
     template_name = 'general/general_result.html'
     context_object_name = 'result'
+    success_url = reverse_lazy('results:general_request')
 
 
     def get_object(self, queryset=None):
@@ -341,16 +340,13 @@ class GeneralResultCreateView(LoginRequiredMixin, UpdateView):
         return GeneralTestResult.objects.get(test_info__patient=patient, pk=self.kwargs['pk'])
 
     def form_valid(self, form):
-        form.instance.test_info.updated_by = self.request.user
+        form.instance.test_info.approved_by = self.request.user
         general_result = form.save(commit=False)
         general_result.save()
         messages.success(self.request, 'general result updated successfully')
 
         return super().form_valid(form)
-    def get_success_url(self):
-        return self.object.test_info.patient.get_absolute_url()
-
-# 
+ 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class GeneralReportView(ListView):
@@ -363,7 +359,7 @@ class GeneralReportView(ListView):
         queryset = super().get_queryset()
 
         gen_filter = GenFilter(self.request.GET, queryset=queryset)
-        patient = gen_filter.qs.order_by('-created')
+        patient = gen_filter.qs.order_by('-test_info__updated')
 
         return patient
 
@@ -374,7 +370,7 @@ class GeneralReportView(ListView):
 
 @login_required
 def general_report_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')  # Changed slashes to underscores
 
     f = GenFilter(request.GET, queryset=GeneralTestResult.objects.all()).qs
