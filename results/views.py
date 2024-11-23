@@ -407,27 +407,26 @@ def general_report_pdf(request):
 
 class HemaPayListView(ListView):
     model = Paypoint
-    template_name = 'revenue/hema_pay_list.html'
+    template_name = 'revenue/pathology_pay_list.html'
     paginate_by = 10
-    context_object_name = 'hematology_pays'  # Add this to match your template
+    context_object_name = 'pathology_pays'  # Add this to match your template
 
     def get_queryset(self):
         return Paypoint.objects.filter(
             test_payments__isnull=False,
-            unit__iexact='Hematology'
         ).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        hematology_pays=self.get_queryset()
-        hema_pay_total = hematology_pays.count()
-        hema_paid_transactions = hematology_pays.filter(status=True)
-        hema_total_worth = hema_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+        pathology_pays=self.get_queryset()
+        pathology_pay_total = pathology_pays.count()
+        pathology_paid_transactions = pathology_pays.filter(status=True)
+        pathology_total_worth = pathology_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
 
-        context['hema_pay_total'] = hema_pay_total
+        context['pathology_pay_total'] = pathology_pay_total
 
-        context['hema_total_worth'] = hema_total_worth
+        context['pathology_total_worth'] = pathology_total_worth
         return context
 
       

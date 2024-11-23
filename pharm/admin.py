@@ -108,3 +108,10 @@ class BoxAdmin(admin.ModelAdmin):
     list_display = ('name', 'update',)
     search_fields = ('name',)
     list_filter = ('update',)
+
+
+@admin.register(Prescription)
+class PrescriptionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'dose', 'updated',)
+    search_fields = ('id',)
+    list_filter = ('id',)

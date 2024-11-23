@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
+import os
 
 
 class SerialNumberField(models.CharField):
@@ -301,6 +302,10 @@ class Paypoint(models.Model):
     def __str__(self):
         return f"{self.status}"
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['patient', 'unit', 'status', 'created']),
+        ]
 
 class MedicalRecord(models.Model):
     services=(('new registration','new registration'),('follow up','follow up'),('card replacement','card replacement'))
@@ -525,17 +530,6 @@ class TheatreBooking(models.Model):
     def __str__(self):
         return f"Bill for:{self.patient}"
 
-class Bill(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
-    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='surgery_bill',null=True)
-    created = models.DateTimeField(auto_now_add=True,null=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
-    theatre_booking = models.ForeignKey(TheatreBooking, null=True, blank=True, on_delete=models.SET_NULL)
-    updated = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return f"Surgery Bill"
-
 
 class TheatreItemCategory(models.Model):
     name=models.CharField(max_length=200,null=True, blank=True)
@@ -555,6 +549,18 @@ class TheatreItem(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+class Bill(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='surgery_bill',null=True)
+    created = models.DateTimeField(auto_now_add=True,null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
+    theatre_booking = models.ForeignKey(TheatreBooking, null=True, blank=True, on_delete=models.SET_NULL)
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Surgery Bill"
+
 
 class Billing(models.Model):
     bill = models.ForeignKey(Bill, on_delete=models.CASCADE, related_name='items',null=True)
@@ -802,8 +808,6 @@ class ImplantUsage(models.Model):
     surgical_record = models.ForeignKey(TheatreOperationRecord, on_delete=models.CASCADE)
     implant = models.ForeignKey(Implant, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-
-import os
 
 class Archive(models.Model):
     patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name='patient_archive')

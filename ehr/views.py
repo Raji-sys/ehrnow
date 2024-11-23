@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from django.utils.decorators import method_decorator
-from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import LoginView
 from .models import *

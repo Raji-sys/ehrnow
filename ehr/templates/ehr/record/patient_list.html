@@ -50,7 +50,7 @@
                     #
                 </th>
               <th class="p-3  text-emerald-500 uppercase tracking-wider">
-                FILE NUMBER
+                FILE NO
               </th>
               <th class="p-3 text-emerald-500 uppercase tracking-wider">
                 NAME
@@ -58,14 +58,8 @@
               <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 PHONE
               </th>
-              <th class="p-3 text-emerald-500 uppercase tracking-wider">
-                AGE
-              </th>
               <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 NEXT OF KIN
-              </th>
-              <th class="p-3  text-emerald-500 uppercase tracking-wider">
-                NEXT OF KIN PHONE
               </th>
               <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 RELATIONSHIP
@@ -99,12 +93,7 @@
                 {{ p.phone|default_if_none:'N/A' }}
               </td>
               <td class="p-3 whitespace-nowrap">
-                {{ p.age|default_if_none:'N/A' }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
-                {{ p.nok_name|default_if_none:'N/A' }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
+                {{ p.nok_name|default_if_none:'N/A' }} <br>
                 {{ p.nok_phone|default_if_none:'N/A' }}
               </td>
               <td class="p-3 whitespace-nowrap">

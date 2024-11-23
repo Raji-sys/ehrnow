@@ -1580,7 +1580,7 @@ class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
             return reverse_lazy('pharm:prescription_list', kwargs={'store_pk': prescription.unit.pk})
         else:
             messages.error(self.request, "Prescription update failed due to missing unit.")
-            return reverse_lazy('pharm:home')  # Fallback route
+            return reverse_lazy('pharm:index')  # Fallback route
 
     def form_valid(self, form):
         prescription = form.save(commit=False)
