@@ -1818,7 +1818,13 @@
                           <td class=" p-3 whitespace-nowrap"></td>
                           {%endif%}      
                       <td class="p-3 whitespace-nowrap">
+                        {%if g.payment.status == True %}
                             <a href="{% url 'results:general_result' g.patient.file_no g.general_results.id %}" class="text-green-600 hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a>
+                            {%else%}
+                            <span class="text-rose-700">
+                              UNPAID
+                            </span>
+                            {%endif%}
                           </td>
                         </tr>
                         {% endfor %}

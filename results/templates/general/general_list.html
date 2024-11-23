@@ -3,6 +3,17 @@
 {% block title %}GENERAL RESULT LIST{% endblock %}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'results:general' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>GENERAL RESULT LIST</div>{%endblock%}
 {% block content %}
+<section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
+  {% for message in messages %}
+  <div class="">
+    <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
+      <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
+      <p class="text-green-700  uppercase">{{ message }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
 <div class="mt-4">
   <div class="md:mx-20 mx-2 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
   <div class="overflow-x-auto">
@@ -172,6 +183,10 @@
         <td class="p-3 whitespace-nowrap">
           {{ result.test_info.collected_by }}
         </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8" class="p-3 text-center text-sm text-gray-500">No result found</td>
       </tr>
       {% endfor %}
       <tr class="flex justify-center text-center p-1">

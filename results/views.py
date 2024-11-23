@@ -297,7 +297,8 @@ class GeneralTestCreateView(LoginRequiredMixin, CreateView):
     
     def get_success_url(self):
         return self.object.test_info.patient.get_absolute_url()
-
+    
+    @transaction.atomic
     def form_valid(self, form):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         
@@ -339,6 +340,7 @@ class GeneralResultUpdateView(LoginRequiredMixin, UpdateView):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         return GeneralTestResult.objects.get(test_info__patient=patient, pk=self.kwargs['pk'])
 
+    @transaction.atomic
     def form_valid(self, form):
         form.instance.test_info.approved_by = self.request.user
         general_result = form.save(commit=False)

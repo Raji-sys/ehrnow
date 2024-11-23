@@ -1,0 +1,84 @@
+<!-- templates/ehr/ward/admission_charges.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Current Admissions and Charges</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Patient</th>
+                <th>Ward</th>
+                <th>Days on Admission</th>
+                <th>Daily Rate</th>
+                <th>Total Charges</th>
+                <th>Last Payment</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for admission in admissions %}
+            <tr>
+                <td>{{ admission.patient }}</td>
+                <td>{{ admission.ward }}</td>
+                <td>{{ admission.total_days }}</td>
+                <td>₦{{ admission.ward.daily_rate }}</td>
+                <td>₦{{ admission.total_charges }}</td>
+                <td>
+                    {% if admission.last_payment %}
+                        {% if admission.last_payment.status %}
+                            <span class="text-success">Paid</span>
+                        {% else %}
+                            <span class="text-warning">Pending</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-danger">No payments</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="generateCharge('{{ admission.id }}')">
+                        Generate Charge
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function generateCharge(admissionId) {
+    fetch(`/api/generate-admission-charge/${admissionId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            alert('Charge generated successfully');
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function getCookie(name) {
+    // CSRF token helper function
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

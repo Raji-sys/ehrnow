@@ -2559,3 +2559,4 @@ class ArchiveDeleteView(DeleteView):
     def get_success_url(self):
         messages.success(self.request, 'File deleted successfully.')
         return self.object.patient.get_absolute_url()
+        

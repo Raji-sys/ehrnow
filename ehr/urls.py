@@ -102,6 +102,7 @@ urlpatterns = [
     path('clinic/update-admission/<int:pk>/', AdmissionUpdateView.as_view(), name='receive_patient'),
     path('clinic/patient-discharge/<int:pk>/', AdmissionDischargeView.as_view(), name='discharge_patient'),
     
+
     #wards    
     path('ward/<int:pk>/',WardDetailView.as_view(), name='ward_details'),
     path('ward/<int:ward_id>/<str:status>/', GenericWardListView.as_view(), name='admission_list'),
