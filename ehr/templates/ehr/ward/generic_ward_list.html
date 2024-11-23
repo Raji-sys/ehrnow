@@ -42,61 +42,58 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gradient-to-r from-cyan-400 to-emerald-500">
           <tr class="text-center">
-            <th scope="col" class="px-6 py-3  text-xs font-medium text-gray-900 uppercase tracking-wider">#</th>
-            <th scope="col" class="px-6 py-3  text-xs font-medium text-gray-900 uppercase tracking-wider">File Number</th>
-            <th scope="col" class="px-6 py-3  text-xs font-medium text-gray-900 uppercase tracking-wider">Patient Name</th>
-            <th scope="col" class="px-6 py-3  text-xs font-medium text-gray-900 uppercase tracking-wider">Phone Number</th>
-            <th scope="col" class="px-6 py-3  text-xs font-medium text-gray-900 uppercase tracking-wider">Gender</th>
-            <th scope="col" class="px-6 py-3  text-xs font-medium text-gray-900 uppercase tracking-wider">Bed Number</th>
-            <th scope="col" class="px-6 py-3  text-xs font-medium text-gray-900 uppercase tracking-wider">Process</th>
-            <th scope="col" class="px-6 py-3  text-xs font-medium text-gray-900 uppercase tracking-wider">Actions</th>
-            <th scope="col" class="px-6 py-3  text-xs font-medium text-gray-900 uppercase tracking-wider">Date Admitted</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">#</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">File Number</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Patient Name</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Phone Number</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Gender</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Bed Number</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Process</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Actions</th>
           </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          {% for a in admissions %}
-          <tr class="hover:bg-gray-100 text-center">
-            <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{forloop.counter}}</td>
-            <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.file_no|default_if_none:'' }}</td>
-            <td class="p-3 whitespace-nowrap text-xs font-medium text-cyan-900">{{ a.patient|default_if_none:''|upper }}</td>
-            <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.phone|default_if_none:'' }}</td>
-            <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.gender|default_if_none:'' }}</td>
-            <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.bed_number|default_if_none:'' }}</td>
-            {%if a.status == 'ADMIT'%}
-            <td class="p-3 whitespace-nowrap text-xs font-medium">
-              <a href="{% url 'receive_patient' a.pk %}" class="text-amber-600 hover:text-emerald-900 uppercase">
-                <i class="fa-solid fa-handshake fa-2x"></i><br>accept patient
-              </a>
-            </td>
-            {%elif a.status == 'RECEIVED' %}
-            <td class="p-3 whitespace-nowrap text-xs font-medium">
-              <a href="{% url 'ward_vital_signs' a.patient.file_no %}" class="text-blue-600 hover:text-blue-900 mr-3">
-                <i class="fa-solid fa-heartbeat fa-2x"></i>
-              </a>
-              <a href="{% url 'ward_medication' a.patient.file_no %}" class="text-green-600 hover:text-green-900 mr-3">
-                <i class="fa-solid fa-file-prescription fa-2x"></i>
-              </a>
-              <a href="{% url 'ward_notes' a.patient.file_no %}" class="text-yellow-600 hover:text-yellow-900 mr-3">
-                <i class="fa-solid fa-clipboard-list fa-2x"></i>
-              </a>
-            </td>
-            <td class="p-3 whitespace-nowrap text-xs font-medium">
-              <a href="{% url 'discharge_patient' a.pk %}" class="text-emerald-600 hover:text-emerald-900 uppercase">
-                <i class="fa-solid fa-hospital-user fa-2x"></i><br>discharge patient
-              </a>
-            </td>
-            {%else%}
-            <td class="p-3 whitespace-nowrap text-xs font-medium text-center uppercase text-cyan-500">
-              <i class="fa-solid fa-folder-closed fa-2x text-cyan-600"></i><br>discharged
-            </a>
-          </td>
-          <td class="p-3 whitespace-nowrap text-xs font-medium text-center uppercase text-cyan-500">
-            {{a.updated}}
-          </td>
-            {%endif%}
-          </tr>
-          {% endfor %}
-        </tbody>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for a in admissions %}
+            <tr class="hover:bg-gray-100 text-center">
+              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ forloop.counter }}</td>
+              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.file_no|default_if_none:'' }}</td>
+              <td class="p-3 whitespace-nowrap text-xs font-medium text-cyan-900"><a href="{{a.patient.get_absolute_url}}">{{ a.patient|default_if_none:''|upper }} </a></td>
+
+              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.phone|default_if_none:'' }}</td>
+              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.gender|default_if_none:'' }}</td>
+              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.bed_number|default_if_none:'' }}</td>
+              {% if a.status == 'ADMIT' %}
+              <td colspan="2" class="p-3 whitespace-nowrap text-xs font-medium">
+                <a href="{% url 'receive_patient' a.pk %}" class="text-amber-600 hover:text-emerald-900 uppercase">
+                  <i class="fa-solid fa-handshake fa-2x"></i><br>Accept Patient
+                </a>
+              </td>
+              <td class="p-3 whitespace-nowrap text-xs font-medium">{{ a.date_admitted }}</td>
+              {% elif a.status == 'RECEIVED' %}
+              <td class="p-3 whitespace-nowrap text-xs font-medium">
+                <a href="{% url 'ward_vital_signs' a.patient.file_no %}" class="text-blue-600 hover:text-blue-900 mr-3">
+                  <i class="fa-solid fa-heartbeat fa-2x"></i>
+                </a>
+                <a href="{% url 'ward_medication' a.patient.file_no %}" class="text-green-600 hover:text-green-900 mr-3">
+                  <i class="fa-solid fa-file-prescription fa-2x"></i>
+                </a>
+                <a href="{% url 'ward_notes' a.patient.file_no %}" class="text-yellow-600 hover:text-yellow-900 mr-3">
+                  <i class="fa-solid fa-clipboard-list fa-2x"></i>
+                </a>
+              </td>
+              <td class="p-3 whitespace-nowrap text-xs font-medium">
+                <a href="{% url 'discharge_patient' a.pk %}" class="text-emerald-600 hover:text-emerald-900 uppercase">
+                  <i class="fa-solid fa-hospital-user fa-2x"></i><br>Discharge Patient
+                </a>
+              </td>
+              {% else %}
+              <td colspan="2" class="p-3 whitespace-nowrap text-xs font-medium text-center uppercase text-cyan-500">
+                <i class="fa-solid fa-folder-closed fa-2x text-cyan-600"></i><br>Discharged
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
       </table>
     </div>
   </div>

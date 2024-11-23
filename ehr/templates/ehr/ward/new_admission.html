@@ -25,12 +25,10 @@
     <div class="mb-2 uppercase text-cyan-900 px-16">
         <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">ADMIT PATIENT</p>
         <div class="flex justify-start text-center">
-            <div class=" grid grid-cols-1 p-2 gap-2">
+            <div class=" grid grid-cols-1 md:flex p-2 gap-2 ">
       {% for field in form %}
             <div class="">
                 <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
-            </div>
-            <div class="">
                 {{ field }}
             </div>
             {%endfor%}

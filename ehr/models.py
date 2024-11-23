@@ -78,13 +78,14 @@ def create_clinic_related_objects(sender, instance, created, **kwargs):
 
 class Ward(models.Model):
     name = models.CharField(null=True, blank=True, max_length=200)
-    
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+
     def get_absolute_url(self):
         return reverse('ward_details', args=[self.name])
 
     def __str__(self):
         if self.name:
-            return f"{self.name}"
+            return f"{self.name}- {self.price}"
 
 class Team(models.Model):
     name = models.CharField(null=True, blank=True, max_length=200)
@@ -423,6 +424,7 @@ class RadiologyResult(models.Model):
 
 
 class Admission(models.Model):
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     STATUS = [
         ('ADMIT', 'ADMIT'),
         ('RECEIVED', 'RECEIVED'),
