@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}INCOMING {{ lab_name }} REQUEST{% endblock %}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'results:dashboard' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a></div>{%endblock%}
+{% block content %}
+<div class="p-2">
+    <div class="max-w-7xl mx-auto bg-gray-100 rounded-lg shadow-md p-2">
+        <div class="bg-blue-600 text-white rounded-t-lg ">
+            <h2 class="text-sm font-medium text-white p-2 text-center">INCOMING {{ lab_name }} TESTS</h2>
+        </div>
+
+        {% if tests %}
+        <div class="overflow-x-auto">
+            <div class="max-h-[70vh] overflow-y-auto">
+                <table class="w-full table-auto">
+                    <thead class="bg-gray-200">
+                        <tr class="text-xs uppercase text-gray-700">
+                            <th class="px-4 py-2">#</th>
+                            <th class="px-4 py-2">Date</th>
+                            <th class="px-4 py-2">Patient</th>
+                            <th class="px-4 py-2">Test</th>
+                            <th class="px-4 py-2">Price</th>
+                            <th class="px-4 py-2">Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in tests %}
+                        <tr class="{% cycle 'bg-white' 'bg-gray-50' %} text-xs text-center">
+                            <td class="px-4 py-2 text-center">{{ forloop.counter }}</td>
+                            <td class="px-4 py-2">{{ test.labtest.created }}</td>
+                            <td class="px-4 py-2"><a href="{{test.labtest.patient.get_absolute_url}}">{{ test.labtest.patient }}</a></td>
+                            <td class="px-4 py-2">{{ test.item.name }}</td>
+                            <td class="px-4 py-2">&#x20A6;{{ test.item.price }}</td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {% if test.payment.status %}
+                                        bg-green-100 text-green-800
+                                    {% else %}
+                                        bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {% if test.payment.status %}
+                                    <i class="fa-solid fa-check-circle text-green-700 fa-2xl"></i>
+                                    {% else %}
+                            
+                                    <i class="fa-solid fa-xmark-circle text-red-700 fa-2xl"></i>
+                                    {% endif %}
+                                    
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% if is_paginated %}
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" 
+                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" 
+                       class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Next
+                    </a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Showing 
+                        <span class="font-medium">{{ page_obj.start_index }}</span>
+                        to
+                        <span class="font-medium">{{ page_obj.end_index }}</span>
+                        of
+                        <span class="font-medium">{{ paginator.count }}</span>
+                        results
+                    </p>
+                </div>
+                <div>
+                    {% if is_paginated %}
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                        {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            Previous
+                        </a>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600">
+                                    {{ num }}
+                                </span>
+                            {% else %}
+                                <a href="?page={{ num }}" 
+                                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            Next
+                        </a>
+                        {% endif %}
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-4">
+            <p class="text-gray-500">No microbiology tests found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{%endblock%}

@@ -16,7 +16,7 @@
     <div class="max-h-[70vh] overflow-y-auto p-2">
         <div class="grid md:grid-cols-1 p-1 gap-1 text-center">
             {% for form in formset %}
-            <div class="p-2 border rounded shadow-md w-fit">
+            <div class="p-2 border rounded shadow-md max-w-5xl">
                 <div class="flex justify-center flex-col"> <!-- Changed to flex-col -->
                     <p class="text-left text-xs text-green-700">#{{ forloop.counter }}
                         {{ form.lab }}

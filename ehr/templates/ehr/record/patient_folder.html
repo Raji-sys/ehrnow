@@ -53,7 +53,8 @@
   <li><a href="#" class="rounded-lg">VITAL SIGNS</a></li>
   <li><a href="#" class="rounded-lg">CLINICAL NOTES</a></li>
   <li><a href="#" class="rounded-lg">APPOINTMENTS</a></li>
-  <li><a href="#" class="rounded-lg">LAB INVESTIGATIONS</a></li>
+  <li><a href="#" class="rounded-lg">LAB REQUEST</a></li>
+  <li><a href="#" class="rounded-lg">LAB RESULT</a></li>
   <li><a href="#" class="rounded-lg">PRESCRIPTION</a></li>
   <li><a href="#" class="rounded-lg">RADIOLOGY</a></li>
   <li><a href="#" class="rounded-lg">PHYSIO</a></li>
@@ -366,49 +367,66 @@
      </div>
     <!-- break -->
       <!-- break -->
+           <!-- break -->
+      <!-- break -->
+      <div> 
+        <div>
+          <a href="{% url 'results:lab_test' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+            <i class="fa-solid fa-plus fa-2xl"></i> SEND PATHOLOGY INVESTIGATION
+        </a>
+      </div>     
+
+        <div class="overflow-x-auto max-h-[50vh] p-2">
+          <table class="min-w-full divide-y divide-cyan-200 mb-4">
+            <thead class="bg-cyan-50">
+              <tr class="text-xs">
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">price</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">payment</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">request by</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">details</th>
+          </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-cyan-200">
+              {% for s in test_items %}
+              <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
+                <td class=" p-3 whitespace-nowrap">&#x20A6;{{ s.total_amount }}</td>
+                <td class="p-3 whitespace-nowrap">
+                  {% with lab_items=s.items.all %}
+                      {% if lab_items %}
+                          {% with first_payment=lab_items.first.payment %}
+                              {% if first_payment and first_payment.status %}
+                                  <span class="text-green-500">Paid</span>
+                              {% else %}
+                                  <span class="text-red-500">Unpaid</span>
+                              {% endif %}
+                          {% endwith %}
+                      {% else %}
+                          <span class="text-gray-500">No Items</span>
+                      {% endif %}
+                  {% endwith %}
+              </td>
+                <td class=" p-3 whitespace-nowrap">{{ s.user }}</td>
+                <td class=" p-3 whitespace-nowrap">{{ s.created }}</td>
+                <td class=" p-3 whitespace-nowrap"> <a href="{% url 'results:test_detail' s.id %}" class="text-blue-500 hover:underline" target="_blank"><i class="fa-solid fa-eye fa-2xl"></i></a></td>
+                  </tr>
+              {%empty%}
+              <div class="p-2">
+                  <p>No requests yet</p>
+              </div>
+             {%endfor%}
+
+            </tbody>
+          </table>
+        </div>
+     </div>
+    <!-- break -->
+      <!-- break -->
       <div> 
           <div class="text-center rounded-xl p-2 md:p-10 bg-gray-50">
-            <a href="{% url 'results:lab_test' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-              <i class="fa-solid fa-plus fa-2xl"></i> SEND PATHOLOGY INVESTIGATION
-          </a>
-<div>
-  <table class="min-w-full divide-y divide-cyan-200 mb-4">
-    <thead class="bg-cyan-50">
-      <tr class="text-xs">
-        <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-        <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">price</th>
-        <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">payment</th>
-        <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">billed by</th>
-        <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">date</th>
-        <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">details</th>
-          </tr>
 
-    </thead>
-    <tbody class="bg-white divide-y divide-cyan-200">
-      {% for s in test_items %}
-      <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-        <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-        <td class=" p-3 whitespace-nowrap">&#x20A6;{{ s.total_amount }}</td>
-        <td class=" p-3 whitespace-nowrap">
-          {% if s.test_items.first.payment.status %}
-          <span class="text-green-500">Paid</span>
-      {% else %}
-          <span class="text-red-500">Unpaid</span>
-      {% endif %}
-        </td>
-        <td class=" p-3 whitespace-nowrap">{{ s.user }}</td>
-        <td class=" p-3 whitespace-nowrap">{{ s.created }}</td>
-        <td class=" p-3 whitespace-nowrap"> <a href="{% url 'results:test_detail' s.id %}" class="text-blue-500 hover:underline"><i class="fa-solid fa-eye fa-2xl"></i></a></td>
-          </tr>
-      {%empty%}
-      <div class="p-2">
-          <p>No surgery bill yet</p>
-      </div>
-     {%endfor%}
-    </tbody>
-  </table>
-
-</div>
             <!-- from here  -->
             <ul class="uk-subnav uk-subnav-pill uppercase flex justify-center gap-8" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
               <li ><a href="#" class="rounded-lg ">HEMATOLOGY</a></li>

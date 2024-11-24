@@ -841,7 +841,6 @@ class LabTest(models.Model):
     def __str__(self):
         return f"Lab Test"
 
-
 class LabTesting(models.Model):
     labtest = models.ForeignKey(LabTest, on_delete=models.CASCADE, related_name='items', null=True)
     lab = models.CharField(max_length=300, choices=GenericTest.LABS, null=True, blank=True)  # Changed from category

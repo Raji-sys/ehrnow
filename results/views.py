@@ -419,30 +419,50 @@ def general_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
+# class PathologyPayListView(ListView):
+#     model = Paypoint
+#     template_name = 'revenue/pathology_pay_list.html'
+#     paginate_by = 10
+#     context_object_name = 'pathology_pays'  # Add this to match your template
+
+#     def get_queryset(self):
+#         return Paypoint.objects.filter(test_payments__isnull=False,).order_by('-updated')
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+
+#         pathology_pays=self.get_queryset()
+#         pathology_pay_total = pathology_pays.count()
+#         pathology_paid_transactions = pathology_pays.filter(status=True)
+#         pathology_total_worth = pathology_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+#         context['pathology_pay_total'] = pathology_pay_total
+
+#         context['pathology_total_worth'] = pathology_total_worth
+#         return context
 class PathologyPayListView(ListView):
     model = Paypoint
     template_name = 'revenue/pathology_pay_list.html'
     paginate_by = 10
-    context_object_name = 'pathology_pays'  # Add this to match your template
+    context_object_name = 'pathology_pays'
 
     def get_queryset(self):
-        return Paypoint.objects.filter(
-            test_payments__isnull=False,
-        ).order_by('-updated')
-
+        queryset = (Paypoint.objects.filter(lab_payment__isnull=False).select_related('patient', 'user').distinct().order_by('-updated'))
+                
+        return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        pathology_pays=self.get_queryset()
-        pathology_pay_total = pathology_pays.count()
-        pathology_paid_transactions = pathology_pays.filter(status=True)
-        pathology_total_worth = pathology_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
+        pathology_pays = self.get_queryset()
+        
+        # Calculate totals using distinct counts
+        pathology_pay_total = pathology_pays.distinct().count()
+        pathology_paid_transactions = pathology_pays.filter(status=True).distinct()
+        pathology_total_worth = pathology_paid_transactions.aggregate(
+            total_worth=Sum('price'))['total_worth'] or 0
+            
         context['pathology_pay_total'] = pathology_pay_total
-
         context['pathology_total_worth'] = pathology_total_worth
         return context
-
           
 class BaseTestView(LoginRequiredMixin):
     template_name = 'shared_test_form.html'
@@ -1751,7 +1771,7 @@ class LabTestingCreateView(DoctorRequiredMixin, LoginRequiredMixin, FormView):
         LabTestingFormSet = modelformset_factory(
             LabTesting, 
             form=LabTestingForm, 
-            extra=2
+            extra=10
         )
         if self.request.method == 'POST':
             return LabTestingFormSet(self.request.POST)
@@ -1830,24 +1850,51 @@ def get_lab(request, lab_name):
     return JsonResponse({'items': item_list})
 
 
+from django.db.models import Prefetch
 class LabTestDetailView(DetailView):
     model = LabTest
     template_name = 'ehr/revenue/labtest_detail.html'
-    context_object_name = 'labtest'
+    context_object_name = 'tests'  # Changed to match your template
+
+    def get_queryset(self):
+        return LabTest.objects.select_related(
+            'user',
+            'patient',
+        ).prefetch_related(
+            Prefetch(
+                'items',
+                queryset=LabTesting.objects.select_related(
+                    'item',
+                    'payment'
+                )
+            )
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['labtesting_items'] = LabTesting.objects.filter(labtest=self.object).select_related('item', 'item__lab')
+        context['testing_items'] = self.object.items.all()
+        
+        # Get payment status from the first item as shown in your template
+        first_item = self.object.items.first()
+        if first_item and first_item.payment:
+            context['payment_status'] = first_item.payment.status
+        else:
+            context['payment_status'] = False
+            
         return context
-
-    def get_queryset(self):
-        return super().get_queryset().prefetch_related('items__item__lab')
 
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
     html = template.render(context_dict)
     result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    
+    
+    pdf = pisa.pisaDocument(
+        BytesIO(html.encode("UTF-8")), 
+        result,
+        encoding='UTF-8'
+    )
+    
     if not pdf.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return None
@@ -1855,22 +1902,91 @@ def render_to_pdf(template_src, context_dict):
 class TestPDFView(DetailView):
     model = LabTest
     template_name = 'ehr/revenue/test_pdf.html'
+    
+    def get_queryset(self):
+        return LabTest.objects.select_related(
+            'user',
+            'patient'
+        ).prefetch_related(
+            Prefetch(
+                'items',
+                queryset=LabTesting.objects.select_related('item', 'payment')
+            )
+        )
 
     def get(self, request, *args, **kwargs):
         labtest = self.get_object()
-        labtesting_items = LabTesting.objects.filter(labtest=labtest).select_related('item', 'item__lab')
+        testing_items = labtest.items.all()
+        
+        # Get payment status from first item
+        payment_status = False
+        first_item = testing_items.first()
+        if first_item and first_item.payment:
+            payment_status = first_item.payment.status
         
         context = {
             'labtest': labtest,
-            'labtesting_items': labtesting_items,
+            'testing_items': testing_items,
+            'payment_status': payment_status,
+            'hospital_name': 'HOSPITAL NAME',  # Customize these
+            'generated_date': datetime.now().strftime('%d-%m-%Y %H:%M'),
+            'doc_title': 'LABORATORY TEST REPORT',
         }
         
-        pdf = render_to_pdf('ehr/revenue/test_pdf.html', context)
+        pdf = render_to_pdf(self.template_name, context)
+        
         if pdf:
             response = HttpResponse(pdf, content_type='application/pdf')
             if 'download' in request.GET:
-                filename = f"Test_{labtest.id}.pdf"
-                content = f"attachment; filename={filename}"
-                response['Content-Disposition'] = content
+                filename = f"LAB_TEST_{labtest.patient.file_no}_{datetime.now().strftime('%Y%m%d')}.pdf"
+                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            else:
+                response['Content-Disposition'] = 'inline'
             return response
-        return HttpResponse("Error generating PDF", status=400)
+            
+        return HttpResponse("Error Generating PDF", status=500)
+
+class MicrobiologyTestListView(LoginRequiredMixin, ListView):
+    model = LabTesting
+    template_name = 'incoming_req.html'
+    context_object_name = 'tests'
+    paginate_by = 50  # Adjust as needed
+
+    def get_queryset(self):
+        return LabTesting.objects.filter(
+            lab__icontains='MICROBIOLOGY'
+        ).select_related(
+            'labtest',
+            'labtest__patient',
+            'labtest__user',
+            'item',
+            'payment'
+        ).order_by('-labtest__created')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lab_name'] = 'MICROBIOLOGY'
+        return context
+
+
+class ChempathTestListView(LoginRequiredMixin, ListView):
+    model = LabTesting
+    template_name = 'incoming_req.html'
+    context_object_name = 'tests'
+    paginate_by = 50  # Adjust as needed
+
+    def get_queryset(self):
+        return LabTesting.objects.filter(
+            lab__icontains='CHEMICAL PATHOLOGY'
+        ).select_related(
+            'labtest',
+            'labtest__patient',
+            'labtest__user',
+            'item',
+            'payment'
+        ).order_by('-labtest__created')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lab_name'] = 'CHEMICAL PATHOLOGY'
+        return context
