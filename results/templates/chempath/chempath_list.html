@@ -11,11 +11,11 @@
       <tr class="text-xs bg-emerald-100 text-center">
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">S/N</th>
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">ID</th>
-        <th class="p-3  font-medium text-rose-500 uppercase tracking-wider">
-          Test
-        </th>
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">
-          Patient
+        Patient
+      </th>
+      <th class="p-3  font-medium text-rose-500 uppercase tracking-wider">
+          Test
         </th>
         <th class="p-3 font-medium text-green-700 uppercase tracking-wider">
           Status
@@ -41,14 +41,15 @@
       <td class="p-3 whitespace-nowrap">
         {{ result.id }}
       </td>
-        <td class="p-3 whitespace-nowrap text-rose-500">
-          {{ result.payment.service }}
-        </td>
-        <td class="p-3 whitespace-nowrap">
-          <a href="{{result.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
-
+      <td class="p-3 whitespace-nowrap">
+        <a href="{{result.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+          
           {{ result.patient }}
-          </a>
+        </a>
+      </td>
+      <td class="p-3 whitespace-nowrap text-rose-500">
+          {{ result.payment.service }}
+
         </td>
         <td class="p-3 whitespace-nowrap text-green-600">
           {%if result.cleared %} <i class="fa-solid fa-check-circle fa-xl text-green-600"></i> {%endif%}

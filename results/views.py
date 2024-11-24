@@ -104,7 +104,7 @@ class HematologyListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(payment__status=True,payment__unit__iexact='Hematology',cleared=True).order_by('-updated')
+        queryset = queryset.filter(payment__unit__iexact='Hematology',cleared=True).order_by('-updated')
         return queryset
     
 
@@ -221,7 +221,7 @@ class ChempathListView(ListView):
     
     def get_queryset(self):
         queryset=super().get_queryset()
-        queryset=queryset.filter(payment__status=True,payment__unit__iexact='Chemical pathology',cleared=True).order_by('-updated')
+        queryset=queryset.filter(payment__unit__iexact='Chemical pathology',cleared=True).order_by('-updated')
         return queryset
 
 
@@ -245,7 +245,7 @@ class MicroListView(ListView):
 
     def get_queryset(self):
         queryset=super().get_queryset()
-        queryset=queryset.filter(payment__status=True,payment__unit__iexact='Microbiology',cleared=True).order_by('-updated')
+        queryset=queryset.filter(payment__unit__iexact='Microbiology',cleared=True).order_by('-updated')
         return queryset
 
 
@@ -269,7 +269,7 @@ class SerologyListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset=queryset.filter(payment__status=True,payment__unit__iexact='Serology',cleared=True).order_by('-updated')
+        queryset=queryset.filter(payment__unit__iexact='Serology',cleared=True).order_by('-updated')
         return queryset
     
 
@@ -1989,4 +1989,48 @@ class ChempathTestListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['lab_name'] = 'CHEMICAL PATHOLOGY'
+        return context
+    
+class HematologyTestListView(LoginRequiredMixin, ListView):
+    model = LabTesting
+    template_name = 'incoming_req.html'
+    context_object_name = 'tests'
+    paginate_by = 50  # Adjust as needed
+
+    def get_queryset(self):
+        return LabTesting.objects.filter(
+            lab__icontains='HEMATOLOGY'
+        ).select_related(
+            'labtest',
+            'labtest__patient',
+            'labtest__user',
+            'item',
+            'payment'
+        ).order_by('-labtest__created')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lab_name'] = 'HEMATOLOGY'
+        return context
+
+class SerologyTestListView(LoginRequiredMixin, ListView):
+    model = LabTesting
+    template_name = 'incoming_req.html'
+    context_object_name = 'tests'
+    paginate_by = 50  # Adjust as needed
+
+    def get_queryset(self):
+        return LabTesting.objects.filter(
+            lab__icontains='SEROLOGY'
+        ).select_related(
+            'labtest',
+            'labtest__patient',
+            'labtest__user',
+            'item',
+            'payment'
+        ).order_by('-labtest__created')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lab_name'] = 'SEROLOGY'
         return context

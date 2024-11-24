@@ -3,6 +3,16 @@
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'results:serology' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>SEROLOGY REQUEST LIST</div>{%endblock%}
 {% block content %}
 <div class="">
+  <section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
+    {% for message in messages %}
+    <div class="">
+      <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
+        <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
+        <p class="text-green-700  uppercase">{{ message }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
   <div class="md:mx-20 mx-2 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
   <div class="overflow-x-auto uppercase">
   <table class="min-w-full divide-y divide-gray-500">
@@ -56,15 +66,10 @@
         <td class="p-3 whitespace-nowrap">
           {{ s.collected_by }}
         </td>
-        {% if s.payment.status == False %}
-        <td class="p-3 whitespace-nowrap text-red-700">
-      <i class="fa-solid fa-xmark-circl text-red-700 fa-2xl"></i>
-        </td>
-    {% else %}
     {%if s.payment.service == 'MP/Widal' %}
     <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_widal' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
     {%elif s.payment.service == 'Rheumatoid Factor' %}
-    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_rheumatoid factor' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
+    <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_rheumatoid_factor' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
       <i class="fa-solid fa-edit fa-2xl"></i> </a>
   </td>
     {%elif s.payment.service == 'Hepatitis B' %}
@@ -95,7 +100,6 @@
     <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_hiv_screening' s.patient.file_no s.id %}?next={% url 'results:serology_request' %}" class="text-xs hover:text-green-700">
       <i class="fa-solid fa-edit fa-2xl"></i> </a>
   </td>
-    {% endif %}
     {% endif %}
        </tr>
        {% empty %}
