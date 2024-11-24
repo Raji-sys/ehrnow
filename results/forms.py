@@ -1110,3 +1110,55 @@ class PregnancyForm(forms.ModelForm):
             test_info.cleared = self.cleaned_data.get('cleared')
             test_info.save()
         return pregnancy
+    
+class LabTestingForm(forms.ModelForm):
+    class Meta:
+        model = LabTesting
+        fields = ['lab', 'item']
+
+    def __init__(self, *args, **kwargs):
+        super(LabTestingForm, self).__init__(*args, **kwargs)
+        
+        # Add the lab choices directly from GenericTest LABS
+        self.fields['lab'] = forms.ChoiceField(
+            choices=[('', 'Select Lab')] + GenericTest.LABS,
+            required=True
+        )
+        
+        # Get the lab value from POST data
+        lab_value = None
+        if self.data:
+            # Handle formset numbered fields (form-0-lab, form-1-lab, etc.)
+            form_prefix = self.prefix if self.prefix else 'form'
+            lab_field_name = f'{form_prefix}-lab' if self.prefix else 'lab'
+            lab_value = self.data.get(lab_field_name)
+        elif self.instance.pk:
+            lab_value = self.instance.lab
+
+        # Set the queryset based on the lab value
+        if lab_value:
+            self.fields['item'].queryset = GenericTest.objects.filter(lab=lab_value)
+        else:
+            self.fields['item'].queryset = GenericTest.objects.none()
+        
+        self.fields['item'].required = True
+        
+        # Apply styling to all fields
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+    def clean(self):
+        cleaned_data = super().clean()
+        lab = cleaned_data.get('lab')
+        item = cleaned_data.get('item')
+        
+        if lab:
+            # Update queryset when cleaning
+            self.fields['item'].queryset = GenericTest.objects.filter(lab=lab)
+            
+        if lab and item and str(item.lab) != str(lab):
+            raise forms.ValidationError("Selected test does not belong to the selected lab.")
+            
+        return cleaned_data

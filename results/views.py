@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect
-from django.views.generic.edit import UpdateView, CreateView, DeleteView
+from django.views.generic.edit import UpdateView, CreateView, FormView
 from django.views.generic.base import TemplateView
 from django.views.generic import DetailView, ListView
 from django.views import View
@@ -19,7 +19,7 @@ from xhtml2pdf import pisa
 from datetime import datetime
 from django.conf import settings
 import os
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.db.models import Count,Sum,Q
 User = get_user_model()
 from django.db import transaction
@@ -28,6 +28,13 @@ reset_queries()
 from ehr.models import PatientData
 from django.utils.http import url_has_allowed_host_and_scheme
 from datetime import datetime
+from django.forms import modelformset_factory
+from django.http import JsonResponse
+
+class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='doctor').exists()
+
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -1736,7 +1743,134 @@ class PregnancyUpdateView(BaseLabResultUpdateView):
     form_class = PregnancyForm
 
 
-class BloodGroupDetailView(DetailView):
-    model=BloodGroup
-    context_object_name='bg_test'
-    template_name = "hema/blood_group/bg_details.html"
+class LabTestingCreateView(DoctorRequiredMixin, LoginRequiredMixin, FormView):
+    template_name = 'ehr/revenue/labtesting.html'
+    form_class = LabTestingForm  # Add this even though we override get_form
+    
+    def get_form(self):
+        LabTestingFormSet = modelformset_factory(
+            LabTesting, 
+            form=LabTestingForm, 
+            extra=2
+        )
+        if self.request.method == 'POST':
+            return LabTestingFormSet(self.request.POST)
+        return LabTestingFormSet(queryset=LabTesting.objects.none())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = self.get_form()
+        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        context['get_lab_url'] = reverse('results:get_lab', kwargs={'lab_name': 'PLACEHOLDER'})
+        return context
+
+    def post(self, request, *args, **kwargs):
+        formset = self.get_form()
+        print("POST Data:", request.POST)  # Debug print
+        print("Formset is valid:", formset.is_valid())  # Debug print
+        if not formset.is_valid():
+            print("Formset errors:", formset.errors)  # Debug print
+        if formset.is_valid():
+            return self.formset_valid(formset)
+        return self.formset_invalid(formset)
+
+    @transaction.atomic
+    def formset_valid(self, formset):
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+            
+        labtest = LabTest.objects.create(
+            user=self.request.user, 
+            patient=patient,
+        )
+        total_amount = 0
+        instances = formset.save(commit=False)
+        
+        for instance in instances:
+            if instance.total_item_price:  # Only process non-empty forms
+                instance.labtest = labtest
+                total_amount += instance.total_item_price
+                instance.save()
+        
+        labtest.total_amount = total_amount
+        labtest.save()
+
+        paypoint = Paypoint.objects.create(
+            user=self.request.user,
+            patient=patient,
+            service=f"Lab Test",
+            unit='pathology',
+            price=total_amount,
+            status=False
+        )
+        LabTesting.objects.filter(labtest=labtest).update(payment=paypoint)
+
+        messages.success(self.request, 'TEST REQUEST ADDED')
+        return HttpResponseRedirect(self.get_success_url())
+
+    def formset_invalid(self, formset):
+        return self.render_to_response(self.get_context_data(formset=formset))
+
+    def get_success_url(self):
+        return reverse('patient_details', kwargs={'file_no': self.kwargs['file_no']})
+
+
+def get_lab(request, lab_name):
+    print(f"Received request for lab: {lab_name}")
+    items = GenericTest.objects.filter(lab=lab_name)
+    print(f"Found {items.count()} items")
+    item_list = [{
+        'id': item.id,
+        'name': item.name,
+        'price': float(item.price) if item.price else 0.0
+    } for item in items]
+
+    if not item_list:
+        return JsonResponse({'items': []}) 
+
+    return JsonResponse({'items': item_list})
+
+
+class LabTestDetailView(DetailView):
+    model = LabTest
+    template_name = 'ehr/revenue/labtest_detail.html'
+    context_object_name = 'labtest'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['labtesting_items'] = LabTesting.objects.filter(labtest=self.object).select_related('item', 'item__lab')
+        return context
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('items__item__lab')
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+class TestPDFView(DetailView):
+    model = LabTest
+    template_name = 'ehr/revenue/test_pdf.html'
+
+    def get(self, request, *args, **kwargs):
+        labtest = self.get_object()
+        labtesting_items = LabTesting.objects.filter(labtest=labtest).select_related('item', 'item__lab')
+        
+        context = {
+            'labtest': labtest,
+            'labtesting_items': labtesting_items,
+        }
+        
+        pdf = render_to_pdf('ehr/revenue/test_pdf.html', context)
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            if 'download' in request.GET:
+                filename = f"Test_{labtest.id}.pdf"
+                content = f"attachment; filename={filename}"
+                response['Content-Disposition'] = content
+            return response
+        return HttpResponse("Error generating PDF", status=400)

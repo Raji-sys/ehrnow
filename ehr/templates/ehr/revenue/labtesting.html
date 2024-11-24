@@ -1,0 +1,136 @@
+
+{% extends 'base.html' %}
+{% block title %}PATHOLOGY INVESTIGATION{% endblock %}
+{% block page_title %}
+<div class="flex justify-center">PATHOLOGY INVESTIGATION</div>
+{% endblock %}
+{% block content %}
+<form method="post" class="bg-white shadow-xl rounded px-4 pt-3 pb-4 text-xs mx-auto w-fit mt-1">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {% if formset.non_form_errors %}
+    <div class="text-red-500 text-xs italic">
+        {{ formset.non_form_errors }}
+    </div>
+    {% endif %}
+    <div class="max-h-[70vh] overflow-y-auto p-2">
+        <div class="grid md:grid-cols-1 p-1 gap-1 text-center">
+            {% for form in formset %}
+            <div class="p-2 border rounded shadow-md w-fit">
+                <div class="flex justify-center flex-col"> <!-- Changed to flex-col -->
+                    <p class="text-left text-xs text-green-700">#{{ forloop.counter }}
+                        {{ form.lab }}
+                        {{ form.item }}
+                    </p>
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <div class="text-red-500 text-xs italic">
+                                {{ field.label }}: {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="flex items-center justify-center mt-4">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                type="submit">
+            Save
+        </button>
+    </div>
+</form>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function initializePage() {
+        function loadItems(index) {
+            const labSelect = document.getElementsByName(`form-${index}-lab`)[0];
+            const itemSelect = document.getElementsByName(`form-${index}-item`)[0];
+            
+            if (!labSelect || !itemSelect) {
+                console.error(`Could not find lab or item select for index ${index}`);
+                return;
+            }
+            
+            const selectedLab = labSelect.value;
+            console.log(`Selected lab: ${selectedLab} for index ${index}`);
+            
+            if (!selectedLab) {
+                itemSelect.innerHTML = '<option value="">Select test</option>';
+                itemSelect.disabled = true;
+                return;
+            }
+
+            // Enable item select and show loading state
+            itemSelect.disabled = true;
+            itemSelect.innerHTML = '<option value="">Loading...</option>';
+
+            // Use the URL from context, replacing PLACEHOLDER with the selected lab
+            const url = '{{ get_lab_url }}'.replace('PLACEHOLDER', encodeURIComponent(selectedLab));
+            console.log(`Fetching from URL: ${url}`);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`Received data:`, data);
+                    if (!data.items || !Array.isArray(data.items)) {
+                        throw new Error('Invalid data format received');
+                    }
+                    
+                    itemSelect.innerHTML = '<option value="">Select test</option>';
+                    data.items.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = `${item.name} - ${item.price.toFixed(2)}`;
+                        itemSelect.appendChild(option);
+                    });
+                    itemSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error loading tests:', error);
+                    itemSelect.innerHTML = '<option value="">Error loading tests</option>';
+                    itemSelect.disabled = true;
+                    
+                    // Add visual feedback for the error
+                    labSelect.classList.add('border-red-500');
+                    setTimeout(() => {
+                        labSelect.classList.remove('border-red-500');
+                    }, 3000);
+                });
+        }
+
+        // Add change event listeners to all lab selects
+        const formCount = parseInt(document.querySelector('[name="form-TOTAL_FORMS"]').value);
+        for (let i = 0; i < formCount; i++) {
+            const labSelect = document.getElementsByName(`form-${i}-lab`)[0];
+            if (labSelect) {
+                labSelect.addEventListener('change', function() {
+                    loadItems(i);
+                });
+                
+                // Initialize item select state
+                const itemSelect = document.getElementsByName(`form-${i}-item`)[0];
+                if (itemSelect && !labSelect.value) {
+                    itemSelect.disabled = true;
+                    itemSelect.innerHTML = '<option value="">Select lab first</option>';
+                }
+            }
+        }
+    }
+
+    // Initialize the page
+    initializePage();
+});
+</script>
+{% endblock %}

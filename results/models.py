@@ -31,7 +31,6 @@ class GenericTest(models.Model):
         ('Hematology', 'Hematology'),
         ('Microbiology', 'Microbiology'),
         ('Serology', 'Serology'),
-        ('General', 'General')
     ]
     lab = models.CharField(choices=LABS, max_length=300,null=True, blank=True)
     name = models.CharField(max_length=1000, unique=True,null=True, blank=True)
@@ -830,3 +829,29 @@ class HIVScreening(models.Model):
     test_info = models.OneToOneField(Testinfo, on_delete=models.CASCADE, related_name='hiv_test',null=True, blank=True)
     result = models.CharField(max_length=100, blank=True, null=True)
     comment = models.CharField(max_length=3000,null=True, blank=True)
+
+
+class LabTest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='test_items',null=True)
+    created = models.DateTimeField(auto_now_add=True,null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Lab Test"
+
+
+class LabTesting(models.Model):
+    labtest = models.ForeignKey(LabTest, on_delete=models.CASCADE, related_name='items', null=True)
+    lab = models.CharField(max_length=300, choices=GenericTest.LABS, null=True, blank=True)  # Changed from category
+    item = models.ForeignKey(GenericTest, on_delete=models.CASCADE, null=True, blank=True)
+    payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="lab_payment")
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.labtest.patient.file_no} {self.item.name}"
+    
+    @property
+    def total_item_price(self):
+        return self.item.price if self.item else 0

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bill Detail</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.3cm;
+            border: 1px solid green;
+            padding: 1px;
+
+        }
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            padding-top: 1em;
+        }
+        .info {
+            margin-bottom: 20px;
+            padding: 4px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .info p {
+            margin: 5px 0;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td {
+            border: 1px solid #ddd;
+            padding: 4px;
+            text-align: left;
+        }
+        th {
+            background-color: #077610;
+            color: white;
+            padding: 1px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .sn-column, .quantity-column {
+            width: 8%;
+            text-align: center;
+        }
+        .category-column{
+            width: 22%;
+            text-align: center;
+        }
+        .item-column {
+            width: 22%;
+            text-align: center;
+        }
+        .price-column, .total-column {
+            width: 20%;
+            text-align: center;
+        }
+        .total {
+            text-align: right;
+            font-weight: bold;
+            font-size: 2.0em;
+            color: #06701d;
+        }
+        .status {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .paid {
+            color: #27ae60;
+        }
+        .unpaid {
+            color: #c0392b;
+        }
+        .gen {
+            background-color: #077610;
+            color: white;
+            padding: 2px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Test Detail</h1>
+        </div>
+
+        <div class="info">
+            <p><strong>PATIENT NAME:</strong> {{ labtest.patient|upper }}&nbsp;&nbsp;<strong>HOSPITAL NUMBER:</strong> {{ labtest.patient.file_no }}&nbsp;&nbsp;<strong>SEX:</strong> {{ labtest.patient.gender }}&nbsp;&nbsp;<strong>AGE:</strong> {{ labtest.patient.age }}
+            </p>
+            </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="sn-column">S/N</th>
+                    <th class="item-column">Item</th>
+                    <th class="category-column">Category</th>
+                    <th class="price-column">Price (N)</th>
+                    <th class="total-column">Total (N)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for labtesting in labtesting_items %}
+                <tr>
+                    <td class="sn-column">{{ forloop.counter }}</td>
+                    <td class="category-column">{{ labtesting.item.category.name }}</td>
+                    <td class="item-column">
+                        {% if labtesting.item.name == 'YES' %}
+                          <span style="color: green; font-size: 14px;">&#10004;</span>
+                        {% else %}
+                          {{ labtesting.item.name }}
+                        {% endif %}
+                      </td>                  
+                    <td class="price-column">{{ labtesting.item.price|floatformat:2 }}</td>
+                    <td class="total-column">{{ labtesting.total_item_price|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div>
+        <p class="total">Total: N{{ labtest.total_amount|floatformat:2 }}</p>
+        <p class="gen"><strong>BILL GENERATED ON:</strong> {{ labtest.created }} BY: {{ labtest.user|upper }}</p>
+    </div>
+
+</div>
+</body>
+</html>

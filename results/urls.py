@@ -42,7 +42,6 @@ urlpatterns = [
     # hematology 
     path('blood-group/create/<str:file_no>/', BloodGroupCreateView.as_view(), name='create_blood_group'),
     path('blood-group/update/<str:file_no>/<int:test_info_pk>/', BloodGroupUpdateView.as_view(), name='update_blood_group'),
-    path('blood-group/details/<int:pk>/', BloodGroupDetailView.as_view(), name='bg_test_details'),
 
     path('genotype/create/<str:file_no>/', GenotypeCreateView.as_view(), name='create_genotype'),
     path('genotype/update/<str:file_no>/<int:test_info_pk>/', GenotypeUpdateView.as_view(), name='update_genotype'),
@@ -140,6 +139,10 @@ urlpatterns = [
     path('pregnancy/create/<str:file_no>/', PregnancyCreateView.as_view(), name='create_pregnancy_test'),
     path('pregnancy/update/<str:file_no>/<int:test_info_pk>/', PregnancyUpdateView.as_view(), name='update_pregnancy_test'),
 
+    path('pathology/lab-test/<str:file_no>/', LabTestingCreateView.as_view(), name='lab_test'),   
+    path('get_lab/<str:lab_name>/', views.get_lab, name='get_lab'),
+    path('test/<int:pk>/', LabTestDetailView.as_view(), name='test_detail'),
+    path('test/pdf/<int:pk>/', TestPDFView.as_view(), name='test_pdf'),
 
     path('', include('django.contrib.auth.urls')),
 ]
