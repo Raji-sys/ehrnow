@@ -1951,7 +1951,11 @@
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">status</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">ward</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">price</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">bed number</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">expected days</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">total cost</th>
+                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">payment status</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">admission date</th>
                 <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">discharge date</th>
               </tr>
@@ -1976,6 +1980,7 @@
                       {% endif %}
                   </td>
                   <td class="p-3 whitespace-nowrap">{{ a.ward|default_if_none:'' }}</td>
+                  <td class="p-3 whitespace-nowrap">{{ a.ward.price|default_if_none:'' }} - Per Day</td>
                   <td class="p-3 whitespace-nowrap">
                       {% if a.bed_number %}
                           <span class="text-green-600">{{ a.bed_number }}</span>
@@ -1983,6 +1988,19 @@
                           <span class="text-rose-500">bed not assigned yet</span>
                       {% endif %}
                   </td>
+                  <td class="p-3 whitespace-nowrap">{{ a.expected_days }}</td>
+                  <td class="p-3 whitespace-nowrap">{{ a.calculate_total_cost }}</td>
+                  {% if a.payment.status == False %}
+                  <td class="p-3 whitespace-nowrap text-green-700">
+                    <i class="fa-solid fa-xmark-circle fa-xl text-rose-600"></i>
+              </td>  
+                  </span>
+                    </td>
+                    {% else %}
+                    <td class="p-3 whitespace-nowrap text-green-700">
+                      <i class="fa-solid fa-check-circle fa-xl text-green-600"></i>
+                   </td>
+                    {%endif%}
                   <td class="p-3 whitespace-nowrap">{{ a.created }}</td>
                   <td class="p-3 whitespace-nowrap">
                       {% if a.status == 'DISCHARGE' %}{{ a.updated }}{% endif %}

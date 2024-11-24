@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}PATHOLOGY TRANSACTION{%endblock%}
+{%block title%}ADMISSION TRANSACTION{%endblock%}
 {%block page_title%}
 <div class="flex justify-center text-xs">
-  <div class=""><a href="{%url 'revenue' %}"><i class="fa-solid fa-arrow-left fa-xl m-4"></i></a>PATHOLOGY TRANSACTION</div>
+  <div class=""><a href="{%url 'revenue' %}"><i class="fa-solid fa-arrow-left fa-xl m-4"></i></a>ADMISSION TRANSACTION</div>
   </div>
   {% endblock %}
   
@@ -20,43 +20,38 @@
       {% endfor %}
     </section> 
     <div class="grid md:grid-cols-1">
-      <!-- Pathology Payments -->
       <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="bg-indigo-50 p-2">
-          <span class="bg-indigo-500 text-white text-xs font-medium px-2 py-1 rounded">
-            {{pathology_pay_total}} Pathology Transactions
+        <div class="bg-sky-50 p-2">
+          <span class="bg-sky-500 text-white text-xs font-medium px-2 py-1 rounded">
+            {{pay_total}} Pathology Transactions
           </span>
-          <span class="ml-2 text-indigo-800 font-semibold text-sm">
-            Total: ₦{{ pathology_total_worth|floatformat:2 }}
+          <span class="ml-2 text-sky-800 font-semibold text-sm">
+            Total: ₦{{ total_worth|floatformat:2 }}
           </span>
         </div>
         <div class="max-h-[75vh] overflow-y-auto overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-indigo-100">
+            <thead class="bg-sky-100">
               <tr class="">
                 <th class="p-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">#</th>
                 <th class="p-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Revenue Officer</th>
                 <th class="p-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">patient</th>
                 <th class="p-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">service</th>
-                <th class="p-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">lab</th>
-                <th class="p-2 text-left text-xs font-medium text-green-700 uppercase tracking-wider">price</th>
+                <th class="p-2 text-left text-xs font-medium text-green-700 uppercase tracking-wider">total cost</th>
                 <th class="p-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">date</th>
                 <th class="p-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Payment Status</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              {% for p in pathology_pays %}
+              {% for p in admission_pays %}
               <tr class="hover:bg-gray-50 text-left uppercase">
                 <td class="p-3 whitespace-nowrap text-xs text-gray-700">{{forloop.counter}}</td>
                 <td class="p-3 whitespace-nowrap text-xs text-gray-700">{{request.user}}</td>
                 <td class="p-3 whitespace-nowrap text-xs text-gray-700">
-                  <a href="{{p.patient.get_absolute_url}}" class="text-indigo-600 hover:text-indigo-900">{{ p.patient }}</a>
+                  <a href="{{p.patient.get_absolute_url}}" class="text-sky-600 hover:text-sky-900">{{ p.patient }}</a>
                 </td>
                 <td class="p-3 whitespace-nowrap text-xs text-gray-700">
                   {{ p.service }}
-                </td>
-                <td class="p-3 whitespace-nowrap text-xs text-gray-700">
-                  {{ p.unit }}
                 </td>
                 <td class="p-3 whitespace-nowrap text-xs text-green-700"> ₦{{p.price}}
                 </td>
@@ -66,7 +61,7 @@
                 <td class="p-3 whitespace-nowrap text-xs">
                   {% if p.status == False %}
                   <span class="text-red-600"> </span>
-                  <a href="#" class="ml-2 text-indigo-600 hover:text-indigo-900 open-modal" data-id="{{p.id}}">
+                  <a href="#" class="ml-2 text-sky-600 hover:text-sky-900 open-modal" data-id="{{p.id}}">
                     <i class="fa-solid fa-cash-register fa-xl"></i> 
                   </a>
                   {% else %}
@@ -143,7 +138,7 @@
                   <button type="submit" form="paymentForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
                       Pay
                   </button>
-                  <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm close-modal">
+                  <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm close-modal">
                       Cancel
                   </button>
               </div>
@@ -194,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentPayId = this.getAttribute('data-id');
             messagesContainer.classList.add('hidden'); // Hide any existing messages
             
-            fetch(`/revenue/update-payment/${currentPayId}/?next={% url "results:lab_revenue" %}`, {
+            fetch(`/revenue/update-payment/${currentPayId}/?next={% url "admission_pay_list" %}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }

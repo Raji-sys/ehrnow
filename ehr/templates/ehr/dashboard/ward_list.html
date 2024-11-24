@@ -3,8 +3,13 @@
 {% block title %}WARD DASHBOARD{% endblock %}
 
 {% block page_title %}
-<div class="flex justify-center">
+<div class="flex items-center justify-center gap-2 px-4 py-2 bg-white">
+<div class="flex items-center">
     <a href="{% url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>WARDS
+</div>
+<div class="flex space-x-2">
+<a href="{%url 'admissions' %}" class="p-1 rounded bg-sky-600 text-white uppercase">admission directory</a>
+</div>
 </div>
 {% endblock %}
 
@@ -24,7 +29,7 @@
     <div class="bg-gradient-to-r from-emerald-600 to-sky-600 p-2 text-center">
         <span class="text-sm text-white  uppercase">Available WARDS</span>
     </div>
-
+       
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 p-6">
 {% for w in wards %}
 <a href="{%url 'ward_details' w.id %}" class="block">

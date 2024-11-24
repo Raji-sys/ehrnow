@@ -39,12 +39,12 @@
 
   <div class="bg-white shadow-md rounded-lg overflow-hidden">
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
+      <table class="min-w-full divide-y divide-gray-200 uppercase">
         <thead class="bg-gradient-to-r from-cyan-400 to-emerald-500">
           <tr class="text-center">
             <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">#</th>
             <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">File Number</th>
-            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Patient Name</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Patient</th>
             <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Phone Number</th>
             <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Gender</th>
             <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Bed Number</th>
@@ -62,6 +62,7 @@
               <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.phone|default_if_none:'' }}</td>
               <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.gender|default_if_none:'' }}</td>
               <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.bed_number|default_if_none:'' }}</td>
+              {%if a.payment.status == True %}
               {% if a.status == 'ADMIT' %}
               <td colspan="2" class="p-3 whitespace-nowrap text-xs font-medium">
                 <a href="{% url 'receive_patient' a.pk %}" class="text-amber-600 hover:text-emerald-900 uppercase">
@@ -91,6 +92,12 @@
                 <i class="fa-solid fa-folder-closed fa-2x text-cyan-600"></i><br>Discharged
               </td>
               {% endif %}
+              {%else%}
+              <td class="p-3 whitespace-nowrap text-rose-700 text-xs ">
+                admission fee unpaid <br><br>
+                <i class="fa-solid fa-xmark-circle fa-2xl text-rose-600"></i>
+              </td>  
+             {%endif%}
             </tr>
             {% endfor %}
           </tbody>

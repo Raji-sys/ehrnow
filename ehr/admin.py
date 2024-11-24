@@ -2,6 +2,12 @@ from .models import *
 from django.contrib import admin
 
 
+@admin.register(Admission)
+class AdmissionAdmin(admin.ModelAdmin):
+    list_display = ('patient', 'status', 'ward','payment','created','updated')
+    search_fields = ('patient', 'status', 'ward','created','updated')
+    list_filter = ('patient', 'status', 'ward','created','updated')
+
 @admin.register(Services)
 class ServicesAdmin(admin.ModelAdmin):
     list_display = ('type', 'name', 'price')
@@ -61,7 +67,7 @@ class ClinicAdmin(admin.ModelAdmin):
 
 @admin.register(Ward)
 class WardAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name','price')
     search_fields = ('name',)
     list_filter = ('name',)
 

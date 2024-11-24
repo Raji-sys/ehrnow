@@ -85,7 +85,7 @@ class Ward(models.Model):
 
     def __str__(self):
         if self.name:
-            return f"{self.name}- {self.price}"
+            return f"{self.name}"
 
 class Team(models.Model):
     name = models.CharField(null=True, blank=True, max_length=200)
@@ -424,7 +424,7 @@ class RadiologyResult(models.Model):
 
 
 class Admission(models.Model):
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE, related_name="admission_payment")
     STATUS = [
         ('ADMIT', 'ADMIT'),
         ('RECEIVED', 'RECEIVED'),
@@ -446,7 +446,20 @@ class Admission(models.Model):
             days_on = (today - self.created.date()).days
             return max(days_on, 0)  # Ensure non-negative value
         return 0
+    
+    def calculate_total_cost(self):
+        if self.ward and self.expected_discharge_date:
+            days = (self.expected_discharge_date - self.created.date()).days + 1
+            days = max(days, 1)
+            return self.ward.price * days
+        return 0
 
+    def expected_days(self):
+        if self.ward and self.expected_discharge_date:
+            days = (self.expected_discharge_date - self.created.date()).days + 1
+            return days
+        return 0
+    
     def __str__(self):
         return f"{self.patient} - {self.status}"
 
@@ -526,7 +539,7 @@ class TheatreBooking(models.Model):
     date = models.DateField(null=True)
     blood_requirement=models.CharField(max_length=200,null=True,blank=True)
     note=QuillField(null=True, blank=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
+    # payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):

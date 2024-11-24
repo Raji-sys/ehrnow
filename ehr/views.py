@@ -1676,6 +1676,7 @@ class RadiologyPayListView(ListView):
         return context  
     
 
+
 class AdmissionCreateView(RevenueRequiredMixin, CreateView):
     model = Admission
     form_class = AdmissionForm
@@ -1683,15 +1684,92 @@ class AdmissionCreateView(RevenueRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        self.object = form.save()
+        patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient
+        
+        # Calculate number of days between admission and expected discharge
+        expected_date = form.instance.expected_discharge_date
+        admission_date = date.today()
+        if expected_date:
+            # Add 1 to include both the admission day and discharge day
+            days_count = (expected_date - admission_date).days + 1
+            # Ensure we don't have negative days
+            days_count = max(days_count, 1)
+        else:
+            # Default to 1 day if no expected discharge date is provided
+            days_count = 1
+
+        admission_fee = form.save(commit=False)
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status=False,
+            service=f"{admission_fee.ward.name} admission Fees",
+            unit='admission',
+            # Multiply ward price by number of days
+            price=admission_fee.ward.price * days_count,
+        )
+        admission_fee.payment = payment 
+        admission_fee.save()
+
         return super().form_valid(form)
     
     def get_success_url(self):
         messages.success(self.request, 'PATIENT ADMITTED')
         return self.object.patient.get_absolute_url()
 
- 
+class AdmissionListView(ListView):
+    model=Admission
+    template_name='ehr/ward/admission_list.html'
+    context_object_name='admissions'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(payment__status__isnull=False)
+        # Add search functionality
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)
+            )
+
+        return queryset.order_by('-updated')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')        
+        return context
+
+
+class AdmissionPayListView(ListView):
+    model = Paypoint
+    template_name = 'ehr/revenue/admission_pay_list.html'
+    context_object_name = 'admission_pays'
+    paginate_by = 10
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+    
+    def get_queryset(self):
+        return Paypoint.objects.filter(admission_payment__isnull=False).order_by('-updated')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pay_total = self.get_queryset().count()
+
+        paid_transactions = self.get_queryset().filter(status=True)
+        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        return context  
+     
+
 class AdmissionUpdateView(UpdateView):
     model = Admission
     template_name = 'ehr/ward/update_admission.html'

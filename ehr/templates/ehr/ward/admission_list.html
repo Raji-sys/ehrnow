@@ -1,0 +1,112 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block title %}ADMISSION DIRECTORY{% endblock %}
+
+{% block page_title %}
+<div class="flex justify-center">
+    <a href="{% url 'ward_list'  %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a> ADMISSION DIRECTORY
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+  <section class="text-center border-sky-700 p-1 m-1">
+    {% for message in messages %}
+    <div class="">
+        <div class="uk-alert-success rounded-2xl text-xs w-fit mx-auto" uk-alert>
+            <a href class="uk-alert-close font-bold" uk-close></a>
+            <p class="text-green-700 font-semibold uppercase p-3">{{ message }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+<form method="get" class="mb-2 flex justify-center">
+  <input type="text" name="q" placeholder="Search patients..." value="{{ request.GET.q|default:'' }}"
+         class="p-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+  <button type="submit"
+          class="p-3 bg-blue-500 text-white rounded-none hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+      Search
+  </button>
+  <a href="{% url 'admissions' %}"
+     class="p-3 bg-gray-300 text-gray-700 rounded-r-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs">
+      Reset
+  </a>
+</form>
+
+  <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 uppercase">
+        <thead class="bg-gradient-to-r from-sky-400 to-emerald-500">
+          <tr class="text-left">
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">#</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">File No</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Patient</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Phone</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Gender</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">ward</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">payment status</th>
+            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Status</th>
+          </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for a in admissions %}
+            <tr class="hover:bg-gray-100 text-left">
+              <td class="p-3 whitespace-nowrap text-xs text-sky-600 text-center">{{ forloop.counter }}</td>
+              <td class="p-3 whitespace-nowrap text-xs text-sky-600">{{ a.patient.file_no|default_if_none:'' }}</td>
+              <td class="p-3 whitespace-nowrap text-xs font-medium text-sky-900"><a href="{{a.patient.get_absolute_url}}">{{ a.patient|default_if_none:''|upper }} </a></td>
+
+              <td class="p-3 whitespace-nowrap text-xs text-sky-600">{{ a.patient.phone|default_if_none:'' }}</td>
+              <td class="text-center p-3 whitespace-nowrap text-xs text-sky-600">{{ a.patient.gender|default_if_none:'' }}</td>
+              <td class="p-3 whitespace-nowrap text-xs text-sky-600">{{ a.ward|default_if_none:'' }}</td>
+              {% if a.payment.status == False %}
+              <td class="text-center p-3 whitespace-nowrap text-green-700">
+                <i class="fa-solid fa-xmark-circle fa-xl text-rose-600"></i>
+          </td>  
+              </span>
+                </td>
+                {% else %}
+                <td class="text-center p-3 whitespace-nowrap text-green-700">
+                  <i class="fa-solid fa-check-circle fa-xl text-green-600"></i>
+               </td>
+                {%endif%}
+              {% if a.status == 'ADMIT' %}
+              <td class="text-center p-3 whitespace-nowrap text-xs font-medium">waiting</td>
+              {%else%}
+              <td class="text-center p-3 whitespace-nowrap text-xs font-medium">{{a.status}}</td>
+              {%endif%}
+            </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if is_paginated %}
+  <div class="flex justify-center mt-6">
+    <nav class="inline-flex rounded-md shadow">
+      {% if page_obj.has_previous %}
+        <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-xs font-medium text-sky-600 hover:bg-gray-50">
+          First
+        </a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-xs font-medium text-sky-600 hover:bg-gray-50">
+          Previous
+        </a>
+      {% endif %}
+      <span class="px-3 py-2 border border-gray-300 bg-white text-xs font-medium text-gray-700">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      </span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-xs font-medium text-sky-600 hover:bg-gray-50">
+          Next
+        </a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-xs font-medium text-sky-600 hover:bg-gray-50">
+          Last
+        </a>
+      {% endif %}
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

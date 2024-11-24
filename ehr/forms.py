@@ -286,10 +286,8 @@ class AdmissionForm(forms.ModelForm):
 class AdmissionUpdateForm(forms.ModelForm):
     class Meta:
         model = Admission
-        fields = ['status', 'bed_number', 'expected_discharge_date'] 
-        widgets = {
-            'expected_discharge_date': forms.DateInput(attrs={'type': 'date'})
-        }
+        fields = ['status', 'bed_number'] 
+
     def __init__(self, *args, **kwargs):
         super(AdmissionUpdateForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
