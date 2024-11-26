@@ -1,33 +1,46 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}PHYSIOTHERAPY REQUEST {%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href=""><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PHYSIOTHERAPY REQUEST FORM</div>{%endblock%}
 {% block content %}
-<div class="p-4 mx-2">
-  <div class="max-w-md text-center mx-auto bg-white rounded-xl shadow-black shadow-sm p-8">
-    <h1 class="text-sm mb-6 uppercase">PHYSIOTHERAPY REQUEST FORM</h1>
-    <form method="post" class="space-y-6 uppercase">
+      <div class="mt-4  mx-2 md:mx-auto w-fit rounded-xl bg-white">
+        <section class="text-center border-cyan-700 p-4 m-2">
+          {% for message in messages %}
+          <div class="mt-2">
+            <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
+              <a href class="uk-alert-close font-bold" uk-close></a>
+              <p class="text-green-700 font-semibold">{{ message }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </section>
+        {% if form.errors %}
+        <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
+          <a href class="uk-alert-close font-bold" uk-close></a>
+          <p>{{form.errors}}</p>
+        </div>
+        {% endif %}
+    <form method="post" enctype="multipart/form-data" class="text-xs">
       {% csrf_token %}
-      {% for field in form %}
-      <div class="space-y-2">
-        <label for="{{ field.id_for_label }}" class="block text-gray-700 text-xs">{{ field.label }}</label>
-        {% if field.field.widget.input_type == 'text' %}
-        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500" />
-        {% elif field.field.widget.input_type == 'number' %}
-        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500" />
-        {% elif field.field.widget.input_type == 'date' %}
-        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500" />
-        {% else %}
-        {{ field }}
-        {% endif %}
-        {% if field.help_text %}
-        <p class="text-gray-500 text-xs">{{ field.help_text }}</p>
-        {% endif %}
+      <div class="mb-2 uppercase text-cyan-900 px-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {% for field in form %}
+        <div>
+        <div class="flex justify-center">
+          <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
+        </div>
+        <div class="flex justify-center mb-2">
+          {{ field }}
+        </div>
       </div>
-      {% endfor %}
-      <button type="submit"  value="save" class="uppercase text-xs bg-blue-500 hover:bg-blue-700 text-white  py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-        save
-      </button>
-    </form>
-  </div>
-</div>
+      {%endfor%}
+    </div>
+      </div>
+      <div class="gap-2 flex justify-center align-middle p-2">
+        <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+    bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
+      </div>
+      </form>
+      </div>
+      </div>
 {% endblock %}

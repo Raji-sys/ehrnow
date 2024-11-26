@@ -21,31 +21,29 @@
       <tr class="text-xs bg-emerald-100 text-left">
         <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">#</th>
         <th class="p-3  font-medium text-rose-500 uppercase tracking-wider">
-          Test
+          Test &
+          Price
         </th>
-        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
-          comment
-        </th>
-        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
+        <th class="p-3 font-medium uppercase tracking-wider text-gray-500">
           Diagnosis
         </th>
-        <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">
-          Price
+        <th class="p-3 font-medium uppercase tracking-wider text-gray-500">
+          comment
         </th>
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Payment Status
+          Payment
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Patient
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Requested By
+          Doctor
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Request Date
+          Date
         </th>
-        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
+        <th class="p-3 font-medium uppercase tracking-wider text-gray-500">
           remark
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
@@ -59,17 +57,15 @@
         <td class="p-3 whitespace-nowrap">
           {{forloop.counter}}
       </td>
-        <td class="p-3 whitespace-nowrap text-rose-400">
-          {{ p.test|default_if_none:'' }}
+        <td class="p-3 whitespace-nowrap text-rose-600">
+          {{ p.test.name|default_if_none:'' }} <br>
+          &#x20A6;{{ p.test.price|default_if_none:'' }}
         </td>
-        <td class="p-3 whitespace-nowrap text-rose-400">
+        <td class="p-3 whitespace-nowrap text-gray-600">
           {{ p.diagnosis|default_if_none:'' }}
         </td>
-        <td class="p-3 whitespace-nowrap text-rose-400">
+        <td class="p-3 whitespace-nowrap text-gray-600">
           {{ p.comment|default_if_none:'' }}
-        </td>
-        <td class="p-3 whitespace-nowrap">
-          &#x20A6;{{ p.test.price|default_if_none:'' }}
         </td>
         {% if p.payment.status == False %}
             <td class="p-3 whitespace-nowrap text-red-700 text-center">
@@ -89,7 +85,7 @@
         <td class="p-3 whitespace-nowrap">
           {{ p.request_date|default_if_none:'' }}
         </td>
-        <td class="p-3 whitespace-nowrap text-rose-400">
+        <td class="p-3 whitespace-nowrap text-gray-600">
           {{ p.remark|default_if_none:'' }}
         </td>
         <td class="text-center">

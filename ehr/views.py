@@ -703,7 +703,7 @@ class PatientFolderView(DetailView):
         context['prescribed_drugs'] = prescribed_drugs
         
         context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
-        context['physio'] = patient.physio.all().order_by('-updated')
+        context['physio'] = patient.physio_info.all().order_by('-updated')
         context['admission_info'] = patient.admission_info.all().order_by('-updated')
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
         context['ward_medication'] = patient.ward_medication.all().order_by('-updated')
@@ -2731,7 +2731,7 @@ class PhysioReportView(ListView):
 
 class PhysioPayListView(ListView):
     model = Paypoint
-    template_name = 'ehr/revenue/radiology_pay_list.html'
+    template_name = 'ehr/revenue/physio_pay_list.html'
     context_object_name = 'physio_pays'
     paginate_by = 10
 

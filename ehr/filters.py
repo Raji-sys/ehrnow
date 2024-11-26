@@ -207,10 +207,10 @@ class TheatreOperationRecordFilter(django_filters.FilterSet):
 
 class PhysioFilter(django_filters.FilterSet):
     patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                              
-    request_date__gte = django_filters.DateFilter(field_name='request_date', lookup_expr='gte', label='Request Date (From)')
-    request_date__lte = django_filters.DateFilter(field_name='request_date', lookup_expr='lte', label='Request Date (To)')
-    result_date__gte = django_filters.DateFilter(field_name='result_date', lookup_expr='gte', label='Result Date (From)')
-    result_date__lte = django_filters.DateFilter(field_name='result_date', lookup_expr='lte', label='Result Date (To)')
+    request_date__gte = django_filters.DateFilter(field_name='request_date', lookup_expr='gte', label='Request Date (From)', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    request_date__lte = django_filters.DateFilter(field_name='request_date', lookup_expr='lte', label='Request Date (To)', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    result_date__gte = django_filters.DateFilter(field_name='result_date', lookup_expr='gte', label='Result Date (From)', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
+    result_date__lte = django_filters.DateFilter(field_name='result_date', lookup_expr='lte', label='Result Date (To)', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     doctor = django_filters.ModelChoiceFilter(queryset=User.objects.all())
     physiotherapist = django_filters.ModelChoiceFilter(queryset=User.objects.all())

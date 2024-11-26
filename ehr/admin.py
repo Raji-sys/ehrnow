@@ -183,6 +183,6 @@ class ClinicalNoteAdmin(admin.ModelAdmin):
 
 @admin.register(PhysioTest)
 class PhysioTestAdmin(admin.ModelAdmin):
-    list_display = ('name','price','updated')
-    search_fields = ('name','updated')
-    list_filter = ('name','updated')
+    list_display = ('category','name','price','updated')
+    search_fields = ('category','name','updated')
+    list_filter = ('category','name','updated')

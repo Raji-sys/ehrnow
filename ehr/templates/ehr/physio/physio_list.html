@@ -13,20 +13,20 @@
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Patient
         </th>
-        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
+        <th class="p-3 font-medium uppercase tracking-wider text-gray-500">
           Test
         </th>
-        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
+        <th class="p-3 font-medium uppercase tracking-wider text-gray-500">
           Diagnosis
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Result Details
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Reported By
+          physiotherapist
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Result Date
+          Date
         </th>
       </tr>
     </thead>
@@ -40,9 +40,9 @@
           {{ result.patient|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap text-rose-400">
-            {{ result.test|default_if_none:'' }}
+            {{ result.test.name|default_if_none:'' }}
         </td>
-        <td class="p-3 whitespace-nowrap text-rose-400">
+        <td class="p-3 whitespace-nowrap text-gray-600">
             {{ result.diagnosis|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">

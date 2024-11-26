@@ -1,17 +1,17 @@
 {%extends "base.html" %}
-{% block title %}RADIOLOGY REPORT{% endblock%}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'radiology' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>RADIOLOGY REPORT</div>{%endblock%}
+{% block title %}PHYSIOTHERAPY REPORT{% endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'physio' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PHYSIOTHERAPY REPORT</div>{%endblock%}
 {% block content %}
 <div class="mt-2">
 <div class="grid grid-rows-2 mt-0 relative ">
     <div class="center-2 h-full overflow-y-auto ">
         <div class="flex flex-row justify-center items-center md:mx-20 mx-2 rounded-xl p-4 shadow-2xl bg-green-50 text-black m-2">
           <form method="get" class="text-xs text-center uppercase">
-            {% for field in radio_filter.form %}
+            {% for field in physio_filter.form %}
                 {{field.errors}}
                 {% endfor %}
                 <div class="flex flex-wrap flex-row gap-1 justify-center items-center text-center">
-                    {% for field in radio_filter.form %}
+                    {% for field in physio_filter.form %}
                     <div class="flex justify-center items-start flex-col">
                         <label class="form-label">{{ field.label_tag }}</label>
                         <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" value="{{ field.value|default:'' }}"
@@ -50,13 +50,22 @@
                 Patient
               </th>
               <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
-                Phone
+                doctor
               </th>
               <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
-                Result By
+                comment
               </th>
               <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
-                Date
+                physiotherapist
+              </th>
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
+                result details
+              </th>
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
+                Request Date
+              </th>
+              <th class="p-3 font-medium text-green-500 uppercase tracking-wider">
+                Result Date
               </th>
             </tr>
           </thead>
@@ -68,24 +77,35 @@
                 {{forloop.counter}}
               </td>
               <td class="p-3 whitespace-nowrap">
-                {{ i.test|default_if_none:''|upper }}
+                {{ i.test.name|default_if_none:''|upper }}
               </td>
               <td class="p-3 whitespace-nowrap">
+              <a href="{{i.patient.get_absolute_url}}">
                 {{ i.patient|default_if_none:''|upper }}
+              </a>  
               </td>
               <td class="p-3 whitespace-nowrap">
-                {{ i.patient.phone|default_if_none:''|upper }}
+                {{ i.doctor|default_if_none:'' }}
               </td>
               <td class="p-3 whitespace-nowrap">
-                {{ i.user|default_if_none:'' }}
+                {{ i.comment|default_if_none:'' }}
               </td>
               <td class="p-3 whitespace-nowrap">
-                {{ i.updated|default_if_none:'' }}
+                {{ i.physiotherapist|default_if_none:'' }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ i.result_details|default_if_none:'' }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ i.request_date|default_if_none:'' }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ i.result_date|default_if_none:'' }}
               </td>
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="p-3 text-center text-emerald-500">
+              <td colspan="8" class="p-3 text-center text-emerald-500">
                 Not found
               </td>
             </tr>
