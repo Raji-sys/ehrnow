@@ -1,52 +1,103 @@
 {% extends 'base.html' %}
 {%load static %}
-{%block title%}RADIOLOGY TEST LIST {%endblock%}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'radiology' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>RADIOLOGY RESULT LIST</div>{%endblock%}
+{%block title%}PHYSIOTHERAPY REQUEST {%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'physio' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PHYSIOTHERAPY REQUEST LIST</div>{%endblock%}
 {% block content %}
-<div class="mt-4">
-  <div class="md:mx-20 mx-2 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
-  <div class="overflow-x-auto">
+<section class="mt-2 md:max-w-xl md:mx-auto text-center border-cyan-700 p-1 mx-1">
+  {% for message in messages %}
+  <div class="">
+    <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
+        <a href class="uk-alert-close font-medium" uk-close></a>
+        <p class="text-green-700 font-medium uppercase p-4">{{ message }}</p>
+    </div>
+</div>
+  {% endfor %}
+</section>
+<div class="">
+  <div class="mt-2 mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
+  <div class="overflow-x-auto uppercase">
   <table class="min-w-full divide-y divide-gray-500">
     <thead class="bg-gray-100">
-      <tr class="text-xs bg-emerald-100 text-center">
-        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">#</th>
-        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Patient
-        </th>
-        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
+      <tr class="text-xs bg-emerald-100 text-left">
+        <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">#</th>
+        <th class="p-3  font-medium text-rose-500 uppercase tracking-wider">
           Test
         </th>
-        <th class="p-3 font-medium text-green-700 uppercase tracking-wider">
+        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
           comment
+        </th>
+        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
+          Diagnosis
+        </th>
+        <th class="p-3  font-medium text-gray-500 uppercase tracking-wider">
+          Price
+        </th>
+        </th>
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+          Payment Status
+        </th>
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+          Patient
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
           Requested By
         </th>
         <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
-          Date
+          Request Date
+        </th>
+        <th class="p-3 font-medium uppercase tracking-wider text-rose-500">
+          remark
+        </th>
+        <th class="p-3 font-medium text-gray-500 uppercase tracking-wider">
+          INPUT RESULT
         </th>
       </tr>
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
-      {% for result in radiology_results %}
-      <tr class="text-center text-xs bg-gray-50 hover:bg-gray-200 transition-colors duration-300 uppercase">
+      {% for p in physio %}
+      <tr class="text-left text-xs bg-gray-50 hover:bg-gray-200 transition-colors duration-300 uppercase">
         <td class="p-3 whitespace-nowrap">
           {{forloop.counter}}
       </td>
-      <td class="p-3 whitespace-nowrap text-blue-500">
-          {{ result.patient|default_if_none:'' }}
+        <td class="p-3 whitespace-nowrap text-rose-400">
+          {{ p.test|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap text-rose-400">
-            {{ result.test|default_if_none:'' }}
+          {{ p.diagnosis|default_if_none:'' }}
         </td>
-        <td class="p-3 whitespace-nowrap text-green-600">
-          {{ result.comments|default_if_none:'' }}
-          </td>
-        <td class="p-3 whitespace-nowrap">
-          {{ result.user|default_if_none:'' }}
+        <td class="p-3 whitespace-nowrap text-rose-400">
+          {{ p.comment|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
-          {{ result.updated|default_if_none:'' }}
+          &#x20A6;{{ p.test.price|default_if_none:'' }}
+        </td>
+        {% if p.payment.status == False %}
+            <td class="p-3 whitespace-nowrap text-red-700 text-center">
+          <i class="fa-solid fa-xmark-circle text-red-700 fa-2xl"></i>
+            </td>
+        {% else %}
+            <td class="p-3 whitespace-nowrap text-green-700 text-center">
+             <i class="fa-solid fa-check-circle fa-2xl"></i>
+           </td>
+        {% endif %}
+        <td class="p-3 whitespace-nowrap text-blue-500">
+                {{ p.patient|default_if_none:'' }}
+        </td>
+        <td class="p-3 whitespace-nowrap">
+          {{ p.doctor|default_if_none:'' }}
+        </td>
+        <td class="p-3 whitespace-nowrap">
+          {{ p.request_date|default_if_none:'' }}
+        </td>
+        <td class="p-3 whitespace-nowrap text-rose-400">
+          {{ p.remark|default_if_none:'' }}
+        </td>
+        <td class="text-center">
+          {% if p.payment.status == True %}
+          <a href="{% url 'physio_result' p.patient.file_no p.id %}" class="text-green-500 hover:text-blue-700"><i class="fa-solid fa-plus-square fa-2xl"></i></a>
+          {%else%}
+          <i class="fa-solid fa-xmark-square text-red-700 fa-2xl"></i>
+          {%endif%}
         </td>
       </tr>
       {% endfor %}
@@ -54,5 +105,5 @@
   </table>
 </div>
 </div>
-</div>
+</div> 
 {% endblock %}

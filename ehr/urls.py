@@ -160,7 +160,7 @@ urlpatterns = [
 
     #physio
     path('physio-list/', PhysioListView.as_view(), name='physio_list'),
-    path('physio-request/', PhysioRequestListView.as_view(), name='physio_request_list'),
+    path('physio-request/', PhysioRequestListView.as_view(), name='physio_request'),
     path('physio-test/create/<str:file_no>/', PhysioTestCreateView.as_view(), name='physio_request'),
     path('physio-result/create/<str:file_no>/<int:pk>/', PhysioRequestUpdateView.as_view(), name='physio_result'),
     path('physio-report/', RadioReportView.as_view(), name='physio_report'),

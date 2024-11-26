@@ -1947,8 +1947,7 @@
                         <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                         <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Test</th>
                         <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
-                        <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Date Reported</th>
-                        <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">DICOM File</th>
+                        <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-cyan-200">
@@ -1958,9 +1957,6 @@
                         <td class="p-3 whitespace-nowrap">{{ r.test|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap">{{ r.comments|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap">{{ r.updated|default_if_none:'' }}</td>
-                        <td class="p-3 whitespace-nowrap">
-                        <a href="{{ result.dicom_file.url }}" download>Download DICOM File</a>
-                      </td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -1977,20 +1973,46 @@
       <!-- break -->
       <div> 
         <div>
-        <a href="#" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-crutch fa-2xl"></i></a>
+        <a href="{% url 'physio_request' patient.file_no %}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-muscle fa-2xl"></i></a>
       </div>     
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
               <tr class="text-xs">
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">doctor</th>
+                <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Test</th>
+                <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">request date</th>
+                <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">diagnosis</th>
+                <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">remark</th>
+                <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">comment</th>
+                <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">physiotherapist</th>
+                <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">result details</th>
+                <th class="p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">result date</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
+              {% for p in physio_info %}
               
               <tr class="text-xs uppercase bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class=" p-3 whitespace-nowrap"></td>
-              </tr>
+                <td class="p-3 whitespace-nowrap">{{ forloop.counter }}</td>
+                <td class="p-3 whitespace-nowrap">{{ p.doctor|default_if_none:'' }}</td>
+                <td class="p-3 whitespace-nowrap">{{ p.test|default_if_none:'' }}</td>
+                <td class="p-3 whitespace-nowrap">{{ p.request_date|default_if_none:'' }}</td>
+                <td class="p-3 whitespace-nowrap">{{ p.diagnosis|default_if_none:'' }}</td>
+                <td class="p-3 whitespace-nowrap">{{ p.remark|default_if_none:'' }}</td>
+                <td class="p-3 whitespace-nowrap">{{ p.comment|default_if_none:'' }}</td>
+                <td class="p-3 whitespace-nowrap">{{ p.result_details|default_if_none:'' }}</td>
+                <td class="p-3 whitespace-nowrap">{{ p.result_date|default_if_none:'' }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="p-3">
+                    <p>No physio request information yet</p>
+                </td>
+            </tr>
+            {% endfor %}
 
             </tbody>
           </table>

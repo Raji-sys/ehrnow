@@ -98,7 +98,6 @@ class RadiologyTestAdmin(admin.ModelAdmin):
     list_filter = ('name','updated')
 
 
-
 @admin.register(TheatreBooking)
 class TheatreBookingAdmin(admin.ModelAdmin):
     list_display = ('patient','theatre','team','date','blood_requirement','updated')
@@ -180,3 +179,10 @@ class ClinicalNoteAdmin(admin.ModelAdmin):
     list_display = ('patient','note','diagnosis','user','updated')
     search_fields = ('patient','note','diagnosis','updated')
     list_filter = ('patient','note','diagnosis','updated')
+
+
+@admin.register(PhysioTest)
+class PhysioTestAdmin(admin.ModelAdmin):
+    list_display = ('name','price','updated')
+    search_fields = ('name','updated')
+    list_filter = ('name','updated')

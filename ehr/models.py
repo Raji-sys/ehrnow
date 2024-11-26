@@ -410,7 +410,6 @@ class RadiologyResult(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     test = models.ForeignKey(RadiologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="radiology_results")
     patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="radiology_results")
-    local_file_path = models.CharField(max_length=255, null=True, blank=True)    
     cleared = models.BooleanField(default=False)
     comments = models.CharField(max_length=200, null=True, blank=True)
     payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="radiology_result_payment")
@@ -829,9 +828,26 @@ class Archive(models.Model):
     
 
 class PhysioTestCategory(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(null=True, blank=True)
+    CATEGORY_CHOICES = [
+        ("manual_muscle_strength", "Manual Muscle Strength Tests"),
+        ("range_of_motion", "Range of Motion Tests"),
+        ("orthopedic", "Orthopedic Tests"),
+        ("neurological", "Neurological Tests"),
+        ("functional_capacity", "Functional Capacity Tests"),
+        ("pain_assessment", "Pain Assessment Tests"),
+        ("special_condition", "Special Condition Tests"),
+        ("rehabilitation_specific", "Rehabilitation Specific Tests"),
+        ("cardiovascular", "Cardiovascular Tests"),
+        ("sports_specific", "Sports-Specific Tests"),
+        ("specialized_orthopedic", "Specialized Orthopedic Assessments"),
+        ("neurological_specific", "Neurological Specific Tests"),
+        ("ergonomic_workplace", "Ergonomic and Workplace Assessments"),
+        ("pediatric", "Pediatric Physiotherapy Tests"),
+        ("geriatric", "Geriatric Specific Tests"),
+    ]
+    name = models.CharField(max_length=100,choices=CATEGORY_CHOICES,unique=True)
 
+   
     def __str__(self):
         return self.name
 
@@ -849,7 +865,7 @@ class PhysioTest(models.Model):
 class PhysioRequest(models.Model):
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='doctor')
     physiotherapist = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='physiotherapist')
-    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="physio_info")
     test = models.ForeignKey(PhysioTest, null=True, on_delete=models.CASCADE)
     payment = models.OneToOneField(Paypoint, null=True, on_delete=models.CASCADE, related_name="physio_payment")
     diagnosis = models.CharField(max_length=200, null=True, blank=True)

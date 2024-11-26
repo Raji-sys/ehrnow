@@ -703,6 +703,7 @@ class PatientFolderView(DetailView):
         context['prescribed_drugs'] = prescribed_drugs
         
         context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
+        context['physio'] = patient.physio.all().order_by('-updated')
         context['admission_info'] = patient.admission_info.all().order_by('-updated')
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
         context['ward_medication'] = patient.ward_medication.all().order_by('-updated')
@@ -1899,7 +1900,7 @@ class RadiologyListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(payment__status__isnull=False,payment__status=True).order_by('-updated')
+        queryset = queryset.filter(payment__status__isnull=False,cleared=True).order_by('-updated')
         return queryset
     
 
@@ -2676,7 +2677,7 @@ class PhysioListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(payment__status__isnull=False).order_by('-updated')
+        queryset = queryset.filter(payment__status__isnull=False,cleared=True).order_by('-updated')
         return queryset
     
 
@@ -2704,7 +2705,7 @@ class PhysioRequestListView(ListView):
     context_object_name='physio'
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(payment__status=True,cleared=False).order_by('-updated')
+        queryset = queryset.filter(cleared=False).order_by('-updated')
         return queryset
 
 
