@@ -843,7 +843,7 @@ class LabTest(models.Model):
 
 class LabTesting(models.Model):
     labtest = models.ForeignKey(LabTest, on_delete=models.CASCADE, related_name='items', null=True)
-    lab = models.CharField(max_length=300, choices=GenericTest.LABS, null=True, blank=True)  # Changed from category
+    lab = models.CharField(max_length=300, choices=GenericTest.LABS, null=True, blank=True)
     item = models.ForeignKey(GenericTest, on_delete=models.CASCADE, null=True, blank=True)
     payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="lab_payment")
     updated = models.DateTimeField(auto_now=True)

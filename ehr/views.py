@@ -1649,36 +1649,7 @@ def print_receipt_pdf(request):
         )
     
     return HttpResponse('Error generating PDF', status=500)
-
-
-class RadiologyPayListView(ListView):
-    model = Paypoint
-    template_name = 'ehr/revenue/radiology_pay_list.html'
-    context_object_name = 'radiology_pays'
-    paginate_by = 10
-
-    def get_success_url(self):
-        next_url = self.request.GET.get('next')
-        if next_url:
-            return next_url
-        return reverse_lazy("pay_list")
     
-    def get_queryset(self):
-        return Paypoint.objects.filter(radiology_result_payment__isnull=False).order_by('-updated')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pay_total = self.get_queryset().count()
-
-        paid_transactions = self.get_queryset().filter(status=True)
-        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-        context['pay_total'] = pay_total
-        context['total_worth'] = total_worth
-        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-        return context  
-    
-
 
 class AdmissionCreateView(RevenueRequiredMixin, CreateView):
     model = Admission
@@ -1980,6 +1951,34 @@ class RadioReportView(ListView):
         context['radio_filter'] = RadioFilter(self.request.GET, queryset=self.get_queryset())
         return context
     
+
+class RadiologyPayListView(ListView):
+    model = Paypoint
+    template_name = 'ehr/revenue/radiology_pay_list.html'
+    context_object_name = 'radiology_pays'
+    paginate_by = 10
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+    
+    def get_queryset(self):
+        return Paypoint.objects.filter(radiology_result_payment__isnull=False).order_by('-updated')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pay_total = self.get_queryset().count()
+
+        paid_transactions = self.get_queryset().filter(status=True)
+        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        return context  
+
 
 class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
     template_name = 'ehr/revenue/billing.html'
@@ -2641,3 +2640,117 @@ class ArchiveDeleteView(DeleteView):
         messages.success(self.request, 'File deleted successfully.')
         return self.object.patient.get_absolute_url()
         
+
+class PhysioTestCreateView(DoctorRequiredMixin, CreateView):
+    model = PhysioRequest
+    form_class = PhysioRequestForm
+    template_name = 'ehr/physio/physio_form.html'
+        
+    def form_valid(self, form):
+        patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient
+        form.instance.doctor = self.request.user
+
+        physio_test = form.save(commit=False)
+        payment = Paypoint.objects.create(
+            patient=patient,
+            status=False,
+            service=physio_test.test.name,
+            unit='physiotherapy',
+            price=physio_test.test.price,
+        )
+        physio_test.payment = payment 
+        physio_test.save()
+        
+        messages.success(self.request, 'physio request created successfully')
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
+
+
+class PhysioListView(ListView):
+    model=PhysioRequest
+    template_name='ehr/physio/physio_list.html'
+    context_object_name='physio'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(payment__status__isnull=False).order_by('-updated')
+        return queryset
+    
+
+class PhysioRequestUpdateView(PhysioRequiredMixin, UpdateView):
+    model = PhysioRequest
+    form_class = PhysioResultForm
+    template_name = 'ehr/physio/physio_form.html'
+    success_url=reverse_lazy('physio_request')
+
+    def get_object(self, queryset=None):
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        return get_object_or_404(PhysioRequest, patient=patient, pk=self.kwargs['pk'])
+
+    def form_valid(self, form):
+        form.instance.physiotherapist = self.request.user
+        physio_request = form.save(commit=False)
+        physio_request.save()
+        messages.success(self.request, 'Physiotherapy result updated successfully')
+        return super().form_valid(form)
+
+
+class PhysioRequestListView(ListView):
+    model=PhysioRequest
+    template_name='ehr/physio/physio_request.html'
+    context_object_name='physio'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(payment__status=True,cleared=False).order_by('-updated')
+        return queryset
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PhysioReportView(ListView):
+    model = PhysioRequest
+    template_name = 'ehr/physio/physio_report.html'
+    paginate_by = 10
+    context_object_name = 'patient'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        physio_filter = PhysioFilter(self.request.GET, queryset=queryset)
+        patient = physio_filter.qs.order_by('-updated')
+        return patient
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['physio_filter'] = PhysioFilter(self.request.GET, queryset=self.get_queryset())
+        return context
+    
+
+class PhysioPayListView(ListView):
+    model = Paypoint
+    template_name = 'ehr/revenue/radiology_pay_list.html'
+    context_object_name = 'physio_pays'
+    paginate_by = 10
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+    
+    def get_queryset(self):
+        return Paypoint.objects.filter(physio_payment__isnull=False).order_by('-updated')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pay_total = self.get_queryset().count()
+
+        paid_transactions = self.get_queryset().filter(status=True)
+        total_worth = paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
+
+        context['pay_total'] = pay_total
+        context['total_worth'] = total_worth
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        return context

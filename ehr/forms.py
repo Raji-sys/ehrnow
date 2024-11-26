@@ -505,3 +505,27 @@ class FundWalletForm(forms.ModelForm):
         self.fields['amount'].widget.attrs.update({
             'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
         })
+
+
+class PhysioRequestForm(forms.ModelForm):
+    class Meta:
+        model = PhysioRequest
+        fields = ['test','diagnosis','remark','comment']
+    def __init__(self, *args, **kwargs):
+        super(PhysioRequestForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+
+class PhysioResultForm(forms.ModelForm):
+    class Meta:
+        model = PhysioRequest
+        fields = ['test', 'result_details','cleared']
+    def __init__(self, *args, **kwargs):
+        super(PhysioResultForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })

@@ -1623,13 +1623,6 @@ class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 from datetime import datetime
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from django.template.loader import get_template
-from django.contrib.auth.decorators import login_required
-from io import BytesIO
-from xhtml2pdf import pisa
-from datetime import datetime
 from django.utils.dateparse import parse_date
 
 @login_required

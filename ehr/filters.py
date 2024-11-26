@@ -203,3 +203,20 @@ class TheatreOperationRecordFilter(django_filters.FilterSet):
     class Meta:
         model = TheatreOperationRecord
         fields = ['patient','date']
+
+
+class PhysioFilter(django_filters.FilterSet):
+    patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                              
+    request_date__gte = django_filters.DateFilter(field_name='request_date', lookup_expr='gte', label='Request Date (From)')
+    request_date__lte = django_filters.DateFilter(field_name='request_date', lookup_expr='lte', label='Request Date (To)')
+    result_date__gte = django_filters.DateFilter(field_name='result_date', lookup_expr='gte', label='Result Date (From)')
+    result_date__lte = django_filters.DateFilter(field_name='result_date', lookup_expr='lte', label='Result Date (To)')
+
+    doctor = django_filters.ModelChoiceFilter(queryset=User.objects.all())
+    physiotherapist = django_filters.ModelChoiceFilter(queryset=User.objects.all())
+    diagnosis = django_filters.CharFilter(field_name='diagnosis', lookup_expr='icontains')
+    test = django_filters.ModelChoiceFilter(queryset=PhysioTest.objects.all())
+
+    class Meta:
+        model = PhysioRequest
+        fields = ['request_date__gte', 'request_date__lte', 'result_date__gte', 'result_date__lte', 'doctor', 'physiotherapist', 'diagnosis', 'test']

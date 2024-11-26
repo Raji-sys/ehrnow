@@ -60,6 +60,7 @@ urlpatterns = [
 
     path('revenue/add-payment/', PayCreateView.as_view(), name='add_pay'),
     path('revenue/radiology-list/', RadiologyPayListView.as_view(), name='radiology_pay_list'),
+    path('revenue/physio-list/', PhysioPayListView.as_view(), name='physio_pay_list'),
     path('revenue/admission-list/', AdmissionPayListView.as_view(), name='admission_pay_list'),
     path('revenue/admissions/list/', AdmissionListView.as_view(), name='admissions'),
     path('revenue/visit-list/', VisitPayListView.as_view(), name='visit_pay_list'),
@@ -156,4 +157,12 @@ urlpatterns = [
     path('patient/add-archive/<str:file_no>/',ArchiveCreateView.as_view(),name='new_archive'),
     path('patient/updated-archive/<int:pk>/',ArchiveUpdateView.as_view(),name='update_archive'),
     path('patient/delete-archive/<int:pk>/', ArchiveDeleteView.as_view(), name='delete_archive'),
+
+    #physio
+    path('physio-list/', PhysioListView.as_view(), name='physio_list'),
+    path('physio-request/', PhysioRequestListView.as_view(), name='physio_request_list'),
+    path('physio-test/create/<str:file_no>/', PhysioTestCreateView.as_view(), name='physio_request'),
+    path('physio-result/create/<str:file_no>/<int:pk>/', PhysioRequestUpdateView.as_view(), name='physio_result'),
+    path('physio-report/', RadioReportView.as_view(), name='physio_report'),
+
 ]

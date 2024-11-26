@@ -408,7 +408,7 @@ class RadiologyTest(models.Model):
 
 class RadiologyResult(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    test = models.ForeignKey(RadiologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="results")
+    test = models.ForeignKey(RadiologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="radiology_results")
     patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="radiology_results")
     local_file_path = models.CharField(max_length=255, null=True, blank=True)    
     cleared = models.BooleanField(default=False)
@@ -591,17 +591,7 @@ class Billing(models.Model):
     @property
     def total_item_price(self):
         return self.item.price * self.quantity
-       
-
-class Physio(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="physio_payment")
-    updated = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.patient
-    
+           
 
 class PrivateBill(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
@@ -836,3 +826,47 @@ class Archive(models.Model):
         super().save(*args, **kwargs)
     def __str__(self):
         return self.title
+    
+
+class PhysioTestCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+class PhysioTest(models.Model):
+    category = models.ForeignKey(PhysioTestCategory, on_delete=models.CASCADE, related_name='tests')
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField(null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.category.name} - {self.name}"
+    
+
+class PhysioRequest(models.Model):
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='doctor')
+    physiotherapist = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='physiotherapist')
+    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE)
+    test = models.ForeignKey(PhysioTest, null=True, on_delete=models.CASCADE)
+    payment = models.OneToOneField(Paypoint, null=True, on_delete=models.CASCADE, related_name="physio_payment")
+    diagnosis = models.CharField(max_length=200, null=True, blank=True)
+    remark = models.TextField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
+    request_date = models.DateTimeField(null=True,auto_now_add=True)
+    
+    result_details = models.TextField(null=True, blank=True)
+    result_date = models.DateTimeField(null=True, blank=True)
+    cleared = models.BooleanField(default=False)
+    
+    updated = models.DateTimeField(null=True,auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if self.result_details and not self.result_date:
+            self.result_date = timezone.now()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.patient} - {self.test.name}"
