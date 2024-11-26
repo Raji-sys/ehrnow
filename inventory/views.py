@@ -17,7 +17,7 @@ from django.db import transaction
 
 @login_required
 def index(request):
-    return render(request, 'store/index.html')
+    return render(request, 'main_store/index.html')
 
 
 @login_required
@@ -28,7 +28,7 @@ def items_list(request):
     po=pgn.get_page(pn)
 
     context = {'items': items,'po':po}
-    return render(request, 'store/items_list.html', context)
+    return render(request, 'main_store/items_list.html', context)
 
 
 @login_required
@@ -39,26 +39,26 @@ def records(request):
     po=pgn.get_page(pn)
 
     context = {'records': records, 'po':po}
-    return render(request, 'store/record.html', context)
+    return render(request, 'main_store/record.html', context)
 
 
 @login_required
 def reports(request):
-    return render(request, 'store/report.html')
+    return render(request, 'main_store/report.html')
 
 
 @login_required
 def item_report(request):
     itemfilter=ItemFilter(request.GET, queryset=Item.objects.all().order_by('-updated_at'))    
     context = {'itemfilter': itemfilter}
-    return render(request, 'store/item_report.html', context)
+    return render(request, 'main_store/item_report.html', context)
 
 
 @login_required
 def record_report(request):
     recordfilter=RecordFilter(request.GET, queryset=Record.objects.all().order_by('-updated_at'))    
     context = {'recordfilter':recordfilter}
-    return render(request, 'store/record_report.html', context)
+    return render(request, 'main_store/record_report.html', context)
 
 
 @superuser_required
@@ -67,7 +67,7 @@ def worth(request):
     ndate = datetime.datetime.now()
     today = ndate.strftime('%d-%B-%Y at: %I:%M %p')
     context = {'total_store_value': total_store_value,'today':today}
-    return render(request, 'store/worth.html', context)
+    return render(request, 'main_store/worth.html', context)
 
 
 @login_required
@@ -83,7 +83,7 @@ def create_item(request):
     else:
         form = ItemForm()
     
-    return render(request, 'store/create_item.html', {'form': form})
+    return render(request, 'main_store/create_item.html', {'form': form})
 
 
 @login_required
@@ -103,7 +103,7 @@ def create_record(request):
             return redirect('inventory:record')
     else:
         form = RecordForm()
-    return render(request, 'store/create_record.html', {'form': form})
+    return render(request, 'main_store/create_record.html', {'form': form})
 
 
 @login_required
@@ -123,7 +123,7 @@ def restock(request):
             return redirect('inventory:list')
     else:
         form = ReStockForm()
-    return render(request, 'store/restock.html', {'form': form})
+    return render(request, 'main_store/restock.html', {'form': form})
 
 
 @login_required
@@ -160,7 +160,7 @@ def item_pdf(request):
    
     buffer = BytesIO()
 
-    pisa_status = pisa.CreatePDF(get_template('store/item_pdf.html').render(context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+    pisa_status = pisa.CreatePDF(get_template('main_store/item_pdf.html').render(context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
 
     if not pisa_status.err:
         pdf = buffer.getvalue()
@@ -183,7 +183,7 @@ def record_pdf(request):
     context = {'f': f, 'pagesize': 'A4', 'orientation': 'Potrait','result':result}
     response = HttpResponse(content_type='application/pdf', headers={'Content-Disposition': f'filename="Report__{filename}"'})
     buffer = BytesIO()
-    pisa_status = pisa.CreatePDF(get_template('store/record_pdf.html').render(context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
+    pisa_status = pisa.CreatePDF(get_template('main_store/record_pdf.html').render(context), dest=buffer, encoding='utf-8', link_callback=fetch_resources)
 
     if not pisa_status.err:
         pdf = buffer.getvalue()
