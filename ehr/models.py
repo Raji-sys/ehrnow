@@ -664,6 +664,24 @@ class WalletTransaction(models.Model):
         return f"{self.get_transaction_type_display()} of {self.amount} for {self.wallet.patient}"
     
 
+class OperationNotes(models.Model):
+    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="operation_notes")
+    operated=models.BooleanField(default=False)
+    notes=QuillField(null=True,blank=True)
+    anaesthesia=(('GENERAL ANAESTHESIA','GENERAL ANAESTHESIA'),('SPINE ANAESTHESIA','SPINE ANAESTHESIA'))
+    type_of_anaesthesia=models.CharField(choices=anaesthesia, max_length=300,null=True,blank=True)
+    findings=models.CharField(max_length=300,null=True,blank=True)
+    post_op_order=models.CharField('post-op order',max_length=300,null=True,blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural='operation notes'
+
+    def __str__(self):
+        return f"{self.patient}"
+
+
 class MedicalIllness(models.Model):
     name=models.CharField(max_length=100,null=True)
     def __str__(self):
@@ -722,24 +740,6 @@ class AnaesthisiaChecklist(models.Model):
     def __str__(self):
         return self.patient
     
-
-class OperationNotes(models.Model):
-    doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="operation_notes")
-    operated=models.BooleanField(default=False)
-    notes=QuillField(null=True,blank=True)
-    anaesthesia=(('GENERAL ANAESTHESIA','GENERAL ANAESTHESIA'),('SPINE ANAESTHESIA','SPINE ANAESTHESIA'))
-    type_of_anaesthesia=models.CharField(choices=anaesthesia, max_length=300,null=True,blank=True)
-    findings=models.CharField(max_length=300,null=True,blank=True)
-    post_op_order=models.CharField('post-op order',max_length=300,null=True,blank=True)
-    prescription=QuillField(null=True,blank=True)
-    updated = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural='operation notes'
-    def __str__(self):
-        return self.patient
-
 
 class Consumable(models.Model):
     name = models.CharField(max_length=100,null=True,blank=True)
@@ -813,6 +813,7 @@ class ImplantUsage(models.Model):
     implant = models.ForeignKey(Implant, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
+
 class Archive(models.Model):
     patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name='patient_archive')
     title = models.CharField(max_length=255,null=True)
@@ -869,7 +870,7 @@ class PhysioRequest(models.Model):
     test = models.ForeignKey(PhysioTest, null=True, on_delete=models.CASCADE)
     payment = models.OneToOneField(Paypoint, null=True, on_delete=models.CASCADE, related_name="physio_payment")
     diagnosis = models.CharField(max_length=200, null=True, blank=True)
-    remark = models.TextField(null=True, blank=True)
+    remark = models.CharField(max_length=200, null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
     request_date = models.DateTimeField(null=True,auto_now_add=True)
     

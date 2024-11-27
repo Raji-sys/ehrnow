@@ -107,7 +107,7 @@ class TheatreBookingAdmin(admin.ModelAdmin):
 
 @admin.register(OperationNotes)
 class OperationNotesAdmin(admin.ModelAdmin):
-    list_display = ('patient','notes','type_of_anaesthesia','findings','post_op_order','operated','updated')
+    list_display = ('patient','theatre','notes','type_of_anaesthesia','findings','post_op_order','operated','updated')
     search_fields = ('patient','notes','type_of_anaesthesia','findings','post_op_order','operated','updated')
     list_filter = ('patient','notes','type_of_anaesthesia','findings','post_op_order','operated','updated')
 

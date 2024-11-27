@@ -412,7 +412,7 @@ class TheatreBookingForm(forms.ModelForm):
 class OperationNotesForm(forms.ModelForm):
     class Meta:
         model = OperationNotes
-        fields = ['operated','notes','type_of_anaesthesia','findings']
+        fields = ['operated','notes','post_op_order','type_of_anaesthesia','findings']
 
     def __init__(self, *args, **kwargs):
         super(OperationNotesForm, self).__init__(*args, **kwargs)

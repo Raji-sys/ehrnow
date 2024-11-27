@@ -2161,7 +2161,7 @@ class TheatreBookingCreateView(DoctorRequiredMixin, CreateView):
     template_name = 'ehr/theatre/book_theatre.html'
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        form.instance.doctor = self.request.user
         form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         self.object = form.save()
         return super().form_valid(form)
@@ -2226,8 +2226,12 @@ class OperationNotesCreateView(DoctorRequiredMixin,CreateView):
     template_name = 'ehr/theatre/theatre_notes.html'
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
         patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        theatre_booking = TheatreBooking.objects.filter(patient=patient_data).order_by('-id').first()
+        if theatre_booking:
+            form.instance.theatre = theatre_booking.theatre
+        
+        form.instance.doctor = self.request.user
         form.instance.patient = patient_data
         self.object = form.save()
 
@@ -2239,7 +2243,7 @@ class OperationNotesCreateView(DoctorRequiredMixin,CreateView):
         return context
 
     def get_success_url(self):
-        messages.success(self.request, 'PATIENT THEATRE NOTES ADDED')
+        messages.success(self.request, 'PATIENT OPERATION NOTES ADDED')
         return self.object.patient.get_absolute_url()
 
 
@@ -2252,8 +2256,9 @@ class OperationNotesListView(DoctorRequiredMixin,ListView):
     def get_queryset(self):
         theatre_id = self.kwargs.get('theatre_id')
         theatre = get_object_or_404(Theatre, id=theatre_id)
-        operated = super().get_queryset().filter(theatre=theatre).order_by('-updated')
-        theatre_filter = OperationNotesFilter(self.request.GET, queryset=operated)
+
+        operate_note = OperationNotes.objects.filter(operated=True, theatre=theatre).order_by('-updated')
+        theatre_filter = OperationNotesFilter(self.request.GET, queryset=operate_note)
         return theatre_filter.qs
 
     def get_context_data(self, **kwargs):

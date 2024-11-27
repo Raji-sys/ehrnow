@@ -2405,9 +2405,8 @@
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">anaesthesia used</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">findings</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">post op-order</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">prescription</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Note</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">By</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Surgeon</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
                     </tr>
           
@@ -2419,12 +2418,11 @@
                       <td class=" p-3 whitespace-nowrap">{{ o.type_of_anaesthesia }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ o.findings }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ o.post_op_order }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.prescription }}</td>
                       <td class=" p-3 whitespace-nowrap">
                         <details>
                           <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
                           <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4">
-                            <p class="text-xs text-center">{{ o.notes }}</p>
+                            <p class="text-xs text-center">{{ o.notes.html|safe }}</p>
                           </div>
                         </details>    
                       </td>

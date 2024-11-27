@@ -70,9 +70,6 @@
                 POST OP-ORDER
               </th>
               <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
-                PRESCRIPTION
-              </th>
-              <th class="p-3 text-left text-xs font-medium text-emerald-500 uppercase tracking-wider">
                 DATE OPERATE
               </th>
             </tr>
@@ -98,15 +95,12 @@
                 {{ o.post_op_order }}
               </td>
               <td class="p-3 whitespace-nowrap">
-                {{ o.prescription }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
                 {{ o.updated }}
               </td>
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="p-3 text-center text-emerald-500">
+              <td colspan="6" class="p-3 text-center text-emerald-500">
                 not found
               </td>
             </tr>
