@@ -341,7 +341,7 @@ class TheatreListView(DoctorNurseRequiredMixin, ListView):
     model=Theatre
     context_object_name='theatres'
     template_name = "ehr/dashboard/theatre_list.html"
-
+    
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class TheatreDetailView(DoctorNurseRequiredMixin, DetailView):
@@ -2194,30 +2194,6 @@ class TheatreBookingUpdateView(DoctorRequiredMixin,UpdateView):
         return self.object.patient.get_absolute_url()
     
 
-# class TheatreBookingListView(DoctorRequiredMixin,ListView):
-#     model=TheatreBooking
-#     template_name='ehr/theatre/theatre_bookings.html'
-#     context_object_name='bookings'
-#     paginate_by = 10
-
-#     def get_queryset(self):
-#         theatre_id = self.kwargs.get('theatre_id')
-#         theatre = get_object_or_404(Theatre, id=theatre_id)
-#         theatrebooking = super().get_queryset().filter(theatre=theatre).order_by('-updated')
-#         theatrebooking_filter = TheatreBookingFilter(self.request.GET, queryset=theatrebooking)
-#         return theatrebooking_filter.qs
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         theatre_id = self.kwargs.get('theatre_id')
-#         theatre = get_object_or_404(Theatre, id=theatre_id)
-
-#         total_bookings = self.get_queryset().count()
-        
-#         context['theatre'] = theatre
-#         context['total_bookings'] = total_bookings
-#         context['theatreBookingFilter'] = TheatreBookingFilter(self.request.GET, queryset=self.get_queryset())
-#         return context
 class TheatreBookingListView(DoctorRequiredMixin, ListView):
     model = TheatreBooking
     template_name = 'ehr/theatre/theatre_bookings.html'
@@ -2603,6 +2579,17 @@ class TheatreOperationRecordCreateView(CreateView):
 
     def form_valid(self, form):
         form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+
+        admission_info = Admission.objects.filter(patient=patient_data).order_by('-id').first()
+        if admission_info:
+            form.instance.ward = admission_info.ward
+
+        theatre_booking = TheatreBooking.objects.filter(patient=patient_data).order_by('-id').first()
+        if theatre_booking:
+            form.instance.theatre = theatre_booking.theatre
+
+
         context = self.get_context_data()
         consumables = context['consumables']
         implants = context['implants']

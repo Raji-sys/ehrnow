@@ -23,7 +23,7 @@
             <span class="text-sm text-white  uppercase">Nursing stations</span>
         </div>
   
-      <div class="grid grid-cols-5 gap-6 p-8 bg-gray-50">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-8 bg-gray-50">
             {% for desk in nursing_desks %}
             <div class="transform transition duration-500 hover:scale-105">
                 <a href="{% url 'nursing_station_detail' desk.id %}" class="block h-fit">

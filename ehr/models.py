@@ -761,7 +761,6 @@ class TheatreOperationRecord(models.Model):
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='theatre_operation_record')
     theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
     ward = models.ForeignKey(Ward, null=True, on_delete=models.CASCADE)
-    # ward = models.CharField(max_length=50,null=True,blank=True)
     
     # Operation Details
     diagnosis = models.CharField(max_length=200,null=True,blank=True)
@@ -780,8 +779,7 @@ class TheatreOperationRecord(models.Model):
     
     consumables = models.ManyToManyField(Consumable, through='ConsumableUsage',blank=True)
     implants = models.ManyToManyField(Implant, through='ImplantUsage',blank=True)
-
-    
+  
     # Instrument Count
     towel_clips = models.IntegerField(default=0,null=True,blank=True)
     plain_gauze_small = models.IntegerField(default=0,null=True,blank=True)

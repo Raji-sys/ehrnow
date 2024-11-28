@@ -471,7 +471,7 @@ ImplantUsageFormSet = inlineformset_factory(
 class TheatreOperationRecordForm(forms.ModelForm):
     class Meta:
         model = TheatreOperationRecord
-        exclude = ['patient', 'consumables', 'implants']
+        exclude = ['patient', 'theatre','ward','consumables', 'implants']
         widgets = {
             'date_of_operation': forms.DateInput(attrs={'type': 'date'}),
             'tourniquet_time': forms.TimeInput(attrs={'type': 'time'}),

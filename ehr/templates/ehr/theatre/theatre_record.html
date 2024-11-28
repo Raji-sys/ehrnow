@@ -4,10 +4,10 @@
 {%block page_title%}<div class="flex justify-center"><a href="#"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>NEW OPERATION RECORD</div>{%endblock%}
 
 {% block content %}
-<div class="bg-white shadow-md rounded-lg overflow-hidden lg:mx-20 sm:mx-4 my-1  overflow-y-auto max-h-[80vh] uppercase">
-  <form method="post" class="p-3">
+<div class="bg-white shadow-md rounded-lg overflow-hidden md:p-10 w-fit md:mx-20 sm:mx-4  overflow-y-auto max-h-[80vh] uppercase">
+  <form method="post" class="p-3 text-center">
     {% csrf_token %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
       {% for field in form %}
         {% if field.name != 'consumables' and field.name != 'implants' %}
           <div class="mb-3">
