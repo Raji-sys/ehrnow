@@ -1763,9 +1763,9 @@ class PregnancyUpdateView(BaseLabResultUpdateView):
     form_class = PregnancyForm
 
 
-class LabTestingCreateView(DoctorRequiredMixin, LoginRequiredMixin, FormView):
+class LabTestingCreateView(DoctorRequiredMixin, FormView):
     template_name = 'ehr/revenue/labtesting.html'
-    form_class = LabTestingForm  # Add this even though we override get_form
+    form_class = LabTestingForm
     
     def get_form(self):
         LabTestingFormSet = modelformset_factory(

@@ -2194,16 +2194,53 @@ class TheatreBookingUpdateView(DoctorRequiredMixin,UpdateView):
         return self.object.patient.get_absolute_url()
     
 
-class TheatreBookingListView(DoctorRequiredMixin,ListView):
-    model=TheatreBooking
-    template_name='ehr/theatre/theatre_bookings.html'
-    context_object_name='bookings'
+# class TheatreBookingListView(DoctorRequiredMixin,ListView):
+#     model=TheatreBooking
+#     template_name='ehr/theatre/theatre_bookings.html'
+#     context_object_name='bookings'
+#     paginate_by = 10
+
+#     def get_queryset(self):
+#         theatre_id = self.kwargs.get('theatre_id')
+#         theatre = get_object_or_404(Theatre, id=theatre_id)
+#         theatrebooking = super().get_queryset().filter(theatre=theatre).order_by('-updated')
+#         theatrebooking_filter = TheatreBookingFilter(self.request.GET, queryset=theatrebooking)
+#         return theatrebooking_filter.qs
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         theatre_id = self.kwargs.get('theatre_id')
+#         theatre = get_object_or_404(Theatre, id=theatre_id)
+
+#         total_bookings = self.get_queryset().count()
+        
+#         context['theatre'] = theatre
+#         context['total_bookings'] = total_bookings
+#         context['theatreBookingFilter'] = TheatreBookingFilter(self.request.GET, queryset=self.get_queryset())
+#         return context
+class TheatreBookingListView(DoctorRequiredMixin, ListView):
+    model = TheatreBooking
+    template_name = 'ehr/theatre/theatre_bookings.html'
+    context_object_name = 'bookings'
     paginate_by = 10
 
     def get_queryset(self):
         theatre_id = self.kwargs.get('theatre_id')
         theatre = get_object_or_404(Theatre, id=theatre_id)
-        theatrebooking = super().get_queryset().filter(theatre=theatre).order_by('-updated')
+
+        # Get patients who have been operated
+        operated_patients = OperationNotes.objects.filter(
+            operated=True, 
+            theatre=theatre
+        ).values_list('patient', flat=True)
+
+        # Filter out theatre bookings for operated patients
+        theatrebooking = super().get_queryset().filter(
+            theatre=theatre
+        ).exclude(
+            patient__in=operated_patients
+        ).order_by('-updated')
+
         theatrebooking_filter = TheatreBookingFilter(self.request.GET, queryset=theatrebooking)
         return theatrebooking_filter.qs
 
@@ -2216,9 +2253,11 @@ class TheatreBookingListView(DoctorRequiredMixin,ListView):
         
         context['theatre'] = theatre
         context['total_bookings'] = total_bookings
-        context['theatreBookingFilter'] = TheatreBookingFilter(self.request.GET, queryset=self.get_queryset())
+        context['theatreBookingFilter'] = TheatreBookingFilter(
+            self.request.GET, 
+            queryset=self.get_queryset()
+        )
         return context
-
 
 class OperationNotesCreateView(DoctorRequiredMixin,CreateView):
     model = OperationNotes
