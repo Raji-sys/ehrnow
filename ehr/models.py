@@ -132,10 +132,10 @@ class Profile(models.Model):
 
         
 class PatientData(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     # types = (('REGULAR', 'REGULAR'), ('NHIS', 'NHIS'),('RETAINER','RETAINER'))
     # patient_type = models.CharField(choices=types, max_length=100, null=True, blank=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     titles = (('Mr.','Mr.'),('Mrs.','Mrs.'),('Miss','Miss'),('Alhaji','Alhaji'),('Mallam','Mallam'),('Chief','Chief'),('Prof.','Prof.'),('Dr.','Dr.'),('Engr.','Engr.'),('Ach.','Ach.'))
     title = models.CharField(choices=titles, max_length=10, null=True, blank=True)
     last_name = models.CharField('SURNAME', max_length=300, null=True)
@@ -240,15 +240,29 @@ class PatientData(models.Model):
 
     def full_name(self):
         name_parts=[
-            self.title or "",
-            self.first_name or "",
-            self.last_name or "",
-            self.other_name or "",
+            self.title or " ",
+            self.first_name or " ",
+            self.last_name or " ",
+            self.other_name or " ",
         ]
         return " ".join(filter(None,name_parts))
     
+    def full_name(self):
+        try:
+            name_parts = [
+                str(self.title or '').strip(),
+                str(self.first_name or '').strip(),
+                str(self.last_name or '').strip(),
+                str(self.other_name or '').strip()
+            ]
+            return " ".join(filter(None, name_parts)) or f"Patient {self.file_no}"
+        except Exception as e:
+            return f"Patient {self.file_no}"
+
     def __str__(self):
         return self.full_name()
+    # def __str__(self):
+    #     return f"{self.file_no} - {self.full_name()}"
 
     def create_wallet(self):
         Wallet.objects.get_or_create(patient=self)

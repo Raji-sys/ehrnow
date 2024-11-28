@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'fontawesomefree',
     'django_quill',
     'pharm',
-    # 'chartjs',
+    'chartjs',
     'inventory',
     'results',
     
