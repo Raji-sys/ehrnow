@@ -19,13 +19,14 @@
 
 {% block content %}
 <div class="mx-4 mt-8 md:mx-20">
+    <div class="bg-gradient-to-r from-emerald-600 to-sky-600 h-1"></div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 uppercase text-center rounded-b-xl p-6 bg-gradient-to-r from-sky-100 via-sky-700 to-sky-100 shadow-sm">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 uppercase text-center rounded-b-xl p-6 bg-sky-100 shadow-sm">
         <div>
             <a href="{%url 'medical_record' %}" class="text-xs font-medium  text-sky-800">
                 <div class="bg-white rounded-t-xl shadow-sm p-6  hover:border-white hover:bg-emerald-600 hover:text-white">
                     <i class="fa-solid fa-book fa-2x mb-2"></i><br>
-                    RECORD</div>
+                    MEDICAL RECORD</div>
             </a>
         </div>
         <div>
@@ -105,7 +106,7 @@
             <a href="{%url 'visit_report' %}" class="text-xs  font-medium text-emerald-600">
                 <div class="bg-white rounded-t-xl shadow-sm p-6  hover:border-white hover:bg-emerald-600 hover:text-white">
                     <i class="fa-solid fa-bar-chart fa-2x mb-2"></i><br>
-                    ACTIVITY</div>
+                    CLINIC ACTIVITY</div>
             </a> 
         </div>
 

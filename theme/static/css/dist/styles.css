@@ -2504,12 +2504,6 @@ select {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-.from-sky-100 {
-  --tw-gradient-from: #e0f2fe var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(224 242 254 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
 .from-sky-400 {
   --tw-gradient-from: #38bdf8 var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(56 189 248 / 0) var(--tw-gradient-to-position);
@@ -2525,6 +2519,12 @@ select {
 .from-yellow-500 {
   --tw-gradient-from: #eab308 var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(234 179 8 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-emerald-700 {
+  --tw-gradient-from: #047857 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(4 120 87 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
@@ -2551,11 +2551,6 @@ select {
 .via-orange-600 {
   --tw-gradient-to: rgb(234 88 12 / 0)  var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), #ea580c var(--tw-gradient-via-position), var(--tw-gradient-to);
-}
-
-.via-sky-700 {
-  --tw-gradient-to: rgb(3 105 161 / 0)  var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), #0369a1 var(--tw-gradient-via-position), var(--tw-gradient-to);
 }
 
 .to-blue-500 {
@@ -2610,10 +2605,6 @@ select {
   --tw-gradient-to: #7e22ce var(--tw-gradient-to-position);
 }
 
-.to-sky-100 {
-  --tw-gradient-to: #e0f2fe var(--tw-gradient-to-position);
-}
-
 .to-sky-600 {
   --tw-gradient-to: #0284c7 var(--tw-gradient-to-position);
 }
@@ -2624,6 +2615,10 @@ select {
 
 .to-yellow-700 {
   --tw-gradient-to: #a16207 var(--tw-gradient-to-position);
+}
+
+.to-sky-700 {
+  --tw-gradient-to: #0369a1 var(--tw-gradient-to-position);
 }
 
 .bg-clip-text {
