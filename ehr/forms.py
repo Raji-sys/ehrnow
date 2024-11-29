@@ -222,7 +222,7 @@ class ClinicalNoteUpdateForm(forms.ModelForm):
 class ServiceForm(forms.ModelForm):
     class Meta:
         model = Services
-        fields = "__all__"
+        fields = ["type",'name','description','price']
 
     def __init__(self, *args, **kwargs):
         super(ServiceForm, self).__init__(*args, **kwargs)

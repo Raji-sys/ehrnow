@@ -1176,14 +1176,20 @@ class HospitalServicesListView(TemplateView):
         medical_record_paginator = Paginator(MedicalRecord.objects.all(), 10)
         services_paginator = Paginator(Services.objects.all(), 10)
         lab_test_paginator = Paginator(GenericTest.objects.all(), 10)
+        radiology_test_paginator = Paginator(RadiologyTest.objects.all(), 10)
+        physio_test_paginator = Paginator(PhysioTest.objects.all(), 10)
 
         medical_record_page = self.request.GET.get('medical_record_page', 1)
         services_page = self.request.GET.get('services_page', 1)
         lab_test_page = self.request.GET.get('lab_test_page', 1)
+        radiology_test_page = self.request.GET.get('radiology_test_page', 1)
+        physio_test_page = self.request.GET.get('physio_test_page', 1)
 
         context['medical_record'] = medical_record_paginator.get_page(medical_record_page)
         context['services'] = services_paginator.get_page(services_page)
         context['lab_test'] = lab_test_paginator.get_page(lab_test_page)
+        context['radiology_test'] = radiology_test_paginator.get_page(radiology_test_page)
+        context['physio_test'] = physio_test_paginator.get_page(physio_test_page)
 
         return context
 

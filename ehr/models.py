@@ -278,10 +278,11 @@ class Services(models.Model):
     type=models.CharField(max_length=100, null=True, blank=True)
     name=models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+    description = models.TextField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.type}----{self.name}"
+        return f"{self.type}--{self.name}--{self.price}"
 
     class Meta:
         verbose_name_plural = 'general services'
