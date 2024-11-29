@@ -14,17 +14,20 @@
 <form method="post" enctype="multipart/form-data" >
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
-    {% for field in form %}
-    <div class="flex justify-center text-xs">
-     <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
-     </div>
-     <div class="flex justify-center mb-6">
-     {{ field }}
-    </div>
-    {%endfor%}
+    <div class="flex justify-start text-center">
+      <div class=" grid grid-cols-1 md:flex p-2 gap-6 text-xs">
+{% for field in form %}
+      <div class="">
+          <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
+          {{ field }}
+      </div>
+      {%endfor%}
+  </div>
+  </div>
+
   </div>
   <div class="flex justify-center align-middle">
-    <input type="submit" value="follow up" class="text-xs focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+    <input type="submit" value="send" class="text-xs focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
 bg-green-700 text-white py-2 px-4 rounded shadow-lg hover:shadow-xl">
   </div>
   </form>
