@@ -752,7 +752,7 @@ class AnaesthisiaChecklist(models.Model):
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return self.patient
+        return f"{self.patient}"
     
 
 class Consumable(models.Model):

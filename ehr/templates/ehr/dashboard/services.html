@@ -1,149 +1,228 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}SERVICE DIRECTORY{%endblock%}
-{%block page_title%}<div class="flex justify-center">HOSPITAL SERVICES DIRECTORY</div>{%endblock%}
+{%block title%}SERVICES{%endblock%}
+{%block page_title%}<div class="flex justify-center">HOSPITAL SERVICES</div>{%endblock%}
 {%block content %}
-<div class="mt-2 ">
-    <div class="uppercase mx-2 md:mx-20 rounded-xl p-2 shadow-black shadow-sm bg-orange-50">
-      <div class="overflow-x-auto px-4 md:px-10 m-4">
-        <h5>GENERAL SERIVCES</h5>
+<div class="mb-4 flex justify-center ">
+  <div class="flex gap-2 ">
+    <button onclick="openTab('services')" 
+    class="tab-btn px-4 py-2 font-medium text-xs bg-orange-100 hover:bg-orange-200 focus:outline-none uppercase rounded-xl shadow-black shadow-sm text-gray-900" 
+    id="services-tab" data-tab="services" .cursor-pointer>Services</button>
+    <button onclick="openTab('medical')" 
+    class="tab-btn px-4 py-2 font-medium text-xs bg-orange-100 hover:bg-orange-200 focus:outline-none uppercase rounded-xl shadow-black shadow-sm text-gray-900" 
+    id="medical-tab" data-tab="medical" .cursor-pointer>Medical Record</button>
+    <button onclick="openTab('pathology')" 
+    class="tab-btn px-4 py-2 font-medium text-xs bg-orange-100 hover:bg-orange-200 focus:outline-none uppercase rounded-xl shadow-black shadow-sm text-gray-900" 
+    id="pathology-tab" data-tab="pathology" .cursor-pointer>Pathology</button>
+  </div>
+</div>
+<div class="container mx-auto px-4 uppercase md:mx-20 rounded-b-xl p-2 shadow-black shadow-sm bg-orange-50">
+      <div class="overflow-x-auto px-4 md:px-10 m-4 tab-content" id="services-content">
+        <h5 class="text-center">GENERAL SERIVCES</h5>
           <!-- <a href="{%url 'add_service' %}">ADD SERVICE</a>  -->
         <table class="min-w-full divide-y divide-orange-200">
           <thead class="bg-orange-50">
-            <tr class="text-sm ">
-                <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
+            <tr class="text-xs ">
+                <th class="px-3 py-2 text-left text-xs font-medium text-orange-500 uppercase tracking-wider">
                     #
                 </th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
+              <th class="px-3 py-2 text-left text-xs font-medium text-orange-500 uppercase tracking-wider">
                 SERVICE
               </th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
+              <th class="px-3 py-2 text-left text-xs font-medium text-orange-500 uppercase tracking-wider">
                 PRICE
               </th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
-                DATE ADDED
-              </th>
-            </tr>
+              </tr>
           </thead>
           <tbody class="bg-white divide-y divide-orange-200">
             {% for s in services %}
-            <tr class="text-xs bg-orange-100 hover:bg-orange-200 transition-colors duration-300 text-center">
-                <td class="px-6 py-4 whitespace-nowrap">
+            <tr class="text-xs bg-orange-100 hover:bg-orange-200 transition-colors duration-300 text-left">
+                <td class="px-3 py-2 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-3 py-2 whitespace-nowrap">
                   {{ s.name}}
                 </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-3 py-2 whitespace-nowrap">
                 &#x20A6;{{ s.price }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{ s.updated }}
               </td>
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="px-6 py-4 text-center text-orange-500">
+              <td colspan="3" class="px-3 py-2 text-center text-orange-500">
                 No service found
               </td>
             </tr>
             {% endfor %}
+            <tr class="">
+              <td colspan="10" class="p-1 text-center">        
+                <div class="pagination flex justify-center">
+                  <span class="flex items-center">
+                    {% if services.has_previous %}
+                    <a href="?active_tab=services&services_page=1" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                    <a href="?active_tab=services&services_page={{services.previous_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                    {% endif %}
+                  </span>
+                  <span class="flex item-center"> 
+                    {% if services.has_next %}
+                    <a href="?active_tab=services&services_page={{services.next_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                    <a href="?active_tab=services&services_page={{services.paginator.num_pages}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                    {% endif %}
+                  </span>
+                </div>
+              </td>
+            </tr>
+            
           </tbody>
         </table>
+
       </div>
 
-      <div class="overflow-x-auto px-4 md:px-10 m-4">
-        <h5>MEDICAL RECORD</h5>
+      <div class="overflow-x-auto px-4 md:px-10 m-4 tab-content hidden" id="medical-content">
+        <h5 class="text-center">MEDICAL RECORD</h5>
         <table class="min-w-full divide-y divide-orange-200">
           <thead class="bg-orange-50">
-            <tr class="text-sm ">
-                <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
+            <tr class="text-xs ">
+                <th class="px-3 py-2 text-left text-xs font-medium text-orange-500 uppercase tracking-wider">
                     #
                 </th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
+              <th class="px-3 py-2 text-left text-xs font-medium text-orange-500 uppercase tracking-wider">
                 SERVICE
               </th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
+              <th class="px-3 py-2 text-left text-xs font-medium text-orange-500 uppercase tracking-wider">
                 PRICE
-              </th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
-                DATE ADDED
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-orange-200">
             {% for s in medical_record %}
-            <tr class=" text-xs bg-orange-100 hover:bg-orange-200 transition-colors duration-300 text-center">
-                <td class="px-6 py-4 whitespace-nowrap text-center">
+            <tr class=" text-xs bg-orange-100 hover:bg-orange-200 transition-colors duration-300 text-left">
+                <td class="px-3 py-2 whitespace-nowrap text-left">
                     {{forloop.counter}}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-3 py-2 whitespace-nowrap">
                   {{ s.name}}
                 </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-3 py-2 whitespace-nowrap">
                 &#x20A6;{{ s.price }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{ s.updated }}
               </td>
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="2" class="px-6 py-4 text-center text-orange-500">
+              <td colspan="3" class="px-3 py-2 text-center text-orange-500">
                 No service found
               </td>
             </tr>
             {% endfor %}
+            <tr class="">
+              <td colspan="10" class="p-1 text-center">        
+                <div class="pagination flex justify-center">
+                  <span class="flex items-center">
+                    {% if medical_record.has_previous %}
+                    <a href="?active_tab=medical&medical_record_page=1" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                    <a href="?active_tab=medical&medical_record_page={{medical_record.previous_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                    {% endif %}
+                  </span>
+                  <span class="flex item-center"> 
+                    {% if medical_record.has_next %}
+                    <a href="?active_tab=medical&medical_record_page={{medical_record.next_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                    <a href="?active_tab=medical&medical_record_page={{medical_record.paginator.num_pages}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                    {% endif %}
+                  </span>
+                </div>
+              </td>
+            </tr>
+                        
           </tbody>
         </table>
       </div>
 
-      <div class="overflow-x-auto px-4 md:px-10 m-4">
-        <h5>HEMATOLOGY</h5>
+      <div class="overflow-x-auto px-4 md:px-10 m-4 tab-content hidden" id="pathology-content">
+        <h5 class="text-center">PATHOLOGY</h5>
         <table class="min-w-full divide-y divide-orange-200">
-          <thead class="bg-orange-50">
-            <tr class="text-sm">
-                <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
-                    #
-                </th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
-                SERVICE
-              </th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
-                PRICE
-              </th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-orange-500 uppercase tracking-wider">
-                DATE ADDED
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-orange-200">
-            {% for s in hematology %}
-            <tr class="text-xs bg-orange-100 hover:bg-orange-200 transition-colors duration-300 text-center">
-                <td class="px-6 py-4 whitespace-nowrap">
-                    {{forloop.counter}}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  {{ s.name}}
-                </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                &#x20A6;{{ s.price }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{ s.updated }}
-              </td>
-            </tr>
-            {% empty %}
-            <tr class="bg-white">
-              <td colspan="2" class="px-6 py-4 text-center text-orange-500">
-                No service found
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
+            <thead class="bg-orange-50">
+                <tr class="text-xs">
+                    <th class="px-3 py-2 text-left text-xs font-medium text-orange-500 uppercase tracking-wider">
+                        #
+                    </th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-orange-500 uppercase tracking-wider">
+                        SERVICE
+                    </th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-orange-500 uppercase tracking-wider">
+                        PRICE
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-orange-200">
+                {% for s in lab_test %}
+                <tr class="text-xs bg-orange-100 hover:bg-orange-200 transition-colors duration-300 text-left">
+                    <td class="px-3 py-2 whitespace-nowrap">
+                        {{forloop.counter}}
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                        {{ s.name}}
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                        &#x20A6;{{ s.price }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="bg-white">
+                    <td colspan="3" class="px-3 py-2 text-center text-orange-500">
+                        No service found
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="">
+                  <td colspan="10" class="p-1 text-center">        
+                    <div class="pagination flex justify-center">
+                      <span class="flex items-center">
+                        {% if lab_test.has_previous %}
+                        <a href="?active_tab=pathology&lab_test_page=1" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                        <a href="?active_tab=pathology&lab_test_page={{lab_test.previous_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                        {% endif %}
+                      </span>
+                      <span class="flex item-center"> 
+                        {% if lab_test.has_next %}
+                        <a href="?active_tab=pathology&lab_test_page={{lab_test.next_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                        <a href="?active_tab=pathology&lab_test_page={{lab_test.paginator.num_pages}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                        {% endif %}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
         </table>
-      </div>
-
+        
     </div>
   </div>
-{%endblock%}
+  <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const activeTab = "{{ active_tab }}";
+        openTab(activeTab);
+    });
+
+function openTab(tabName) {
+  // Hide all tab contents
+  const tabContents = document.querySelectorAll('.tab-content');
+  tabContents.forEach(content => {
+    content.classList.add('hidden');
+  });
+
+  // Show selected tab content
+  const activeContent = document.getElementById(`${tabName}-content`);
+  if (activeContent) {
+    activeContent.classList.remove('hidden');
+  }
+
+  // Update URL to maintain tab state
+  const currentUrl = new URL(window.location);
+  currentUrl.searchParams.set('active_tab', tabName);
+  window.history.replaceState({}, '', currentUrl);  
+}
+
+
+
+
+</script>
+  {%endblock%}

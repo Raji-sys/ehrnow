@@ -430,7 +430,7 @@ class AnaesthisiaChecklistForm(forms.ModelForm):
     )
     class Meta:
         model=AnaesthisiaChecklist
-        exclude=['doctor','updated','concurrent_medical_illness','comment','patient']
+        exclude=['theatre','doctor','updated','concurrent_medical_illness','comment','patient']
 
     def __init__(self, *args, **kwargs):
         super(AnaesthisiaChecklistForm, self).__init__(*args, **kwargs)

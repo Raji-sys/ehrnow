@@ -50,7 +50,7 @@ from django.urls import reverse_lazy
 from django.db import transaction
 from django.contrib import messages
 from django.shortcuts import redirect
-
+from results.models import GenericTest 
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -1161,12 +1161,30 @@ class AppointmentListView(ListView):
         return context
 
 
+from django.core.paginator import Paginator
 class HospitalServicesListView(TemplateView):
-    template_name='ehr/dashboard/services.html'
+    template_name = 'ehr/dashboard/services.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['medical_record'] = MedicalRecord.objects.all()
-        context['services'] = Services.objects.all()
+        
+        # Get active tab from the request
+        active_tab = self.request.GET.get('active_tab', 'services')
+        context['active_tab'] = active_tab
+
+        # Paginate each queryset
+        medical_record_paginator = Paginator(MedicalRecord.objects.all(), 10)
+        services_paginator = Paginator(Services.objects.all(), 10)
+        lab_test_paginator = Paginator(GenericTest.objects.all(), 10)
+
+        medical_record_page = self.request.GET.get('medical_record_page', 1)
+        services_page = self.request.GET.get('services_page', 1)
+        lab_test_page = self.request.GET.get('lab_test_page', 1)
+
+        context['medical_record'] = medical_record_paginator.get_page(medical_record_page)
+        context['services'] = services_paginator.get_page(services_page)
+        context['lab_test'] = lab_test_paginator.get_page(lab_test_page)
+
         return context
 
 
@@ -2296,6 +2314,9 @@ class AnaesthesiaChecklistCreateView(DoctorRequiredMixin,CreateView):
     def form_valid(self, form):
         form.instance.doctor = self.request.user
         patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        theatre_booking = TheatreBooking.objects.filter(patient=patient_data).order_by('-id').first()
+        if theatre_booking:
+            form.instance.theatre = theatre_booking.theatre
         form.instance.patient = patient_data
         self.object = form.save()
 
