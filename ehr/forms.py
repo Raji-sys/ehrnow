@@ -196,7 +196,7 @@ class AppointmentForm(forms.ModelForm):
 class ClinicalNoteForm(forms.ModelForm):
     class Meta:
         model = ClinicalNote
-        fields = ('note', 'diagnosis','needs_review','appointment',)
+        fields = ('note', 'diagnosis','needs_review',)
 
     def __init__(self, *args, **kwargs):
         super(ClinicalNoteForm, self).__init__(*args, **kwargs)
@@ -209,7 +209,7 @@ class ClinicalNoteForm(forms.ModelForm):
 class ClinicalNoteUpdateForm(forms.ModelForm):
     class Meta:
         model = ClinicalNote
-        fields = ('needs_review',)
+        fields = ('note','diagnosis','needs_review')
 
     def __init__(self, *args, **kwargs):
         super(ClinicalNoteUpdateForm, self).__init__(*args, **kwargs)

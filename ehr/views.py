@@ -1072,7 +1072,17 @@ class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        messages.success(self.request, 'Clinical note updated successfully.')
+        self.object=form.save()
+        visit=VisitRecord.objects.filter(patient__file_no=self.object.patient.file_no).order_by('-id').first()
+
+        if form.instance.needs_review:
+            visit.review=True
+            visit.save()
+            messages.success(self.request, 'Clinical note updated successfully, patient awaiting review')
+        else:
+            visit.close_visit()
+            messages.success(self.request, 'Clinical note updated successfully, patient consultation completed')
+        visit.save()
         return super().form_valid(form)
 
     def get_success_url(self):

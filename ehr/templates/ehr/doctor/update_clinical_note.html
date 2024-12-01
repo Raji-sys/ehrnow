@@ -1,8 +1,9 @@
 {%extends "base.html" %}
-{%load static%}
-{% block title %}CLINICAL UPDATE FORM{% endblock%}
+{% block title %}CLINICAL NOTE{% endblock%}
+{%block page_title%}<div class="flex justify-center">CLINICAL NOTE</div>{%endblock%}
 {% block content %}
-  <div class="uk-overlay rounded-3xl bg-white uk-position-center mt-6">
+<div class="">
+  <div class="mt-4 mx-2 md:mx-auto w-fit rounded-xl bg-white">
       <section class="text-center border-cyan-700 p-4 m-2">
           {% for message in messages %}
         <div class="mt-2">
@@ -16,28 +17,30 @@
       {% if form.errors %}
       <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
           <a href class="uk-alert-close font-bold" uk-close></a>
-          <p>{{form.errors}}</p> 
+          <p>{{form.errors}}</p>
       </div>
           {% endif %}
-          <form method="post" enctype="multipart/form-data" >
-            {% csrf_token %}
-            <div class="mb-2 uppercase text-cyan-900 px-10 text-center">
-              <div class="flex flex-col justify-center p-2 gap-4">
-      {% for field in form %}
-        <div class="">
-            <div class="text-center">
-                <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
+<form method="post" enctype="multipart/form-data"class="text-xs" >
+  {% csrf_token %}
+  <div class="mb-2 text-cyan-900 px-6">
+    {% for field in form %}
+    <div class="flex justify-center">
+     <label for="{{field.id_for_label}}" class="block m-1">{{ field.label_tag }}</label>
+     </div>
+<div class="flex justify-center gap-4">
+                    {% if field.name == 'note' %}
+                    <span class="mb-2">{{ field|safe }}</span>
+                    {% else %}
+                        <span class="">{{ field|safe }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
             </div>
-            <div class="">
-                {{ field }}
-            </div>
-            </div>
-            {%endfor%}
-        </div>
-  <div class="flex justify-center align-middle gap-4">
-    <input type="submit" value="UPDATE" class="focus:opacity-10 focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-bg-green-700 text-white py-4 px-8 rounded shadow-lg hover:shadow-xl">
+  <div class="flex justify-center align-middle p-2">
+    <input type="submit" value="save" class="uppercase focus:opacity-10 focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
   </div>
   </form>
   </div>
-  {% endblock %}
+  </div>
+{% endblock %}

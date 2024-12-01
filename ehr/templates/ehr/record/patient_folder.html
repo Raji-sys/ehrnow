@@ -2,19 +2,9 @@
 {%load static%}
 {% block title %}PATIENT FOLDER{% endblock%}
 {%block page_title%}
-<div class="bg-white shadow-sm rounded-lg p-2 mb-2 flex flex-col sm:flex-row justify-between items-center">
-  <div class="flex flex-col sm:flex-row items-center mb-4 sm:mb-0">
-      <h1 class="text-lg font-semibold text-gray-800 mb-2 sm:mb-0 sm:mr-4">{{patient.full_name}}</h1>
-      <div class="bg-emerald-100 rounded-full px-4 py-2 flex items-center">
-          <span class="text-emerald-700 font-medium mr-2">Wallet Balance:</span>
-          <span class="text-emerald-800 font-bold">₦{{ patient.wallet.balance|floatformat:2 }}</span>
+<div class="flex justify-center">
+      PATIENT VIRTUAL FILE
       </div>
-  </div>
-  <a href="{% url 'fund_wallet' patient.id %}" class="bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 px-4 rounded-full transition duration-300 ease-in-out flex items-center">
-      <i class="fas fa-wallet mr-2"></i>
-      Fund Wallet
-  </a>
-</div>
 {%endblock%}
 {% block content %}
 
@@ -30,39 +20,51 @@
       {% endfor %}
     </section>
 
-<div class="md:mx-20  rounded-xl shadow-black shadow-sm mx-2 text-xs ">
-  <div class="text-center rounded-xl md:p-8 p-2 bg-gray-50 uppercase max-h[40vh]">
-<!-- start -->
-<!-- top  -->
-<style>
-  .uk-subnav-pill > * > :first-child {
-      padding: 0.25rem 1rem;
-      background-color: transparent;
-      transition: background-color 0.3s, color 0.3s;
-  }
-  .uk-subnav-pill > * > a:hover {
-      background-color: rgba(6, 182, 212, 0.1);
-      color: rgb(21, 94, 117);
-  }
-</style>
-<ul class="text-xs text-cyan-700 uk-subnav uk-subnav-pill uppercase flex flex-wrap justify-center gap-2 border-b-2 border-cyan-200 mb-3  bg-gray-50" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
-  <li><a href="#" class="rounded-lg">BIODATA</a></li>
-  <li><a href="#" class="rounded-lg">VISIT</a></li>
-  <li><a href="#" class="rounded-lg">WALLET TRANSACTION HISTORY</a></li>
-  <li><a href="#" class="rounded-lg">PAYMENT HISTORY</a></li>
-  <li><a href="#" class="rounded-lg">VITAL SIGNS</a></li>
-  <li><a href="#" class="rounded-lg">CLINICAL NOTES</a></li>
-  <li><a href="#" class="rounded-lg">APPOINTMENTS</a></li>
-  <li><a href="#" class="rounded-lg">LAB REQUEST</a></li>
-  <li><a href="#" class="rounded-lg">LAB RESULT</a></li>
-  <li><a href="#" class="rounded-lg">PRESCRIPTION</a></li>
-  <li><a href="#" class="rounded-lg">RADIOLOGY</a></li>
-  <li><a href="#" class="rounded-lg">PHYSIO</a></li>
-  <li><a href="#" class="rounded-lg">ADMISSION</a></li>
-  <li><a href="#" class="rounded-lg">SURGERY BILL</a></li>
-  <li><a href="#" class="rounded-lg">WARD</a></li>
-  <li><a href="#" class="rounded-lg">THEATRE</a></li>
-  <li><a href="#" class="rounded-lg">ARCHIVE AND FILES</a></li>
+    <div class="md:mx-20  mx-2 text-xs text-center">
+      <div class="rounded-t-xl flex items-center gap-2 justify-between md:flex-row flex-col p-2 bg-gradient-to-r from-emerald-700 to-sky-700">
+        <div>
+          <h1 class="text-sm font-semibold text-gray-200 sm:mb-0 sm:mr-4 uppercase p-2">{{patient.full_name}} </h1>
+        </div>
+        <div class="flex items-center uppercase">
+          <span class="text-gray-200 font-bold mr-2">Wallet Balance: ₦{{ patient.wallet.balance|floatformat:2 }}</span>
+          <a href="{% url 'fund_wallet' patient.id %}" class="bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 px-4 rounded-full transition duration-300 ease-in-out flex items-center">
+            <i class="fas fa-wallet mr-2"></i>
+            Fund Wallet
+          </a>
+        </div>
+      </div>
+      <div class="text-center rounded-b-xl p-3 bg-gray-50 uppercase max-h[40vh]">
+    <!-- start -->
+    <!-- top  -->
+    <style>
+      .uk-subnav-pill > * > :first-child {
+          padding: 0.25rem 1rem;
+          background-color: transparent;
+          transition: background-color 0.3s, color 0.3s;
+      }
+      .uk-subnav-pill > * > a:hover {
+          background-color: rgba(6, 182, 212, 0.1);
+          color: rgb(21, 94, 117);
+      }
+    </style>
+    
+      <ul class="text-xs text-cyan-700 uppercase grid md:grid-cols-8 grid-cols-3 justify-center gap-2 border-b-2 border-cyan-200 bg-gray-50 text-center p-1"uk-switcher="animation: uk-animation-slide-bottom-medium">
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">BIODATA</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">VISIT</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">PAYMENT HISTORY</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">VITAL SIGNS</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">CLINICAL NOTES</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">APPOINTMENTS</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">LAB REQUEST</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">LAB RESULT</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">PRESCRIPTION</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">RADIOLOGY</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">PHYSIO</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">ADMISSION</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">SURGERY BILL</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">WARD</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">THEATRE</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">ARCHIVE AND FILES</a></li>
 </ul>
 <!-- top end  -->
     <div class="uk-switcher uk-margin ">
@@ -140,7 +142,7 @@
      </div>
     <!-- break -->
       <!-- break -->
-      <div> 
+      <!-- <div> 
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
@@ -177,7 +179,7 @@
             </tbody>
           </table>
         </div>
-     </div>
+     </div> -->
     <!-- break -->
       <!-- break -->
 
@@ -191,7 +193,8 @@
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">SERVICE</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">PRICE</th>
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">PAYMENT STATUS</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">STATUS</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">METHOD</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DATE</th>
               </tr>
             </thead>
@@ -210,6 +213,7 @@
                   <i class="fa-solid fa-thumbs-up fa-2xl"></i>
                 </td>
                 {% endif %}
+                <td class=" p-3 whitespace-nowrap">{{ p.payment_method }}</td>
                 <td class=" p-3 whitespace-nowrap">{{ p.updated }}</td>
               </tr>
               {%empty%}
@@ -292,7 +296,7 @@
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NOTE</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DIAGNOSIS</th>
                 <!-- <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">APPOINTMENT</th> -->
-                <!-- <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">UPDATE REVIEW STATUS</th>  -->
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">UPDATE/REVIEW</th> 
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DATE CONSULTED</th>
               </tr>
             </thead>
@@ -311,7 +315,7 @@
                 </td>
                 <td class=" p-3 whitespace-nowrap">{{ c.diagnosis|default_if_none:'' }}</td>
                 <!-- <td class=" p-3 whitespace-nowrap">{{ c.appointment|default_if_none:'' }}</td> -->
-                <!-- <td class=" p-3 whitespace-nowrap"><a href="{%url 'clinical_note_update' c.id%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-pen-fancy fa-2xl"></i></a> -->
+                <td class=" p-3 whitespace-nowrap"><a href="{%url 'clinical_note_update' c.id%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-pen-square fa-2xl"></i></a>
                   <td class=" p-3 whitespace-nowrap">{{ c.updated }}</td>
                 </td>
               </tr>
