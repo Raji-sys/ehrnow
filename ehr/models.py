@@ -237,15 +237,6 @@ class PatientData(models.Model):
 
     def get_absolute_url(self):
         return reverse('patient_details', args=[self.file_no])
-
-    def full_name(self):
-        name_parts=[
-            self.title or " ",
-            self.first_name or " ",
-            self.last_name or " ",
-            self.other_name or " ",
-        ]
-        return " ".join(filter(None,name_parts))
     
     def full_name(self):
         try:
@@ -260,9 +251,7 @@ class PatientData(models.Model):
             return f"Patient {self.file_no}"
 
     def __str__(self):
-        return self.full_name()
-    # def __str__(self):
-    #     return f"{self.file_no} - {self.full_name()}"
+        return str(self.full_name())
 
     def create_wallet(self):
         Wallet.objects.get_or_create(patient=self)
@@ -357,7 +346,7 @@ class VisitRecord(models.Model):
         self.save()
 
     def __str__(self):
-        return f"{self.patient}"
+        return self.patient
 
     class Meta:
         verbose_name_plural = 'visit record'
@@ -670,7 +659,7 @@ class WalletTransaction(models.Model):
     ]
 
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
     transaction_type = models.CharField(max_length=6, choices=TRANSACTION_TYPES)
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
