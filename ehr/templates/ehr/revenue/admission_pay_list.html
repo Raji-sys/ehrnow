@@ -23,7 +23,7 @@
       <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <div class="bg-sky-50 p-2">
           <span class="bg-sky-500 text-white text-xs font-medium px-2 py-1 rounded">
-            {{pay_total}} Pathology Transactions
+            {{pay_total}} Transactions
           </span>
           <span class="ml-2 text-sky-800 font-semibold text-sm">
             Total: ₦{{ total_worth|floatformat:2 }}
@@ -71,7 +71,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="8" class="p-3 text-center text-xs text-gray-700">No hematology transactions found</td>
+                <td colspan="8" class="p-3 text-center text-xs text-gray-700">No admission transactions found</td>
               </tr>
               {% endfor %}
               <tr class="">

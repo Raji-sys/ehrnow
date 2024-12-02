@@ -52,9 +52,9 @@
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">BIODATA</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">VISIT</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">PAYMENT HISTORY</a></li>
-        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">VITAL SIGNS</a></li>
-        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">CLINICAL NOTES</a></li>
-        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">APPOINTMENTS</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">VITAL SIGN</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">CLINICAL NOTE</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">APPOINTMENT</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">LAB REQUEST</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">LAB RESULT</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">PRESCRIPTION</a></li>
@@ -64,7 +64,7 @@
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">SURGERY BILL</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">WARD</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">THEATRE</a></li>
-        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">ARCHIVE AND FILES</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">FILES</a></li>
 </ul>
 <!-- top end  -->
     <div class="uk-switcher uk-margin ">
@@ -206,11 +206,11 @@
                 <td class=" p-3 whitespace-nowrap text-green-700">&#x20A6;{{ p.price }}</td>
                 {% if p.status == False %}
                 <td class=" p-3 whitespace-nowrap text-red-700">
-                  <i class="fa-solid fa-x text-red-700 fa-2xl"></i>
+                  <i class="fa-solid fa-xmark-circle text-red-700 fa-2xl"></i>
                 </td>
                 {% else %}
                 <td class=" p-3 whitespace-nowrap text-green-700">
-                  <i class="fa-solid fa-thumbs-up fa-2xl"></i>
+                  <i class="fa-solid fa-check-circle fa-2xl"></i>
                 </td>
                 {% endif %}
                 <td class=" p-3 whitespace-nowrap">{{ p.payment_method }}</td>
