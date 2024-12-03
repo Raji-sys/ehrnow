@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.reload();
                 }, 1500);
             } else {
-                showMessage(data.message || 'An error occurred', 'error');
+                showMessage(data.message || 'wrong action, TRY AGAIN', 'error');
             }
         })
         .catch(error => {
