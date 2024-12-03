@@ -5,6 +5,24 @@
 <div class="flex justify-center">SURGERY BILL</div>
 {% endblock %}
 {% block content %}
+<section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
+    {% for message in messages %}
+    <div class="">
+        {% if message.tags == 'warning' %}
+        <div class="bg-yellow-100 rounded-2xl text-xs p-2" uk-alert>
+            <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
+            <p class="text-yellow-700 uppercase">{{ message }}</p>
+            <a href="{% url 'book_for_surgery' patient.file_no %}" class="text-xs text-cyan-600 hover:text-green-700"><i class="fa-solid fa-calendar-days fa-2xl"></i></a>
+        </div>
+        {% else %}
+        <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
+            <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
+            <p class="text-green-700 uppercase">{{ message }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+  </section>
 <form method="post" class="bg-white shadow-xl rounded px-4 pt-3 pb-4 text-xs mx-auto w-fit mt-1">
     {% csrf_token %}
     {{ form.management_form }}

@@ -17,13 +17,13 @@
                 <strong>GENDER:</strong> {{ bill.patient.gender }}&nbsp;
                 <strong>AGE:</strong> {{ bill.patient.age }}</p>
                 <p class="text-xs border-b border-gray-400">
-                        <strong>DIAGNOSIS:</strong> {{ bill.theatre_booking.diagnosis }}&nbsp;
-                        <strong>OPERATION PLANNED:</strong> {{ bill.theatre_booking.operation_planned }}&nbsp;
+                        <strong>DIAGNOSIS:</strong> {{ bill.theatre_booking.diagnosis|default:'Not Available' }}&nbsp;
+                        <strong>OPERATION PLANNED:</strong> {{ bill.theatre_booking.operation_planned|default:'Not Specified' }}&nbsp;
                 </p>
                 <p class="text-xs border-b border-gray-400">
-                        <strong>TEAM:</strong> {{ bill.theatre_booking.team }}
-                        <strong>THEATRE:</strong> {{ bill.theatre_booking.theatre }}
-                        <strong>DATE:</strong> {{ bill.theatre_booking.date }}
+                        <strong>TEAM:</strong> {{ bill.theatre_booking.team|default:'N/A' }}
+                        <strong>THEATRE:</strong> {{ bill.theatre_booking.theatre|default:'N/A' }}
+                        <strong>DATE:</strong> {{ bill.theatre_booking.date|default:'N/A' }}
                 </p>
             <div class="flex justify-between">
                 <div>

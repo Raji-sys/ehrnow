@@ -542,7 +542,6 @@ class TheatreBooking(models.Model):
     date = models.DateField(null=True)
     blood_requirement=models.CharField(max_length=200,null=True,blank=True)
     note=QuillField(null=True, blank=True)
-    # payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE)
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):

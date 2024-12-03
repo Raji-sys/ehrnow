@@ -2028,7 +2028,23 @@ class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['formset'] = self.get_form()
-        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        context['patient'] = patient
+        
+        # Check for theatre booking before form submission
+        latest_theatre_booking = (
+            TheatreBooking.objects
+            .filter(patient=patient)
+            .order_by('-date', '-id')
+            .distinct()
+            .first()
+        )
+
+        if not latest_theatre_booking:
+            messages.warning(
+                self.request,
+                'No theatre booking found for this patient. Please add theatre booking details first. by click the calendar icon below'
+            )
         return context
 
     def form_valid(self, form):
@@ -2050,7 +2066,6 @@ class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
             .distinct()
             .first()
         )
-    
         bill = Bill.objects.create(
             user=self.request.user, 
             patient=patient,
@@ -2104,12 +2119,35 @@ class BillDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Add billing items to the context
         context['billing_items'] = Billing.objects.filter(bill=self.object).select_related('item', 'item__category')
+        
+        # Add theatre booking context with fallback to None
+        theatre_booking = getattr(self.object, 'theatre_booking', None)
+        context.update({
+            'theatre_booking': theatre_booking,
+            'diagnosis': theatre_booking.diagnosis if theatre_booking else None,
+            'operation_planned': theatre_booking.operation_planned if theatre_booking else None,
+            'team': theatre_booking.team if theatre_booking else None,
+            'theatre': theatre_booking.theatre if theatre_booking else None,
+            'booking_date': theatre_booking.date if theatre_booking else None
+        })
+        
         return context
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related('items__item__category')
+# class BillDetailView(DetailView):
+#     model = Bill
+#     template_name = 'ehr/revenue/bill_detail.html'
+#     context_object_name = 'bill'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['billing_items'] = Billing.objects.filter(bill=self.object).select_related('item', 'item__category')
+#         return context
+    
+#     def get_queryset(self):
+#         return super().get_queryset().prefetch_related('items__item__category')
 
 
 class BillingPayListView(ListView):
