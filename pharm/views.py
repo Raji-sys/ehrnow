@@ -115,6 +115,7 @@ class MainStoreDashboardView(LoginRequiredMixin, StoreGroupRequiredMixin,Templat
 
 
 @group_required('STORE')
+@transaction.atomic
 def create_drug(request):
     if request.method == 'POST':
         form = DrugForm(request.POST)
