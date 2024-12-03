@@ -280,15 +280,6 @@ class StaffDashboardView(TemplateView):
 class MedicalRecordView(RecordRequiredMixin,TemplateView):
     template_name = "ehr/dashboard/medical_record.html"
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class PatientMovementView(TemplateView):
-    template_name = "ehr/record/patient_moves.html"
- 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['clinics'] = Clinic.objects.all()
-        return context
-
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class AppointmentDashboardView(TemplateView):

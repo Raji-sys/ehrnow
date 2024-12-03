@@ -32,7 +32,6 @@ urlpatterns = [
     path('get-started/store', StoreView.as_view(), name='store'),
 
     # Record URLs
-    path('medical-record/patient-movement/', PatientMovementView.as_view(), name='patient_movement'),
     path('medical-record/appointment-dash/', AppointmentDashboardView.as_view(), name='appt_dashboard'),
 
     path('record/create-patient/', PatientCreateView.as_view(), name='new_patient'),
