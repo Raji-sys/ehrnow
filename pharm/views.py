@@ -1504,10 +1504,8 @@ def create_prescription(request, file_no ):
                             instance.unit = unit
                         else:
                             messages.error(request, f"No matching unit found for clinic {clinic.name}.")
-                            return redirect('pharm:error_page')
                     else:
                         messages.error(request, "No visit record or associated clinic found for this patient.")
-                        return redirect('pharm:error_page')
 
                     instance.patient = patient
                     instance.prescribed_by = request.user
