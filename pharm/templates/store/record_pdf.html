@@ -161,7 +161,7 @@ h1 {
                 {{r.updated_at|default_if_none:''}}
             </td>
             <td>
-                {{r.drug.generic_name|default_if_none:''|upper}}
+                {{r.drug.name|default_if_none:''|upper}}
             </td>
             <td>
                 {{r.drug.trade_name|default_if_none:''|upper}}
