@@ -59,10 +59,7 @@
                 PHONE
               </th>
               <th class="p-3  text-emerald-500 uppercase tracking-wider">
-                NEXT OF KIN
-              </th>
-              <th class="p-3  text-emerald-500 uppercase tracking-wider">
-                RELATIONSHIP
+                NEXT OF KIN INFORMATION
               </th>
               <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 DATE REGISTERED
@@ -92,11 +89,9 @@
               <td class="p-3 whitespace-nowrap">
                 {{ p.phone|default_if_none:'N/A' }}
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-3 whitespace-nowrap text-center">
                 {{ p.nok_name|default_if_none:'N/A' }} <br>
-                {{ p.nok_phone|default_if_none:'N/A' }}
-              </td>
-              <td class="p-3 whitespace-nowrap">
+                {{ p.nok_phone|default_if_none:'N/A' }} <br>
                 {{ p.nok_rel|default_if_none:'N/A' }}
               </td>
               <td class="p-3 whitespace-nowrap">

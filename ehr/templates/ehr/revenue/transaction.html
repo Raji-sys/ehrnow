@@ -20,11 +20,11 @@
     </a>
     <a href="?status=approved" 
        class="px-3 py-1 text-xs rounded {% if current_filter == 'approved' %}bg-sky-600 text-white{% else %}bg-sky-100 text-sky-600{% endif %}">
-      Approved ({{ approved_count }})
+      PAID ({{ approved_count }})
     </a>
     <a href="?status=pending" 
        class="px-3 py-1 text-xs rounded {% if current_filter == 'pending' %}bg-sky-600 text-white{% else %}bg-sky-100 text-sky-600{% endif %}">
-      Pending ({{ pending_count }})
+      UNPAID ({{ pending_count }})
     </a>
   </div>
 
