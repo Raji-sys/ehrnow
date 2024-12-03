@@ -58,6 +58,12 @@
               <th class="p-3  text-emerald-500 uppercase tracking-wider">
                 PHONE
               </th>
+              <th class="p-3  text-emerald-500 uppercase tracking-wider">
+                GENDER
+              </th>
+              <th class="p-3  text-emerald-500 uppercase tracking-wider">
+                AGE
+              </th>
               <th class="p-3  text-emerald-500 uppercase tracking-wider text-center">
                 NEXT OF KIN INFORMATION
               </th>
@@ -88,6 +94,12 @@
               </td>
               <td class="p-3 whitespace-nowrap">
                 {{ p.phone|default_if_none:'N/A' }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ p.gender|default_if_none:'N/A' }}
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ p.age|default_if_none:'N/A' }}
               </td>
               <td class="p-3 whitespace-nowrap text-center">
                 {{ p.nok_name|default_if_none:'N/A' }} <br>
