@@ -123,7 +123,7 @@ def create_drug(request):
             new_drug.added_by=request.user
             new_drug.save()
             messages.success(request,'drug added to inventory')
-            return redirect('list')
+            return redirect('pharm:list')
     else:
         form = DrugForm()
     return render(request, 'store/create_item.html', {'form': form})
@@ -376,7 +376,7 @@ def restock(request):
                 instance.restocked_by = request.user
                 instance.save()
             messages.success(request,'drugs restocked')
-            return redirect('restocked')
+            return redirect('pharm:restocked')
     else:
         formset = RestockFormSet(queryset=Restock.objects.none())
 
@@ -1090,7 +1090,7 @@ def dispenserecord(request, dispensary_id, patient_id):
                     next_url = request.GET.get('next')
                     if next_url:
                         return redirect(next_url)
-                    return redirect('unit_dispensary', pk=dispensary.unit.id)
+                    return redirect('pharm:unit_dispensary', pk=dispensary.unit.id)
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
     else:
@@ -1291,7 +1291,7 @@ def boxrecord(request, unit_id):
                             locker_inventory.quantity += instance.quantity
                             locker_inventory.save()
                     messages.success(request, 'DRUGS MOVED TO DAMAGE AND EXPIRY BOX')
-                    return redirect('unit_box', pk=unit_id)
+                    return redirect('pharm:unit_box', pk=unit_id)
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
     else:
@@ -1428,7 +1428,7 @@ def return_drug(request, unit_id):
                             unit_store.save()
 
                     messages.success(request, 'Drugs returned successfully')
-                    return redirect('return_drugs_list', unit_id=unit.id)
+                    return redirect('pharm:return_drugs_list', unit_id=unit.id)
 
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
@@ -1503,10 +1503,10 @@ def create_prescription(request, file_no ):
                             instance.unit = unit
                         else:
                             messages.error(request, f"No matching unit found for clinic {clinic.name}.")
-                            return redirect('error_page')
+                            return redirect('pharm:error_page')
                     else:
                         messages.error(request, "No visit record or associated clinic found for this patient.")
-                        return redirect('error_page')
+                        return redirect('pharm:error_page')
 
                     instance.patient = patient
                     instance.prescribed_by = request.user
