@@ -11,7 +11,7 @@ class DrugFilter(filters.FilterSet):
                                     widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
     dosage_form = filters.ChoiceFilter(label="DOSAGE FORM", field_name='dosage_form', choices=Drug.dosage, lookup_expr='iexact',
                                        widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
-    generic_name = filters.CharFilter(label="GENERIC NAME", field_name='name', lookup_expr='icontains')
+    name = filters.CharFilter(label="GENERIC NAME", field_name='name', lookup_expr='icontains')
     trade_name = filters.CharFilter(label="TRADE NAME", field_name='trade_name', lookup_expr='icontains')
     supplier = filters.CharFilter(label="SUPPLIER", field_name='supplier', lookup_expr='icontains')
     
@@ -41,7 +41,7 @@ class DrugFilter(filters.FilterSet):
 
 
 class RecordFilter(django_filters.FilterSet):
-    generic_name = django_filters.CharFilter(label="GENERIC NAME", field_name='drug__generic_name', lookup_expr='icontains')
+    name = django_filters.CharFilter(label="GENERIC NAME", field_name='drug__name', lookup_expr='icontains')
     trade_name = django_filters.CharFilter(label="TRADE NAME", field_name='drug__trade_name', lookup_expr='icontains')
     supplier = django_filters.CharFilter(label="SUPPLIER", field_name='drug__supplier', lookup_expr='icontains')
     unit_issued_to = django_filters.ModelChoiceFilter(
