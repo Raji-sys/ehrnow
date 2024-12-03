@@ -19,7 +19,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.views.generic import UpdateView, ListView, DetailView, TemplateView
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Case, When, Value, CharField, Q
@@ -462,7 +462,7 @@ def pdf_generator(buffer):
 
 @group_required('STORE')
 def drug_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')
     drugfilter = DrugFilter(request.GET, queryset=Drug.objects.all().order_by('-updated_at'))
     f = drugfilter.qs
@@ -482,7 +482,7 @@ def drug_pdf(request):
 
 @group_required('STORE')
 def record_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')
     f = RecordFilter(request.GET, queryset=Record.objects.all()).qs
     total_quantity = f.aggregate(models.Sum('quantity'))['quantity__sum'] or 0
@@ -520,7 +520,7 @@ def record_pdf(request):
 
 @group_required('STORE')
 def restock_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')
     f = RestockFilter(request.GET, queryset=Restock.objects.all()).qs
     total_quantity = f.aggregate(models.Sum('quantity'))['quantity__sum'] or 0
@@ -947,7 +947,7 @@ def unitissue_report(request, pk):
 
 @login_required
 def unitissue_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')
     f = UnitIssueFilter(request.GET, queryset=UnitIssueRecord.objects.all()).qs
     total_quantity = f.aggregate(models.Sum('quantity'))['quantity__sum'] or 0
@@ -1022,7 +1022,7 @@ def transfer_report(request, pk):
 
 @login_required
 def transfer_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')
     f = TransferFilter(request.GET, queryset=UnitIssueRecord.objects.all()).qs
     total_quantity = f.aggregate(models.Sum('quantity'))['quantity__sum'] or 0
@@ -1192,7 +1192,7 @@ def dispense_report(request, pk):
 
 @login_required
 def dispense_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')
     f = DispenseFilter(request.GET, queryset=DispenseRecord.objects.all()).qs
     total_quantity = f.aggregate(models.Sum('quantity'))['quantity__sum'] or 0
@@ -1370,7 +1370,7 @@ def box_report(request, pk):
 
 @login_required
 def box_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on_%d_%m_%Y_at_%I_%M%p.pdf')
     f = BoxFilter(request.GET, queryset=UnitIssueRecord.objects.all()).qs
     total_quantity = f.aggregate(models.Sum('quantity'))['quantity__sum'] or 0
