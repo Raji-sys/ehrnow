@@ -689,7 +689,7 @@ class PatientFolderView(DetailView):
         context['payments'] = patient.patient_payments.all().order_by('-updated')
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
         context['appointments'] = patient.appointments.all().order_by('-updated')
-        # context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
+        context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
         prescribed_drugs = patient.prescribed_drugs.all().order_by('-updated')
         context['prescribed_drugs'] = prescribed_drugs
         

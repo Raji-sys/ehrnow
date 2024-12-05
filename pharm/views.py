@@ -36,6 +36,8 @@ from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.views.generic.base import TemplateView
 from django.db.models import Q
 from ehr.models import Clinic
+from datetime import datetime
+from django.utils.dateparse import parse_date
 
 
 def group_required(group_name):
@@ -1570,7 +1572,8 @@ class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
 class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
     model = Prescription
     form_class = PrescriptionUpdateForm
-    template_name = 'dispensary/update_prescription.html'
+    # template_name = 'dispensary/update_prescription.html'
+    template_name = 'dispensary/prescription.html'
 
     def get_success_url(self):
         # Dynamically include the unit's primary key in the success URL
@@ -1621,8 +1624,6 @@ class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
         context['prescription'] = self.object  # Pass the prescription object to the template
         return context
 
-from datetime import datetime
-from django.utils.dateparse import parse_date
 
 @login_required
 def prescription_pdf(request, file_no, date):
@@ -1702,3 +1703,45 @@ class PharmPayListView(ListView):
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         return context  
+
+@login_required(login_url='login')
+def update_pres(request, file_no):
+    patient = get_object_or_404(PatientData, file_no=file_no)
+    
+    # Get existing undispensed prescriptions for this patient
+    prescription_instances = Prescription.objects.filter(patient=patient, is_dispensed=False)
+    
+    PrescriptionFormSet = modelformset_factory(
+        Prescription,
+        form=PrescriptionUpdateForm,
+        extra=0,  # No extra forms
+        can_delete=True,
+        exclude=['quantity', 'payment', 'is_dispensed']
+    )
+    
+    if request.method == 'POST':
+        formset = PrescriptionFormSet(request.POST, queryset=prescription_instances)
+        
+        if formset.is_valid():
+            instances = formset.save(commit=False)
+            deleted_instances = formset.deleted_objects
+            
+            # Delete marked instances
+            for obj in deleted_instances:
+                obj.delete()
+            
+            for instance in instances:
+                # Perform any necessary updates or validations
+                instance.save()
+            
+            messages.success(request, 'Prescriptions updated successfully.')
+            return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
+    else:
+        formset = PrescriptionFormSet(queryset=prescription_instances)
+    
+    context = {
+        'formset': formset,
+        'patient': patient,
+        'prescription_instances': prescription_instances,
+    }
+    return render(request, 'dispensary/prescription.html', context)

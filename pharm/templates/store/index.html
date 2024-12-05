@@ -3,33 +3,25 @@
 {% block title %}PHARMACY DASHBOARD{% endblock %}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PHARMACY DASHBOARD</div>{%endblock%}
 {% block content %}
-    <div class="md:mx-auto mx-2 w-fit bg-white rounded-xl shadow-2xl overflow-hidden mt-4">
-        <div class="p-4 md:p-10">
-          <div class="grid grid-cols-2 gap-4 text-sm uppercase font-medium p-6">
+    <div class="mx-auto w-fit bg-white rounded-xl shadow-2xl overflow-hidden mt-4 p-16">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm uppercase font-medium">
             <a href="{% url 'pharm:main_store' %}">
-              <div class="bg-sky-600 hover:bg-white text-white hover:text-sky-600 border border-transparent hover:border-sky-500 py-5 px-10 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
-                <i class="fas fa-warehouse mr-3 text-2xl hover:scale-110 transition-transform"></i>
-                <span>Main Store</span>
+              <div class="bg-sky-600 hover:bg-white text-white hover:text-sky-600 border border-transparent hover:border-sky-500 p-8 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
+                <span class="text-center"><i class="fas fa-warehouse text-2xl hover:scale-110 transition-transform"></i><br>Main Store</span>
               </div>
             </a>
             <a href="{% url 'pharm:store_list' %}">
-              <div class="bg-purple-600 hover:bg-white text-white hover:text-purple-600 border border-transparent hover:border-purple-500 py-5 px-10 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
-                <i class="fas fa-hospital mr-3 text-2xl hover:scale-110 transition-transform"></i>
-                <span>Pharmacy Units</span>
+              <div class="bg-purple-600 hover:bg-white text-white hover:text-purple-600 border border-transparent hover:border-purple-500 p-8 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
+                <span class="text-center"><i class="fas fa-hospital text-2xl hover:scale-110 transition-transform"></i><br>
+                  Pharmacy Units</span>
               </div>
             </a>
-          </div>
-          {% if request.user.is_superuser %}
-          <div class="mt-6">
             <a href="{% url 'pharm:worth' %}" class="group block">
-              <div class="bg-amber-600 hover:bg-white text-white hover:text-amber-600 border border-transparent hover:border-amber-500 py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center uppercase text-sm font-medium">
-                <span class="mr-3 text-2xl hover:scale-110 transition-transform">&#x20A6;</span>
-                <span>Pharmacy Value</span>
+              <div class="bg-amber-600 hover:bg-white text-white hover:text-amber-600 border border-transparent hover:border-amber-500 p-8 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out flex items-center justify-center uppercase text-sm font-medium">
+                <span class="text-center"><i class="fas fa-money-bill-wave text-2xl hover:scale-110 transition-transform"></i><br>Pharmacy Value</span>
               </div>
             </a>
           </div>
-          {% endif %}
-      </div>
     </div>
       
 {% endblock %}

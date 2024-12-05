@@ -65,6 +65,7 @@ urlpatterns=[
     path('pharmacy/prescription/prescribe/<str:file_no>/', views.create_prescription, name='add_prescription'),
     path('pharmacy/prescription/update/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
     path('patient-prescriptions-pdf/<str:file_no>/<str:date>/', views.prescription_pdf, name='prescription_pdf'),
+    path('pharmacy/prescription/update/<str:file_no>/', views.update_pres, name='update_pres'),
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
 
   # Dispensary
