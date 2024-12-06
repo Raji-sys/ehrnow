@@ -22,7 +22,7 @@
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
                     {% for bill in bills %}
-                    <tr class="border-b border-gray-200 hover:bg-blue-50 text-xs text-center uppercase">
+                    <tr class="border-b border-gray-200 hover:bg-blue-50 text-xs text-center uppercase bg-teal-50">
                         <td class="p-4 text-center whitespace-nowrap">
                         {{forloop.counter}}    
                         </td>
@@ -63,7 +63,7 @@
         </div>
         
         {% if is_paginated %}
-        <div class="flex justify-center mt-6">
+        <div class="flex justify-center mt-2">
             <nav class="inline-flex rounded-md shadow">
                 {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 rounded-l-md border border-blue-300 bg-white text-sm font-medium text-blue-500 hover:bg-blue-50">

@@ -62,7 +62,7 @@
                                         {{ transaction.created_at|date:"M d, Y" }}
                                 </td>
                                 <td class="p-3 border-b border-gray-200  ">
-                                        {{ transaction.description|truncatechars:30 }}
+                                        {{ transaction.description|truncatechars:30|default:'N/A' }}
                                 </td>
                             </tr>
                             {% endfor %}

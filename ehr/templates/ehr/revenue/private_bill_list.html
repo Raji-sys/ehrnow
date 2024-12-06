@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Private Bill List{% endblock %}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PRIVATE SURGERY BILL</div>{%endblock%}
+{% block title %}Quick Bill List{% endblock %}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>QUICK SURGERY BILL</div>{%endblock%}
 {% block content %}
 <div class="md:mx-20 mx-2">
     <div class="md:max-w-7xl md:mx-auto mx-2">
@@ -22,7 +22,7 @@
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
                     {% for bill in private_bills %}
-                    <tr class="border-b border-gray-200 hover:bg-blue-50 text-xs text-center uppercase">
+                    <tr class="border-b border-gray-200 hover:bg-blue-50 text-xs text-center uppercase bg-amber-50">
                         <td class="p-4 text-center whitespace-nowrap">
                         {{forloop.counter}}    
                         </td>
@@ -63,7 +63,7 @@
         </div>
         
         {% if is_paginated %}
-        <div class="flex justify-center mt-6">
+        <div class="flex justify-center mt-2">
             <nav class="inline-flex rounded-md shadow">
                 {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 rounded-l-md border border-blue-300 bg-white text-sm font-medium text-blue-500 hover:bg-blue-50">

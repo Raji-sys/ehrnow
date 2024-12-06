@@ -1345,7 +1345,7 @@ class PayUpdateView(UpdateView):
             paypoint.save()
             
             # Handle surgery bill specific logic
-            if paypoint.service.startswith("Surgery Bill:"):
+            if paypoint.service.startswith("Standard Bill:"):
                 wallet, created = Wallet.objects.get_or_create(patient=paypoint.patient)
                 wallet.add_funds(paypoint.price)
             
@@ -1385,72 +1385,6 @@ class PayUpdateView(UpdateView):
             })
         return super().form_invalid(form)
 
-# class PayUpdateView(UpdateView):
-#     model = Paypoint
-#     template_name = 'ehr/revenue/update_pay.html'
-#     form_class = PayUpdateForm
-
-#     def get_success_url(self):
-#         next_url = self.request.GET.get('next')
-#         if next_url:
-#             return next_url
-#         return reverse_lazy("pay_list")
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         paypoint = self.get_object()
-#         context['patient'] = paypoint.patient
-#         context['service'] = paypoint.service
-#         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-#         return context
-    
-#     @transaction.atomic
-#     def form_valid(self, form):
-#         form.instance.user = self.request.user
-#         paypoint = form.save(commit=False)
-#         try:
-#             paypoint.save()
-
-#             if paypoint.service.startswith("Surgery Bill:"):
-#                 wallet, created = Wallet.objects.get_or_create(patient=paypoint.patient)
-#                 wallet.add_funds(paypoint.price)
-
-#             messages.success(self.request, 'TRANSACTION SUCCESSFUL')
-
-#             if paypoint.status:
-#                 # Redirect to the receipt page
-#                 return redirect(f'/print-receipt/?id={paypoint.id}&next={self.get_success_url()}')
-
-#             return super().form_valid(form)
-#         except ValidationError as e:
-#             error_message = str(e)
-#             if "Insufficient funds" in error_message:
-#                 error_message = "Insufficient funds in the wallet. Please add funds and try again."
-#             form.add_error(None, error_message)
-#             return self.form_invalid(form)
-
-    # @transaction.atomic
-    # def form_valid(self, form):
-    #     form.instance.user = self.request.user
-    #     paypoint = form.save(commit=False)
-    #     try:
-    #         paypoint.save()
-
-    #         if paypoint.service.startswith("Surgery Bill:"):
-    #             wallet, created = Wallet.objects.get_or_create(patient=paypoint.patient)
-    #             wallet.add_funds(paypoint.price)
-
-    #         messages.success(self.request, 'TRANSACTION SUCCESSFUL')
-    #         if paypoint.status:  # Only redirect to print if payment was successful
-    #             return redirect(f'/print-receipt/?id={paypoint.id}')
-
-    #         return super().form_valid(form)
-    #     except ValidationError as e:
-    #         error_message = str(e)
-    #         if "Insufficient funds" in error_message:
-    #             error_message = "Insufficient funds in the wallet. Please add funds and try again."
-    #         form.add_error(None, error_message)
-    #         return self.form_invalid(form)
 
 class PayListView(ListView):
     model = Paypoint
@@ -2114,7 +2048,7 @@ class BillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView):
         paypoint = Paypoint.objects.create(
             user=self.request.user,
             patient=patient,
-            service=f"Surgery Bill:-{bill.id}",
+            service=f"Standard Bill:-{bill.id}",
             unit='surgery bill',
             price=total_amount,
             status=False
@@ -2189,7 +2123,7 @@ class BillingPayListView(ListView):
         return reverse_lazy("pay_list")
     
     def get_queryset(self):
-        queryset = super().get_queryset().filter(service__startswith='Surgery Bill:-').order_by('-updated')
+        queryset = super().get_queryset().filter(service__startswith='Standard Bill:-').order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -2495,8 +2429,8 @@ class PrivateBillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView
         paypoint = Paypoint.objects.create(
             user=self.request.user,
             patient=patient,
-            service=f"Private Surgery Bill:-{private_bill.id}",
-            unit='Private Surgery Bill',
+            service=f"Quick Surgery Bill:-{private_bill.id}",
+            unit='Quick Bill',
             price=total_amount,
             status=False
         )
@@ -2539,7 +2473,7 @@ class PrivateBillingPayListView(ListView):
 
         
     def get_queryset(self):
-        queryset = super().get_queryset().filter(service__startswith='Private Surgery Bill:-').order_by('-updated')
+        queryset = super().get_queryset().filter(service__startswith='Quick Surgery Bill:-').order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
