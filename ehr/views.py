@@ -1766,7 +1766,18 @@ class AdmissionPayListView(ListView):
         return reverse_lazy("pay_list")
     
     def get_queryset(self):
-        return Paypoint.objects.filter(admission_payment__isnull=False).order_by('-updated')
+        queryset = super().get_queryset().filter(admission_payment__isnull=False).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
+        return queryset    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1778,6 +1789,7 @@ class AdmissionPayListView(ListView):
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        context['query'] = self.request.GET.get('q', '')       
         return context  
      
 
@@ -2177,7 +2189,18 @@ class BillingPayListView(ListView):
         return reverse_lazy("pay_list")
     
     def get_queryset(self):
-        return Paypoint.objects.filter(service__startswith='Surgery Bill:-').order_by('-updated')
+        queryset = super().get_queryset().filter(service__startswith='Surgery Bill:-').order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
+        return queryset    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -2190,6 +2213,7 @@ class BillingPayListView(ListView):
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        context['query'] = self.request.GET.get('q', '')       
         return context
 
 
@@ -2515,7 +2539,18 @@ class PrivateBillingPayListView(ListView):
 
         
     def get_queryset(self):
-        return Paypoint.objects.filter(service__startswith='Private Surgery Bill:-').order_by('-updated')
+        queryset = super().get_queryset().filter(service__startswith='Private Surgery Bill:-').order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
+        return queryset    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -2527,6 +2562,8 @@ class PrivateBillingPayListView(ListView):
         context['pay_total'] = pay_total
         context['total_worth'] = total_worth
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        context['query'] = self.request.GET.get('q', '')       
+
         return context
 
 

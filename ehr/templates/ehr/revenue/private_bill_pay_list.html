@@ -3,15 +3,9 @@
 {%block title%}PRIVATE SURGERY BILLING TRANSACTION{%endblock%}
 {%block page_title%}<div class="flex justify-center p-2"> <div><a href="{%url 'billing_home' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PRIVATE SURGERY BILL TRANSACTION</div>
 <div class="">
-  <span class="shadow-sm shadow-blue-900 gap-4 bg-blue-600 text-white uppercase text-xs border-b-2 border-blue-900 py-2 px-4 rounded-xl mx-2 w-fit">
-    <span class=" shadow-white text-xs p-1 rounded-full bg-white text-blue-900">{{pay_total}}</span>&nbsp;transactions 
+  <span class="shadow-sm shadow-yellow-900 gap-4 bg-yellow-600 text-white uppercase text-xs border-b-2 border-yellow-900 py-2 px-4 rounded-xl mx-2 w-fit">
+    <span class=" shadow-white text-xs p-1 rounded-full bg-white text-yellow-900">{{pay_total}}</span>&nbsp;transactions 
    
-        {% if request.GET.urlencode %}
-        <span>
-            <a href="?" class=" p-2 focus:opacity-10  focus:border-blue-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
-                <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
-            </span>
-            {%endif%}
         </span>
       </div>
       <div class="">
@@ -26,7 +20,7 @@
 
 {%block content %}
 <div class="">
-    <section class="text-center border-blue-700 p-2 m-1">
+    <section class="text-center border-yellow-700 p-2 m-1">
         {% for message in messages %}
         <div class="mt-2 ">
           <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
@@ -38,38 +32,71 @@
             
       </section>
       
-    <div class=" mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-blue-50">
-      <div class="overflow-x-auto px-4 md:px-10 m-4 uppercase">
-        <table class="min-w-full divide-y divide-blue-200">
-          <thead class="bg-blue-50">
-            <tr class="text-xs">
-              <th class="p-3 text-left text-xs font-medium text-cyan-500 uppercase tracking-wider">
-                #
+      <div class=" mx-2 md:mx-20 rounded-b-xl p-4 shadow-black shadow-sm bg-white">
+        <div class="text-green-900">
+          <form method="get" class="text-xs text-center">
+            <div class="flex justify-center items-center gap-2">
+                <input 
+                    type="field.field.widget.input_type" 
+                    name="q" 
+                    placeholder="Search by: Name, File No, Phone No, or Title"
+                    class="md:text-center text-xs focus:outline-none w-1/3 md:w-1/2 text-yellow-950 p-2
+                           rounded shadow-sm shadow-yellow-900 border-yellow-600 border"
+                    value="{{query|default:''}}"
+                >
+                <button 
+                    type="submit" 
+                    class="shadow-sm shadow-yellow-700 h-full p-2 focus:opacity-10 uppercase 
+                           border-gray-500 focus:border-yellow-600 bg-yellow-600 text-white 
+                           rounded hover:border-yellow-700"
+                >
+                    <i class="fa-solid fa-search fa-xl"></i>
+                </button>
+                {% if request.GET.urlencode %}
+                    <a href="?" 
+                       class="py-4 px-2 focus:opacity-10 focus:border-cyan-600 bg-orange-500 
+                              text-white rounded shadow-sm hover:shadow-xl inline-flex 
+                              items-center justify-center"
+                    >
+                        <i class="fa-solid fa-rotate fa-xl text-cyan"></i>
+                    </a>              
+                {% endif %}
+            </div>
+        </form>
+      </div>
+        <div class="overflow-x-auto overflow-y-auto shadow-lg shadow-gray-400 mt-4 uppercase">
+          <table class="min-w-full divide-y divide-yellow-200">
+            <thead class="bg-white border rounded-lg">
+              <tr class="text-xs">
+                <th class="p-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                  #
+                </th>
+              <th class="p-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+              REVENUE OFFICER
               </th>
-              <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
-                REVENUE OFFICER
-                </th>
-                <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
-                  PATIENT
-                </th>
-                <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
-                  SERVICE
-                </th>
-                <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
-                  PRICE
-                </th>
-                <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
-                  TRANSACTION DATE 
-                </th>
-                <th class="p-3 text-left text-xs font-medium text-sky-500 uppercase tracking-wider">
-                  PROCESS
-                </th>
-
+              <th class="p-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                PATIENT
+              </th>
+              <th class="p-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                FILE NO
+              </th>
+              <th class="p-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                SERVICE
+              </th>
+              <th class="p-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                PRICE
+              </th>
+              <th class="p-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                TRANSACTION DATE 
+              </th>
+              <th class="p-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
+                PROCESS
+              </th>
             </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-blue-200">
+                    </thead>
+          <tbody class="bg-white divide-y divide-yellow-200">
             {% for p in private_bill_pays %}
-            <tr class="text-xs bg-blue-100 hover:bg-blue-200 transition-colors duration-300 uppercase">
+            <tr class="text-xs bg-yellow-200 hover:bg-yellow-300  transition-colors duration-300 uppercase">
               <td class="p-3 whitespace-nowrap">
                 {{forloop.counter}}
             </td>
@@ -77,9 +104,12 @@
               {{request.user}}
             </td>
           <td class="p-3 whitespace-nowrap">
-            <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+            <a href="{{p.patient.get_absolute_url}}">
             {{ p.patient}}
             </a>
+          </td>
+          <td class="p-3 whitespace-nowrap">
+            {{ p.patient.file_no }}
           </td>
           <td class="p-3 whitespace-nowrap">
             {{ p.service }}
@@ -90,28 +120,47 @@
             <td class="p-3 whitespace-nowrap">
             {{ p.updated }}
           </td>
-                        {% if p.status == False %}
-          <td class="p-3 whitespace-nowrap">
-            <span class="space-x-4">
-              <a href="#" class="text-blue-500 hover:text-blue-700 open-modal" data-id="{{ p.id }}">
-                  <i class="fa-solid fa-cash-register fa-xl text-rose-600"></i>
-                </a>
-              </span>
-            </td>
-            {% else %}
-            <td class="p-3 whitespace-nowrap text-green-700">
-              <i class="fa-solid fa-check-circle fa-xl text-green-600"></i>
-            </td>
-            {%endif%}
-            <td></td>
-          </tr>
+          {% if p.status == False %}
+        <td class="p-3 whitespace-nowrap">
+          <span class="space-x-4">
+            <a href="#" class="text-yellow-500 hover:text-yellow-700 open-modal" data-id="{{ p.id }}">
+                <i class="fa-solid fa-cash-register fa-xl text-rose-600"></i>
+              </a>
+            </span>
+          </td>
+          {% else %}
+          <td class="p-3 whitespace-nowrap text-green-700">
+            <i class="fa-solid fa-check-circle fa-xl text-green-600"></i>
+          </td>
+          {%endif%}
+          <td>
+          </td>
+        </tr>
             {% empty %}
             <tr class="bg-white">
-                <td colspan="2" class="p-3 text-center text-blue-500">
+                <td colspan="2" class="p-3 text-center text-yellow-500">
                     No transactions found
                 </td>
             </tr>
             {% endfor %}
+            <tr class="">
+              <td colspan="8" class="p-1 text-left">        
+          <div class="pagination flex justify-center">
+              <span class="flex items-center">
+                  {% if page_obj.has_previous %}
+                  <a href="?page=1" class="p-1 rounded-lg bg-yellow-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                  <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-yellow-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                  {% endif %}
+              </span>
+                  <span class="flex item-center"> 
+                      {% if page_obj.has_next %}
+                      <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-yellow-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                      <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-yellow-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                      {% endif %}
+                  </span>
+              </div>
+          </td>
+        </tr>
           </tbody>
         </table>
        
