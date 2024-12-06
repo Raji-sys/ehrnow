@@ -445,10 +445,26 @@ class PathologyPayListView(ListView):
     template_name = 'revenue/pathology_pay_list.html'
     paginate_by = 10
     context_object_name = 'pathology_pays'
+    
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy("pay_list")
+
 
     def get_queryset(self):
-        queryset = (Paypoint.objects.filter(lab_payment__isnull=False).select_related('patient', 'user').distinct().order_by('-updated'))
-                
+        queryset = super().get_queryset().filter(lab_payment__isnull=False).select_related('patient', 'user').distinct().order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -462,6 +478,9 @@ class PathologyPayListView(ListView):
             
         context['pathology_pay_total'] = pathology_pay_total
         context['pathology_total_worth'] = pathology_total_worth
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        context['query'] = self.request.GET.get('q', '')       
+
         return context
           
 class BaseTestView(LoginRequiredMixin):
