@@ -3,30 +3,30 @@
 {% block title %}user update{% endblock%}
 {%block page_title%}<div class="flex justify-center">UPDATE USER</div>{%endblock%}
 {% block content %}
-<div class="mt-4">
-  <div class="rounded-xl bg-white mx-auto w-fit p-8">
-      <section class="text-center border-cyan-700 p-4 m-2">
-          {% for message in messages %}
-        <div class="mt-2">
-             <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
-              <a href class="uk-alert-close font-bold" uk-close></a>
-              <p class="text-green-700 font-semibold">{{ message }}</p>
-              </div>
-        </div>
-        {% endfor %}
-      </section>
-      {% if form.errors %}
-      <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
-          <a href class="uk-alert-close font-bold" uk-close></a>
-          <p>{{form.errors}}</p>
+<section class="text-center border-cyan-700 p-4 m-2">
+  {% for message in messages %}
+    <div class="mt-2">
+      <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
+        <a href class="uk-alert-close font-bold" uk-close></a>
+        <p class="text-green-700 font-semibold">{{ message }}</p>
       </div>
-          {% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% if form.errors %}
+  <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
+    <a href class="uk-alert-close font-bold" uk-close></a>
+    <p>{{form.errors}}</p>
+  </div>
+  {% endif %}
+  <div class="mt-4">
+  <div class="rounded-xl bg-white mx-auto w-fit p-8">
 <form method="post" enctype="multipart/form-data" >
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
     {% for field in form %}
     <div class="flex justify-center">
-     <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
+     <label for="{{field.id_for_label}}" class="block text-xs">{{ field.label_tag }}</label>
      </div>
      <div class="flex justify-center mb-6">
      {{ field }}
@@ -35,9 +35,9 @@
   </div>
   <div class="gap-4 flex justify-center align-middle">
     <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
-    <a href="{{ object.profile.get_absolute_url }} " class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-    bg-rose-700 text-white p-4 rounded shadow-lg hover:shadow-xl">cancel</a>
+bg-green-700 text-white p-2 text-xs rounded shadow-lg hover:shadow-xl">
+    <a href="{%url 'stafflist' %}" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+    bg-rose-700 text-white p-2 text-xs rounded shadow-lg hover:shadow-xl">cancel</a>
   </div>
   </form>
   </div>

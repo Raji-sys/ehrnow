@@ -21,6 +21,12 @@ class DepartmentAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('name',)
 
+@admin.register(Unit)
+class UnitAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+    list_filter = ('name',)
+
 @admin.register(PatientData)
 class PatientDataAdmin(admin.ModelAdmin):
     list_display = ('title','last_name','first_name','other_name','gender','age','updated')

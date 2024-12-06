@@ -108,7 +108,7 @@ class Profile(models.Model):
     department = models.ForeignKey(Department, blank=True, max_length=300, null=True, on_delete=models.CASCADE)
     unit = models.ForeignKey(Unit, blank=True, max_length=300, null=True, on_delete=models.CASCADE)
     phone = models.CharField(max_length=300, null=True, blank=True, unique=True)
-    photo = models.ImageField(null=True, blank=True)
+    # photo = models.ImageField(null=True, blank=True)
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True, blank=True)
     dob = models.DateField('date of birth', null=True, blank=True)

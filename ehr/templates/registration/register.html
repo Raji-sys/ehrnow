@@ -25,7 +25,6 @@
     <form action="{% url 'register' %}" method="POST" class="text-xs">
       {% csrf_token %}
       <div class="mb-1 text-cyan-900 px-16 uppercase">
-        <p class="text-green-900 text-sm text-center border-b border-green-700">new staff information</p>
         <div class="flex justify-center">
           <label for="uname">username</label>
         </div>
@@ -100,17 +99,7 @@
             value="Register"
           />
         </div>
-        <div class="m-2 p-2 flex items-center border-t-2 border-cyan-800">
-          {% if request.user.is_authenticated == False %}
-          <div class="text-cyan-800 text-xs">
-            <a
-              class="border-b-2 border-blue-600 text-sm text-blue-800 ml-1"
-              href="{%url 'login' %}"
-              >login</a
-            >
-          </div>
-          {% endif %}
-        </div>
+
       </div>
     </form>
 </div>

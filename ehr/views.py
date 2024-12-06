@@ -148,7 +148,7 @@ class UserRegistrationView(CreateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse_lazy('get_started')
+        return reverse_lazy('stafflist')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -253,15 +253,28 @@ class StaffListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        profiles = super().get_queryset().order_by('-user_id')
-        staff_filter = StaffFilter(self.request.GET, queryset=profiles)
-        return staff_filter.qs
+        queryset = super().get_queryset().order_by('-user_id')
+        # Add search functionality
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(user__first_name__icontains=query) |
+                Q(user__last_name__icontains=query) |
+                Q(user__email__icontains=query)|
+                Q(phone__icontains=query)|
+                Q(unit__name__icontains=query)|
+                Q(department__name__icontains=query)
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         total_profiles = self.get_queryset().count()
-        context['staffFilter'] = StaffFilter(self.request.GET, queryset=self.get_queryset())
+        search_count = self.get_queryset().count()
+        context['search_count'] = search_count
         context['total_profiles'] = total_profiles
+        context['query'] = self.request.GET.get('q', '')
+
         return context
     
 class IndexView(TemplateView):

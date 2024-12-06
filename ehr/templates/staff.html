@@ -14,19 +14,19 @@
   {% endfor %}
 </section>
 <div class="">
-  <div class="md:mx-20 mx-2">
+  <div class="md:max-w-xl mx-2 md:mx-auto">
     <div class="bg-white rounded-xl shadow-black shadow-lg ">
-    <div class="p-8 md:p-4 text-center grid grid-cols-2 gap-2">
+    <div class="p-8  text-center grid md:grid-cols-2 gap-4">
       <div>
         <a href="{% url 'register' %}" class="block">
-          <div class=" hover:bg-white hover:text-gray-600 text-white bg-emerald-500 rounded-lg shadow-lg p-4 border-2 border-white transition duration-300">
+          <div class=" hover:bg-white hover:text-green-600 text-white bg-emerald-500 rounded-lg shadow-lg p-8 border-2 border-white transition duration-300">
             <div class="text-xs">REGISTER STAFF </div><i class="fa-solid fa-plus-circle fa-2x"></i><br>
           </div>
         </a>
       </div>
       <div>
         <a href="{% url 'stafflist' %}" class="block">
-          <div class="bg-blue-500 hover:bg-white text-white hover:text-gray-600 rounded-lg shadow-lg p-4 border-2 border-white transition duration-300">
+          <div class="bg-blue-500 hover:bg-white text-white hover:text-blue-600 rounded-lg shadow-lg p-8 border-2 border-white transition duration-300">
             <div class="text-xs uppercase">staff list</div><i class="fa-solid fa-list fa-2x"></i><br>
           </div>
         </a>
