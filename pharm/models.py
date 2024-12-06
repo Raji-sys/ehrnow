@@ -342,7 +342,7 @@ class Prescription(models.Model):
             return self.drug.cost_price * self.quantity
 
     def __str__(self):
-        return f"{self.patient}"
+        return f"{self.patient.file_no}"
     
     def can_be_dispensed(self):
         """Check if the prescription can be dispensed"""

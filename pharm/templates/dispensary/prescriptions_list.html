@@ -81,51 +81,52 @@
             {% for p in object_list %}
             <tr class="text-xs bg-amber-50 hover:bg-amber-200 transition-colors duration-300 text-left">
                 <td class="p-3 whitespace-nowrap">
-                    {{forloop.counter}}
+                    {{ forloop.counter }}
                 </td>
                 
                 <td class="p-3 whitespace-nowrap">
                     {{ p.patient.file_no|default_if_none:'' }}
                 </td>
                 <td class="p-3 whitespace-nowrap">
-                    <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
+                    <a href="{{ p.patient.get_absolute_url }}" class="text-blue-500 hover:text-blue-700">
                         {{ p.patient|default_if_none:'' }}
                     </a>
                 </td>
                 <td class="p-3 whitespace-nowrap">
-                        {% for drug in p.prescription_drugs.all %}
-                          <li class="text-left list-none text-green-700">{{ drug.drug.name }} {{drug.dosage}} ({{ drug.quantity }})</li>
-                        {% endfor %}
-                        </td>
+                    {% for drug in p.prescription_drugs.all %}
+                        <li class="text-left list-none text-green-700">{{ drug.drug.name }} - {{ drug.dosage }}</li>
+                    {% endfor %}
+                </td>
                 <td class="p-3 whitespace-nowrap">
                     {{ p.prescribed_date|default_if_none:'' }}
                 </td>
-                {% if not p.payment.status  %}
+                {% if not p.payment.status %}
                 <td class="p-3 whitespace-nowrap">
-                  <span class="space-x-4">
-                    <a href="#" class="text-blue-500 hover:text-blue-700 open-modal" data-id="{{ p.id }}">
-                        <i class="fa-solid fa-xmark-circle fa-xl text-rose-600"></i>
-                      </a>
+                    <span class="space-x-4">
+                        <a href="#" class="text-blue-500 hover:text-blue-700 open-modal" data-id="{{ p.id }}">
+                            <i class="fa-solid fa-xmark-circle fa-xl text-rose-600"></i>
+                        </a>
                     </span>
-                  </td>
-                  {% else %}
-                  <td class="p-3 whitespace-nowrap text-green-700">
+                </td>
+                {% else %}
+                <td class="p-3 whitespace-nowrap text-green-700">
                     <i class="fa-solid fa-check-circle fa-xl text-green-600"></i>
-                  </td>
-                  {%endif%}
-                {% if not p.payment.status  %}
+                </td>
+                {% endif %}
+                {% if not p.payment.status %}
                 <td class="p-3 whitespace-nowrap">
-                            <a href="{% url 'pharm:update_prescription' p.id %}" class="text-xs text-green-600 hover:text-green-700 uppercase">
-                                <i class="fa-solid fa-edit fa-xl"></i>
-                            </a>
+                    <a href="{% url 'pharm:update_prescription' p.id %}" class="text-xs text-green-600 hover:text-green-700 uppercase">
+                        <i class="fa-solid fa-edit fa-xl"></i>
+                    </a>
                 </td>
                 {% else %}
                 <td class="p-3 whitespace-nowrap text-blue-700">
-                    <a href="{% url 'pharm:update_prescription' p.id %}" class="text-xs text-blue-600 hover:text-blue-700 uppercase">
-                        <i class="fa-solid fa-edit fa-xl"></i>
-                    </a>                  </td>
-                  {%endif%}
-            </tr>
+                    <a href="{% url 'pharm:dispense' store.dispensary_locker.id p.patient.id %}?next={% url 'pharm:prescription_list' store.pk %}" class="text-xs text-blue-600 hover:text-blue-700 uppercase">
+                        <i class="fa-solid fa-prescription-bottle-medical fa-xl"></i>
+                    </a>
+                </td>
+                {% endif %}
+            </tr>        
             {% empty %}
             <tr class="bg-white">
                 <td colspan="9" class="p-3 text-center text-gray-700">

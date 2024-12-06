@@ -1701,9 +1701,8 @@ class PrescriptionListView(ListView):
         if store_pk is None:
             messages.error(self.request, "No store PK provided")
             return []
-        queryset = super().get_queryset().filter(unit_id=store_pk, prescription_drugs__isnull=False).order_by('-updated')
-        print(f"Store PK: {store_pk}")
-        print(f"Total prescriptions: {queryset.count()}")
+        queryset = super().get_queryset().filter(unit_id=store_pk, prescription_drugs__isnull=False).order_by('-updated').distinct()
+
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -1714,19 +1713,16 @@ class PrescriptionListView(ListView):
                 Q(patient__phone__icontains=query)|
                 Q(patient__title__icontains=query)
             )
-
         return queryset
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['store'] = get_object_or_404(Unit, pk=self.kwargs['store_pk'])
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-        context['query'] = self.request.GET.get('q', '')
-#       
+        context['query'] = self.request.GET.get('q', '')       
         return context
 
-
+from django.db import IntegrityError
 class PrescriptionCreateView(LoginRequiredMixin, CreateView):
     model = Prescription
     form_class = PrescriptionForm
@@ -1750,6 +1746,7 @@ class PrescriptionCreateView(LoginRequiredMixin, CreateView):
             messages.error(self.request, "No visit record or associated clinic found for this patient.")
         return prescription
 
+    @transaction.atomic
     def form_valid(self, form):
         prescription = form.save(commit=False)
         prescription.prescribed_by = self.request.user
@@ -1760,15 +1757,29 @@ class PrescriptionCreateView(LoginRequiredMixin, CreateView):
         selected_drugs = self.request.POST.getlist('selected_drugs')
         selected_doses = self.request.POST.getlist('selected_doses')
 
+        # Track unique drug combinations
+        unique_drugs = set()
+
         for i, drug_id in enumerate(selected_drugs):
-            PrescriptionDrug.objects.create(
-                prescription=prescription,
-                drug_id=drug_id,
-                dosage=selected_doses[i]
-            )
+            try:
+                # Check if this drug is already added to prevent duplicates
+                if drug_id in unique_drugs:
+                    messages.warning(self.request, f'Drug {drug_id} was already added and skipped.')
+                    continue
+
+                PrescriptionDrug.objects.create(
+                    prescription=prescription,
+                    drug_id=drug_id,
+                    dosage=selected_doses[i]
+                )
+                unique_drugs.add(drug_id)
+
+            except IntegrityError:
+                messages.warning(self.request, f'Drug {drug_id} could not be added due to a duplicate.')
+                continue
+
         messages.success(self.request, 'Prescription added successfully')
-        return super().form_valid(form)
-        
+        return super().form_valid(form)        
     def get_success_url(self):
         return self.object.patient.get_absolute_url()
 

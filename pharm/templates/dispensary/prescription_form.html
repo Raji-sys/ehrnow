@@ -2,13 +2,24 @@
 {% block title %}DRUG PRESCRIPTION{% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase">DRUG PRESCRIPTION FORM</div>{%endblock%}
 {% block content %}
-
+{% if messages %}
+<section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
+    {% for message in messages %}
+    <div class="">
+      <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
+        <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
+        <p class="text-green-700  uppercase">{{ message }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+{%endif%}
 <div class="flex justify-center mx-2 p-4 mb-4">
     <div class="justify-center items-center uppercase text-xs shadow-sm shadow-green-500 mx-auto rounded-2xl bg-green-50 mt-2 p-6">
         <form method="post" class="flex flex-col space-y-4">
             {% csrf_token %}
             
-            <div class="flex flex-col space-y-2">
+            <div class="flex flex-row space-y-2 gap-2">
                 {{ form.categories }}
                 <select id="drug-selector" name="drug" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
                     <option value="">Select a drug</option>
@@ -55,7 +66,7 @@ $(document).ready(function() {
             <input type="hidden" name="selected_drugs" value="${drugId}" data-category="${categoryId}">
             <input type="hidden" name="selected_doses" value="${dose}">
             ${categoryName}: ${drugName} - Dose: ${dose}
-            <button type="button" class="remove-drug">Remove</button>
+            <button type="button" class="remove-drug bg-red-500 text-white p-2 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-red-600 hover:bg-white hover:text-red-600 hover:border-2 hover:border-red-600 text-xs">X</button>
         </div>
     `;
 
