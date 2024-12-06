@@ -684,6 +684,8 @@ class PatientFolderView(DetailView):
         context['test_items'] = (patient.test_items.all()
                         .prefetch_related('items__payment')
                         .order_by('-updated'))
+        visit_record = VisitRecord.objects.filter(patient=patient).latest('created')
+        context['visit_record'] = visit_record
         context['visits'] = patient.visit_record.all().order_by('-updated')
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
         context['payments'] = patient.patient_payments.all().order_by('-updated')

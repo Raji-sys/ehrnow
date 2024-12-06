@@ -3,7 +3,7 @@
 {%block title%}PRESCRIPTION LIST{%endblock%}
 {%block page_title%}<div class="flex justify-center items-end "><a href="{%url 'pharm:unit_dashboard' store.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{store.name}} PRESCRIPTION DIRECTORY</div>{%endblock%}
 
-{%block content %}
+{% block content %}
 <div class="">
     <section class="text-center border-cyan-700 p-1 m-1">
         {% for message in messages %}
@@ -50,41 +50,36 @@
         </div>
     </div>
       <div class="overflow-x-auto p-4 uppercase">
+        {% if object_list %}
         <table class="min-w-full divide-y divide-amber-200">
-          <thead class="bg-amber-50">
+          <thead class="bg-amber-300">
             <tr class="text-xs">
-                <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+                <th class=" p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     #
                 </th>
-              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 FILE NUMBER
               </th>
-              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 NAME
               </th>
-              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
-                PRESCRIBED DRUG
+              <th class=" p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                PRESCRIPTION INFO
               </th>
-              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
-                DOSE
-              </th>
-              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
-                PRICE
-              </th>
-              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 DATE
               </th>
-              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
-                Status
+              <th class=" p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                payment
               </th>
-              <th class=" p-3 text-left text-xs font-medium text-green-500 uppercase tracking-wider">
+              <th class=" p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 costing
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-amber-200">
-            {% for p in prescriptions %}
-            <tr class="text-xs bg-amber-100 hover:bg-amber-200 transition-colors duration-300">
+            {% for p in object_list %}
+            <tr class="text-xs bg-amber-50 hover:bg-amber-200 transition-colors duration-300 text-left">
                 <td class="p-3 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
@@ -98,46 +93,42 @@
                     </a>
                 </td>
                 <td class="p-3 whitespace-nowrap">
-                    {{ p.drug|default_if_none:'' }}
-                </td>
-                <td class="p-3 whitespace-nowrap">
-                    {{ p.dose|default_if_none:'' }}
-                </td>
-                <td class="p-3 whitespace-nowrap">
-                    {% if p.payment %}
-                        {{ p.payment.price|default_if_none:'' }}
-                    {% else %}
-                        Not priced
-                    {% endif %}
-                </td>
+                        {% for drug in p.prescription_drugs.all %}
+                          <li class="text-left list-none text-green-700">{{ drug.drug.name }} {{drug.dosage}} ({{ drug.quantity }})</li>
+                        {% endfor %}
+                        </td>
                 <td class="p-3 whitespace-nowrap">
                     {{ p.prescribed_date|default_if_none:'' }}
                 </td>
-                
+                {% if not p.payment.status  %}
                 <td class="p-3 whitespace-nowrap">
-                    <div class="rounded-xl p-2">
-                        {% if p.payment and p.payment.status %}
-                            <a href="{% url 'pharm:dispense' store.dispensary_locker.id p.patient.id %}?next={% url 'pharm:prescription_list' store.pk %}" class="text-xs text-green-600 hover:text-green-700 uppercase">
-                                <i class="fa-solid fa-check-circle fa-2xl"></i>
-                            </a>
-                        {% elif p.payment %}
-                            <i class="fa-solid fa-money-bill text-yellow-500 fa-2xl" title="Payment pending"></i>
-                        {% else %}
-                            <i class="fa-solid fa-xmark-square text-red-700 fa-2xl" title="Not priced"></i>
-                        {% endif %}
-                    </div>
-                </td>
-                <td class="text-center p-3 whitespace-nowrap">
-                    <span class="space-x-4">
-                        <a href="{% url 'pharm:update_prescription' p.id %}" class="text-blue-500 hover:text-blue-700">
-                            <i class="fa-solid fa-edit fa-2xl"></i>
-                        </a>
+                  <span class="space-x-4">
+                    <a href="#" class="text-blue-500 hover:text-blue-700 open-modal" data-id="{{ p.id }}">
+                        <i class="fa-solid fa-xmark-circle fa-xl text-rose-600"></i>
+                      </a>
                     </span>
+                  </td>
+                  {% else %}
+                  <td class="p-3 whitespace-nowrap text-green-700">
+                    <i class="fa-solid fa-check-circle fa-xl text-green-600"></i>
+                  </td>
+                  {%endif%}
+                {% if not p.payment.status  %}
+                <td class="p-3 whitespace-nowrap">
+                            <a href="{% url 'pharm:update_prescription' p.id %}" class="text-xs text-green-600 hover:text-green-700 uppercase">
+                                <i class="fa-solid fa-edit fa-xl"></i>
+                            </a>
                 </td>
+                {% else %}
+                <td class="p-3 whitespace-nowrap text-blue-700">
+                    <a href="{% url 'pharm:update_prescription' p.id %}" class="text-xs text-blue-600 hover:text-blue-700 uppercase">
+                        <i class="fa-solid fa-edit fa-xl"></i>
+                    </a>                  </td>
+                  {%endif%}
             </tr>
             {% empty %}
             <tr class="bg-white">
-                <td colspan="9" class="p-3 text-center text-green-500">
+                <td colspan="9" class="p-3 text-center text-gray-700">
                     No prescriptions found
                 </td>
             </tr>
@@ -162,7 +153,10 @@
         </tr>
           </tbody>
         </table>
+        {% else %}
+        <p>No prescriptions found.</p>
+      {% endif %}
       </div>
     </div>
   </div>
-{%endblock%}
+{% endblock %}

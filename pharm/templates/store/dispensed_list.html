@@ -117,8 +117,8 @@
                     {% for d in dispensed_list %}
                     <tr class="hover:bg-emerald-50 transition-colors duration-300 text-xs text-center">
                         <td class="p-3 whitespace-nowrap text-gray-700">{{forloop.counter}}</td>
-                        <td class="p-3 whitespace-nowrap text-gray-700">{{ d.patient_info|default_if_none:'' }}</td>
-                        <td class="p-3 whitespace-nowrap text-gray-700">{{ d.drug.generic_name|default_if_none:'' }}</td>
+                        <td class="p-3 whitespace-nowrap text-gray-700">{{ d.patient|default_if_none:'' }}</td>
+                        <td class="p-3 whitespace-nowrap text-gray-700">{{ d.drug.name|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap text-gray-700">{{ d.drug.trade_name|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap text-gray-700">{{ d.drug.strength|default_if_none:'' }}</td>
                         <td class="p-3 whitespace-nowrap text-gray-700">{{ d.drug.cost_price|default_if_none:'' }}</td>

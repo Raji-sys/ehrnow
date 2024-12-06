@@ -342,7 +342,7 @@ class Prescription(models.Model):
             return self.drug.cost_price * self.quantity
 
     def __str__(self):
-        return self.patient.file_no
+        return f"{self.patient}"
     
     def can_be_dispensed(self):
         """Check if the prescription can be dispensed"""
@@ -404,3 +404,36 @@ class ReturnedDrugs(models.Model):
 
     class Meta:
         verbose_name_plural = 'returned drugs record'
+
+from django.db import models
+from django.core.validators import MinValueValidator
+
+class PrescriptionDrug(models.Model):
+    prescription = models.ForeignKey(
+        'Prescription', 
+        on_delete=models.CASCADE, 
+        related_name='prescription_drugs'
+    )
+    drug = models.ForeignKey(
+        'Drug', 
+        on_delete=models.CASCADE, 
+        related_name='prescription_instances'
+    )
+    quantity = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Quantity of the specific drug"
+    )
+    dosage = models.CharField(
+        max_length=200, 
+        blank=True, 
+        null=True,
+        help_text="Specific dosage instructions"
+    )
+
+    class Meta:
+        unique_together = ('prescription', 'drug')
+        verbose_name_plural = "Prescription Drugs"
+
+    def __str__(self):
+        return f"{self.drug.name} - {self.quantity}"

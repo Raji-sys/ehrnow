@@ -32,7 +32,7 @@
                         {% for record in unit_issue_records %}
                         <tr class="{% cycle 'bg-white' 'bg-purple-50' %} text-sm text-center">
                             <td class="px-4 py-2 text-gray-700">{{ record.unit.name }}</td>
-                            <td class="px-4 py-2 font-medium text-gray-800">{{ record.drug.generic_name }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ record.drug.name }}</td>
                             <td class="px-4 py-2 font-medium text-gray-800">{{ record.quantity }}</td>
                             <td class="px-4 py-2 text-gray-700">{{ record.date_issued }}</td>
                             <td class="px-4 py-2 text-gray-700">

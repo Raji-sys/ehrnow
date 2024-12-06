@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}DRUG PRESCRIPTION{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase">DRUG PRESCRIPTION FORM</div>{%endblock%}
+{% block content %}
+
+<div class="flex justify-center mx-2 p-4 mb-4">
+    <div class="justify-center items-center uppercase text-xs shadow-sm shadow-green-500 mx-auto rounded-2xl bg-green-50 mt-2 p-6">
+        <form method="post" class="flex flex-col space-y-4">
+            {% csrf_token %}
+            
+            <div class="flex flex-col space-y-2">
+                {{ form.categories }}
+                <select id="drug-selector" name="drug" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+                    <option value="">Select a drug</option>
+                </select>
+                <input type="text" id="dose-input" name="dose" placeholder="Dose" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+                <button type="button" id="add-drug-btn" class="bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600">Add Drug</button>
+            </div>
+
+            <div id="selected-drugs-container" class="flex flex-col space-y-2 p-6"></div>
+
+            <button type="submit" class="bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600">prescribe</button>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#category-selector').change(function() {
+        var categoryId = $(this).val();
+        $.ajax({
+            url: "{% url 'pharm:get_drugs_by_category' 0 %}".replace('0', categoryId),
+            success: function(data) {
+                var $drugSelector = $('#drug-selector');
+                $drugSelector.empty();
+                $drugSelector.append('<option value="">Select a drug</option>');
+                data.drugs.forEach(function(drug) {
+                    $drugSelector.append(
+                        `<option value="${drug.id}">${drug.name}</option>`
+                    );
+                });
+            }
+        });
+    });
+
+    $('#add-drug-btn').click(function() {
+    var categoryName = $('#category-selector option:selected').text();
+    var drugName = $('#drug-selector option:selected').text();
+    var categoryId = $('#category-selector').val();
+    var drugId = $('#drug-selector').val();
+    var dose = $('#dose-input').val();
+
+    var drugHtml = `
+        <div>
+            <input type="hidden" name="selected_drugs" value="${drugId}" data-category="${categoryId}">
+            <input type="hidden" name="selected_doses" value="${dose}">
+            ${categoryName}: ${drugName} - Dose: ${dose}
+            <button type="button" class="remove-drug">Remove</button>
+        </div>
+    `;
+
+    $('#selected-drugs-container').append(drugHtml);
+});
+
+$(document).on('click', '.remove-drug', function() {
+    $(this).parent().find('input[name="selected_drugs"]').remove();
+    $(this).parent().find('input[name="selected_doses"]').remove();
+    $(this).parent().remove();
+});
+
+});
+</script>
+{% endblock %}

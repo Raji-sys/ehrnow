@@ -23,14 +23,19 @@
                 {% endif %}
                 <div class="grid grid-cols-1 gap-2 md:grid-cols-3 border-t p-2">
                     {% for field in form.visible_fields %}
-                    <div class="space-y-1">
-                        <label class="block text-xs font-medium text-gray-700">{{ field.label }}</label>
+                    <div class="space-y-1"> 
+                        <label class="block text-xs font-medium text-emerald-700">{{ field.label }}</label>
                         <div class="mt-1">
                             {{ field }}
                         </div>
                         {% if field.errors %}
-                        <p class="text-red-600 text-xs mt-1">{{ field.errors }}</p>
+                        <p class="text-red-600 text-xs mt-1">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </p>
                         {% endif %}
+                        
                     </div>
                     {% endfor %}
                 </div>

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Undispensed Prescription Batches</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="row mb-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Process Selected Batches</button>
+            </div>
+        </div>
+        
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all"></th>
+                    <th>Patient</th>
+                    <th>File No</th>
+                    <th>Drugs</th>
+                    <th>Unit</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient, prescriptions in prescription_batches.items %}
+                <tr>
+                    <td>
+                        <input 
+                            type="checkbox" 
+                            name="selected_patients" 
+                            value="{{ patient.id }}"
+                        >
+                    </td>
+                    <td>{{ patient.full_name }}</td>
+                    <td>{{ patient.file_no }}</td>
+                    <td>
+                        {% for prescription in prescriptions %}
+                            {{ prescription.drug.name }} ({{ prescription.quantity }}){% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ prescriptions.0.unit.name }}</td>
+                    <td>
+                        <a href="{% url 'pharm:update_formset' file_no=patient.file_no %}" 
+                           class="btn btn-sm btn-warning">
+                            Update Batch
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<script>
+document.getElementById('select-all').addEventListener('change', function() {
+    var checkboxes = document.querySelectorAll('input[name="selected_patients"]');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.checked = document.getElementById('select-all').checked;
+    });
+});
+</script>
+{% endblock %}

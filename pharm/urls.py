@@ -61,13 +61,18 @@ urlpatterns=[
 
     
     # Prescription
-    path('pharmacy/prescription/prescribed/<int:store_pk>/', views.PrescriptionListView.as_view(), name='prescription_list'),
-    path('pharmacy/prescription/prescribe/<str:file_no>/', views.create_prescription, name='add_prescription'),
-    path('pharmacy/prescription/update/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
+    # path('pharmacy/prescription/prescribed/<int:store_pk>/', views.PrescriptionListView.as_view(), name='prescription_list'),
+    # path('pharmacy/prescription/prescribe/<str:file_no>/', views.create_prescription, name='add_prescription'),
+    # path('pharmacy/prescription/update/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
     path('patient-prescriptions-pdf/<str:file_no>/<str:date>/', views.prescription_pdf, name='prescription_pdf'),
-    path('pharmacy/prescription/update/<str:file_no>/', views.update_pres, name='update_pres'),
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
+    path('prescriptions/<int:store_pk>/', views.PrescriptionListView.as_view(), name='prescription_list'),
+    path('add_prescription/<str:file_no>/', views.PrescriptionCreateView.as_view(), name='add_prescription'),
+    path('add_prescription/<str:file_no>/<int:store_pk>/', 
+     views.PrescriptionCreateView.as_view(), 
+     name='add_prescription'),
 
+    path('update_prescription/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
   # Dispensary
     path('unit/dispensary/<int:dispensary_id>/dispense/<int:patient_id>', views.dispenserecord, name='dispense'),
     path('unit/dispensary/dispensed-list/<int:pk>/', DispenseRecordView.as_view(), name='dispensed_list'),
@@ -76,7 +81,6 @@ urlpatterns=[
     path('unit/<int:unit_id>/return-drug/', return_drug, name='return_drug'),
     path('returned-drugs/<int:unit_id>/', ReturnedDrugsListView.as_view(), name='return_drugs_list'),
     path('return-report/<int:unit_id>/', views.return_report, name='return_report'),
-          # path('sales-stats/', SalesStatsView.as_view(), name='sales_stats'),
     path('get_drugs_by_category/<int:category_id>/', views.get_drugs_by_category, name='get_drugs_by_category'),
     path('',include('django.contrib.auth.urls')),  
 ]

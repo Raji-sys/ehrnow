@@ -1909,32 +1909,40 @@
       <div> 
         <div>    
         <!-- Dispensary Form Section -->
-        <a href="{% url 'pharm:add_prescription' patient.file_no %}" class="text-xs text-green-600 hover:text-green-700">
+        <a href="{% url 'pharm:add_prescription' patient.file_no visit_record.clinic.id %}" class="text-xs text-green-600 hover:text-green-700">
           <i class="fa-solid fa-prescription fa-2xl"></i>
-      </a>
-      </div>     
+        </a>
+                      </div>     
         <div class="overflow-x-auto max-h-[50vh] p-2">
-          <table class="min-w-full divide-y divide-cyan-200 mb-4">
-            <thead class="bg-cyan-50">
-              <tr class="text-xs">
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">Prescription Sheet</th>
+<table class="min-w-full divide-y divide-cyan-200 mb-4">
+    <thead class="bg-cyan-50">
+        <tr class="text-xs">
+            <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">drug</th>
+            <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">dose</th>
+            <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">qty</th>
+        </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-cyan-200">
+        {% for p in prescribed_drugs %}
+        <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+            <td colspan="4" class=" p-3 whitespace-nowrap">{{ forloop.counter }} {{ p.updated }}</td>
+            {% for pd in p.prescription_drugs.all %}
+            <tr class="text-xs">
+              <td class=" p-3 whitespace-nowrap">{{ pd.drug.name }}</td>
+              <td class=" p-3 whitespace-nowrap">{{ pd.dosage }}</td>
+              <td class=" p-3 whitespace-nowrap">{{ pd.quantity }}</td>
+              <td></td>
               </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-cyan-200">
-              {% for date in prescription_dates %}
-              <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                <td class=" p-3 whitespace-nowrap"><a href="{% url 'pharm:prescription_pdf' patient.file_no date|date:'Y-m-d' %}" class="btn btn-sm btn-primary">
-                 <i class="fas fa-file-pdf"></i> Prescriptions for {{ date|date:"d-M-Y" }} VISIT</a></td>
-              </tr>
-              {%empty%}
-              <div class="p-2 text-xs">
-                  <p>No prescriptions yet</p>
-              </div>
-         {% endfor %}
-                       </tbody>
-          </table>
+              {% endfor %}
+        </tr>
+        {%empty%}
+        <div class="p-2 text-xs">
+            <p>No prescriptions yet</p>
+        </div>
+        {% endfor %}
+    </tbody>
+</table>
+
         </div>
      </div>
     <!-- break -->

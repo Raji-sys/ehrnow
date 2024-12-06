@@ -46,7 +46,7 @@
                         {% for r in page_obj %}
                         <tr class="{% cycle 'bg-white' 'bg-rose-50' %} text-xs text-center">
                             <td class="px-4 py-2 text-gray-700">{{ forloop.counter }}</td>
-                            <td class="px-4 py-2 font-medium text-gray-800">{{ r.drug.generic_name|default_if_none:'N/A'|upper }}</td>
+                            <td class="px-4 py-2 font-medium text-gray-800">{{ r.drug.name|default_if_none:'N/A'|upper }}</td>
                             <td class="px-4 py-2 font-medium text-gray-800">{{ r.drug.strength|default_if_none:'N/A'|upper }}</td>
                             <td class="px-4 py-2 font-medium text-gray-800">{{ r.drug.trade_name|default_if_none:'N/A'|upper }}</td>
                             <td class="px-4 py-2 font-medium text-gray-800">{{ r.quantity|default_if_none:''|upper }}</td>

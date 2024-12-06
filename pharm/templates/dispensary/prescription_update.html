@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}PRESCRIPTION COSTING{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase">DRUG PRESCRIPTION COSTING</div>{%endblock%}
+{% block content %}
+<div class="flex justify-center mx-2 p-4 mb-4">
+  <div class="justify-center items-center uppercase text-xs shadow-sm shadow-green-500 mx-auto rounded-2xl bg-green-50 mt-2 p-6">
+    <form method="post" class="flex flex-col space-y-4">
+      {% csrf_token %}
+      
+      <div id="selected-drugs-container" class="flex flex-col space-y-2">
+        {% for drug in object.prescription_drugs.all %}
+          <div class="p-2">
+            <select name="drug_{{ forloop.counter0 }}" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+              {% for drug_option in drugs %}
+                <option value="{{ drug_option.id }}" {% if drug_option.id == drug.drug.id %}selected{% endif %}>{{ drug_option.name }}</option>
+              {% endfor %}
+            </select>
+            <input type="number" name="quantity_{{ forloop.counter0 }}" value="{{ drug.quantity }}" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+            <input type="text" name="dose_{{ forloop.counter0 }}" value="{{ drug.dosage }}" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+            <button type="button" class="remove-drug bg-red-500 text-white p-2 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-red-600 hover:bg-white hover:text-red-600 hover:border-2 hover:border-red-600 text-xs"><i class="fa fa-solid fa-xmark-circle fa-lg"></i></button>
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="text-xs bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600">cost</button>
+    </form>
+
+    <table class="w-full text-left m-2">
+      <tr class="uppercase text-xs text-green-500">
+        <th>Drug</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+      {% for pd in prescription_drugs %}
+        <tr>
+          <td>{{ pd.drug.name }}</td>
+          <td>{{ pd.quantity }}</td>
+          <td>{{ pd.drug.cost_price }}</td>
+          <td>{{ pd.total_price }}</td>
+        </tr>
+      {% endfor %}
+      <tr class="uppercase text-xs text-green-500">
+        <td colspan="3">Total:</td>
+        <td>{{ total_price }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#category-selector').change(function() {
+        var categoryId = $(this).val();
+        $.ajax({
+            url: "{% url 'pharm:get_drugs_by_category' 0 %}".replace('0', categoryId),
+            success: function(data) {
+                var $drugSelector = $('#drug-selector');
+                $drugSelector.empty();
+                $drugSelector.append('<option value="">Select a drug</option>');
+                data.drugs.forEach(function(drug) {
+                    $drugSelector.append(
+                        `<option value="${drug.id}">${drug.name}</option>`
+                    );
+                });
+            }
+        });
+    });
+
+    $('#add-drug-btn').click(function() {
+    var categoryName = $('#category-selector option:selected').text();
+    var drugName = $('#drug-selector option:selected').text();
+    var categoryId = $('#category-selector').val();
+    var drugId = $('#drug-selector').val();
+    var quantity = $('#quantity-input').val();
+    var dose = $('#dose-input').val();
+
+    var drugHtml = `
+        <div>
+            <input type="hidden" name="selected_drugs" value="${drugId}" data-category="${categoryId}">
+            <input type="hidden" name="selected_quantities" value="${quantity}">
+            <input type="hidden" name="selected_doses" value="${dose}">
+            ${categoryName}: ${drugName} (Quantity: ${quantity}) - Dose: ${dose}
+            <button type="button" class="remove-drug">Remove</button>
+        </div>
+    `;
+
+    $('#selected-drugs-container').append(drugHtml);
+});
+
+$(document).on('click', '.remove-drug', function() {
+    $(this).parent().find('input[name="selected_drugs"]').remove();
+    $(this).parent().find('input[name="selected_quantities"]').remove();
+    $(this).parent().find('input[name="selected_doses"]').remove();
+    $(this).parent().remove();
+});
+
+});
+
+</script>
+{% endblock %}

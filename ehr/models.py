@@ -346,7 +346,7 @@ class VisitRecord(models.Model):
         self.save()
 
     def __str__(self):
-        return self.patient
+        return f"{self.patient}"
 
     class Meta:
         verbose_name_plural = 'visit record'

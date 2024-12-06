@@ -156,7 +156,7 @@ h1 {
                 {{r.patient_info|default_if_none:''|upper}}<br>
             </td>    
             <td>
-                {{r.drug.generic_name|default_if_none:''|upper}} <br>
+                {{r.drug.name|default_if_none:''|upper}} <br>
                <small class="t">{{r.drug.strength|default_if_none:''|upper}}</small> 
             </td>
             <td>

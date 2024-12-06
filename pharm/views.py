@@ -17,7 +17,7 @@ from django.http import JsonResponse
 from django.forms import modelformset_factory, BaseModelFormSet
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.views.generic import UpdateView, ListView, DetailView, TemplateView
+from django.views.generic import UpdateView, ListView, DetailView, TemplateView, CreateView
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -38,7 +38,7 @@ from django.db.models import Q
 from ehr.models import Clinic
 from datetime import datetime
 from django.utils.dateparse import parse_date
-
+from django.urls import reverse
 
 def group_required(group_name):
     def decorator(view_func):
@@ -179,7 +179,7 @@ class DrugUpdateView(LoginRequiredMixin, StoreGroupRequiredMixin, UpdateView):
     model=Drug
     form_class=DrugForm
     template_name='store/create_item.html'
-    success_url=reverse_lazy('list')
+    success_url=reverse_lazy('pharm:list')
   
     def form_valid(self, form):
         form.instance.added_by = self.request.user
@@ -327,7 +327,6 @@ def get_drugs_by_category(request, category_id):
     drugs = Drug.objects.filter(category_id=category_id)
     drug_list = [{'id': drug.id, 'name': drug.name} for drug in drugs]
     return JsonResponse({'drugs': drug_list})
-
 
 @group_required('STORE')
 def record_report(request):
@@ -1074,7 +1073,7 @@ class UnitIssueRecordListView(LoginRequiredMixin,UnitGroupRequiredMixin,ListView
 def dispenserecord(request, dispensary_id, patient_id):
     dispensary = get_object_or_404(DispensaryLocker, id=dispensary_id)
     patient = get_object_or_404(PatientData, id=patient_id)
-    DispensaryFormSet = modelformset_factory(DispenseRecord, form=DispenseRecordForm, extra=2)
+    DispensaryFormSet = modelformset_factory(DispenseRecord, form=DispenseRecordForm, extra=5)
     
     if request.method == 'POST':
         formset = DispensaryFormSet(request.POST, queryset=DispenseRecord.objects.none(), 
@@ -1513,16 +1512,6 @@ def create_prescription(request, file_no ):
                     instance.prescribed_by = request.user
                     instance.is_dispensed = False
                     instance.save()
-    # if request.method == 'POST':
-    #     formset = PrescriptionFormSet(request.POST)
-    #     if formset.is_valid():
-    #         instances = formset.save(commit=False)
-    #         for instance in instances:
-    #             if instance.drug:  # Only save if a drug is selected
-    #                 instance.patient = patient
-    #                 instance.prescribed_by = request.user
-    #                 instance.is_dispensed = False
-    #                 instance.save()
             messages.success(request, 'Drugs prescribed. Patient should visit the pharmacy for costing.')
             return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
     else:
@@ -1536,93 +1525,92 @@ def create_prescription(request, file_no ):
     return render(request, 'dispensary/prescription.html', context)
 
 
-class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
-    model = Prescription
-    template_name = 'dispensary/prescription_list.html'
-    context_object_name = 'prescriptions'
-    paginate_by = 10
+# class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
+#     model = Prescription
+#     template_name = 'dispensary/prescription_list.html'
+#     context_object_name = 'prescriptions'
+#     paginate_by = 10
 
 
-    def get_queryset(self):
-        store_pk = self.kwargs.get('store_pk')
-        queryset = super().get_queryset().filter(
-            is_dispensed=False,
-            unit_id=store_pk,
-        ).order_by('-prescribed_date')
+#     def get_queryset(self):
+#         store_pk = self.kwargs.get('store_pk')
+#         queryset = super().get_queryset().filter(
+#             is_dispensed=False,
+#             unit_id=store_pk,
+#         ).order_by('-prescribed_date')
         
-        query = self.request.GET.get('q')
-        if query:
-            queryset = queryset.filter(
-                Q(patient__first_name__icontains=query) |
-                Q(patient__last_name__icontains=query) |
-                Q(patient__other_name__icontains=query) |
-                Q(patient__file_no__icontains=query)|
-                Q(patient__phone__icontains=query)|
-                Q(patient__title__icontains=query)
-            )
-        return queryset
+#         query = self.request.GET.get('q')
+#         if query:
+#             queryset = queryset.filter(
+#                 Q(patient__first_name__icontains=query) |
+#                 Q(patient__last_name__icontains=query) |
+#                 Q(patient__other_name__icontains=query) |
+#                 Q(patient__file_no__icontains=query)|
+#                 Q(patient__phone__icontains=query)|
+#                 Q(patient__title__icontains=query)
+#             )
+#         return queryset
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['store'] = get_object_or_404(Unit, pk=self.kwargs['store_pk'])
-        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
-        context['query'] = self.request.GET.get('q', '')
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['store'] = get_object_or_404(Unit, pk=self.kwargs['store_pk'])
+#         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+#         context['query'] = self.request.GET.get('q', '')
+#         return context
 
-class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
-    model = Prescription
-    form_class = PrescriptionUpdateForm
-    # template_name = 'dispensary/update_prescription.html'
-    template_name = 'dispensary/prescription.html'
+# class PrescriptionUpdateView(LoginRequiredMixin, UpdateView):
+#     model = Prescription
+#     form_class = PrescriptionUpdateForm
+#     template_name = 'dispensary/update_prescription.html'
 
-    def get_success_url(self):
-        # Dynamically include the unit's primary key in the success URL
-        prescription = self.object
-        if prescription.unit:
-            return reverse_lazy('pharm:prescription_list', kwargs={'store_pk': prescription.unit.pk})
-        else:
-            messages.error(self.request, "Prescription update failed due to missing unit.")
-            return reverse_lazy('pharm:index')  # Fallback route
+#     def get_success_url(self):
+#         # Dynamically include the unit's primary key in the success URL
+#         prescription = self.object
+#         if prescription.unit:
+#             return reverse_lazy('pharm:prescription_list', kwargs={'store_pk': prescription.unit.pk})
+#         else:
+#             messages.error(self.request, "Prescription update failed due to missing unit.")
+#             return reverse_lazy('pharm:index')  # Fallback route
 
-    def form_valid(self, form):
-        prescription = form.save(commit=False)
+#     def form_valid(self, form):
+#         prescription = form.save(commit=False)
 
-        # Ensure the prescription is linked to the correct unit based on the clinic
-        visit_record = VisitRecord.objects.filter(patient=prescription.patient).order_by('-created').first()
-        if visit_record and visit_record.clinic:
-            clinic = visit_record.clinic
-            unit_name = clinic.name  # Assume unit follows the clinic naming convention
-            unit = Unit.objects.filter(name__icontains=unit_name).first()
-            if unit:
-                prescription.unit = unit
-            else:
-                messages.error(self.request, f"No matching unit found for clinic {clinic.name}.")
-                return self.form_invalid(form)
-        else:
-            messages.error(self.request, "No visit record or associated clinic found for this patient.")
-            return self.form_invalid(form)
+#         # Ensure the prescription is linked to the correct unit based on the clinic
+#         visit_record = VisitRecord.objects.filter(patient=prescription.patient).order_by('-created').first()
+#         if visit_record and visit_record.clinic:
+#             clinic = visit_record.clinic
+#             unit_name = clinic.name  # Assume unit follows the clinic naming convention
+#             unit = Unit.objects.filter(name__icontains=unit_name).first()
+#             if unit:
+#                 prescription.unit = unit
+#             else:
+#                 messages.error(self.request, f"No matching unit found for clinic {clinic.name}.")
+#                 return self.form_invalid(form)
+#         else:
+#             messages.error(self.request, "No visit record or associated clinic found for this patient.")
+#             return self.form_invalid(form)
 
-        # Handle payment creation if required
-        if prescription.quantity and prescription.drug:
-            if not prescription.payment:
-                paypoint = Paypoint.objects.create(
-                    user=self.request.user,
-                    patient=prescription.patient,
-                    service=prescription.drug.name,
-                    unit='pharmacy',
-                    price=prescription.drug.cost_price * prescription.quantity,
-                    status=False
-                )
-                prescription.payment = paypoint
+#         # Handle payment creation if required
+#         if prescription.quantity and prescription.drug:
+#             if not prescription.payment:
+#                 paypoint = Paypoint.objects.create(
+#                     user=self.request.user,
+#                     patient=prescription.patient,
+#                     service=prescription.drug.name,
+#                     unit='pharmacy',
+#                     price=prescription.drug.cost_price * prescription.quantity,
+#                     status=False
+#                 )
+#                 prescription.payment = paypoint
 
-        prescription.save()
-        messages.success(self.request, 'Prescription updated successfully.')
-        return super().form_valid(form)
+#         prescription.save()
+#         messages.success(self.request, 'Prescription updated successfully.')
+#         return super().form_valid(form)
  
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['prescription'] = self.object  # Pass the prescription object to the template
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['prescription'] = self.object  # Pass the prescription object to the template
+#         return context
 
 
 @login_required
@@ -1704,44 +1692,148 @@ class PharmPayListView(ListView):
         context['total_worth'] = total_worth
         return context  
 
-@login_required(login_url='login')
-def update_pres(request, file_no):
-    patient = get_object_or_404(PatientData, file_no=file_no)
-    
-    # Get existing undispensed prescriptions for this patient
-    prescription_instances = Prescription.objects.filter(patient=patient, is_dispensed=False)
-    
-    PrescriptionFormSet = modelformset_factory(
-        Prescription,
-        form=PrescriptionUpdateForm,
-        extra=0,  # No extra forms
-        can_delete=True,
-        exclude=['quantity', 'payment', 'is_dispensed']
-    )
-    
-    if request.method == 'POST':
-        formset = PrescriptionFormSet(request.POST, queryset=prescription_instances)
+class PrescriptionListView(ListView):
+    model = Prescription
+    template_name = 'dispensary/prescriptions_list.html'
+    paginate_by = 10
+    def get_queryset(self):
+        store_pk = self.kwargs.get('store_pk')
+        if store_pk is None:
+            messages.error(self.request, "No store PK provided")
+            return []
+        queryset = super().get_queryset().filter(unit_id=store_pk, prescription_drugs__isnull=False).order_by('-updated')
+        print(f"Store PK: {store_pk}")
+        print(f"Total prescriptions: {queryset.count()}")
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
+
+        return queryset
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['store'] = get_object_or_404(Unit, pk=self.kwargs['store_pk'])
+        context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
+        context['query'] = self.request.GET.get('q', '')
+#       
+        return context
+
+
+class PrescriptionCreateView(LoginRequiredMixin, CreateView):
+    model = Prescription
+    form_class = PrescriptionForm
+    template_name = 'dispensary/prescription_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.patient = get_object_or_404(PatientData, file_no=kwargs['file_no'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def set_unit(self, prescription):
+        latest_visit_record = VisitRecord.objects.filter(patient=self.patient).last()
+        if latest_visit_record and latest_visit_record.clinic:
+            clinic = latest_visit_record.clinic
+            unit_name = clinic.name  # Assume unit follows the clinic naming convention
+            unit = Unit.objects.filter(name__icontains=unit_name).first()
+            if unit:
+                prescription.unit = unit
+            else:
+                messages.error(self.request, f"No matching unit found for clinic {clinic.name}.")
+        else:
+            messages.error(self.request, "No visit record or associated clinic found for this patient.")
+        return prescription
+
+    def form_valid(self, form):
+        prescription = form.save(commit=False)
+        prescription.prescribed_by = self.request.user
+        prescription.patient = self.patient
+        prescription = self.set_unit(prescription)
+        prescription.save()
+
+        selected_drugs = self.request.POST.getlist('selected_drugs')
+        selected_doses = self.request.POST.getlist('selected_doses')
+
+        for i, drug_id in enumerate(selected_drugs):
+            PrescriptionDrug.objects.create(
+                prescription=prescription,
+                drug_id=drug_id,
+                dosage=selected_doses[i]
+            )
+        messages.success(self.request, 'Prescription added successfully')
+        return super().form_valid(form)
         
-        if formset.is_valid():
-            instances = formset.save(commit=False)
-            deleted_instances = formset.deleted_objects
-            
-            # Delete marked instances
-            for obj in deleted_instances:
-                obj.delete()
-            
-            for instance in instances:
-                # Perform any necessary updates or validations
-                instance.save()
-            
-            messages.success(request, 'Prescriptions updated successfully.')
-            return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
-    else:
-        formset = PrescriptionFormSet(queryset=prescription_instances)
-    
-    context = {
-        'formset': formset,
-        'patient': patient,
-        'prescription_instances': prescription_instances,
-    }
-    return render(request, 'dispensary/prescription.html', context)
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
+
+
+class PrescriptionUpdateView(UpdateView):
+    model = Prescription
+    form_class = PrescriptionForm
+    template_name = 'dispensary/prescription_update.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['drugs'] = Drug.objects.all()
+        
+        # Calculate total price for each prescription drug
+        prescription_drugs = self.object.prescription_drugs.all()
+        prescription_drugs_with_total_price = []
+        for pd in prescription_drugs:
+            pd.total_price = pd.drug.cost_price * pd.quantity
+            prescription_drugs_with_total_price.append(pd)
+        context['prescription_drugs'] = prescription_drugs_with_total_price
+
+        # Calculate total price for all prescription drugs
+        total_price = 0
+        for pd in prescription_drugs:
+            total_price += pd.drug.cost_price * pd.quantity
+        context['total_price'] = total_price
+
+        return context
+
+    def form_valid(self, form):
+        prescription = form.save(commit=False)
+        prescription.prescribed_by = self.request.user
+        prescription.save()
+
+        # Update prescription drugs
+        for i, drug in enumerate(prescription.prescription_drugs.all()):
+            drug_id = self.request.POST.get(f'drug_{i}')
+            quantity = self.request.POST.get(f'quantity_{i}')
+            dose = self.request.POST.get(f'dose_{i}')
+
+            pd = PrescriptionDrug.objects.get(prescription=prescription, drug_id=drug.drug.id)
+            pd.drug_id = drug_id
+            pd.quantity = quantity
+            pd.dosage = dose
+            pd.save()
+
+        # Calculate total price
+        total_price = 0
+        for pd in prescription.prescription_drugs.all():
+            total_price += pd.drug.cost_price * pd.quantity
+
+        # Create paypoint
+        paypoint = Paypoint.objects.create(
+            user=self.request.user,
+            patient=prescription.patient,
+            service='drug payment',
+            unit='pharmacy',
+            price=total_price,
+            status=False
+        )
+        # Update prescription payment
+        prescription.payment = paypoint
+        prescription.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # Assuming you want to redirect to the list view for the current unit/store
+        return reverse('pharm:prescription_list', kwargs={'store_pk': self.object.unit.pk})

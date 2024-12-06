@@ -22,10 +22,7 @@ class DrugForm(forms.ModelForm):
 class RecordForm(forms.ModelForm):
     class Meta:
         model = Record
-        fields = ['category', 'drug', 'unit_issued_to', 'quantity', 'date_issued']
-        widgets = {
-            'date_issued': forms.DateInput(attrs={'type': 'date'})
-        }
+        fields = ['category', 'drug', 'unit_issued_to', 'quantity']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -82,6 +79,7 @@ class UnitIssueRecordForm(forms.ModelForm):
     class Meta:
         model = UnitIssueRecord
         fields = ['unit', 'category', 'drug', 'quantity', 'issued_to']
+        # fields = ['unit', 'category', 'drug', 'quantity', 'issued_to']
         # widgets = {
         #     'date_issued': forms.DateInput(attrs={'type': 'date'}),
         # }
@@ -185,10 +183,8 @@ class BoxRecordForm(forms.ModelForm):
 class DispensaryIssueRecordForm(forms.ModelForm):
     class Meta:
         model = UnitIssueRecord
+
         fields = ['unit', 'category', 'drug', 'quantity', 'issued_to_locker']
-        widgets = {
-            'date_issued': forms.DateInput(attrs={'type': 'date'}),
-        }
 
     def __init__(self, *args, **kwargs):
         self.issuing_unit = kwargs.pop('issuing_unit', None)
@@ -327,40 +323,56 @@ class DispenseForm(forms.Form):
     )
 
 
+# class PrescriptionForm(forms.ModelForm):
+#     class Meta:
+#         model = Prescription
+#         fields = ['category', 'drug', 'dose']
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})
+#         for field in self.fields.values():
+#             field.required = False
+#             field.widget.attrs.update({
+#                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+#             })
+
+#     def clean(self):
+#         cleaned_data = super().clean()
+#         quantity = cleaned_data.get('quantity')
+#         drug = cleaned_data.get('drug')
+        
+#         if drug and quantity:
+#             if not drug.has_sufficient_stock(quantity):
+#                 raise ValidationError(
+#                     f"Insufficient stock. Available: {drug.current_balance}, Requested: {quantity}"
+#                 )
+        
+#         return cleaned_data
+
+
+# class PrescriptionUpdateForm(forms.ModelForm):
+#     class Meta:
+#         model = Prescription
+#         fields = ['category','drug','quantity','dose']
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         for field in self.fields.values():
+#             field.required=False    
+#             field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400  p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
 class PrescriptionForm(forms.ModelForm):
+    categories = forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        widget=forms.Select(attrs={'id': 'category-selector'})
+    )
+
     class Meta:
         model = Prescription
-        fields = ['category', 'drug', 'dose']
+        fields = ['dose']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})
         for field in self.fields.values():
-            field.required = False
-            field.widget.attrs.update({
-                'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'
-            })
-
-    def clean(self):
-        cleaned_data = super().clean()
-        quantity = cleaned_data.get('quantity')
-        drug = cleaned_data.get('drug')
-        
-        if drug and quantity:
-            if not drug.has_sufficient_stock(quantity):
-                raise ValidationError(
-                    f"Insufficient stock. Available: {drug.current_balance}, Requested: {quantity}"
-                )
-        
-        return cleaned_data
-
-
-class PrescriptionUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Prescription
-        fields = ['category','drug','quantity','dose']
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.required=False    
+            field.required=False
             field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400  p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
