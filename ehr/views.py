@@ -497,7 +497,11 @@ def patient_report_pdf(request):
     ndate = datetime.datetime.now()
     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
     f = PatientReportFilter(request.GET, queryset=PatientData.objects.all()).qs
-    values = [value.upper() for key, value in request.GET.items() if value]
+    values = []
+    for key, value in request.GET.items():
+        if value:
+            values.append(f"{key.capitalize().replace('_', ' ')}: {value}")
+    
     result = ", ".join(values)
 
     context = {'generated_date': datetime.datetime.now().strftime('%d-%h-%Y'),
@@ -569,25 +573,23 @@ def visit_pdf(request):
     )).qs
     
     patient = f.first().patient if f.exists() else None
-    result = ""
-    result2 = ""
-    result3 = ""
-
+    values = []
     for key, value in request.GET.items():
         if value:
-            result += f"{value.upper()} "
-            result2 += f"Generated on: {ndate.strftime('%d-%B-%Y : %I:%M %p')}" 
-            result3 += f"By: {request.user.username.upper()}"
+            if key == 'clinic':
+                clinic = Clinic.objects.get(id=value)
+                values.append(f"Clinic: {clinic.name}")
+            elif key == 'team':
+                team = Team.objects.get(id=value)
+                values.append(f"Team: {team.name}")
+            else:
+                values.append(f"{key.capitalize()}: {value}")
+    
+    result = ", ".join(values)
 
-    context = {
-        'f': f,
-        'pagesize': 'A4',
-        'patient': patient,
-        'orientation': 'landscape',
-        'result': result,
-        'result2': result2,
-        'result3': result3
-    }
+    context = {'generated_date': datetime.datetime.now().strftime('%d-%h-%Y'),
+            'user': request.user.username.upper(),'f': f, 'pagesize': 'A4',
+            'orientation': 'landscape', 'result': result,'patient': patient,}
 
     response = HttpResponse(content_type='application/pdf',
                             headers={'Content-Disposition': f'filename="Report__{filename}"'})
@@ -609,6 +611,7 @@ def visit_pdf(request):
         return response
     
     return HttpResponse('Error generating PDF', status=500)
+
 
 
 

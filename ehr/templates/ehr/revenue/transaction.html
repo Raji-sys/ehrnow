@@ -1,48 +1,47 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}TRANSACTION HISTORY{%endblock%}
-{%block page_title%}
-
-<div class="flex items-center justify-between px-4 py-2 bg-white">
+{% block page_title %}
+<div class="flex flex-wrap items-center justify-between px-4 py-2 bg-white">
   <!-- Left section: Back button and title -->
-  <div class="flex items-center">
-      <a href="{% url 'revenue' %}" class="mr-2">
+  <div class="flex items-center mb-2 md:mb-0">
+    <a href="{% url 'revenue' %}" class="mr-2 md:mr-4">
       <i class="fa-solid fa-backward fa-2xl"></i>
     </a>
-    <span class="text-sm">ALL TRANSACTIONS</span>
+    <span class="text-sm md:text-base">ALL TRANSACTIONS</span>
   </div>
 
   <!-- Middle section: Filter buttons -->
-  <div class="flex space-x-2">
+  <div class="flex space-x-1 md:flex-wrap mb-2 md:mb-0">
     <a href="?status=all" 
-       class="px-3 py-1 text-xs rounded {% if current_filter == 'all' %}bg-sky-600 text-white{% else %}bg-sky-100 text-sky-600{% endif %}">
+       class="px-3 py-1 text-xs rounded md:px-4 md:py-2 {% if current_filter == 'all' %}bg-sky-600 text-white{% else %}bg-sky-100 text-sky-600{% endif %}">
       All ({{ total_count }})
     </a>
     <a href="?status=approved" 
-       class="px-3 py-1 text-xs rounded {% if current_filter == 'approved' %}bg-emerald-600 text-white{% else %}bg-emerald-100 text-emerald-600{% endif %}">
+       class="px-3 py-1 text-xs rounded md:px-4 md:py-2 {% if current_filter == 'approved' %}bg-emerald-600 text-white{% else %}bg-emerald-100 text-emerald-600{% endif %}">
       PAID ({{ approved_count }})
     </a>
     <a href="?status=pending" 
-       class="px-3 py-1 text-xs rounded {% if current_filter == 'pending' %}bg-rose-600 text-white{% else %}bg-rose-100 text-rose-600{% endif %}">
+       class="px-3 py-1 text-xs rounded md:px-4 md:py-2 {% if current_filter == 'pending' %}bg-rose-600 text-white{% else %}bg-rose-100 text-rose-600{% endif %}">
       UNPAID ({{ pending_count }})
     </a>
   </div>
 
   <!-- Right section: Transaction stats -->
-  <div class="flex items-center space-x-2">
-    <span class="bg-sky-600 text-white text-xs px-3 py-1 rounded flex items-center">
+  <div class="flex space-x-1 md:flex-wrap mb-2 md:mb-0">
+    <span class="bg-sky-600 text-white text-xs px-3 py-1 rounded md:px-4 md:py-2 flex items-center">
       Today: {{ today_transactions }} (&#x20A6;{{ today_worth|floatformat:2 }})
     </span>
-    <span class="bg-green-100 text-xs px-3 py-1 rounded">
+    <span class="bg-green-100 text-xs px-3 py-1 rounded md:px-4 md:py-2">
       Total: <span class="text-green-700 font-bold">&#x20A6;{{ total_worth|floatformat:2 }}</span>
     </span>
     {% if total_pending > 0 %}
-    <span class="bg-yellow-100 text-xs px-3 py-1 rounded">
+    <span class="bg-yellow-100 text-xs px-3 py-1 rounded md:px-4 md:py-2">
       Pending: <span class="text-yellow-700 font-bold">&#x20A6;{{ total_pending|floatformat:2 }}</span>
     </span>
     {% endif %}
     {% if request.GET.urlencode %}
-    <div class="flex space-x-2 mx-2">
+    <div class="flex space-x-1 mx-2 md:mx-4">
         <a href="?" class="text-amber-600 hover:text-amber-700">
             <i class="fa-solid fa-rotate fa-xl"></i>
         </a>
@@ -56,7 +55,9 @@
     {% endif %}
   </div>
 </div>
-{%endblock%}
+
+{% endblock %}
+
 {%block content %}
     <div class="mx-2 md:mx-20 rounded-b-xl p-4 shadow-black shadow-sm bg-white">
       <div class="text-sky-900">

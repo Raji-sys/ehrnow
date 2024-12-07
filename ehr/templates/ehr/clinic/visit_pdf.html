@@ -85,66 +85,81 @@ body {
           #sp h1 {
             margin-top: 180px; /* Adjust the value as needed */
           }
-          .value {
-            background-color: white;
-          }
           .uppercase {
             text-transform: uppercase;
           }
+        .sn {
+            width: 8%;
+            text-align: center;
+            background-color: white;
+
+        }
+        .sn1 {
+            width: 12%;
+            text-align: center;
+            background-color: white;
+        }
+        .sn2 {
+          width: 30%;
+            text-align: center;
+            background-color: white;
+        }
+        .value{
+          background-color: white;
+        }
+        .hd{
+          text-align: center;
+          background-color: white;
+
+        }
     </style>
 </head>
 <body>
-    <h1 class="queryset-data"><b>CLINICAL REPORT</b></h1>
-        <th >{{ result2|upper }}</th>     
-        <th >{{ result3|upper }}</th>     
+    <h1 class="hd"><b>CLINICAL REPORT</b></h1>
     <hr>
         <table >
-            <tr>
-        <th colspan="10">FILTERED BY:&nbsp;{{ result|upper }}</th>
-    </tr>
+          <tr>
+            <th colspan="8">FILTERED BY:&nbsp;{{ result|upper }} <br>Generated on: {{ generated_date|upper }} By: {{ user|upper }}</th>
+        </tr>
         <tbody >
             <tr>
-                <td><span class="variable">S/N</span></td>
-                <td><span class="variable">FILE NUMBER</span></td>
-                <td><span class="variable">PHONE</span></td>
-                <td><span class="variable">NAME</span></td>
-                <td><span class="variable">AGE</span></td>
-                <td><span class="variable">STATUS</span></td>
-                <td><span class="variable">CLINIC</span></td>
-                <td><span class="variable">TEAM</span></td>
-                <td><span class="variable">DIAGNOSIS</span></td>
-                <td><span class="variable">DATE</span></td>
+                <td><span class="">#</span></td>
+                <td><span class="">PN</span></td>
+                <td><span class="">PHONE</span></td>
+                <td><span class="">NAME</span></td>
+                <td><span class="">AGE</span></td>
+                <!-- <td><span class="">STATUS</span></td> -->
+                <td><span class="">CLINIC</span> / <span class="">TEAM</span></td>
+                <td><span class="">DIAGNOSIS</span></td>
+                <td><span class="">DATE</span></td>
             </tr>
               {% for i in f %}        
         <tr >
-            <td class="value">
+            <td class="sn">
                 {{forloop.counter}}
             </td>    
-            <td class="value">
+            <td class="sn1">
                 {{i.patient.file_no|default_if_none:''|upper}}
             </td>    
-            <td class="value">
+            <td class="sn2">
                 {{i.patient.phone|default_if_none:''|upper}}
             </td>
             <td class="value">
                 {{i.patient.full_name|default_if_none:''|upper}}
             </td>
-            <td class="value">
+            <td class="sn1">
                 {{i.patient.age|default_if_none:''|upper}}
             </td>
-            <td class="value">
+            <!-- <td class="sn2">
             {{i.status|default_if_none:''|upper}}
-            </td>
+            </td> -->
             <td class="value">
-            {{i.clinic|default_if_none:''|upper}}
+            {{i.clinic|default_if_none:''|upper}} <br>{{i.team|default_if_none:''|upper}}
             </td>
-            <td class="value">
-            {{i.team|default_if_none:''|upper}}
-            </td>
-            <td class="value">
+            <td class="sn2">
               {{ i.latest_diagnosis|default_if_none:'No Diagnosis'|upper }}
           </td>          
-            <td class="value">
+            <td class="sn2">
             {{i.updated}}
             </td>
           </tr>
