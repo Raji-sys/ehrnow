@@ -388,7 +388,9 @@ class GenericWardListView(DoctorRequiredMixin, ListView):
                 Q(patient__first_name__icontains=query) |
                 Q(patient__last_name__icontains=query) |
                 Q(patient__other_name__icontains=query) |
-                Q(patient__file_no__icontains=query)
+                Q(patient__file_no__icontains=query)|
+                Q(patient__title__icontains=query)|
+                Q(patient__phone__icontains=query)
             )
 
         return queryset.order_by('-updated')
@@ -495,17 +497,13 @@ def patient_report_pdf(request):
     ndate = datetime.datetime.now()
     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
     f = PatientReportFilter(request.GET, queryset=PatientData.objects.all()).qs
-    result = ""
-    result2 = ""
-    result3 = ""
-    for key, value in request.GET.items():
-        if value:
-            result += f"{value.upper()} "
-            result2 += f"Generated on: {ndate.strftime('%d-%B-%Y : %I:%M %p')}" 
-            result3 += f"By: {request.user.username.upper()}"
+    values = [value.upper() for key, value in request.GET.items() if value]
+    result = ", ".join(values)
 
-    context = {'f': f, 'pagesize': 'A4',
-               'orientation': 'landscape', 'result': result,'result2':result2,'result3':result3}
+    context = {'generated_date': datetime.datetime.now().strftime('%d-%h-%Y'),
+            'user': request.user.username.upper(),'f': f, 'pagesize': 'A4',
+            'orientation': 'landscape', 'result': result,}
+
     response = HttpResponse(content_type='application/pdf',
                             headers={'Content-Disposition': f'filename="Report__{filename}"'})
 
@@ -892,7 +890,7 @@ class NursingStationDetailView(DetailView):
     model = NursingDesk
     template_name = 'ehr/nurse/nursing_station.html'
     context_object_name = 'nursing_desk'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -902,9 +900,22 @@ class NursingStationDetailView(DetailView):
             payment__status=True,
             vitals=False
         ).select_related('patient', 'payment', 'record')
+        query = self.request.GET.get('q')
+
+        if query:
+            visits = visits.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
 
         # Pass the list of visit records to the template
         context['visits'] = visits
+        context['query'] = query or ''
+
         return context
 
 
@@ -1007,11 +1018,23 @@ class VisitListView(DoctorNurseRecordRequiredMixin, ListView):
             updated__gte=timezone.now() - timedelta(days=100),
             **self.filter_params
         ).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__title__icontains=query)|
+                Q(patient__phone__icontains=query)
+            )
         return queryset
+        # return queryset.order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['clinic'] = self.clinic
+        context['query'] = self.request.GET.get('q', '')        
         return context
 
 class WaitingListView(VisitListView):
@@ -1143,35 +1166,7 @@ class AppointmentUpdateView(UpdateView):
         messages.error(self.request, 'Error updating appointment information')
         return self.render_to_response(self.get_context_data(form=form))
 
-
-class NewAppointmentListView(ListView):
-    model=PatientData
-    template_name='ehr/record/new_appt_list.html'
-    context_object_name='patients'
-    paginate_by = 10
-
-    def get_queryset(self):
-        queryset = super().get_queryset().order_by('-updated')
-        # Add search functionality
-        query = self.request.GET.get('q')
-        if query:
-            queryset = queryset.filter(
-                Q(first_name__icontains=query) |
-                Q(last_name__icontains=query) |
-                Q(other_name__icontains=query) |
-                Q(file_no__icontains=query)|
-                Q(phone__icontains=query)|
-                Q(title__icontains=query)
-            )
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q', '')
-
-        return context
     
-
 class AppointmentListView(ListView):
     model=Appointment
     template_name='ehr/record/appointment.html'
@@ -1672,7 +1667,9 @@ class AdmissionListView(ListView):
                 Q(patient__first_name__icontains=query) |
                 Q(patient__last_name__icontains=query) |
                 Q(patient__other_name__icontains=query) |
-                Q(patient__file_no__icontains=query)
+                Q(patient__file_no__icontains=query)|
+                Q(patient__title__icontains=query)|
+                Q(patient__phone__icontains=query)
             )
 
         return queryset.order_by('-updated')

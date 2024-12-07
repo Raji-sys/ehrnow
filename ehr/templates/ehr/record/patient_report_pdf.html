@@ -85,63 +85,77 @@ body {
           #sp h1 {
             margin-top: 180px; /* Adjust the value as needed */
           }
-          .value {
-            background-color: white;
-          }
           .uppercase {
             text-transform: uppercase;
           }
+        .sn {
+            width: 6%;
+            text-align: center;
+            background-color: white;
+
+        }
+        .sn1 {
+            width: 12%;
+            text-align: center;
+            background-color: white;
+        }
+        .sn2 {
+          width: 30%;
+            text-align: center;
+            background-color: white;
+        }
+        .value{
+          background-color: white;
+        }
+        .hd{
+          text-align: center;
+          background-color: white;
+
+        }
     </style>
 </head>
 <body>
-    <h1 class="queryset-data"><b>PATIENT RECORD REPORT</b></h1>
-        <th >{{ result2|upper }}</th>     
-        <th >{{ result3|upper }}</th>     
+    <h1 class="hd"><b>PATIENT RECORD REPORT</b></h1>
+    
     <hr>
-        <table >
-            <tr>
-        <th colspan="9">FILTERED BY:&nbsp;{{ result|upper }}</th>
+    <table >
+      <tr>
+        <th colspan="7">FILTERED BY:&nbsp;{{ result|upper }} <br>Generated on: {{ generated_date|upper }} By: {{ user|upper }}</th>
     </tr>
         <tbody >
             <tr>
-                <td><span class="variable">S/N</span></td>
-                <td><span class="variable">FILE NUMBER</span></td>
-                <td><span class="variable">PHONE</span></td>
-                <td><span class="variable">NAME</span></td>
-                <td><span class="variable">AGE</span></td>
-                <td><span class="variable">NEXT OF KIN</span></td>
-                <td><span class="variable">NEXT OF KIN PHONE</span></td>
-                <td><span class="variable">RELATIONSHIP</span></td>
-                <td><span class="variable">DATE REGISTERED</span></td>
+                <td><span class="">S/N</span></td>
+                <td><span class="">FILE NO.</span></td>
+                <td><span class="">PHONE</span></td>
+                <td><span class="">NAME</span></td>
+                <td><span class="">AGE</span></td>
+                <td><span class="">NEXT OF KIN INFO</span></td>
+                <td><span class="">DATE REGISTERED</span></td>
             </tr>
               {% for i in f %}        
         <tr >
-            <td class="value">
+            <td class="sn">
                 {{forloop.counter}}
             </td>    
-            <td class="value">
-                {{i.file_no|default_if_none:''|upper}}
+            <td class="sn1">
+                {{i.file_no|default_if_none:''}}
             </td>    
-            <td class="value">
-                {{i.phone|default_if_none:''|upper}}
+            <td class="sn2">
+                {{i.phone|default_if_none:''}}
             </td>
             <td class="value">
                 {{i.full_name|default_if_none:''|upper}}
             </td>
-            <td class="value">
-                {{i.age|default_if_none:''|upper}}
+            <td class="sn1">
+                {{i.age|default_if_none:''}}
             </td>
             <td class="value">
-            {{i.nok_name|default_if_none:''|upper}}
-            </td>
-            <td class="value">
-            {{i.nok_phone|default_if_none:''|upper}}
-            </td>
-            <td class="value">
+            {{i.nok_name|default_if_none:''|upper}} <br>
+            {{i.nok_phone|default_if_none:''}} <br>
             {{i.nok_rel|default_if_none:''|upper}}
             </td>
-            <td class="value">
-            {{i.updated}}
+            <td class="sn2">
+            {{i.updated|date:'d-M-Y'}}
             </td>
           </tr>
           {%endfor%}

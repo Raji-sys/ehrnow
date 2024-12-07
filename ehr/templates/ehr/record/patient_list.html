@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}PATIENT LIST{%endblock%}
-{%block page_title%}<div class="flex justify-center"><a href="{%url 'medical_record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>PATIENT LIST</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center">PATIENT LIST</div>{%endblock%}
 {%block content %}
 <div class="p-1 ">
     <section class="text-center border-emerald-700 p-1 m-1">
@@ -15,7 +15,7 @@
         {% endfor %}
       </section>
     <div class="mx-2 md:mx-20 rounded-b-xl p-2 shadow-black shadow-sm bg-emerald-50">
-      <div class="flex justify-between">
+      <div class="md:flex justify-between grid grid-cols-1">
         <div class="m-2 md:m-2 text-center flex-1">
           <span class="shadow-sm shadow-emerald-700 gap-4 bg-emerald-700 text-white uppercase text-xs border-b-2 border-emerald-900 py-2 px-2 rounded-xl mx-2 w-fit">
             <span class=" shadow-white text-xs p-1 rounded-full bg-white text-emerald-900">{{total_patient}}</span>&nbsp;patients registered

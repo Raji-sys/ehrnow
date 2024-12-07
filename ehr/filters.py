@@ -8,18 +8,18 @@ class PatientReportFilter(django_filters.FilterSet):
     file_no = django_filters.CharFilter(label='FILE NUMBER', field_name='file_no')
     age_start = django_filters.NumberFilter(label="AGE R1", field_name="age", lookup_expr='gte',)
     age_end = django_filters.NumberFilter(label="AGE R2", field_name="age", lookup_expr='lte',)
-    gender = django_filters.ChoiceFilter(label="GENDER",choices=PatientData.sex,empty_label="ALL",
-                                         widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
-    marital_status = django_filters.ChoiceFilter(label="MARITAL STATUS",choices=PatientData.m_status, 
-                                                 widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
-    religion = django_filters.ChoiceFilter(label="RELIGION",choices=PatientData.faith,
-                                           widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
+    gender = django_filters.ChoiceFilter(label="GENDER",choices=PatientData.sex,empty_label="GENDER",
+                                         widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'}))
+    marital_status = django_filters.ChoiceFilter(label="MARITAL STATUS",choices=PatientData.m_status,empty_label="MARITAL STATUS", 
+                                                 widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'}))
+    religion = django_filters.ChoiceFilter(label="RELIGION",choices=PatientData.faith,empty_label="RELIGION",
+                                           widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'}))
     occupation = django_filters.CharFilter(label="OCCUPATION", field_name="occupation", lookup_expr='iexact')
     
-    nationality = django_filters.ChoiceFilter(label="NATIONALITY",choices=PatientData.ns,
-                                              widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
-    zone = django_filters.ChoiceFilter(label="GEO ZONE",choices=PatientData.geo_political_zone,
-                                       widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'}))
+    nationality = django_filters.ChoiceFilter(label="NATIONALITY",choices=PatientData.ns,empty_label="NATIONALITY",
+                                              widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'}))
+    zone = django_filters.ChoiceFilter(label="GEO ZONE",choices=PatientData.geo_political_zone,empty_label="GEO ZONE",
+                                       widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'}))
     state = django_filters.CharFilter(label="STATE", field_name="state", lookup_expr='iexact')
     lga = django_filters.CharFilter(label="LGA", field_name="lga", lookup_expr='iexact')
     address = django_filters.CharFilter(label="ADDRESS", field_name="address", lookup_expr='icontains')
@@ -34,7 +34,7 @@ class VisitFilter(django_filters.FilterSet):
         label='CLINIC',
         queryset=Clinic.objects.all(),
         widget=forms.Select(attrs={
-            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+            'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
         })
     )
     
@@ -42,7 +42,7 @@ class VisitFilter(django_filters.FilterSet):
         queryset=Team.objects.all(),
         label='TEAM',
         widget=forms.Select(attrs={
-            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+            'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
         }),
     )
     
@@ -51,7 +51,7 @@ class VisitFilter(django_filters.FilterSet):
         field_name="created",
         widget=forms.DateInput(attrs={
             'type': 'date',
-            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+            'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
         }),
         input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y']
     )
@@ -70,7 +70,7 @@ class VisitFilter(django_filters.FilterSet):
         lookup_expr='gte',
         label='MIN AGE',
         widget=forms.NumberInput(attrs={
-            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+            'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
         })
     )
 
@@ -79,7 +79,7 @@ class VisitFilter(django_filters.FilterSet):
         lookup_expr='lte',
         label='MAX AGE',
         widget=forms.NumberInput(attrs={
-            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'
+            'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
         })
     )
     
@@ -89,7 +89,7 @@ class VisitFilter(django_filters.FilterSet):
         lookup_expr='icontains',  # Use icontains for partial matches
         label='DIAGNOSIS',
         widget=forms.TextInput(attrs={
-            'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border',
+            'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200',
         })
     )
 
@@ -101,8 +101,8 @@ class VisitFilter(django_filters.FilterSet):
 class AppointmentFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(label="DATE", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     patient=django_filters.CharFilter(label='FILE NUMBER', field_name="patient__file_no",lookup_expr='exact')
-    clinic=django_filters.CharFilter(label='CLINIC',field_name="clinic",lookup_expr='iexact')                                                                                                     
-    team=django_filters.CharFilter(label='TEAM',field_name="team",lookup_expr='iexact')                                                                                                     
+    clinic=django_filters.CharFilter(label='CLINIC',field_name="clinic__name",lookup_expr='iexact')                                                                                                     
+    team=django_filters.CharFilter(label='TEAM',field_name="team__name",lookup_expr='iexact')                                                                                                     
 
     class Meta:
         model = Appointment

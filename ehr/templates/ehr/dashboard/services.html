@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}SERVICES{%endblock%}
-{%block page_title%}<div class="flex justify-center">HOSPITAL SERVICES</div>{%endblock%}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>HOSPITAL SERVICES</div>{%endblock%}
 {%block content %}
 <section class="text-center border-cyan-700">
   {% for message in messages %}

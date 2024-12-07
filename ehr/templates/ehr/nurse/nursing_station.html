@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}NURSING DESK{% endblock %}
 {% block page_title %}
-<div class="flex justify-center">
+<div class="flex justify-center uppercase">
     <a href="{% url 'nursing_desks_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>
     {{ nursing_desk.clinic.name }} Nusring Desk
 </div>
@@ -19,6 +19,21 @@
         </div>
         {% endfor %}
     </section>
+    <form method="get" class="mb-2 flex justify-center">
+        <input type="text" name="q" placeholder="Search patients..." value="{{ query|default:'' }}"
+               class="p-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+        <button type="submit"
+                class="p-3 bg-blue-500 text-white rounded-r hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+                <i class="fa fa-solid fa-search fa-xl"></i>
+        </button>
+        {% if request.GET.urlencode %}
+        <a href="{% url 'nursing_station_detail' nursing_desk.id %}"
+           class="p-3 bg-white text-amber-600 rounded-r-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs">
+           <i class="fa-solid fa-rotate fa-xl"></i>
+        </a>
+        {%endif%}
+      </form>
+      
     <div class="mx-2 md:mx-20 rounded-b-xl p-4 bg-sky-50 shadow-md">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-sky-300">
@@ -38,7 +53,7 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-sky-200">
                     {% for h in visits %}
-                    <tr class="text-xs bg-sky-50 hover:bg-sky-200 transition-colors duration-300">
+                    <tr class="text-xs bg-sky-50 hover:bg-sky-200 transition-colors duration-300 uppercase">
                         <td class="p-2 whitespace-nowrap">{{ forloop.counter }}</td>
                         <td class="p-2 whitespace-nowrap">{{ h.patient.file_no|default_if_none:'' }}</td>
                         <td class="p-2 whitespace-nowrap">{{ h.patient.full_name|default_if_none:'' }}</td>

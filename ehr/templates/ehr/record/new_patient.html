@@ -22,11 +22,9 @@
             {% endif %}
             <form method="post" enctype="multipart/form-data" class="text-xs text-center">
               {% csrf_token %}
-              <div class="uppercase text-cyan-900">
-                <p class="text-green-900 text-sm font-bold text-center border-b border-green-700">enter patient information</p>
-                
+              <div class="uppercase text-cyan-900">                
                 <!-- Patient Information Section -->
-                <div class="grid grid-cols-3 md:grid-cols-4 p-2 gap-4 text-center">
+                <div class="grid grid-cols-2 md:grid-cols-4 p-2 gap-4 text-center">
                   {% for field in form %}
                     {% if field.name != "nok_name" and field.name != "nok_phone" and field.name != "nok_addr" and field.name != "nok_rel" and field.name != "nok_addr_if" %}
                       <div class="text-center text-xs">
@@ -46,7 +44,7 @@
                   <p class="text-green-900 text-sm font-bold text-center mt-4">Next of Kin Information</p>
                 </div>
                 
-                <div class="grid grid-cols-3 md:grid-cols-5 p-2 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-5 p-2 gap-4">
                   {% for field in form %}
                     {% if field.name == "nok_name" or field.name == "nok_phone" or field.name == "nok_addr" or field.name == "nok_rel" or field.name == "nok_addr_if" %}
                       <div class="text-center text-xs">
