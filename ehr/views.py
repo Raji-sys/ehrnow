@@ -319,11 +319,6 @@ class ClinicDashView(DoctorNurseRecordRequiredMixin, ListView):
 class StoreView(TemplateView):
     template_name = "ehr/dashboard/store.html"
 
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class ServiceView(TemplateView):
-    template_name = "ehr/dashboard/service.html"
-
     
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class RadiologyView(RadiologyRequiredMixin,TemplateView):
@@ -1259,25 +1254,6 @@ class ServiceUpdateView(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class ServiceListView(ListView):
-    model=Services
-    template_name='ehr/revenue/general_services.html'
-    context_object_name='services'
-    paginate_by = 10
-
-    def get_queryset(self):
-        type = super().get_queryset().order_by('-type')
-        service_filter = ServiceFilter(self.request.GET, queryset=type)
-        return service_filter.qs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        total_services = self.get_queryset().count()
-        context['serviceFilter'] = ServiceFilter(self.request.GET, queryset=self.get_queryset())
-        context['total_services'] = total_services
-        return context
-
-
 class PayCreateView(RevenueRequiredMixin, CreateView):
     model = Paypoint
     form_class = PayForm
@@ -1555,10 +1531,8 @@ def record_receipt(request):
     ndate = datetime.datetime.now()
     filename = ndate.strftime('Receipt__%d_%m_%Y__%I_%M%p.pdf')
     
-    # Start with pharmacy payments and status=True
     base_queryset = Paypoint.objects.filter(record_payment__isnull=False,status=True)
     
-    # Then apply the filter
     f = PayFilter(request.GET, queryset=base_queryset).qs
     
     patient = f.first().patient if f.exists() else None

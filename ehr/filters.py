@@ -4,14 +4,6 @@ import django_filters
 from django import forms
 from .models import *
 
-class StaffFilter(django_filters.FilterSet):
-    last_name = django_filters.CharFilter(label='SURNAME', field_name='user__last_name', lookup_expr='icontains')
-
-    class Meta:
-        model = User
-        fields = ['last_name']
-
-
 class PatientReportFilter(django_filters.FilterSet):
     file_no = django_filters.CharFilter(label='FILE NUMBER', field_name='file_no')
     age_start = django_filters.NumberFilter(label="AGE R1", field_name="age", lookup_expr='gte',)
@@ -115,16 +107,6 @@ class AppointmentFilter(django_filters.FilterSet):
     class Meta:
         model = Appointment
         fields = ['patient','date','clinic','team']
-
-
-class ServiceFilter(django_filters.FilterSet):
-    type=django_filters.CharFilter(label='CATEGORY', field_name="type",lookup_expr='iexact')
-    name=django_filters.CharFilter(label='SERVICE',field_name="name",lookup_expr='iexact')                                                                                                     
-    updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
-
-    class Meta:
-        model = Services
-        fields = ['type','name','updated']
 
 
 class PayFilter(django_filters.FilterSet):

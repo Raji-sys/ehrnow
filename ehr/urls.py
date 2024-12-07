@@ -50,9 +50,7 @@ urlpatterns = [
     path('record/appointments/', AppointmentListView.as_view(), name='appointments'),
     path('record/appointment/update-appointment/<int:pk>/', AppointmentUpdateView.as_view(), name='update_appointment'),
 
-    path('get-started/service-dash', ServiceView.as_view(), name='service_dash'),
     path('revenue/add-service/', ServiceCreateView.as_view(), name='add_service'),
-    path('revenue/service-list/', ServiceListView.as_view(), name='service_list'),
     path('revenue/update-service/<int:pk>/', ServiceUpdateView.as_view(), name='update_service'),
     
     path('revenue/hospital-services/', HospitalServicesListView.as_view(), name='hospital_services'),
