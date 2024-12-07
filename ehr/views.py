@@ -701,7 +701,15 @@ class PatientFolderView(DetailView):
         context['visit_record'] = visit_record
         context['visits'] = patient.visit_record.all().order_by('-updated')
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
-        context['payments'] = patient.patient_payments.all().order_by('-updated')
+        # context['payments'] = patient.patient_payments.all().order_by('-updated')
+            # Filter payments with credit method and calculate total credit amount
+        payments = patient.patient_payments.all().order_by('-updated')
+        context['payments'] = payments
+
+        credit_payments = payments.filter(payment_method='CREDIT')
+        total_credit_amount = credit_payments.aggregate(total=Sum('price'))['total'] or 0
+        context['total_credit_amount'] = total_credit_amount
+        
         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
         context['appointments'] = patient.appointments.all().order_by('-updated')
         context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')

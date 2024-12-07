@@ -25,6 +25,7 @@
         <div>
           <h1 class="text-sm font-semibold text-gray-200 sm:mb-0 sm:mr-4 uppercase p-2">{{patient.full_name}} </h1>
         </div>
+        
         <div class="flex items-center uppercase">
           <span class="text-gray-200 font-bold mr-2">Wallet Balance: ₦{{ patient.wallet.balance|floatformat:2 }}</span>
           <a href="{% url 'fund_wallet' patient.id %}" class="bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 px-4 rounded-full transition duration-300 ease-in-out flex items-center">
@@ -34,6 +35,11 @@
         </div>
       </div>
       <div class="text-center rounded-b-xl p-3 bg-gray-50 uppercase max-h[40vh]">
+        {% if total_credit_amount > 0 %}
+        <div>
+          <h2 class="text-sm font-semibold text-red-700 sm:mb-0 sm:mr-4 uppercase p-2"><i class="fa fa-solid fa-minus-circle fa-xl"></i>Total Credit Amount: {{ total_credit_amount }}<i class="fa fa-solid fa-minus-circle fa-xl"></i></h2>
+          </div>
+          {%endif%}
     <!-- start -->
     <!-- top  -->
     <style>
