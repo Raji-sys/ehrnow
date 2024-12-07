@@ -213,7 +213,11 @@
                   <i class="fa-solid fa-check-circle fa-2xl"></i>
                 </td>
                 {% endif %}
+                {% if p.payment_method == 'CREDIT' %}
+                <td class=" p-3 whitespace-nowrap text-red-600"><i class="fa fa-solid fa-minus-circle fa-xl"></i>{{ p.payment_method }}<i class="fa fa-solid fa-minus-circle fa-xl"></i></td>
+                {%else%}
                 <td class=" p-3 whitespace-nowrap">{{ p.payment_method }}</td>
+                {%endif%}
                 <td class=" p-3 whitespace-nowrap">{{ p.updated }}</td>
               </tr>
               {%empty%}

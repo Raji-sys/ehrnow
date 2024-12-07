@@ -53,11 +53,15 @@
             font-size: 9pt;
         }
         td, th {
-            padding: 2px;
+            padding: 1px;
             text-align: left;
         }
         .amount {
             text-align: right;
+        }
+        .it{
+            text-align: left;
+            font-weight: bold;
         }
 </style>
 
@@ -71,8 +75,9 @@
         <p>Receipt No: {{ receipt_no }}</p>
         {% if patient %}
         <hr>
-        <p>Patient: {{ patient }}</p>
-        <p>File No: {{ patient.file_no }}</p>
+        patient info
+        <p class="it">{{ patient }}</p>
+        <p class="it">{{ patient.file_no }}</p>
         <hr>
         {% endif %}
                 
@@ -85,12 +90,14 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>{{ payment.service|truncatechars:20 }}</td>
+                    <td>{{ payment.service|truncatechars:50 }}</td>
                     <td class="amount">{{ payment.price|floatformat:2 }}</td>
                 </tr>
             </tbody>
         </table>
         <hr>        
+        <p><b>payment method</b>:{{ payment.payment_method}}</p>
+            <hr>
         <div class="receipt-footer">
             Generated: {{ generated_date }}<br>
             By: {{ user }}

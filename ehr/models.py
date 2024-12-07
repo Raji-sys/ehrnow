@@ -288,6 +288,7 @@ class Paypoint(models.Model):
     PAYMENT_METHODS = [
         ('CASH', 'CASH'),
         ('WALLET', 'WALLET'),
+        ('CREDIT','CREDIT'),
     ]
     payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS, default='CASH',null=True,blank=True)
     
