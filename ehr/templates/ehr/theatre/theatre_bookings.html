@@ -3,16 +3,7 @@
 {%block title%}THEATRE BOOKINGS{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre_details' theatre.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a> {{theatre}} BOOKINGS</div>{%endblock%}
 {%block content %}
-<div class="">
     <section class="text-center border-amber-700 p-2 m-1">
-        {% for message in messages %}
-        <div class=""> 
-          <div class="bg-green-100 rounded-2xl text-sm p-4" uk-alert>
-            <a href class="uk-alert-close font-bold" uk-close></a>
-            <p class="text-green-700 font-semibold">{{ message }}</p>
-          </div>
-        </div>
-        {% endfor %}
         <div class="">
           <span class="shadow-sm shadow-amber-900 gap-4 bg-amber-600 text-white uppercase text-xs border-b-2 border-amber-900 py-2 px-4 rounded-xl mx-2 w-fit">
             <span class=" shadow-white text-xs p-1 rounded-full bg-white text-amber-600">{{total_bookings}}</span>&nbsp; patients booked
@@ -25,7 +16,7 @@
       </span>
     </div>
   </section>
-  <div class="mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-amber-50">
+  <div class="mx-2 md:mx-20 rounded-b-xl p-4 shadow-black shadow-sm bg-amber-100">
       <div class="text-amber-900">
         <form method="get" class="text-xs text-center">
           {% for field in theatreBookingFilter.form %}
@@ -34,15 +25,14 @@
           <div class="text-center flex flex-row flex-wrap gap-1 justify-center">
             {% for field in theatreBookingFilter.form %}
             <div class="flex justify-center items-start flex-col">
-              <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
-                <input type="{{field.field.widget.input_type}}" name="{{field.name}}"
+              <!-- <label for="{{field.id_for_label}}">{{ field.label_tag }}</label> -->
+                <input type="{{field.field.widget.input_type}}" name="{{field.name}}" placeholder="{{field.name}}"
                 {%if field.value%} value="{{field.value}}"{%endif%}
-                class="text-center text-xs focus:outline-none w-fit text-amber-700 p-2
-                rounded shadow-sm shadow-amber-900 border-amber-900 border">
+                class="text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200 uppercase w-full">
                 <span class="form-error">{{ field.errors }}</span>
                 </div>
                 {% endfor %}
-                <div class="mt-4 flex justify-center align-middle ">
+                <div class=" flex justify-center align-middle ">
                 <button type="submit" class="shadow-sm shadow-amber-900 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-amber-600 bg-amber-600 text-white rounded hover:border-amber-700 ">
                     <i class="fa-solid fa-search fa-xl "></i>
                 </button>
@@ -52,28 +42,31 @@
     </div>
       <div class="overflow-x-auto p-3 uppercase">
         <table class="min-w-full divide-y divide-amber-200">
-          <thead class="bg-amber-50">
+          <thead class="bg-amber-300">
             <tr class="text-xs">
-                <th class="p-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+                <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     S/N
                 </th>
-              <th class="p-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
               PATIENT
               </th>
-              <th class="p-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+              FILE NO
+              </th>
+              <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 THEATRE
               </th>
-              <th class="p-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 TEAM
               </th>
-              <th class="p-3 text-left text-xs font-medium text-amber-500 uppercase tracking-wider">
+              <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 DATE 
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-amber-200">
             {% for b in bookings %}
-            <tr class="uppercase text-xs bg-amber-100 hover:bg-amber-200 transition-colors duration-300">
+            <tr class="uppercase text-xs bg-amber-50 hover:bg-amber-200 transition-colors duration-300">
                 <td class="p-3 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
@@ -81,6 +74,9 @@
                 <a href="{{b.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
                 {{ b.patient }}
                 </a>
+              </td>
+              <td class="p-3 whitespace-nowrap">
+                {{ b.patient.file_no }}
               </td>
               <td class="p-3 whitespace-nowrap">
                 {{ b.theatre }}
@@ -95,7 +91,7 @@
             </tr>
             {% empty %}
             <tr class="bg-white">
-              <td colspan="5" class="p-3 text-center text-amber-500">
+              <td colspan="5" class="p-3 text-center text-gray-700">
                 Patient not found
               </td>
             </tr>

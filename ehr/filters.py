@@ -101,8 +101,8 @@ class VisitFilter(django_filters.FilterSet):
 class AppointmentFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(label="DATE", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
     patient=django_filters.CharFilter(label='FILE NUMBER', field_name="patient__file_no",lookup_expr='exact')
-    clinic=django_filters.CharFilter(label='CLINIC',field_name="clinic__name",lookup_expr='iexact')                                                                                                     
-    team=django_filters.CharFilter(label='TEAM',field_name="team__name",lookup_expr='iexact')                                                                                                     
+    clinic=django_filters.CharFilter(label='CLINIC',field_name="clinic__name",lookup_expr='icontains')                                                                                                     
+    team=django_filters.CharFilter(label='TEAM',field_name="team__name",lookup_expr='icontains')                                                                                                     
 
     class Meta:
         model = Appointment
@@ -136,7 +136,7 @@ class RadioFilter(django_filters.FilterSet):
 class AdmissionFilter(django_filters.FilterSet):
     patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
     patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')            
-    ward=django_filters.CharFilter(label='WARD',field_name="ward",lookup_expr='iexact')                                                                                                     
+    ward=django_filters.CharFilter(label='WARD',field_name="ward",lookup_expr='icontains')                                                                                                     
     updated = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     class Meta:
@@ -145,27 +145,27 @@ class AdmissionFilter(django_filters.FilterSet):
 
 
 class TheatreBookingFilter(django_filters.FilterSet):
-    patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
+    file_no=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
     patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')            
-    theatre=django_filters.CharFilter(label='THEATRE',field_name="theatre",lookup_expr='iexact')                                                                                                     
-    team=django_filters.CharFilter(label='TEAM',field_name="team__name",lookup_expr='iexact')                                                                                                     
+    theatre=django_filters.CharFilter(label='THEATRE',field_name="theatre__name",lookup_expr='icontains')                                                                                                     
+    team=django_filters.CharFilter(label='TEAM',field_name="team__name",lookup_expr='icontains')                                                                                                            
     date = django_filters.DateFilter(label="DATE", field_name="date", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     class Meta:
         model = TheatreBooking
-        fields = ['patient','theatre','team','date']
+        fields = ['theatre','team','date']
 
 
 class OperationNotesFilter(django_filters.FilterSet):
-    patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
+    file_no=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
     patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')            
-    type_of_anaesthesia=django_filters.CharFilter(label='ANAESTHESIA',field_name="type_of_anaesthesia",lookup_expr='iexact')                                                                                                     
-    findings=django_filters.CharFilter(label='FINDINGS',field_name="findings",lookup_expr='iexact')                                                                                                     
+    type_of_anaesthesia=django_filters.CharFilter(label='ANAESTHESIA',field_name="type_of_anaesthesia",lookup_expr='icontains')                                                                                                     
+    findings=django_filters.CharFilter(label='FINDINGS',field_name="findings",lookup_expr='icontains')                                                                                                     
     date = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     class Meta:
         model = OperationNotes
-        fields = ['patient','type_of_anaesthesia','findings','date']
+        fields = ['file_no','type_of_anaesthesia','findings','date']
 
 class AnaesthisiaChecklistFilter(django_filters.FilterSet):
     patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
@@ -178,13 +178,22 @@ class AnaesthisiaChecklistFilter(django_filters.FilterSet):
 
 
 class TheatreOperationRecordFilter(django_filters.FilterSet):
-    patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
-    patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')            
+    file_no=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
+    patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')
+    theatre=django_filters.CharFilter(label='THEATRE',field_name="theatre__name",lookup_expr='icontains')                                                                                                     
+    team=django_filters.CharFilter(label='TEAM',field_name="team__name",lookup_expr='icontains')                                                                                                          
+    ward=django_filters.CharFilter(label='WARD',field_name="ward__name",lookup_expr='icontains')       
+    surgeon=django_filters.CharFilter(label='SURGEON',field_name="surgeon",lookup_expr='icontains')                                                                                                     
+    operation=django_filters.CharFilter(label='OPERATION',field_name="operation",lookup_expr='icontains')                                                                                                     
+    diagnosis=django_filters.CharFilter(label='DIAGNOSIS',field_name="diagnosis",lookup_expr='icontains')                                                                                                     
+    instrument_nurse=django_filters.CharFilter(label='INSTRUMENT NURSE',field_name="instrument_nurse",lookup_expr='icontains')                                                                                                     
+    circulating_nurse=django_filters.CharFilter(label='CIRCULATING NURSE',field_name="circulating_nurse",lookup_expr='icontains')                                                                                                     
+
     date = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     class Meta:
         model = TheatreOperationRecord
-        fields = ['patient','date']
+        fields = ['date']
 
 
 class PhysioFilter(django_filters.FilterSet):
