@@ -2727,7 +2727,6 @@ class TheatreOperationRecordCreateView(CreateView):
         if theatre_booking:
             form.instance.theatre = theatre_booking.theatre
 
-
         context = self.get_context_data()
         consumables = context['consumables']
         implants = context['implants']
@@ -2745,6 +2744,11 @@ class TheatreOperationRecordCreateView(CreateView):
     def get_success_url(self):
         messages.success(self.request, 'SURGERY RECORD ADDED')
         return self.object.patient.get_absolute_url()
+
+
+class TheatreOperationRecordDetailView(DetailView):
+    model = TheatreOperationRecord
+    template_name = 'ehr/theatre/theatre_record_details.html'
 
 
 class TheatreOperationRecordListView(DoctorRequiredMixin, ListView):

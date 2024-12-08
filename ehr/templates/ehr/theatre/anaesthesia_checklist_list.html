@@ -25,7 +25,7 @@
                   </span>
                 </div>
               </section>
-    <div class="mx-2 md:mx-20 rounded-xl p-4 shadow-black shadow-sm bg-zinc-50">
+    <div class="mx-2 md:mx-20 rounded-b-xl p-4 shadow-black shadow-sm bg-zinc-50">
               <div class="text-zinc-900">
         <form method="get" class="text-xs text-center">
           {% for field in anaesthesia_checklistFilter.form %}
@@ -73,7 +73,7 @@
           </thead>
           <tbody class="bg-white divide-y divide-zinc-200">
             {% for a in anaesthesia_checklist %}
-            <tr class="uppercase text-xs bg-zinc-100 hover:bg-zinc-200 transition-colors duration-300">
+            <tr class="uppercase text-xs bg-white hover:bg-zinc-200 transition-colors duration-300">
                 <td class="p-3 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>

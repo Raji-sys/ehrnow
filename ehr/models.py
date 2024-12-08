@@ -802,6 +802,9 @@ class TheatreOperationRecord(models.Model):
     comments = models.TextField(blank=True,null=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def get_absolute_url(self):
+        return reverse('theatre_operation_record_details', args=[self.id])
+
     def __str__(self):
         return f"{self.patient} - {self.operation}"
 

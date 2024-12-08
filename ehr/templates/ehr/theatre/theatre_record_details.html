@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %}OPERATION RECORD DETAILS{% endblock %}
+{%block page_title%}<div class="flex justify-center text-blue-700 uppercase"><a href="{%url 'theatre_operation_record_list' object.theatre.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Theatre Operation Record Details</div>{%endblock%}
+{% block content %}
+  <div class="p-2 md:mx-20 mx-auto bg-sky-800 rounded-lg">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2 text-xs">
+      <div class="bg-white shadow-md rounded px-4 py-4">
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Patient Information</h3>
+        <table class="table-auto w-full mb-2 text-left">
+          <tbody>
+            <tr class="">
+              <th class="px-2 py-1">File No.</th>
+              <td class="px-2 py-1">{{ object.patient.file_no }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Name</th>
+              <td class="px-2 py-1">{{ object.patient }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Gender</th>
+              <td class="px-2 py-1">{{ object.patient.gender }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Age</th>
+              <td class="px-2 py-1">{{ object.patient.age }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Phone</th>
+              <td class="px-2 py-1">{{ object.patient.phone }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Next of kin info</th>
+              <td class="px-2 py-1">{{ object.patient.nok_name }}&nbsp;&nbsp;{{ object.patient.nok_phone }}&nbsp;&nbsp;{{ object.patient.nok_rel }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-white shadow-md rounded px-4 py-4">
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Operation Details</h3>
+        <table class="table-auto w-full mb-2 text-left">
+          <tbody>
+            <tr>
+              <th class="px-2 py-1">Theatre</th>
+              <td class="px-2 py-1">{{ object.theatre }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Ward</th>
+              <td class="px-2 py-1">{{ object.ward }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Diagnosis</th>
+              <td class="px-2 py-1">{{ object.diagnosis }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Operation</th>
+              <td class="px-2 py-1">{{ object.operation }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Date of Operation</th>
+              <td class="px-2 py-1">{{ object.date_of_operation }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-white shadow-md rounded px-4 py-4">
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Staff Information</h3>
+        <table class="table-auto w-full mb-2 text-left">
+          <tbody>
+            <tr>
+              <th class="px-2 py-1">Surgeon</th>
+              <td class="px-2 py-1">{{ object.surgeon }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Assistant 1</th>
+              <td class="px-2 py-1">{{ object.assistant_1 }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Assistant 2</th>
+              <td class="px-2 py-1">{{ object.assistant_2 }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Assistant 3</th>
+              <td class="px-2 py-1">{{ object.assistant_3 }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Instrument Nurse</th>
+              <td class="px-2 py-1">{{ object.instrument_nurse }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Circulating Nurse</th>
+              <td class="px-2 py-1">{{ object.circulating_nurse }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Anaesthetist</th>
+              <td class="px-2 py-1">{{ object.anaesthetist }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-white shadow-md rounded px-4 py-4">
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Consumables</h3>
+        <ul class="list-disc list-inside mb-2 text-left">
+          {% for usage in object.consumableusage_set.all %}
+          <li>{{ usage.consumable.name }} ({{ usage.quantity }})</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="bg-white shadow-md rounded px-4 py-4">
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Implants</h3>
+        <ul class="list-disc list-inside mb-2 text-left">
+          {% for usage in object.implantusage_set.all %}
+          <li>{{ usage.implant.name }} ({{ usage.quantity }})</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="bg-white shadow-md rounded px-4 py-4">
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Instrument Count</h3>
+        <table class="table-auto w-full mb-2 text-left">
+          <tbody>
+            <tr>
+              <th class="px-2 py-1">Towel Clips</th>
+              <td class="px-2 py-1">{{ object.towel_clips }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Plain Gauze Small</th>
+              <td class="px-2 py-1">{{ object.plain_gauze_small }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Artery Forceps</th>
+              <td class="px-2 py-1">{{ object.artery_forceps }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Needles</th>
+              <td class="px-2 py-1">{{ object.needles }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Large Swabs</th>
+              <td class="px-2 py-1">{{ object.large_swabs }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-white shadow-md rounded px-4 py-4">
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Tourniquet</h3>
+        <table class="table-auto w-full mb-2 text-left">
+          <tbody>
+            <tr>
+              <th class="px-2 py-1">Applied</th>
+              <td class="px-2 py-1">{{ object.tourniquet_applied }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Time</th>
+              <td class="px-2 py-1">{{ object.tourniquet_time }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Applied By</th>
+              <td class="px-2 py-1">{{ object.tourniquet_by }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Removed By</th>
+              <td class="px-2 py-1">{{ object.tourniquet_off_by }}</td>
+            </tr>
+            <tr>
+              <th class="px-2 py-1">Removed Time</th>
+              <td class="px-2 py-1">{{ object.tourniquet_off_time }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-white shadow-md rounded px-4 py-4">
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Comments</h3>
+        <p class="px-2 py-1">{{ object.comments }}</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

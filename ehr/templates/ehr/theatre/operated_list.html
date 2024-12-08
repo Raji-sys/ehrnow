@@ -17,7 +17,7 @@
                   </span>
                 </div>
               </section>
-    <div class="mx-2 md:mx-20 rounded-b-xl p-4 shadow-black shadow-sm bg-emerald-100">
+    <div class="mx-2 md:mx-20 rounded-b-xl p-4 shadow-black shadow-sm bg-emerald-50">
               <div class="text-emerald-900">
         <form method="get" class="text-xs text-center">
           {% for field in theatreFilter.form %}
@@ -70,7 +70,7 @@
           </thead>
           <tbody class="bg-white divide-y divide-emerald-200">
             {% for o in operated %}
-            <tr class="uppercase text-xs bg-emerald-50 hover:bg-emerald-200 transition-colors duration-300">
+            <tr class="uppercase text-xs bg-white hover:bg-emerald-200 transition-colors duration-300">
                 <td class="p-3 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>

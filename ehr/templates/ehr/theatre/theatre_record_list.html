@@ -4,20 +4,20 @@
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'theatre_details' theatre.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{theatre}} OPERATION RECORD</div>{%endblock%}
 
 {% block content %}
-<section class="text-center border-slate-700 p-2 m-1">
+<section class="text-center border-sky-700 p-2 m-1">
   <div class="">
-    <span class="shadow-sm shadow-slate-900 gap-4 bg-slate-600 text-white uppercase text-xs border-b-2 border-slate-900 py-2 px-4 rounded-xl mx-2 w-fit">
-      <span class=" shadow-white text-xs p-1 rounded-full bg-white text-slate-600">{{total_operations}}</span>&nbsp; patients operated
+    <span class="shadow-sm shadow-sky-900 gap-4 bg-sky-600 text-white uppercase text-xs border-b-2 border-sky-900 py-2 px-4 rounded-xl mx-2 w-fit">
+      <span class=" shadow-white text-xs p-1 rounded-full bg-white text-sky-600">{{total_operations}}</span>&nbsp; patients operated
     {% if request.GET.urlencode %}
   <span>
-    <a href="?" class=" p-2 focus:opacity-10  focus:border-slate-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
+    <a href="?" class=" p-2 focus:opacity-10  focus:border-sky-600 bg-orange-500 text-white rounded shadow-lg hover:shadow-xl text-center w-fit">
       <i class="fa-solid fa-rotate fa-lg text-white"></i></a>
     </span>
   {%endif%}
 </span>
 </div>
 </section>
-<div class="bg-white shadow-md rounded-lg overflow-hidden md:mx-20 sm:mx-4 my-2 max-h-[calc(100vh-6rem)] overflow-y-auto p-4">
+<div class="bg-sky-50 shadow-md rounded-b-xl overflow-hidden md:mx-20 sm:mx-4 my-2 max-h-[calc(100vh-6rem)] overflow-y-auto p-4">
   <div class="text-slate-900">
     <form method="get" class="text-xs text-center">
       {% for field in theatreOpFilter.form %}
@@ -34,7 +34,7 @@
             </div>
             {% endfor %}
             <div class=" flex justify-center align-middle ">
-            <button type="submit" class="shadow-sm shadow-slate-900 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-slate-600 bg-slate-600 text-white rounded hover:border-slate-700 ">
+            <button type="submit" class="shadow-sm shadow-sky-900 w-fit p-2 focus:opacity-10 uppercase border-gray-500 focus:border-sky-600 bg-sky-600 text-white rounded hover:border-sky-700 ">
                 <i class="fa-solid fa-search fa-xl "></i>
             </button>
             </div>
@@ -45,7 +45,7 @@
     <div class="overflow-x-auto">
       <table class="w-full uppercase">
         <thead>
-          <tr class="bg-gray-100 text-gray-600 uppercase text-xs">
+          <tr class="bg-sky-300 text-gray-700 uppercase text-xs">
             <th class="py-2 px-3 text-left">#</th>
             <th class="py-2 px-3 text-left">Patient</th>
             <th class="py-2 px-3 text-left">Theatre</th>
@@ -55,44 +55,29 @@
             <th class="py-2 px-3 text-left">Surgeon</th>
             <th class="py-2 px-3 text-left">Instrument Nurse</th>
             <th class="py-2 px-3 text-left">Circulating Nurse</th>
-            <th class="py-2 px-3 text-left">Consumables</th>
-            <th class="py-2 px-3 text-left">Implants</th>
-            <th class="py-2 px-3 text-left">Details</th>
             <th class="py-2 px-3 text-left">Date</th>
+            <th class="py-2 px-3 text-left">Details</th>
           </tr>
         </thead>
         <tbody class="text-gray-600 text-xs">
           {% for record in surgical_records %}
-            <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-150">
+            <tr class=" border-b border-sky-200 hover:bg-sky-50 transition duration-150 bg-white">
               <td class="py-2 px-3 whitespace-nowrap">
                 <span class="font-medium">{{ forloop.counter }}</span>
               </td>
               <td class="py-2 px-3 whitespace-nowrap">
                 <span class="font-medium">{{ record.patient.file_no }}</span>
               </td>
-              <td class="py-2 px-3">{{ record.theatre }}</td>
-              <td class="py-2 px-3">{{ record.ward }}</td>
-              <td class="py-2 px-3">{{ record.diagnosis }}</td>
-              <td class="py-2 px-3">{{ record.operation }}</td>
-              <td class="py-2 px-3">{{ record.surgeon }}</td>
-              <td class="py-2 px-3">{{ record.instrument_nurse }}</td>
-              <td class="py-2 px-3">{{ record.circulating_nurse }}</td>
-              <td class="py-2 px-3">
-                <ul class="list-disc list-inside">
-                  {% for usage in record.consumableusage_set.all %}
-                  <li>{{ usage.consumable.name }} ({{ usage.quantity }})</li>
-                  {% endfor %}
-                </ul>
+              <td class="py-2 px-3">{{ record.theatre|default:'N/A' }}</td>
+              <td class="py-2 px-3">{{ record.ward|default:'N/A' }}</td>
+              <td class="py-2 px-3">{{ record.diagnosis|default:'N/A' }}</td>
+              <td class="py-2 px-3">{{ record.operation|default:'N/A' }}</td>
+              <td class="py-2 px-3">{{ record.surgeon|default:'N/A' }}</td>
+              <td class="py-2 px-3">{{ record.instrument_nurse|default:'N/A' }}</td>
+              <td class="py-2 px-3">{{ record.circulating_nurse|default:'N/A' }}</td>
+              <td class="py-2 px-3">{{ record.date_of_operation|default:'N/A' }}</td>
+              <td class="py-2 px-3"><a href="{{record.get_absolute_url}}" class="text-blue-500 hover:text-blue-700"><i class="fa fa-solid fa-eye fa-2xl"></i></a>
               </td>
-              <td class="py-2 px-3">
-                <ul class="list-disc list-inside">
-                  {% for usage in record.implantusage_set.all %}
-                  <li>{{ usage.implant.name }} ({{ usage.quantity }})</li>
-                  {% endfor %}
-                </ul>
-              </td>
-              <td class="py-2 px-3">upcoming details page</td>
-              <td class="py-2 px-3">{{ record.date_of_operation }}</td>
             </tr>
           {% empty %}
             <tr>

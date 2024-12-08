@@ -124,6 +124,7 @@ urlpatterns = [
     
     path('theatre-operation-record/create/<str:file_no>/', TheatreOperationRecordCreateView.as_view(), name='theatre_operation_record'),
     path('theatre/<int:theatre_id>/theatre-operation-record-list/', TheatreOperationRecordListView.as_view(), name="theatre_operation_record_list"), 
+    path('theatre/<int:pk>/theatre-operation-record-details/', TheatreOperationRecordDetailView.as_view(), name="theatre_operation_record_details"), 
     
     path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='operation_notes'),
     path('theatre/theatre-notes/update/<int:pk>/', OperationNotesUpdateView.as_view(), name='operation_notes_update'),
