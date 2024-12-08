@@ -1930,12 +1930,16 @@
     <!-- break -->
       <!-- break -->
       <div> 
-        <div>    
-        <!-- Dispensary Form Section -->
-        <a href="{% url 'pharm:add_prescription' patient.file_no visit_record.clinic.id %}" class="text-xs text-green-600 hover:text-green-700">
+        <div class="flex gap-2 justify-center">    
+        <a href="{% url 'pharm:add_prescription' patient.file_no visit_record.clinic.id %}" class="text-xs text-green-600 hover:text-green-700 bg-green-100 p-3 rounded-xl"> 
           <i class="fa-solid fa-prescription fa-2xl"></i>
+          out-patient <br>  
         </a>
-                      </div>     
+        <a href="{% url 'pharm:inpatient_prescription_create' patient.file_no %}" class="text-xs text-orange-600 hover:text-orange-700 bg-orange-100 p-3 rounded-xl">
+          <i class="fa-solid fa-file-prescription fa-2xl"></i>
+          in-patient <br>
+        </a>
+      </div>     
         <div class="overflow-x-auto max-h-[50vh] p-2">
 <table class="min-w-full divide-y divide-cyan-200 mb-4">
     <thead class="bg-cyan-50">
@@ -1943,6 +1947,7 @@
             <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">drug</th>
             <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">dose</th>
             <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">qty</th>
+            <th class=" p-3 text-xs font-medium text-cyan-500 uppercase tracking-wider">pharmacy</th>
         </tr>
     </thead>
     <tbody class="bg-white divide-y divide-cyan-200">
@@ -1954,7 +1959,10 @@
               <td class=" p-3 whitespace-nowrap">{{ pd.drug.name }}</td>
               <td class=" p-3 whitespace-nowrap">{{ pd.dosage }}</td>
               <td class=" p-3 whitespace-nowrap">{{ pd.quantity }}</td>
+              <td colspan="4" class=" p-3 whitespace-nowrap"> {{ p.unit }}</td>
+            
               <td></td>
+
               </tr>
               {% endfor %}
         </tr>

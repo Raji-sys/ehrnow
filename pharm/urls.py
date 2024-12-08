@@ -68,10 +68,10 @@ urlpatterns=[
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
     path('prescriptions/<int:store_pk>/', views.PrescriptionListView.as_view(), name='prescription_list'),
     path('add_prescription/<str:file_no>/', views.PrescriptionCreateView.as_view(), name='add_prescription'),
-    path('add_prescription/<str:file_no>/<int:store_pk>/', 
-     views.PrescriptionCreateView.as_view(), 
-     name='add_prescription'),
-
+    path('add_prescription/<str:file_no>/<int:store_pk>/', views.PrescriptionCreateView.as_view(), name='add_prescription'),
+    
+    path('inpatient-prescription/create/<file_no>/', InPatientPrescriptionCreateView.as_view(), name='inpatient_prescription_create'),
+  
     path('update_prescription/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
   # Dispensary
     path('unit/dispensary/<int:dispensary_id>/dispense/<int:patient_id>', views.dispenserecord, name='dispense'),

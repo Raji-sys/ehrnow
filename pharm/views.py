@@ -1862,3 +1862,56 @@ class PrescriptionUpdateView(UpdateView):
     def get_success_url(self):
         # Assuming you want to redirect to the list view for the current unit/store
         return reverse('pharm:prescription_list', kwargs={'store_pk': self.object.unit.pk})
+
+
+class InPatientPrescriptionCreateView(LoginRequiredMixin, CreateView):
+    model = Prescription
+    form_class = PrescriptionForm
+    template_name = 'dispensary/prescription_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.patient = get_object_or_404(PatientData, file_no=kwargs['file_no'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def set_unit(self, prescription):
+        in_patient_unit = Unit.objects.filter(name__icontains='In-Patient').first()
+        if in_patient_unit:
+            prescription.unit = in_patient_unit
+        else:
+            messages.error(self.request, "No In-Patient unit found.")
+        return prescription
+
+    @transaction.atomic
+    def form_valid(self, form):
+        prescription = form.save(commit=False)
+        prescription.prescribed_by = self.request.user
+        prescription.patient = self.patient
+        prescription = self.set_unit(prescription)
+        prescription.save()
+
+        selected_drugs = self.request.POST.getlist('selected_drugs')
+        selected_doses = self.request.POST.getlist('selected_doses')
+
+        unique_drugs = set()
+
+        for i, drug_id in enumerate(selected_drugs):
+            try:
+                if drug_id in unique_drugs:
+                    messages.warning(self.request, f'Drug {drug_id} was already added and skipped.')
+                    continue
+
+                PrescriptionDrug.objects.create(
+                    prescription=prescription,
+                    drug_id=drug_id,
+                    dosage=selected_doses[i]
+                )
+                unique_drugs.add(drug_id)
+
+            except IntegrityError:
+                messages.warning(self.request, f'Drug {drug_id} could not be added due to a duplicate.')
+                continue
+
+        messages.success(self.request, 'Prescription added successfully')
+        return super().form_valid(form)        
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
