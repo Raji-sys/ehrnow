@@ -1131,7 +1131,6 @@ class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        messages.success(self.request, 'NOTES UPDATED')
         return self.object.patient.get_absolute_url()
 
 
