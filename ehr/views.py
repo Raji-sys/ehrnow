@@ -718,6 +718,7 @@ class PatientFolderView(DetailView):
         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
         context['ward_medication'] = patient.ward_medication.all().order_by('-updated')
         context['ward_clinical_notes'] = patient.ward_clinical_notes.all().order_by('-updated')
+        context['ward_shift_notes'] = patient.ward_shift_notes.all().order_by('-updated')
         context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
         context['operation_notes'] = patient.operation_notes.all().order_by('-updated')
         context['anaesthesia_checklist'] = patient.anaesthesia_checklist.all().order_by('-updated')
@@ -1784,7 +1785,6 @@ class WardVitalSignCreateView(NurseRequiredMixin,CreateView):
     model = WardVitalSigns
     form_class = WardVitalSignsForm
     template_name = 'ehr/ward/ward_vital_signs.html'
-    success_url = reverse_lazy('ward_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -1799,13 +1799,14 @@ class WardVitalSignCreateView(NurseRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
         return context
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
 
 
 class WardMedicationCreateView(NurseRequiredMixin,CreateView):
     model = WardMedication
     form_class = WardMedicationForm
     template_name = 'ehr/ward/ward_medication.html'
-    success_url = reverse_lazy('ward_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -1821,15 +1822,17 @@ class WardMedicationCreateView(NurseRequiredMixin,CreateView):
         context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
         return context
 
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
+
 
 class WardNotesCreateView(NurseRequiredMixin,CreateView):
     model = WardClinicalNote
     form_class = WardNotesForm
     template_name = 'ehr/ward/ward_notes.html'
-    success_url = reverse_lazy('ward_list')
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        form.instance.doctor = self.request.user
         patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient_data
         self.object = form.save()
@@ -1842,6 +1845,46 @@ class WardNotesCreateView(NurseRequiredMixin,CreateView):
         context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
         return context
 
+class WardNotesUpdateView(NurseRequiredMixin, UpdateView):
+    model=WardClinicalNote
+    form_class = WardNotesForm
+    template_name = 'ehr/ward/ward_notes.html'
+    
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
+
+
+class WardShiftNotesCreateView(NurseRequiredMixin,CreateView):
+    model = WardShiftNote
+    form_class = WardShiftNotesForm
+    template_name = 'ehr/ward/ward_notes.html'
+
+    def form_valid(self, form):
+        form.instance.nurse = self.request.user
+        patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
+        self.object = form.save()
+
+        messages.success(self.request, 'Notes Taken')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        return context
+
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
+
+
+class WardShiftNotesUpdateView(NurseRequiredMixin, UpdateView):
+    model=WardShiftNote
+    form_class = WardShiftNotesForm
+    template_name = 'ehr/ward/ward_notes.html'
+    
+    def get_success_url(self):
+
+        return self.object.patient.get_absolute_url()
     
 class RadiologyTestCreateView(LoginRequiredMixin, CreateView):
     model = RadiologyResult

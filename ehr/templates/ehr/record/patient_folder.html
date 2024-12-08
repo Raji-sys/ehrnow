@@ -68,7 +68,7 @@
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">PHYSIO</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">ADMISSION</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">SURGERY BILL</a></li>
-        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">WARD</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">IN-PATIENT</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">THEATRE</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">FILES</a></li>
 </ul>
@@ -179,7 +179,7 @@
               </tr>
               {%empty%}
               <div class="p-2">
-                  <p>No payments found yet</p>
+                  <p>No payments found found</p>
               </div>
              {%endfor%}
             </tbody>
@@ -228,7 +228,7 @@
               </tr>
               {%empty%}
               <div class="p-2">
-                  <p>No payments found yet</p>
+                  <p>No payments found found</p>
               </div>
              {%endfor%}
             </tbody>
@@ -283,7 +283,7 @@
               </tr>
               {%empty%}
               <div class="p-2">
-                  <p>No vital signs yet</p>
+                  <p>No vital signs found</p>
               </div>
          {%endfor%}
             </tbody>
@@ -318,7 +318,7 @@
                 <td class=" p-3 whitespace-nowrap">
                   <details>
                     <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                    <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4">
+                    <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4 normal-case">
                       <p class="text-xs text-center">{{ c.note.html|safe }}</p>
                     </div>
                   </details>
@@ -331,7 +331,7 @@
               </tr>
               {%empty%}
               <div class="p-2">
-                  <p>No clinical notes yet</p>
+                  <p>No clinical notes found</p>
               </div>
          {%endfor%}
             </tbody>
@@ -372,7 +372,7 @@
               </tr>
               {%empty%}
               <div class="p-2">
-                  <p>No appointments yet</p>
+                  <p>No appointments found</p>
               </div>
          {%endfor%}
             </tbody>
@@ -428,7 +428,7 @@
                   </tr>
               {%empty%}
               <div class="p-2">
-                  <p>No requests yet</p>
+                  <p>No requests found</p>
               </div>
              {%endfor%}
 
@@ -492,7 +492,7 @@
                               </tr>
                             {%empty%}
                             <tr>
-                              <td colspan="10" class="p-3 text-center">blood group test yet.</td>
+                              <td colspan="10" class="p-3 text-center">blood group test found.</td>
                           </tr>
                           {% endfor %}
                           </tbody>
@@ -633,7 +633,7 @@
                             </tr>
                             {%empty%}
                             <tr>
-                              <td colspan="10" class="p-3 text-center">No Urea & Electrolyte test yet.</td>
+                              <td colspan="10" class="p-3 text-center">No Urea & Electrolyte test found.</td>
                           </tr>
                           {% endfor %}
                           </tbody>
@@ -671,7 +671,7 @@
                           </tr>
                           {%empty%}
                           <tr>
-                            <td colspan="9" class="p-3 text-center">No liver function test yet.</td>
+                            <td colspan="9" class="p-3 text-center">No liver function test found.</td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -708,7 +708,7 @@
                           </tr>
                           {%empty%}
                           <tr>
-                            <td colspan="7" class="p-3 text-center">No lipid profile test yet.</td>
+                            <td colspan="7" class="p-3 text-center">No lipid profile test found.</td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -744,7 +744,7 @@
                           </tr>
                           {%empty%}
                           <tr>
-                            <td colspan="6" class="p-3 text-center">No bone chemistry test yet.</td>
+                            <td colspan="6" class="p-3 text-center">No bone chemistry test found.</td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -781,7 +781,7 @@
                           </tr>
                           {%empty%}
                           <tr>
-                            <td colspan="7" class="p-3 text-center">No serum proteins test yet.</td>
+                            <td colspan="7" class="p-3 text-center">No serum proteins test found.</td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -818,7 +818,7 @@
                           </tr>
                           {%empty%}
                           <tr>
-                            <td colspan="6" class="p-3 text-center">No cerebo spinal fluid test yet.</td>
+                            <td colspan="6" class="p-3 text-center">No cerebo spinal fluid test found.</td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -855,7 +855,7 @@
                           </tr>
                           {%empty%}
                           <tr>
-                            <td colspan="5" class="p-3 text-center">No blood glucose test yet.</td>
+                            <td colspan="5" class="p-3 text-center">No blood glucose test found.</td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -892,7 +892,7 @@
                           </tr>
                           {%empty%}
                           <tr>
-                            <td colspan="9" class="p-3 text-center">No miscellaneous test  yet.</td>
+                            <td colspan="9" class="p-3 text-center">No miscellaneous test  found.</td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -958,7 +958,7 @@
                             </tr>
                             {%empty%}
                             <tr>
-                              <td colspan="10" class="p-3 text-center">No Urine microscopy test yet.</td>
+                              <td colspan="10" class="p-3 text-center">No Urine microscopy test found.</td>
                           </tr>
                           {% endfor %}
                           </tbody>
@@ -997,7 +997,7 @@
                                         </tr>
                                         {% empty %}
                                         <tr>
-                                          <td colspan="11" class="p-3 text-center">No HVS test yet.</td>
+                                          <td colspan="11" class="p-3 text-center">No HVS test found.</td>
                                         </tr>
                                         {% endfor %}
                                       </tbody>
@@ -1036,7 +1036,7 @@
                                         </tr>
                                         {% empty %}
                                         <tr>
-                                          <td colspan="12" class="p-3 text-center">No Stool test yet.</td>
+                                          <td colspan="12" class="p-3 text-center">No Stool test found.</td>
                                         </tr>
                                         {% endfor %}
                                       </tbody>
@@ -1076,7 +1076,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="6" class="p-3 text-center">No Blood Culture test yet.</td>
+                <td colspan="6" class="p-3 text-center">No Blood Culture test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1115,7 +1115,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="7" class="p-3 text-center">No Occult Blood test yet.</td>
+                <td colspan="7" class="p-3 text-center">No Occult Blood test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1154,7 +1154,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="6" class="p-3 text-center">No Sputum MCS test yet.</td>
+                <td colspan="6" class="p-3 text-center">No Sputum MCS test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1195,7 +1195,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="9" class="p-3 text-center">No Gram Stain test yet.</td>
+                <td colspan="9" class="p-3 text-center">No Gram Stain test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1234,7 +1234,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="9" class="p-3 text-center">swab_pus_aspirate test yet.</td>
+                <td colspan="9" class="p-3 text-center">swab_pus_aspirate test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1273,7 +1273,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="9" class="p-3 text-center">No ZN Stain test yet.</td>
+                <td colspan="9" class="p-3 text-center">No ZN Stain test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1312,7 +1312,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="13" class="p-3 text-center">No Semen Analysis test yet.</td>
+                <td colspan="13" class="p-3 text-center">No Semen Analysis test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1351,7 +1351,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="18" class="p-3 text-center">No Urinalysis test yet.</td>
+                <td colspan="18" class="p-3 text-center">No Urinalysis test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1389,7 +1389,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="6" class="p-3 text-center">No Pregnancy test yet.</td>
+                <td colspan="6" class="p-3 text-center">No Pregnancy test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1447,7 +1447,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="13" class="p-3 text-center">No Widal test yet.</td>
+                <td colspan="13" class="p-3 text-center">No Widal test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1482,7 +1482,7 @@
                             </tr>
                             {%empty%}
                             <tr>
-                              <td colspan="9" class="p-3 text-center">No rheumatoid factor test  yet.</td>
+                              <td colspan="9" class="p-3 text-center">No rheumatoid factor test  found.</td>
                           </tr>
                           {% endfor %}
                           </tbody>
@@ -1517,7 +1517,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="9" class="p-3 text-center">No Hepatitis B test yet.</td>
+                <td colspan="9" class="p-3 text-center">No Hepatitis B test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1549,7 +1549,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="9" class="p-3 text-center">No Hepatitis C test yet.</td>
+                <td colspan="9" class="p-3 text-center">No Hepatitis C test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1583,7 +1583,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="9" class="p-3 text-center">No VDRL test yet.</td>
+                <td colspan="9" class="p-3 text-center">No VDRL test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1618,7 +1618,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="5" class="p-3 text-center">No mantoux test yet.</td>
+                <td colspan="5" class="p-3 text-center">No mantoux test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1651,7 +1651,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="5" class="p-3 text-center">No ASO Titre test yet.</td>
+                <td colspan="5" class="p-3 text-center">No ASO Titre test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1684,7 +1684,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="5" class="p-3 text-center">No CRP test yet.</td>
+                <td colspan="5" class="p-3 text-center">No CRP test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1717,7 +1717,7 @@
               </tr>
               {% empty %}
               <tr>
-                <td colspan="5" class="p-3 text-center">No HIV Screening test yet.</td>
+                <td colspan="5" class="p-3 text-center">No HIV Screening test found.</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -1947,7 +1947,7 @@
         </tr>
         {%empty%}
         <div class="p-2 text-xs">
-            <p>No prescriptions yet</p>
+            <p>No prescriptions found</p>
         </div>
         {% endfor %}
     </tbody>
@@ -1983,7 +1983,7 @@
                     {% empty %}
                     <tr>
                         <td colspan="5" class="p-3">
-                            <p>No radiology test and result yet</p>
+                            <p>No radiology test and result found</p>
                         </td>
                     </tr>
                     {% endfor %}
@@ -2030,7 +2030,7 @@
             {% empty %}
             <tr>
                 <td colspan="10" class="p-3">
-                    <p>No physio request information yet</p>
+                    <p>No physio request information found</p>
                 </td>
             </tr>
             {% endfor %}
@@ -2157,7 +2157,7 @@
                       </tr>
                   {%empty%}
                   <div class="p-2">
-                      <p>No surgery bill yet</p>
+                      <p>No surgery bill found</p>
                   </div>
                  {%endfor%}
                 </tbody>
@@ -2201,7 +2201,7 @@
                       </tr>
                   {%empty%}
                   <div class="p-2">
-                      <p>No surgery bill yet</p>
+                      <p>No surgery bill found</p>
                   </div>
                  {%endfor%}
                 </tbody>
@@ -2223,6 +2223,7 @@
           <li ><a href="#" class="rounded-lg ">IN-PATIENT VITAL SIGNS</a></li>
           <li class=><a href="#" class="rounded-lg ">IN-PATIENT MEDICATION</a></li>
           <li><a href="#" class="rounded-lg ">IN-PATIENT NOTES</a></li>
+          <li><a href="#" class="rounded-lg ">IN-PATIENT NURSE SHIFT NOTES</a></li>
         </ul>
         
         <div class="uk-switcher uk-margin">
@@ -2266,7 +2267,7 @@
                       </tr>
                   {%empty%}
                   <div class="p-2">
-                      <p>No ward vitals sign yet</p>
+                      <p>No in-patient vitals sign found</p>
                   </div>
                  {%endfor%}
                 </tbody>
@@ -2303,7 +2304,7 @@
                   </tr>
                   {%empty%}
                   <div class="p-2">
-                      <p>No ward medications yet</p>
+                      <p>No in-patient medications found</p>
                   </div>
                  {%endfor%}
                 </tbody>
@@ -2335,17 +2336,58 @@
                     <td class=" p-3 whitespace-nowrap">
                       <details>
                         <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                        <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4">
+                        <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4 normal-case">
                           <p class="text-xs text-center">{{ w.note.html|safe }}</p>
                         </div>
                       </details>    
                     </td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.user|default_if_none:'' }}</td>
+                    <td class=" p-3 whitespace-nowrap">{{ w.doctor|default_if_none:'' }}</td>
                     <td class=" p-3 whitespace-nowrap">{{ w.updated|default_if_none:'' }}</td>
                   </tr>
                   {%empty%}
                   <div class="p-2">
-                      <p>No ward clinical notes yet</p>
+                      <p>No in-patient clinical notes found</p>
+                  </div>
+                 {%endfor%}
+                </tbody>
+              </table>
+            </div>
+          </div>  
+
+          <div>
+            <div>
+              <a href="{% url 'ward_shift_notes' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
+            </div>
+            <div class="overflow-x-auto max-h-[50vh] p-2">
+              <table class="min-w-full divide-y divide-cyan-200 mb-4">
+                <thead class="bg-cyan-50">
+        
+                  <tr class="text-xs">
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Note</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Nurse</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
+                  </tr>
+        
+                </thead>
+                <tbody class="bg-white divide-y divide-cyan-200">
+                  {% for w in ward_shift_notes %}
+                  <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+                    <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
+                    <td class=" p-3 whitespace-nowrap">
+                      <details>
+                        <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
+                        <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4 normal-case">
+                          <p class="text-xs text-center normal-case">{{ w.note.html|safe }}</p>
+                        </div>
+                      </details>    
+                    </td>
+                    <td class=" p-3 whitespace-nowrap">{{ w.nurse|default_if_none:'' }}</td>
+                    <td class=" p-3 whitespace-nowrap">{{ w.updated|default_if_none:'' }}</td>
+                  </tr>
+                  {%empty%}
+                  <div class="p-2">
+                      <p>No in-patient shift notes found</p>
                   </div>
                  {%endfor%}
                 </tbody>
@@ -2405,7 +2447,7 @@
                     </tr>
                     {%empty%}
                     <div class="p-2">
-                        <p>No theatre bookings yet</p>
+                        <p>No theatre bookings found</p>
                     </div>
                    {%endfor%}
                   </tbody>
@@ -2443,7 +2485,7 @@
                       <td class=" p-3 whitespace-nowrap">
                         <details>
                           <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                          <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4">
+                          <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4 normal">
                             <p class="text-xs text-center">{{ o.notes.html|safe }}</p>
                           </div>
                         </details>    
@@ -2453,7 +2495,7 @@
                     </tr>
                     {%empty%}
                     <div class="p-2">
-                        <p>No theatre notes yet</p>
+                        <p>No theatre notes found</p>
                     </div>
                    {%endfor%}
                   </tbody>
@@ -2504,7 +2546,7 @@
                     </tr>
                     {%empty%}
                     <div class="p-2">
-                        <p>No theatre operation records yet</p>
+                        <p>No theatre operation records found</p>
                     </div>
                    {%endfor%}
                   </tbody>
@@ -2561,7 +2603,7 @@
                     </tr>
                     {%empty%}
                     <div class="p-2">
-                        <p>No anaesthesia checklist record yet</p>
+                        <p>No anaesthesia checklist record found</p>
                     </div>
                    {%endfor%}
                   </tbody>

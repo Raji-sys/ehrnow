@@ -513,7 +513,8 @@ class WardClinicalNote(models.Model):
         return self.patient
 
 
-class WardShiftSUmmaryNote(models.Model):
+class WardShiftNote(models.Model):
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='ward_shift_notes')
     nurse = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     note=QuillField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)

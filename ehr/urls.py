@@ -110,7 +110,10 @@ urlpatterns = [
  
     path('ward/nursing/vital-signs/<str:file_no>/', WardVitalSignCreateView.as_view(), name='ward_vital_signs'),
     path('ward/nursing/medication/<str:file_no>/', WardMedicationCreateView.as_view(), name='ward_medication'),
-    path('ward/nursing/notes/<str:file_no>/', WardNotesCreateView.as_view(), name='ward_notes'),
+    path('ward/doctor/notes/<str:file_no>/', WardNotesCreateView.as_view(), name='ward_notes'),
+    path('ward/nursing/notes/<str:file_no>/', WardShiftNotesCreateView.as_view(), name='ward_shift_notes'),
+    path('ward/doctor/notes/update/<int:pk>/', WardNotesUpdateView.as_view(), name='ward_note_update'),
+    path('ward/nursing/notes/update/<int:pk>/', WardShiftNotesUpdateView.as_view(), name='ward_shift_note_update'),
 
     #theatre
     path('theatre/theatre-details/<int:pk>/', TheatreDetailView.as_view(), name='theatre_details'),

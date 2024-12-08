@@ -22,7 +22,7 @@
           {% endif %}
 <form method="post" enctype="multipart/form-data"class="text-xs" >
   {% csrf_token %}
-  <div class="mb-2 uppercase text-cyan-900 px-6">
+  <div class="mb-2 text-cyan-900 px-6">
     {% for field in form %}
     <div class="flex justify-center">
      <label for="{{field.id_for_label}}" class="block m-1">{{ field.label_tag }}</label>
@@ -37,7 +37,7 @@
                 {% endfor %}
             </div>
   <div class="flex justify-center align-middle p-2">
-    <input type="submit" value="submit" class="focus:opacity-10  focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+    <input type="submit" value="save" class="focus:opacity-10  focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
 bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
   </div>
   </form>

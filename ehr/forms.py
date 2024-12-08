@@ -356,6 +356,18 @@ class WardNotesForm(forms.ModelForm):
             })
 
 
+class WardShiftNotesForm(forms.ModelForm):
+    class Meta:
+        model = WardShiftNote
+        fields = ['note',]
+    def __init__(self, *args, **kwargs):
+        super(WardShiftNotesForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+
 class BillingForm(forms.ModelForm):
     class Meta:
         model = Billing

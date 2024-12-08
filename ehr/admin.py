@@ -138,8 +138,8 @@ class MedicalIllnesstAdmin(admin.ModelAdmin):
     list_filter = ('name',)
     # filter_horizontal = ('concurrent_medical_illnesses',)
 
-@admin.register(WardShiftSUmmaryNote)
-class WardShiftSUmmaryNoteAdmin(admin.ModelAdmin):
+@admin.register(WardShiftNote)
+class WardShiftNoteAdmin(admin.ModelAdmin):
     list_display = ('nurse','updated',)
     search_fields = ('nurse','updated')
     list_filter = ('nurse','updated')
