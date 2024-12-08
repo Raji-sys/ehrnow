@@ -91,10 +91,23 @@ class HematologyRequestListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(payment__unit__iexact="Hematology",cleared=False).order_by('-updated')
+        queryset = super().get_queryset().filter(payment__unit__iexact="Hematology",cleared=False).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context 
     
 class HematologyListView(ListView):
     model=Testinfo
@@ -103,10 +116,22 @@ class HematologyListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(payment__unit__iexact='Hematology',cleared=True).order_by('-updated')
+        queryset = super().get_queryset().filter(payment__unit__iexact='Hematology',cleared=True).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
-    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context    
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ReportView(ListView):
@@ -208,10 +233,23 @@ class ChempathRequestListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset = queryset.filter(payment__unit__iexact="Chemical pathology",cleared=False).order_by('-updated')
+        queryset=super().get_queryset().filter(payment__unit__iexact="Chemical pathology",cleared=False).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
-    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context    
 
 class ChempathListView(ListView):
     model=Testinfo
@@ -220,10 +258,23 @@ class ChempathListView(ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset=queryset.filter(payment__unit__iexact='Chemical pathology',cleared=True).order_by('-updated')
+        queryset=super().get_queryset().filter(payment__unit__iexact='Chemical pathology',cleared=True).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context
 
 class MicroRequestListView(ListView):
     model=Testinfo
@@ -232,10 +283,23 @@ class MicroRequestListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset = queryset.filter(payment__unit__iexact="Microbiology",cleared=False).order_by('-updated')
+        queryset=super().get_queryset().filter(payment__unit__iexact="Microbiology",cleared=False).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context
 
 class MicroListView(ListView):
     model=Testinfo
@@ -244,10 +308,23 @@ class MicroListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset=queryset.filter(payment__unit__iexact='Microbiology',cleared=True).order_by('-updated')
+        queryset=super().get_queryset().filter(payment__unit__iexact='Microbiology',cleared=True).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context
 
 class SerologyRequestListView(ListView):
     model = Testinfo
@@ -256,9 +333,23 @@ class SerologyRequestListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(payment__unit__iexact="Serology",cleared=False).order_by('-updated')
+        queryset = super().get_queryset().filter(payment__unit__iexact="Serology",cleared=False).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context
 
 
 class SerologyListView(ListView):
@@ -268,10 +359,23 @@ class SerologyListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset=queryset.filter(payment__unit__iexact='Serology',cleared=True).order_by('-updated')
+        queryset = super().get_queryset().filter(payment__unit__iexact='Serology',cleared=True).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
-    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context    
 
 class GeneralRequestListView(ListView):
     model=GeneralTestResult
@@ -280,10 +384,23 @@ class GeneralRequestListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset = queryset.filter(cleared=False).order_by('-test_info__updated')
+        queryset=super().get_queryset().filter(cleared=False).order_by('-test_info__updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(test_info__patient__first_name__icontains=query) |
+                Q(test_info__patient__last_name__icontains=query) |
+                Q(test_info__patient__other_name__icontains=query) |
+                Q(test_info__patient__file_no__icontains=query)|
+                Q(test_info__patient__phone__icontains=query)|
+                Q(test_info__patient__title__icontains=query)
+            )
         return queryset
-    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context    
 
 class GeneralListView(ListView):
     model=GeneralTestResult
@@ -292,10 +409,23 @@ class GeneralListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset=super().get_queryset()
-        queryset=queryset.filter(test_info__payment__status=True,cleared=True).order_by('-test_info__updated')
+        queryset=super().get_queryset().filter(test_info__payment__status=True,cleared=True).order_by('-test_info__updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(test_info__patient__first_name__icontains=query) |
+                Q(test_info__patient__last_name__icontains=query) |
+                Q(test_info__patient__other_name__icontains=query) |
+                Q(test_info__patient__file_no__icontains=query)|
+                Q(test_info__patient__phone__icontains=query)|
+                Q(test_info__patient__title__icontains=query)
+            )
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context
 
 class GeneralTestCreateView(LoginRequiredMixin, CreateView):
     model=GeneralTestResult
@@ -1972,19 +2102,30 @@ class MicrobiologyTestListView(LoginRequiredMixin, ListView):
     paginate_by = 50  # Adjust as needed
 
     def get_queryset(self):
-        return LabTesting.objects.filter(
-            lab__icontains='MICROBIOLOGY'
-        ).select_related(
+        queryset = super().get_queryset().filter(lab__icontains='MICROBIOLOGY').select_related(
             'labtest',
             'labtest__patient',
             'labtest__user',
             'item',
             'payment'
         ).order_by('-labtest__created')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(labtest__patient__first_name__icontains=query) |
+                Q(labtest__patient__last_name__icontains=query) |
+                Q(labtest__patient__other_name__icontains=query) |
+                Q(labtest__patient__file_no__icontains=query)|
+                Q(labtest__patient__phone__icontains=query)|
+                Q(labtest__patient__title__icontains=query)
+            )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['lab_name'] = 'MICROBIOLOGY'
+        context['dashboard_url'] = 'results:micro'
+        context['query'] = self.request.GET.get('q', '')       
         return context
 
 
@@ -1995,19 +2136,29 @@ class ChempathTestListView(LoginRequiredMixin, ListView):
     paginate_by = 50  # Adjust as needed
 
     def get_queryset(self):
-        return LabTesting.objects.filter(
-            lab__icontains='CHEMICAL PATHOLOGY'
-        ).select_related(
+        queryset = super().get_queryset().filter(lab__icontains='CHEMICAL PATHOLOGY').select_related(
             'labtest',
             'labtest__patient',
             'labtest__user',
             'item',
             'payment'
         ).order_by('-labtest__created')
-
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(labtest__patient__first_name__icontains=query) |
+                Q(labtest__patient__last_name__icontains=query) |
+                Q(labtest__patient__other_name__icontains=query) |
+                Q(labtest__patient__file_no__icontains=query)|
+                Q(labtest__patient__phone__icontains=query)|
+                Q(labtest__patient__title__icontains=query)
+            )
+        return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['lab_name'] = 'CHEMICAL PATHOLOGY'
+        context['dashboard_url'] = 'results:chempath'
+        context['query'] = self.request.GET.get('q', '')       
         return context
     
 class HematologyTestListView(LoginRequiredMixin, ListView):
@@ -2017,19 +2168,29 @@ class HematologyTestListView(LoginRequiredMixin, ListView):
     paginate_by = 50  # Adjust as needed
 
     def get_queryset(self):
-        return LabTesting.objects.filter(
-            lab__icontains='HEMATOLOGY'
-        ).select_related(
+        queryset = super().get_queryset().filter(lab__icontains='HEMATOLOGY').select_related(
             'labtest',
             'labtest__patient',
             'labtest__user',
             'item',
             'payment'
         ).order_by('-labtest__created')
-
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(labtest__patient__first_name__icontains=query) |
+                Q(labtest__patient__last_name__icontains=query) |
+                Q(labtest__patient__other_name__icontains=query) |
+                Q(labtest__patient__file_no__icontains=query)|
+                Q(labtest__patient__phone__icontains=query)|
+                Q(labtest__patient__title__icontains=query)
+            )
+        return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['lab_name'] = 'HEMATOLOGY'
+        context['dashboard_url'] = 'results:hematology'
+        context['query'] = self.request.GET.get('q', '')       
         return context
 
 class SerologyTestListView(LoginRequiredMixin, ListView):
@@ -2039,17 +2200,27 @@ class SerologyTestListView(LoginRequiredMixin, ListView):
     paginate_by = 50  # Adjust as needed
 
     def get_queryset(self):
-        return LabTesting.objects.filter(
-            lab__icontains='SEROLOGY'
-        ).select_related(
+        queryset = super().get_queryset().filter(lab__icontains='SEROLOGY').select_related(
             'labtest',
             'labtest__patient',
             'labtest__user',
             'item',
             'payment'
         ).order_by('-labtest__created')
-
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(labtest__patient__first_name__icontains=query) |
+                Q(labtest__patient__last_name__icontains=query) |
+                Q(labtest__patient__other_name__icontains=query) |
+                Q(labtest__patient__file_no__icontains=query)|
+                Q(labtest__patient__phone__icontains=query)|
+                Q(labtest__patient__title__icontains=query)
+            )
+        return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['lab_name'] = 'SEROLOGY'
+        context['dashboard_url'] = 'results:serology'
+        context['query'] = self.request.GET.get('q', '')       
         return context

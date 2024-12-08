@@ -3,6 +3,21 @@
 {%block title%}RADIOLOGY RESULT LIST {%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'radiology' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>RADIOLOGY RESULT LIST</div>{%endblock%}
 {% block content %}
+<form method="get" class="mb-2 flex justify-center">
+  <input type="text" name="q" placeholder="Search patients..." value="{{ query|default:'' }}"
+         class="p-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+         <button type="submit"
+         class="p-3 bg-blue-500 text-white rounded-r hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+         <i class="fa fa-solid fa-search fa-xl"></i>
+ </button>
+ {% if request.GET.urlencode %}
+  <a href="?"
+     class="p-3 bg-white text-amber-600 rounded-r-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs">
+     <i class="fa-solid fa-rotate fa-xl"></i>
+    </a>
+    {%endif%}
+</form>
+
 <div class="mt-4">
   <div class="md:mx-20 mx-2 rounded-xl p-4 shadow-black shadow-sm bg-gray-50">
   <div class="overflow-x-auto">

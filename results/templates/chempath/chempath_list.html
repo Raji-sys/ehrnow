@@ -3,6 +3,32 @@
 {% block title %}CHEMPATH RESULTS LIST{% endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'results:chempath' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>LATEST CHEMPATH RESULTS LIST</div>{%endblock%}
 {% block content %}
+<div class="">
+  <section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
+    {% for message in messages %}
+    <div class="">
+      <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
+        <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
+        <p class="text-green-700  uppercase">{{ message }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+<form method="get" class="mb-2 flex justify-center">
+  <input type="text" name="q" placeholder="Search patients..." value="{{ query|default:'' }}"
+         class="p-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+         <button type="submit"
+         class="p-3 bg-blue-500 text-white rounded-r hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+         <i class="fa fa-solid fa-search fa-xl"></i>
+ </button>
+ {% if request.GET.urlencode %}
+  <a href="?"
+     class="p-3 bg-white text-amber-600 rounded-r-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs">
+     <i class="fa-solid fa-rotate fa-xl"></i>
+    </a>
+    {%endif%}
+</form>
 <div class="mt-2 p-1">
   <div class="md:mx-20 mx-2 rounded-xl p-1 shadow-black shadow-sm bg-gray-50">
   <div class="overflow-x-auto">

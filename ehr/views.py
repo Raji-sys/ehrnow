@@ -1876,9 +1876,22 @@ class RadiologyListView(ListView):
     context_object_name='radiology_results'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(payment__status__isnull=False,cleared=True).order_by('-updated')
+        queryset = super().get_queryset().filter(payment__status__isnull=False,cleared=True).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context  
     
 
 class RadiologyResultCreateView(LoginRequiredMixin, UpdateView):
@@ -1904,10 +1917,25 @@ class RadiologyRequestListView(ListView):
     model=RadiologyResult
     template_name='ehr/radiology/radiology_request.html'
     context_object_name='radiology_request'
+
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(cleared=False).order_by('-updated')
+        queryset = super().get_queryset().filter(cleared=False).order_by('-updated')
+
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context  
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -2762,9 +2790,22 @@ class PhysioListView(ListView):
     context_object_name='physio'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(payment__status__isnull=False,cleared=True).order_by('-updated')
+        queryset = super().get_queryset().filter(payment__status__isnull=False,cleared=True).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context 
     
 
 class PhysioRequestUpdateView(PhysioRequiredMixin, UpdateView):
@@ -2789,10 +2830,26 @@ class PhysioRequestListView(ListView):
     model=PhysioRequest
     template_name='ehr/physio/physio_request.html'
     context_object_name='physio'
+
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(cleared=False).order_by('-updated')
+        queryset = super().get_queryset().filter(cleared=False).order_by('-updated')
+
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')       
+        return context  
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
