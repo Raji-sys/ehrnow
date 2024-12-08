@@ -36,8 +36,8 @@
       </div>
       <div class="text-center rounded-b-xl p-3 bg-gray-50 uppercase max-h[40vh]">
         {% if total_credit_amount > 0 %}
-        <div>
-          <h2 class="text-sm font-semibold text-red-700 sm:mb-0 sm:mr-4 uppercase p-2"><i class="fa fa-solid fa-minus-circle fa-xl"></i>Total Credit Amount: {{ total_credit_amount }}<i class="fa fa-solid fa-minus-circle fa-xl"></i></h2>
+        <div class="bg-red-100 w-fit mx-auto rounded-xl">
+          <h2 class="text-xs font-semibold text-red-700 sm:mb-0 sm:mr-4 uppercase p-2">Credit Amount: <i class="fa fa-solid fa-minus-square fa-xl"></i>&nbsp;<span class="text-sm">₦{{ total_credit_amount }}</span></h2>
           </div>
           {%endif%}
     <!-- start -->
@@ -297,36 +297,49 @@
         <a href="{%url 'clinical_note' patient.file_no%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-notes-medical fa-2xl"></i></a>
       </div>     
 
-        <div class="overflow-x-auto max-h-[50vh] p-2">
+        <div class="overflow-x-auto max-h-[100vh] p-2 ">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
-              <tr class="text-xs">
+              <tr class="text-xs ">
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DOCTOR</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NOTE</th>
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DIAGNOSIS</th>
-                <!-- <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">APPOINTMENT</th> -->
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">UPDATE/REVIEW</th> 
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">DATE CONSULTED</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">UPDATE</th> 
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
               {% for c in clinical_notes %}
               <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                 <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                <td class=" p-3 whitespace-nowrap">{{ c.user }}</td>
-                <td class=" p-3 whitespace-nowrap">
+                <td class="p-3 whitespace-nowrap">
                   <details>
-                    <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                    <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4 normal-case">
-                      <p class="text-xs text-center">{{ c.note.html|safe }}</p>
+                    <summary class="bg-blue-600 py-2 px-4 text-white rounded-lg text-center cursor-pointer">
+                      OPEN NOTE
+                    </summary>
+                    <div class="bg-white text-blue-600 rounded-md p-4 m-4 max-h-[50vh] overflow-y-auto">
+                      <ul class="space-y-4">
+                        <li class="text-xs uppercase text-left">
+                          <strong class="text-blue-600">Diagnosis:</strong>
+                          <span class="text-gray-700 font-semibold">{{ c.diagnosis|default:'N/A' }}</span>
+                        </li>
+                        <li class="text-xs uppercase text-left flex justify-between">
+                          <div>
+                            <strong class="text-blue-600">Doctor:</strong>
+                            <span class="text-gray-700 font-semibold">{{ c.user|default:'N/A' }}</span>
+                          </div>
+                          <div>
+                            <strong class="text-blue-600">Date:</strong>
+                            <span class="text-gray-700 font-semibold">{{ c.updated }}</span>
+                          </div>
+                        </li>
+                        <hr class="my-4 border-blue-600">
+                        <li class="text-xs text-left text-gray-700 normal-case">
+                          {{ c.note.html|safe }}
+                        </li>
+                      </ul>
                     </div>
                   </details>
                 </td>
-                <td class=" p-3 whitespace-nowrap">{{ c.diagnosis|default_if_none:'' }}</td>
-                <!-- <td class=" p-3 whitespace-nowrap">{{ c.appointment|default_if_none:'' }}</td> -->
                 <td class=" p-3 whitespace-nowrap"><a href="{%url 'clinical_note_update' c.id%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-pen-square fa-2xl"></i></a>
-                  <td class=" p-3 whitespace-nowrap">{{ c.updated }}</td>
                 </td>
               </tr>
               {%empty%}
@@ -2317,15 +2330,14 @@
             <div>
               <a href="{% url 'ward_notes' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
             </div>
-            <div class="overflow-x-auto max-h-[50vh] p-2">
+            <div class="overflow-x-auto max-h-[100vh] p-2">
               <table class="min-w-full divide-y divide-cyan-200 mb-4">
                 <thead class="bg-cyan-50">
         
                   <tr class="text-xs">
                     <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                     <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Note</th>
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">By</th>
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">update</th>
                   </tr>
         
                 </thead>
@@ -2333,16 +2345,33 @@
                   {% for w in ward_clinical_notes %}
                   <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                     <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                    <td class=" p-3 whitespace-nowrap">
+                    <td class="p-3 whitespace-nowrap">
                       <details>
-                        <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                        <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4 normal-case">
-                          <p class="text-xs text-center">{{ w.note.html|safe }}</p>
+                        <summary class="bg-blue-600 py-2 px-4 text-white rounded-lg text-center cursor-pointer">
+                          OPEN NOTE
+                        </summary>
+                        <div class="bg-white text-blue-600 rounded-md p-4 m-4 max-h-[50vh] overflow-y-auto">
+                          <ul class="space-y-4">
+                            <li class="text-xs uppercase text-left flex justify-between">
+                              <div>
+                                <strong class="text-blue-600">Doctor:</strong>
+                                <span class="text-gray-700 font-semibold">{{ w.doctor|default:'N/A' }}</span>
+                              </div>
+                              <div>
+                                <strong class="text-blue-600">Date:</strong>
+                                <span class="text-gray-700 font-semibold">{{ w.updated }}</span>
+                              </div>
+                            </li>
+                            <hr class="my-4 border-blue-600">
+                            <li class="text-xs text-left text-gray-700 normal-case">
+                              {{ w.note.html|safe }}
+                            </li>
+                          </ul>
                         </div>
-                      </details>    
+                      </details>
                     </td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.doctor|default_if_none:'' }}</td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.updated|default_if_none:'' }}</td>
+
+                    <td class=" p-3 whitespace-nowrap"><a href="{%url 'ward_note_update' w.id%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-pen-square fa-2xl"></i></a>
                   </tr>
                   {%empty%}
                   <div class="p-2">
@@ -2358,15 +2387,14 @@
             <div>
               <a href="{% url 'ward_shift_notes' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
             </div>
-            <div class="overflow-x-auto max-h-[50vh] p-2">
+            <div class="overflow-x-auto max-h-[100vh] p-2">
               <table class="min-w-full divide-y divide-cyan-200 mb-4">
                 <thead class="bg-cyan-50">
         
                   <tr class="text-xs">
                     <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
                     <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Note</th>
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Nurse</th>
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
+                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Update</th>
                   </tr>
         
                 </thead>
@@ -2374,16 +2402,33 @@
                   {% for w in ward_shift_notes %}
                   <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                     <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                    <td class=" p-3 whitespace-nowrap">
+                    <td class="p-3 whitespace-nowrap">
                       <details>
-                        <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                        <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4 normal-case">
-                          <p class="text-xs text-center normal-case">{{ w.note.html|safe }}</p>
+                        <summary class="bg-blue-600 py-2 px-4 text-white rounded-lg text-center cursor-pointer">
+                          OPEN NOTE
+                        </summary>
+                        <div class="bg-white text-blue-600 rounded-md p-4 m-4 max-h-[50vh] overflow-y-auto border border-gray-700">
+                          <ul class="space-y-4 ">
+                            <li class="text-xs uppercase text-left flex justify-between">
+                              <div>
+                                <strong class="text-blue-600">Nurse:</strong>
+                                <span class="text-gray-700 font-semibold">{{ w.nurse|default:'N/A' }}</span>
+                              </div>
+                              <div>
+                                <strong class="text-blue-600">Date:</strong>
+                                <span class="text-gray-700 font-semibold">{{ w.updated }}</span>
+                              </div>
+                            </li>
+                            <hr class="my-4 border-blue-600">
+                            <li class="text-xs text-left text-gray-700 normal-case">
+                              {{ w.note.html|safe }}
+                            </li>
+                          </ul>
                         </div>
-                      </details>    
+                      </details>
                     </td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.nurse|default_if_none:'' }}</td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.updated|default_if_none:'' }}</td>
+
+                    <td class=" p-3 whitespace-nowrap"><a href="{%url 'ward_shift_note_update' w.id%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-pen-square fa-2xl"></i></a>
                   </tr>
                   {%empty%}
                   <div class="p-2">
@@ -2460,18 +2505,14 @@
               <div>
                 <a href="{% url 'operation_notes' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-clipboard-list fa-2xl"></i></a>
               </div>
-              <div class="overflow-x-auto max-h-[50vh] p-2">
+              <div class="overflow-x-auto max-h-[100vh] p-2">
                 <table class="min-w-full divide-y divide-cyan-200 mb-4">
                   <thead class="bg-cyan-50">
           
                     <tr class="text-xs">
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">anaesthesia used</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">findings</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">post op-order</th>
                       <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Note</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Surgeon</th>
-                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
+                      <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Update</th>
                     </tr>
           
                   </thead>
@@ -2479,19 +2520,48 @@
                     {% for o in operation_notes %}
                     <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
                       <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.type_of_anaesthesia }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.findings }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.post_op_order }}</td>
-                      <td class=" p-3 whitespace-nowrap">
+                      <td class="p-3 whitespace-nowrap">
                         <details>
-                          <summary class="bg-blue-600 p-2 text-white rounded-lg text-center">OPEN NOTE</summary>
-                          <div class="bg-white text-blue-600 h-fit text-xs well-sm overflow-x-auto max-h-[50vh] rounded-md m-4 normal">
-                            <p class="text-xs text-center">{{ o.notes.html|safe }}</p>
+                          <summary class="bg-blue-600 py-2 px-4 text-white rounded-lg text-center cursor-pointer">
+                            OPEN NOTE
+                          </summary>
+                          <div class="bg-white text-blue-600 rounded-md p-4 m-4 max-h-[50vh] overflow-y-auto">
+                            <ul class="space-y-4">
+                              <li class="text-xs uppercase text-left">
+                                <strong class="text-blue-600">Post Op Order:</strong>
+                                <span class="text-gray-700 font-semibold">{{ o.post_op_order|default:'N/A' }}</span>
+                              </li>
+                              <li class="text-xs uppercase text-left flex justify-between">
+                                <div>
+                                  <strong class="text-blue-600">Anaesthesia Used:</strong>
+                                  <span class="text-gray-700 font-semibold">{{ o.type_of_anaesthesia|default:'N/A' }}</span>
+                                </div>
+                                <div>
+                                  <strong class="text-blue-600">Findings:</strong>
+                                  <span class="text-gray-700 font-semibold">{{ o.findings|default:'N/A' }}</span>
+                                </div>
+                              </li>
+                              <li class="text-xs uppercase text-left flex justify-between">
+                                <div>
+                                  <strong class="text-blue-600">Surgeon:</strong>
+                                  <span class="text-gray-700 font-semibold">{{ o.doctor|default:'N/A' }}</span>
+                                </div>
+                                <div>
+                                  <strong class="text-blue-600">Date:</strong>
+                                  <span class="text-gray-700 font-semibold">{{ o.updated }}</span>
+                                </div>
+                              </li>
+                              <hr class="my-4 border-blue-600">
+                              <li class="text-xs text-left text-gray-700 normal-case">
+                                {{ o.notes.html|safe }}
+                              </li>
+                            </ul>
                           </div>
-                        </details>    
+                        </details>
                       </td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.doctor|default_if_none:'' }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ o.updated|default_if_none:'' }}</td>
+                      
+                      <td class=" p-3 whitespace-nowrap"><a href="{%url 'operation_notes_update' o.id%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-pen-square fa-2xl"></i></a>
+
                     </tr>
                     {%empty%}
                     <div class="p-2">

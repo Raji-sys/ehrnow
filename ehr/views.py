@@ -1131,6 +1131,7 @@ class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
+        messages.success(self.request, 'NOTES UPDATED')
         return self.object.patient.get_absolute_url()
 
 
@@ -1851,6 +1852,7 @@ class WardNotesUpdateView(NurseRequiredMixin, UpdateView):
     template_name = 'ehr/ward/ward_notes.html'
     
     def get_success_url(self):
+        messages.success(self.request, 'NOTES UPDATED')
         return self.object.patient.get_absolute_url()
 
 
@@ -1883,9 +1885,10 @@ class WardShiftNotesUpdateView(NurseRequiredMixin, UpdateView):
     template_name = 'ehr/ward/ward_notes.html'
     
     def get_success_url(self):
-
+        messages.success(self.request, 'NOTES UPDATED')
         return self.object.patient.get_absolute_url()
     
+
 class RadiologyTestCreateView(LoginRequiredMixin, CreateView):
     model = RadiologyResult
     form_class = RadiologyTestForm
@@ -2396,6 +2399,16 @@ class OperationNotesListView(DoctorRequiredMixin,ListView):
         context['total_operations'] = total_operations
         context['theatreFilter'] = OperationNotesFilter(self.request.GET, queryset=self.get_queryset())
         return context
+
+
+class OperationNotesUpdateView(DoctorRequiredMixin, UpdateView):
+    model=OperationNotes
+    form_class = OperationNotesForm
+    template_name = 'ehr/theatre/theatre_notes.html'
+    
+    def get_success_url(self):
+        messages.success(self.request, 'NOTES UPDATED')
+        return self.object.patient.get_absolute_url()
 
 
 class AnaesthesiaChecklistCreateView(DoctorRequiredMixin,CreateView):

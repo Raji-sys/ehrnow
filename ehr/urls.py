@@ -126,6 +126,7 @@ urlpatterns = [
     path('theatre/<int:theatre_id>/theatre-operation-record-list/', TheatreOperationRecordListView.as_view(), name="theatre_operation_record_list"), 
     
     path('theatre/theatre-notes/<str:file_no>/', OperationNotesCreateView.as_view(), name='operation_notes'),
+    path('theatre/theatre-notes/update/<int:pk>/', OperationNotesUpdateView.as_view(), name='operation_notes_update'),
     path('theatre/<int:theatre_id>/operated-patient-list/', OperationNotesListView.as_view(), name="operated_list"),
 
     path('theatre/anaesthesia-checklist/<str:file_no>/', AnaesthesiaChecklistCreateView.as_view(), name='anaesthesia_checklist'),
