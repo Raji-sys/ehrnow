@@ -1951,26 +1951,28 @@
         </tr>
     </thead>
     <tbody class="bg-white divide-y divide-cyan-200">
-        {% for p in prescribed_drugs %}
-        <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-            <td colspan="4" class=" p-3 whitespace-nowrap">{{ forloop.counter }} {{ p.updated }}</td>
-            {% for pd in p.prescription_drugs.all %}
-            <tr class="text-xs">
-              <td class=" p-3 whitespace-nowrap">{{ pd.drug.name }}</td>
-              <td class=" p-3 whitespace-nowrap">{{ pd.dosage }}</td>
-              <td class=" p-3 whitespace-nowrap">{{ pd.quantity }}</td>
-              <td colspan="4" class=" p-3 whitespace-nowrap"> {{ p.unit }}</td>
-            
-              <td></td>
-
-              </tr>
-              {% endfor %}
+      {% for p in prescribed_drugs %}
+      <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
+        <td colspan="4" class=" p-3 whitespace-nowrap">{{ forloop.counter }} {{ p.updated }}        
+          <a href="{% url 'pharm:prescription_pdf' p.patient.file_no p.id %}" class="text-xs text-blue-600 hover:text-bluee-700 p-2 rounded-xl">
+            <i class="fa-solid fa-file-pdf fa-2xl"></i>
+          </a></td>
+        {% for pd in p.prescription_drugs.all %}
+        <tr class="text-xs">
+          <td class=" p-3 whitespace-nowrap">{{ pd.drug.name }}</td>
+          <td class=" p-3 whitespace-nowrap">{{ pd.dosage }}</td>
+          <td class=" p-3 whitespace-nowrap">{{ pd.quantity }}</td>
+          <td colspan="4" class=" p-3 whitespace-nowrap"> {{ p.unit }}</td>
+          <td></td>
         </tr>
-        {%empty%}
-        <div class="p-2 text-xs">
-            <p>No prescriptions found</p>
-        </div>
         {% endfor %}
+      </tr>
+      {%empty%}
+      <div class="p-2 text-xs">
+        <p>No prescriptions found</p>
+      </div>
+    {% endfor %}
+    
     </tbody>
 </table>
 

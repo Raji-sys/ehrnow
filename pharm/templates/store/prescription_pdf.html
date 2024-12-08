@@ -8,14 +8,13 @@
     <div class="prescriptions-container">
         <div class="header">
             <h1 class="uppercase">EMR NOW PRESCRIPTION SHEET</h1>
-            <h4 class="uppercase">TEST CLINICS AND SURGERY</h4>
             <div class="header-line"></div>
         </div>
         
         <div class="result-section">
             <div class="patient-info">
                 <table>
-                    <tr>
+                    <tr class="value">
                         <td class="prescription-meta">
                             <div><span class="patient-name">{{ patient|default:"N/A"|upper }}</span></div>
                         </td>
@@ -26,52 +25,40 @@
                             <div><strong>Sex:</strong> {{ patient.gender|default:"N/A"|upper }}</div>
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="value">
                         <td class="prescription-meta">
-                            {% if prescriptions.first %}
-                            <div><strong>Prescribed by:</strong> {{prescriptions.first.prescribed_by|default_if_none:"N/A"|upper}}</div>
-                            {% endif %}
+                            <div><strong>Prescribed by:</strong> {{prescription.prescribed_by|default_if_none:"N/A"|upper}}</div>
                         </td>
                         <td class="prescription-meta">
-                            {% if prescriptions.first %}
-                            <div><strong>Sent to:</strong> {{ prescriptions.first.unit|default:"N/A" }}</div>
-                            {% endif %}
+                            <div><strong>Sent to:</strong> {{ prescription.unit|default:"N/A" }}</div>
                         </td>
                         <td class="prescription-meta">
-                            {% if prescriptions.first %}
-                            <div><strong>On:</strong> {{ prescriptions.first.prescribed_date|default:"N/A" }}</div>
-                            {% endif %}
+                            <div><strong>On:</strong> {{ prescription.prescribed_date|default:"N/A" }}</div>
                         </td>
                     </tr>
                 </table>
             </div>
-    
             <table class="prescription-table">
                 <thead>
                     <tr class="parameters">
                         <th>DRUG</th>
-                        <th>CATEGORY</th>
-                        <th> DOSE</th>
+                        <th>DOSE</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for f in prescriptions %}
+                    {% for pd in prescription.prescription_drugs.all %}
                     <tr class="value">
-                        <td>{{ f.drug|default:"N/A"|upper }}</td>
-                        <td>{{ f.category|default:"N/A" }}</td>
-                        <td>{{ f.dose|default:"N/A" }}</td>
+                        <td>{{ pd.drug.name }}</td>
+                        <td>{{ pd.dosage }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
+                    </div>
         
         <div class="footer">
             <div class="generated-info">
                 Generated on: {{ generated_date }}
-            </div>
-            <div class="prescription-date">
-                Prescription Date: {{ prescription_date }}
             </div>
         </div>
     </div>

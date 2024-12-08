@@ -1614,33 +1614,24 @@ def create_prescription(request, file_no ):
 
 
 @login_required
-def prescription_pdf(request, file_no, date):
+def prescription_pdf(request, file_no, prescription_id):
     # Get the patient by file_no instead of id
     patient = get_object_or_404(PatientData, file_no=file_no)
     
-    # Parse the date string (assuming format YYYY-MM-DD)
-    target_date = parse_date(date)
-    
-    # Get all prescriptions for this patient on the specified date
-    prescriptions = patient.prescribed_drugs.filter(
-        prescribed_date__date=target_date
-    ).order_by('-prescribed_date')
-    
-    if not prescriptions.exists():
-        return HttpResponse('No prescriptions found for this date', status=404)
+    # Get the prescription by ID
+    prescription = get_object_or_404(Prescription, id=prescription_id, patient=patient)
     
     # Generate filename using file_no
     ndate = datetime.now()
-    filename = f"prescriptions_{file_no}_{date}_{ndate.strftime('%I_%M%p')}.pdf"
+    filename = f"prescription_{prescription_id}_{file_no}__{ndate.strftime('%I_%M%p')}.pdf"
     
     # Rest of your PDF generation code remains the same
     context = {
-        'prescriptions': prescriptions,
+        'prescription': prescription,
         'patient': patient,
         'pagesize': 'A4',
         'orientation': 'portrait',
         'generated_date': ndate.strftime('%d-%B-%Y at %I:%M %p'),
-        'prescription_date': target_date.strftime('%d-%B-%Y')
     }
     
     # Create HTTP response
@@ -1667,6 +1658,7 @@ def prescription_pdf(request, file_no, date):
         return response
     
     return HttpResponse('Error generating PDF', status=500)
+
 
 class PharmPayListView(ListView):
     model = Paypoint
