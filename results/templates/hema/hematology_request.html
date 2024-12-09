@@ -83,11 +83,6 @@
         <td class="p-3 whitespace-nowrap">
           {{ r.collected_by }}
         </td>
-        {% if r.payment.status == False %}
-        <td class="p-3 whitespace-nowrap text-red-700">
-      <i class="fa-solid fa-xmark-circle text-red-700 fa-2xl"></i>
-        </td>
-    {% else %}
     {%if r.payment.service == 'Blood Group' %}
     <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_blood_group' r.patient.file_no r.id %}?next={% url 'results:hematology_request' %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
     {%elif r.payment.service == 'Genotype' %}
@@ -98,7 +93,6 @@
     <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_fbc' r.patient.file_no r.id %}?next={% url 'results:hematology_request' %}" class="text-xs hover:text-green-700">
       <i class="fa-solid fa-edit fa-2xl"></i> </a>
   </td>
-    {% endif %}
     {% endif %}
        </tr>
        {% empty %}

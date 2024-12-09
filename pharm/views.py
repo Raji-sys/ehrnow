@@ -1106,6 +1106,7 @@ def dispenserecord(request, dispensary_id, patient_id):
     }
     return render(request, 'store/dispense_form.html', {'formset': formset, 'dispensary': dispensary})
 
+
 class DispenseRecordView(LoginRequiredMixin, UnitGroupRequiredMixin, ListView):
     model = DispenseRecord
     template_name = 'store/dispensed_list.html'

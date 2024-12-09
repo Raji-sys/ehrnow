@@ -83,11 +83,6 @@
         <td class="p-3 whitespace-nowrap">
           {{ c.collected_by }}
         </td>
-        {% if c.payment.status == False %}
-        <td class="p-3 whitespace-nowrap text-red-700">
-      <i class="fa-solid fa-xmark-circle text-red-700 fa-2xl"></i>
-        </td>
-    {% else %}
     {%if c.payment.service == 'Liver Function' %}
     <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_liver_function' c.patient.file_no c.id %}?next={% url 'results:chempath_request' %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
     {%elif c.payment.service == 'Urea & Electrolyte' %}
@@ -118,7 +113,6 @@
     <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_blood_glucose' c.patient.file_no c.id %}?next={% url 'results:chempath_request' %}" class="text-xs hover:text-green-700">
       <i class="fa-solid fa-edit fa-2xl"></i> </a>
   </td>
-    {% endif %}
     {% endif %}
 
       </tr>

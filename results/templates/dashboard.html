@@ -14,50 +14,50 @@
   </div>
   {% endfor %}
 </section>
-<div class="mx-2 md:mx-20 bg-gray-100 rounded-xl mt-4 p-2">
-  <div class="grid grid-cols-2 md:grid-cols-2 gap-6 p-2 text-center">
-      <div>
-        <a href="{% url 'results:hematology' %}" class="block">
-          <div class=" hover:bg-white hover:text-gray-600 text-white bg-emerald-500  rounded-lg shadow-lg p-10 border-2 border-white transition duration-300">
-            <div class=" uppercase text-xs">Hematology</div>
-          </div>
-        </a>
-      </div>
-      <div>
-        <a href="{% url 'results:chempath' %}" class="block">
-          <div class="bg-blue-500 hover:bg-white text-white hover:text-gray-600 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300">
-            <div class="uppercase text-xs">Chempath</div>
-          </div>
-        </a>
-      </div>
-      <div>
-        <a href="{% url 'results:micro' %}" class="block">
-          <div class="bg-purple-600 border-2 hover:bg-white text-white hover:text-gray-600 rounded-lg shadow-lg p-10 transition duration-300">
-            <div class="uppercase text-xs">Microbiology</div>
-          </div>
-        </a>
-      </div>
-      <div>
-        <a href="{% url 'results:serology' %}" class="block">
-          <div class="bg-amber-500 hover:bg-white text-white hover:text-gray-600 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300">
-            <div class="uppercase text-xs">Serology</div>
-          </div>
-        </a>
-      </div>
-      <div>
-        <a href="{% url 'results:general' %}" class="block">
-          <div class="bg-pink-500 hover:bg-white text-white hover:text-gray-600 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300">
-            <div class="uppercase text-xs">General</div>
-          </div>
-        </a>
-      </div>
-      <div>
-        <a href="{% url 'results:report' %}" class="block">
-          <div class="bg-gray-500 hover:bg-white text-white hover:text-gray-600 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300">
-            <div class="uppercase text-xs">Report</div>
-          </div>
-        </a>
-      </div>
+<div class="mx-2 md:mx-20 bg-gray-100 rounded-xl mt-4 p-4">
+  <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+    <div>
+      <a href="{% url 'results:hematology' %}" class="block">
+        <div class="hover:bg-white hover:text-gray-600 text-white bg-emerald-500 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300 flex items-center justify-center h-40">
+          <div class="uppercase text-sm">Hematology</div>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="{% url 'results:chempath' %}" class="block">
+        <div class="hover:bg-white hover:text-gray-600 text-white bg-blue-500 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300 flex items-center justify-center h-40">
+          <div class="uppercase text-sm">Chempath</div>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="{% url 'results:micro' %}" class="block">
+        <div class="hover:bg-white hover:text-gray-600 text-white bg-purple-600 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300 flex items-center justify-center h-40">
+          <div class="uppercase text-sm">Microbiology</div>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="{% url 'results:serology' %}" class="block">
+        <div class="hover:bg-white hover:text-gray-600 text-white bg-amber-500 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300 flex items-center justify-center h-40">
+          <div class="uppercase text-sm">Serology</div>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="{% url 'results:general' %}" class="block">
+        <div class="hover:bg-white hover:text-gray-600 text-white bg-pink-500 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300 flex items-center justify-center h-40">
+          <div class="uppercase text-sm">General</div>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="{% url 'results:report' %}" class="block">
+        <div class="hover:bg-white hover:text-gray-600 text-white bg-gray-500 rounded-lg shadow-lg p-10 border-2 border-white transition duration-300 flex items-center justify-center h-40">
+          <div class="uppercase text-sm">Report</div>
+        </div>
+      </a>
     </div>
   </div>
+</div>
 {% endblock %}

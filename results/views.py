@@ -2077,7 +2077,6 @@ class TestPDFView(DetailView):
             'labtest': labtest,
             'testing_items': testing_items,
             'payment_status': payment_status,
-            'hospital_name': 'HOSPITAL NAME',  # Customize these
             'generated_date': datetime.now().strftime('%d-%m-%Y %H:%M'),
             'doc_title': 'LABORATORY TEST REPORT',
         }
@@ -2094,6 +2093,7 @@ class TestPDFView(DetailView):
             return response
             
         return HttpResponse("Error Generating PDF", status=500)
+
 
 class MicrobiologyTestListView(LoginRequiredMixin, ListView):
     model = LabTesting
