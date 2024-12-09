@@ -155,7 +155,7 @@ class DispenseFilter(django_filters.FilterSet):
 
     category = django_filters.ChoiceFilter(
         label="CATEGORY",
-        field_name='drug__category',
+        field_name='drug__category__name',
         lookup_expr='iexact',
         choices=Category.DRUG_CLASSES,
         widget=forms.Select(attrs={'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-indigo-800 rounded shadow-sm shadow-indigo-600 border-indigo-600 border'})
