@@ -3,9 +3,8 @@
 {% block title %}VISIT FORM{% endblock%}
 {%block page_title%}<div class="flex justify-center">HOSPITAL VISIT</div>{%endblock%}
 {% block content %}
-<div class="mt-10">
-  <div class="rounded-xl bg-white mx-auto w-fit py-4 px-20">
-      {% if form.errors %}
+<div class="flex justify-center md:mx-20 mx-auto bg-white rounded-xl p-6">
+        {% if form.errors %}
       <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
           <a href class="uk-alert-close font-bold" uk-close></a>
           <p>{{form.errors}}</p>
@@ -14,10 +13,10 @@
 <form method="post" enctype="multipart/form-data" >
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
-    <div class="flex justify-start text-center">
+    <div class="">
       <div class=" grid grid-cols-1 md:flex p-2 gap-6 text-xs">
 {% for field in form %}
-      <div class="">
+      <div class="grid grid-cols-1 align-middle text-center">
           <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
           {{ field }}
       </div>
@@ -31,6 +30,5 @@
 bg-green-700 text-white py-2 px-4 rounded shadow-lg hover:shadow-xl">
   </div>
   </form>
-  </div>
   </div>
 {% endblock %}

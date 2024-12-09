@@ -2,8 +2,8 @@
 {% block title %}NOHD STORE{% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'inventory:record' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>issue item to a unit</div>{%endblock%}
 {% block content %}
-  <div class="flex justify-center ">
-    <div class=" uppercase text-xs shadow-2xl sm:max-w-lg mx-auto md:p-8 overflow-hidden rounded-2xl bg-white mt-2">
+  <div class="flex justify-center md:mx-auto mx-2">
+    <div class=" uppercase text-xs shadow-2xl mx-auto md:p-8 p-12 overflow-x-auto rounded-2xl bg-white mt-2">
         <section class="text-center">        
             {% if form.non_field_errors %}
             <div class="text-red-600 text-lg">

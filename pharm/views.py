@@ -1850,6 +1850,7 @@ class PrescriptionUpdateView(UpdateView):
         # Update prescription payment
         prescription.payment = paypoint
         prescription.save()
+        messages.success(self.request, 'Prescription costed successfully, proceed to revenue and make payment')
         return super().form_valid(form)
 
     def get_success_url(self):

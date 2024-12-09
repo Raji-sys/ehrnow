@@ -3,7 +3,7 @@
 {%block page_title%}<div class="flex justify-center uppercase">DRUG PRESCRIPTION FORM</div>{%endblock%}
 {% block content %}
 {% if messages %}
-<section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
+<section class="md:max-w-xl max-w-sm mx-2 md:mx-auto text-center border-cyan-700 p-1 m-1">
     {% for message in messages %}
     <div class="">
       <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
@@ -19,7 +19,7 @@
         <form method="post" class="flex flex-col space-y-4">
             {% csrf_token %}
             
-            <div class="flex flex-row space-y-2 gap-2">
+            <div class="flex md:flex-row flex-col space-y-2 gap-2 p-8 md:p-4">
                 {{ form.categories }}
                 <select id="drug-selector" name="drug" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
                     <option value="">Select a drug</option>
