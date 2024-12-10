@@ -192,3 +192,11 @@ class PhysioTestAdmin(admin.ModelAdmin):
     list_display = ('category','name','price','updated')
     search_fields = ('category','name','updated')
     list_filter = ('category','name','updated')
+
+@admin.register(RadiologyResult)
+class RadiologyResultAdmin(admin.ModelAdmin):
+    list_display = ('id','patient')
+
+@admin.register(PhysioRequest)
+class PhysioRequestAdmin(admin.ModelAdmin):
+    list_display = ('id','patient')

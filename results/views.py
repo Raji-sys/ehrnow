@@ -663,6 +663,18 @@ class GenotypeCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Genotype')
             
+              # Find the most recent LabTesting with a confirmed payment for this patient
+            recent_lab_testing = LabTesting.objects.filter(
+                labtest__patient=patient,
+                payment__status=True,  # Confirmed payment
+                item__name__iexact='Genotype'  # Specific test type
+            ).order_by('-id').first()
+            
+            # If no paid LabTesting found, block test creation
+            if not recent_lab_testing:
+                messages.error(request, 'Please complete payment for Genotype test')
+                return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
+            
             # Create Paypoint first
             payment = Paypoint.objects.create(
                 patient=patient,

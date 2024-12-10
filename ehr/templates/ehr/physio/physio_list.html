@@ -60,7 +60,7 @@
             {{ result.diagnosis|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
-          {{ result.result_details|default_if_none:'' }}
+          {{ result.result_details.html|safe }}
         </td>
         <td class="p-3 whitespace-nowrap">
           {{ result.physiotherapist|default_if_none:'' }}

@@ -20,24 +20,24 @@
           <p>{{form.errors}}</p>
         </div>
         {% endif %}
-    <form method="post" enctype="multipart/form-data" class="text-xs">
+    <form method="post" enctype="multipart/form-data" class="text-xs normal-case">
       {% csrf_token %}
-      <div class="mb-2 uppercase text-cyan-900 px-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div class="mb-2 normal-case text-cyan-900 px-10">
+        <div class="grid grid-cols-1 gap-2">
         {% for field in form %}
         <div>
-        <div class="flex justify-center">
-          <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
-        </div>
-        <div class="flex justify-center mb-2">
-          {{ field }}
-        </div>
-      </div>
+          <div class="">
+              <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>
+          </div>
+          <div class="">
+              {{ field }}
+          </div>
+          </div>
       {%endfor%}
     </div>
       </div>
       <div class="gap-2 flex justify-center align-middle p-2">
-        <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
+        <input type="submit" value="save" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
     bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
       </div>
       </form>

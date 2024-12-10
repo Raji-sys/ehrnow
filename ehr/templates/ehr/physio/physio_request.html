@@ -79,7 +79,7 @@
           {{ p.diagnosis|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap text-gray-600">
-          {{ p.comment|default_if_none:'' }}
+          {{ p.comment.html|safe }}
         </td>
         {% if p.payment.status == False %}
             <td class="p-3 whitespace-nowrap text-red-700 text-center">

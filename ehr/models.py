@@ -267,7 +267,8 @@ class Services(models.Model):
     type=models.CharField(max_length=100, null=True, blank=True)
     name=models.CharField(max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
-    description = models.TextField(null=True, blank=True)
+    description =QuillField(null=True, blank=True)
+    
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -416,7 +417,7 @@ class RadiologyResult(models.Model):
     test = models.ForeignKey(RadiologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="radiology_results")
     patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="radiology_results")
     cleared = models.BooleanField(default=False)
-    comments = models.CharField(max_length=200, null=True, blank=True)
+    comments=QuillField(null=True, blank=True)
     payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="radiology_result_payment")
     updated = models.DateTimeField(auto_now=True)
     
@@ -440,7 +441,7 @@ class Admission(models.Model):
     ward = models.ForeignKey(Ward, on_delete=models.CASCADE, null=True)
     bed_number = models.CharField(max_length=300, null=True, blank=True)
     expected_discharge_date = models.DateField(null=True, blank=True)
-    notes = models.TextField(blank=True)
+    notes=QuillField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True,null=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -728,7 +729,7 @@ class AnaesthisiaChecklist(models.Model):
     theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
     patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="anaesthesia_checklist")
     concurrent_medical_illness=models.ManyToManyField(MedicalIllness,blank=True)
-    past_medical_history=models.TextField(null=True)
+    past_medical_history=QuillField(null=True, blank=True)
     past_surgical_history=models.ForeignKey(PastSurgicalHistory,on_delete=models.CASCADE,null=True)
     options=(('YES','YES'),('NO','NO'))
     transfussion=models.CharField(choices=options,null=True, max_length=100)
@@ -739,7 +740,7 @@ class AnaesthisiaChecklist(models.Model):
     temporary=models.CharField(choices=options,null=True, max_length=100)
     loose_teeth=models.CharField(choices=options,null=True, max_length=100)
     last_meal=models.ForeignKey(LastMeal,on_delete=models.CASCADE,null=True)
-    comment=models.TextField(null=True)
+    comment=QuillField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
     
     def __str__(self):
@@ -799,7 +800,7 @@ class TheatreOperationRecord(models.Model):
     tourniquet_off_by = models.CharField(max_length=100, blank=True)
     tourniquet_off_time = models.TimeField(null=True, blank=True)
     
-    comments = models.TextField(blank=True,null=True)
+    comments =QuillField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -862,7 +863,7 @@ class PhysioTest(models.Model):
     category = models.ForeignKey(PhysioTestCategory, on_delete=models.CASCADE, related_name='tests')
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField(null=True, blank=True)
+    description = QuillField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -877,10 +878,9 @@ class PhysioRequest(models.Model):
     payment = models.OneToOneField(Paypoint, null=True, on_delete=models.CASCADE, related_name="physio_payment")
     diagnosis = models.CharField(max_length=200, null=True, blank=True)
     remark = models.CharField(max_length=200, null=True, blank=True)
-    comment = models.TextField(null=True, blank=True)
+    comment=QuillField(null=True, blank=True)
     request_date = models.DateTimeField(null=True,auto_now_add=True)
-    
-    result_details = models.TextField(null=True, blank=True)
+    result_details=QuillField(null=True, blank=True)
     result_date = models.DateTimeField(null=True, blank=True)
     cleared = models.BooleanField(default=False)
     

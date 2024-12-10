@@ -3,16 +3,17 @@
 {%block title%}SERVICES{%endblock%}
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>HOSPITAL SERVICES</div>{%endblock%}
 {%block content %}
-<section class="text-center border-cyan-700">
+<section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
   {% for message in messages %}
-<div class="">
-     <div class="uk-alert-success rounded-2xl text-xs" uk-alert>
-      <a href class="uk-alert-close" uk-close></a>
-      <p class="text-green-700 uppercase">{{ message }}</p>
-      </div>
-</div>
-{% endfor %}
+  <div class="">
+    <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
+      <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
+      <p class="text-green-700  uppercase">{{ message }}</p>
+    </div>
+  </div>
+  {% endfor %}
 </section>
+
 <div class="mb-4 flex justify-center ">
   <div class="md:flex gap-2 overflow-x-auto grid grid-cols-2 p-2">
     <button onclick="openTab('services')" 
@@ -68,7 +69,7 @@
                   {{ s.name}}
                 </td>
                 <td class="px-3 py-2 whitespace-nowrap">
-                  {{ s.description|default:'N/A'}}
+                  {{ s.description.html|safe}}
                 </td>
               <td class="px-3 py-2 whitespace-nowrap">
                 &#x20A6;{{ s.price }}
