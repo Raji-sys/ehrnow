@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
-{%block title%}CREDIT TRANSACTIONS{%endblock%}
-{%block page_title%}<div class="flex justify-center p-2"><div><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>CREDIT TRANSACTIONS</div>
+{%block title%}CASH TRANSACTIONS{%endblock%}
+{%block page_title%}<div class="flex justify-center p-2"><div><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>CASH TRANSACTIONS</div>
 <div class="">
-  <span class="shadow-sm shadow-red-900 gap-4 bg-red-600 text-white uppercase text-xs border-b-2 border-red-900 py-2 px-4 rounded-xl mx-2 w-fit">
-    <span class=" shadow-white text-xs p-1 rounded-full bg-white text-red-900">{{pay_total}}</span>&nbsp;transactions 
+  <span class="shadow-sm shadow-green-900 gap-4 bg-green-600 text-white uppercase text-xs border-b-2 border-green-900 py-2 px-4 rounded-xl mx-2 w-fit">
+    <span class=" shadow-white text-xs p-1 rounded-full bg-white text-green-900">{{pay_total}}</span>&nbsp;transactions 
         </span>
       </div>
       <div class="">
@@ -19,7 +19,7 @@
 {%endblock%}
 {%block content %}
 <div class="">
-    <section class="text-center border-red-700 p-2 m-1">
+    <section class="text-center border-green-700 p-2 m-1">
         {% for message in messages %}
         <div class="mt-2 ">
           <div class="uk-alert-success rounded-2xl text-xs w-fit mx-auto" uk-alert>
@@ -31,7 +31,7 @@
             
       </section>
       
-      <div class=" mx-2 md:mx-20 rounded-b-xl p-4 shadow-black shadow-sm bg-red-50">
+      <div class=" mx-2 md:mx-20 rounded-b-xl p-4 shadow-black shadow-sm bg-green-50">
         <div class="text-sky-900">
           <form method="get" class="text-xs text-center">
             <div class="flex justify-center items-center gap-2">
@@ -39,33 +39,33 @@
                     type="field.field.widget.input_type" 
                     name="q" 
                     placeholder="Search by: Name, File No, Phone No, or Title"
-                    class="md:text-center text-xs focus:outline-none w-1/3 md:w-1/2 text-red-950 p-2
-                           rounded shadow-sm shadow-red-900 border-red-900 border"
+                    class="md:text-center text-xs focus:outline-none w-1/3 md:w-1/2 text-green-950 p-2
+                           rounded shadow-sm shadow-green-900 border-green-900 border"
                     value="{{query|default:''}}"
                 >
                 <button 
                     type="submit" 
-                    class="shadow-sm shadow-red-700 h-full p-2 focus:opacity-10 uppercase 
-                           border-gray-500 focus:border-red-600 bg-red-700 text-white 
-                           rounded hover:border-red-700"
+                    class="shadow-sm shadow-green-700 h-full p-2 focus:opacity-10 uppercase 
+                           border-gray-500 focus:border-green-600 bg-green-700 text-white 
+                           rounded hover:border-green-700"
                 >
                     <i class="fa-solid fa-search fa-xl"></i>
                 </button>
                 {% if request.GET.urlencode %}
                     <a href="?" 
-                       class="py-4 px-2 focus:opacity-10 focus:border-red-600 bg-red-500 
+                       class="py-4 px-2 focus:opacity-10 focus:border-green-600 bg-green-500 
                               text-white rounded shadow-sm hover:shadow-xl inline-flex 
                               items-center justify-center"
                     >
-                        <i class="fa-solid fa-rotate fa-xl text-red"></i>
+                        <i class="fa-solid fa-rotate fa-xl text-green"></i>
                     </a>              
                 {% endif %}
             </div>
         </form>
       </div>
         <div class="overflow-x-auto px-4 m-4">
-          <table class="min-w-full divide-y divide-red-200">
-            <thead class="bg-red-300">
+          <table class="min-w-full divide-y divide-green-200">
+            <thead class="bg-green-300">
               <tr class="text-xs">
                   <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     #
@@ -82,20 +82,20 @@
                 <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                   SERVICE
                 </th>
-                <th class="p-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">
+                <th class="p-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
                   PRICE
                 </th>
                 <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                   TRANSACTION DATE 
                 </th>
                 <th class="p-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  CLEAR CREDIT
+                  CHANGE OPTION
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-red-200">
-              {% for p in credit_pays %}
-              <tr class="text-xs bg-red-50 hover:bg-red-200 transition-colors duration-300 uppercase">
+            <tbody class="bg-white divide-y divide-green-200">
+              {% for p in cash_pays %}
+              <tr class="text-xs bg-green-50 hover:bg-green-200 transition-colors duration-300 uppercase">
                   <td class="p-3 whitespace-nowrap">
                       {{forloop.counter}}
                   </td>
@@ -113,7 +113,7 @@
                 <td class="p-3 whitespace-nowrap">
                   {{ p.service }}
                 </td>
-                <td class="p-3 whitespace-nowrap text-red-700">
+                <td class="p-3 whitespace-nowrap text-green-700">
                   &#x20A6;{{p.price}} 
                 </td>
                 <td class="p-3 whitespace-nowrap">
@@ -127,7 +127,7 @@
               </tr>
               {% empty %}
               <tr class="bg-white">
-                <td colspan="8" class="p-3 text-center text-red-500">
+                <td colspan="8" class="p-3 text-center text-green-500">
                   No transactions found
                 </td>
               </tr>
@@ -137,14 +137,14 @@
             <div class="pagination flex justify-center">
                 <span class="flex items-center">
                     {% if page_obj.has_previous %}
-                    <a href="?page=1" class="p-1 rounded-lg bg-red-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
-                    <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-red-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                    <a href="?page=1" class="p-1 rounded-lg bg-green-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                    <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-green-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
                     {% endif %}
                 </span>
                     <span class="flex item-center"> 
                         {% if page_obj.has_next %}
-                        <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-red-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
-                        <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-red-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                        <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-green-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                        <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-green-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
                         {% endif %}
                     </span>
                 </div>
@@ -180,6 +180,7 @@
                                       <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
                                       <select id="payment_method" name="payment_method" class="text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200 w-full">
                                           <option value="CASH">CASH</option>
+                                          <option value="WALLET">WALLET</option>
                                           <option value="CREDIT">CREDIT</option>
                                       </select>
                                   </div>
@@ -229,7 +230,7 @@
           messageContent.classList.add('bg-green-100', 'text-green-700', 'border', 'border-green-400');
           messageIcon.classList.add('fa-solid', 'fa-circle-check', 'mr-2');
       } else {
-          messageContent.classList.add('bg-red-100', 'text-red-700', 'border', 'border-red-400');
+          messageContent.classList.add('bg-green-100', 'text-green-700', 'border', 'border-green-400');
           messageIcon.classList.add('fa-solid', 'fa-circle-xmark', 'mr-2');
       }
   
@@ -248,7 +249,7 @@
               currentPayId = this.getAttribute('data-id');
               messagesContainer.classList.add('hidden'); // Hide any existing messages
               
-              fetch(`/revenue/update-payment/${currentPayId}/?next={% url "credit_pay_list" %}`, {
+              fetch(`/revenue/update-payment/${currentPayId}/?next={% url "cash_pay_list" %}`, {
                   headers: {
                       'X-Requested-With': 'XMLHttpRequest'
                   }
@@ -282,7 +283,7 @@
                   showMessage(data.message, 'success');
                   setTimeout(() => {
                       modal.classList.add('hidden');
-                      window.open(data.redirect_url, '_blank');
+                    //   window.open(data.greenirect_url, '_blank');
                       window.location.reload();
                   }, 1500);
               } else {
@@ -290,7 +291,7 @@
               }
           })
           .catch(error => {
-              showMessage('An unexpected error occurred', 'error');
+              showMessage('An unexpected error occurgreen', 'error');
           });
       });
   

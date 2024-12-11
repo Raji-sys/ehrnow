@@ -649,7 +649,7 @@ class BloodGroupCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Blood Group test created successfully')
+            messages.success(request, 'Blood Group template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Blood Group test: {str(e)}')
         
@@ -662,18 +662,6 @@ class GenotypeCreateView(View):
         try:
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Genotype')
-            
-              # Find the most recent LabTesting with a confirmed payment for this patient
-            recent_lab_testing = LabTesting.objects.filter(
-                labtest__patient=patient,
-                payment__status=True,  # Confirmed payment
-                item__name__iexact='Genotype'  # Specific test type
-            ).order_by('-id').first()
-            
-            # If no paid LabTesting found, block test creation
-            if not recent_lab_testing:
-                messages.error(request, 'Please complete payment for Genotype test')
-                return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
             
             # Create Paypoint first
             payment = Paypoint.objects.create(
@@ -696,11 +684,12 @@ class GenotypeCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Genotype test created successfully')
+            messages.success(request, 'Genotype template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Genotype test: {str(e)}')
         
-        return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
+        return redirect(reverse('results:update_genotype', kwargs={'file_no': file_no,'test_info_pk':test_info.id}))
+        # return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
 
 class FBCCreateView(View):
@@ -731,7 +720,7 @@ class FBCCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'FBC test created successfully')
+            messages.success(request, 'FBC template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating FBC test: {str(e)}')
         
@@ -766,7 +755,7 @@ class UECreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'UREA & ELCTROLYTE test created successfully')
+            messages.success(request, 'UREA & ELCTROLYTE template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating UREA & ELCTROLYTE test: {str(e)}')
         
@@ -801,7 +790,7 @@ class LiverFunctionCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Liver Function test created successfully')
+            messages.success(request, 'Liver Function template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Liver Function test: {str(e)}')
         
@@ -836,7 +825,7 @@ class LipidProfileCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Lipid Profile test created successfully')
+            messages.success(request, 'Lipid Profile template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Lipid Profile test: {str(e)}')
         
@@ -871,7 +860,7 @@ class SerumProteinsCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Serum Proteins test created successfully')
+            messages.success(request, 'Serum Proteins template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Serum Proteins test: {str(e)}')
         
@@ -906,7 +895,7 @@ class CerebroSpinalFluidCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Cerebro Spinal Fluid test created successfully')
+            messages.success(request, 'Cerebro Spinal Fluid template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Cerebro Spinal Fluid test: {str(e)}')
         
@@ -941,7 +930,7 @@ class BoneChemistryCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Bone Chemistry test created successfully')
+            messages.success(request, 'Bone Chemistry template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Bone Chemistry test: {str(e)}')
         
@@ -1011,7 +1000,7 @@ class BloodGlucoseCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Blood Glucose test created successfully')
+            messages.success(request, 'Blood Glucose template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Blood Glucose test: {str(e)}')
         
@@ -1046,7 +1035,7 @@ class WidalCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Widal test created successfully')
+            messages.success(request, 'Widal template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Widal test: {str(e)}')
         
@@ -1080,7 +1069,7 @@ class RheumatoidFactorCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Rheumatoid Factor test created successfully')
+            messages.success(request, 'Rheumatoid Factor template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Rheumatoid Factor test: {str(e)}')
         
@@ -1114,7 +1103,7 @@ class HepatitisBCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Hepatitis B test created successfully')
+            messages.success(request, 'Hepatitis B template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Hepatitis B test: {str(e)}')
         
@@ -1148,7 +1137,7 @@ class HepatitisCCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Hepatitis C test created successfully')
+            messages.success(request, 'Hepatitis C template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Hepatitis C test: {str(e)}')
         
@@ -1182,7 +1171,7 @@ class VDRLCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'VDRL test created successfully')
+            messages.success(request, 'VDRL template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating VDRL test: {str(e)}')
         
@@ -1216,7 +1205,7 @@ class MantouxCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Mantoux test created successfully')
+            messages.success(request, 'Mantoux template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Mantoux test: {str(e)}')
         
@@ -1250,7 +1239,7 @@ class AsoTitreCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Aso Titre test created successfully')
+            messages.success(request, 'Aso Titre template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Aso Titre test: {str(e)}')
         
@@ -1284,7 +1273,7 @@ class CRPCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'CRP test created successfully')
+            messages.success(request, 'CRP template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating CRP test: {str(e)}')
         
@@ -1318,7 +1307,7 @@ class HIVScreeningCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'HIV Screening test created successfully')
+            messages.success(request, 'HIV Screening template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating HIVScreening test: {str(e)}')
         
@@ -1354,7 +1343,7 @@ class UrineMicroscopyCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Urine Microscopy test created successfully')
+            messages.success(request, 'Urine Microscopy template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Urine Microscopy test: {str(e)}')
         
@@ -1388,7 +1377,7 @@ class HVSCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'HVS test created successfully')
+            messages.success(request, 'HVS template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating HVS test: {str(e)}')
         
@@ -1422,7 +1411,7 @@ class StoolCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Stool test created successfully')
+            messages.success(request, 'Stool template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Stool test: {str(e)}')
         
@@ -1456,7 +1445,7 @@ class SwabPusAspirateCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'swab pus aspirate test created successfully')
+            messages.success(request, 'swab pus aspirate template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating SWAB PUS ASPIRATE (MCS) test: {str(e)}')
         
@@ -1490,7 +1479,7 @@ class BloodCultureCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Blood Culture test created successfully')
+            messages.success(request, 'Blood Culture template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Blood Culture test: {str(e)}')
         
@@ -1524,7 +1513,7 @@ class OccultBloodCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Occult Blood test created successfully')
+            messages.success(request, 'Occult Blood template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Occult Blood test: {str(e)}')
         
@@ -1558,7 +1547,7 @@ class SputumMCSCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Sputum MCS test created successfully')
+            messages.success(request, 'Sputum MCS template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Sputum MCS test: {str(e)}')
         
@@ -1592,7 +1581,7 @@ class GramStainCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Gram Stain test created successfully')
+            messages.success(request, 'Gram Stain template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Gram Stain test: {str(e)}')
         
@@ -1626,7 +1615,7 @@ class ZNStainCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'ZN Stain test created successfully')
+            messages.success(request, 'ZN Stain template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating ZN Stain test: {str(e)}')
         
@@ -1660,7 +1649,7 @@ class SemenAnalysisCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Semen Analysis test created successfully')
+            messages.success(request, 'Semen Analysis template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Semen Analysis Stain test: {str(e)}')
         
@@ -1694,7 +1683,7 @@ class UrinalysisCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Urinalysis test created successfully')
+            messages.success(request, 'Urinalysis template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Urinalysis test: {str(e)}')
         
@@ -1728,7 +1717,7 @@ class PregnancyCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Pregnancy test created successfully')
+            messages.success(request, 'Pregnancy template created successfully')
         except Exception as e:
             messages.error(request, f'Error creating Pregnancy test: {str(e)}')
         

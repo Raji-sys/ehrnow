@@ -65,6 +65,7 @@ urlpatterns = [
     path('revenue/billing-list/', BillingPayListView.as_view(), name='bill_pay_list'),
     path('revenue/private/billing-list/', PrivateBillingPayListView.as_view(), name='private_bill_pay_list'),
     path('revenue/credit-list/', CreditPayListView.as_view(), name='credit_pay_list'),
+    path('revenue/cash-list/', CashPayListView.as_view(), name='cash_pay_list'),
 
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
