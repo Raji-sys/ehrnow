@@ -67,10 +67,10 @@
         {{ r.id|default_if_none:'' }}
       </td>
         <td class="p-3 whitespace-nowrap text-rose-400">
-          {{ r.payment.service|default_if_none:'' }}
+          {{ r.test_handler.test|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
-          &#x20A6;{{ r.payment.price|default_if_none:'' }}
+          &#x20A6;{{ r.test_handler.price|default_if_none:'' }}
         </td>
         <td class="p-3 whitespace-nowrap">
           <a href="{{r.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
@@ -83,13 +83,13 @@
         <td class="p-3 whitespace-nowrap">
           {{ r.collected_by }}
         </td>
-    {%if r.payment.service == 'Blood Group' %}
+    {%if r.test_handler.test == 'Blood Group' %}
     <td class=" p-3 whitespace-nowrap">  <a href="{%url 'results:update_blood_group' r.patient.file_no r.id %}?next={% url 'results:hematology_request' %}" class=" hover:text-green-700"><i class="fa-solid fa-edit fa-2xl"></i></a></td> 
-    {%elif r.payment.service == 'Genotype' %}
+    {%elif r.test_handler.test == 'Genotype' %}
     <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_genotype' r.patient.file_no r.id %}?next={% url 'results:hematology_request' %}" class="text-xs hover:text-green-700">
       <i class="fa-solid fa-edit fa-2xl"></i> </a>
   </td>
-    {%elif r.payment.service == 'Full Blood Count' %}
+    {%elif r.test_handler.test == 'Full Blood Count' %}
     <td class="p-3 whitespace-nowrap">  <a href="{% url 'results:update_fbc' r.patient.file_no r.id %}?next={% url 'results:hematology_request' %}" class="text-xs hover:text-green-700">
       <i class="fa-solid fa-edit fa-2xl"></i> </a>
   </td>

@@ -38,10 +38,19 @@ class GenericTest(models.Model):
     def __str__(self):        
         return f"{self.name} - {self.price}"
 
+class TestHandler(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="patient_test_handler")
+    test = models.CharField(max_length=300, null=True, blank=True)  
+    lab = models.CharField(max_length=100, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
+    created = models.DateField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
         
 class Testinfo(models.Model):
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='test_info',null=True, blank=True)
     payment = models.ForeignKey(Paypoint, on_delete=models.CASCADE, related_name='test_payments',null=True,blank=True)
+    test_handler = models.ForeignKey(TestHandler, on_delete=models.CASCADE, related_name='test_handler',null=True,blank=True)
     code = models.CharField(max_length=20, unique=True, editable=False)
     cleared = models.BooleanField(default=False)
     comments = models.CharField(max_length=500, null=True, blank=True)

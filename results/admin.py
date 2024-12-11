@@ -13,6 +13,11 @@ class GenericTestAdmin(admin.ModelAdmin):
     search_fields = ('lab','name','price')
     list_filter = ('lab','name','price')
 
+@admin.register(TestHandler)
+class TestHandlerAdmin(admin.ModelAdmin):
+    list_display = ('patient', 'lab','test', 'updated', 'id')
+    list_filter = ('patient', 'lab','test', 'updated', 'id')
+
 
 @admin.register(Testinfo)
 class TestinfoAdmin(admin.ModelAdmin):

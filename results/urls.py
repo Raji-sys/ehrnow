@@ -141,13 +141,14 @@ urlpatterns = [
 
     path('pathology/lab-test/<str:file_no>/', LabTestingCreateView.as_view(), name='lab_test'),   
     path('get_lab/<str:lab_name>/', views.get_lab, name='get_lab'),
-    path('test/<int:pk>/', LabTestDetailView.as_view(), name='test_detail'),
+    path('test/detail/<int:pk>/', LabTestDetailView.as_view(), name='test_detail'),
     path('test/pdf/<int:pk>/', TestPDFView.as_view(), name='test_pdf'),
 
     path('micro-req/list/',MicrobiologyTestListView.as_view(),name='micro_incoming_req'),
     path('chempath-req/list/',ChempathTestListView.as_view(),name='chempath_incoming_req'),
     path('hema-req/list/',HematologyTestListView.as_view(),name='hema_incoming_req'),
     path('serology-req/list/',SerologyTestListView.as_view(),name='serology_incoming_req'),
+    path('all-test/list/',AllTestListView.as_view(),name='all_test'),
 
     path('', include('django.contrib.auth.urls')),
 ]

@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}INCOMING {{ lab_name }} REQUEST{% endblock %}
+{% block title %}{{ lab_name }} DIRECTORY {% endblock %}
 {%block page_title%}<div class="flex justify-center"><a href="{% url dashboard_url %}">
     <i class="fa-solid fa-arrow-left fa-xl mr-4"></i>
-</a>{{ lab_name|upper }} INCOMING</div>{%endblock%}
+</a>{{ lab_name|upper }} DIRECTORY</div>{%endblock%}
 {% block content %}
 <form method="get" class="mb-2 flex justify-center">
     <input type="text" name="q" placeholder="Search patients..." value="{{ query|default:'' }}"
@@ -21,23 +21,22 @@
   </form>
 <div class="p-2">
     <div class="max-w-7xl mx-auto bg-gray-100 rounded-lg shadow-md p-2">
-        <div class="bg-blue-600 text-white rounded-t-lg ">
-            <h2 class="text-sm font-medium text-white p-2 text-center">INCOMING {{ lab_name }} TESTS</h2>
-        </div>
 
         {% if tests %}
         <div class="overflow-x-auto">
             <div class="max-h-[70vh] overflow-y-auto">
                 <table class="w-full table-auto">
-                    <thead class="bg-gray-200">
-                        <tr class="text-xs uppercase text-gray-700 text-left">
+                    <thead class="bg-blue-600 ">
+                        <tr class="text-xs uppercase text-gray-50 text-left">
                             <th class="px-4 py-2">#</th>
                             <th class="px-4 py-2">Date</th>
                             <th class="px-4 py-2">Patient</th>
                             <th class="px-4 py-2">file no</th>
+                            <th class="px-4 py-2">Lab</th>
                             <th class="px-4 py-2">Test</th>
                             <th class="px-4 py-2">Price</th>
                             <th class="px-4 py-2">Payment</th>
+                            <!-- <th class="px-4 py-2">add template</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -45,8 +44,13 @@
                         <tr class="{% cycle 'bg-white' 'bg-gray-50' %} text-xs text-left uppercase">
                             <td class="px-4 py-2">{{ forloop.counter }}</td>
                             <td class="px-4 py-2">{{ test.labtest.created }}</td>
-                            <td class="px-4 py-2"><a href="{{test.labtest.patient.get_absolute_url}}">{{ test.labtest.patient }}</a></td>
+                            {% if test.payment.status %}
+                            <td class="px-4 py-2"><a href="{{test.labtest.patient.get_absolute_url}}" target="_blank">{{ test.labtest.patient }}</a></td>
+                            {%else%}
+                            <td class="px-4 py-2">{{ test.labtest.patient }}</td>
+                            {%endif%}
                             <td class="px-4 py-2">{{ test.labtest.patient.file_no }}</td>
+                            <td class="px-4 py-2">{{ test.lab }}</td>
                             <td class="px-4 py-2">{{ test.item.name }}</td>
                             <td class="px-4 py-2">&#x20A6;{{ test.item.price }}</td>
                             <td class="px-4 py-3">
@@ -138,7 +142,7 @@
 
         {% else %}
         <div class="text-center py-4">
-            <p class="text-gray-500">No microbiology tests found.</p>
+            <p class="text-gray-500">No tests found.</p>
         </div>
         {% endif %}
     </div>

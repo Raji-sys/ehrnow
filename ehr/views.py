@@ -690,9 +690,7 @@ class PatientFolderView(DetailView):
         context = super().get_context_data(**kwargs)
         patient = self.get_object()
         context['patient'] = patient
-        context['test_items'] = (patient.test_items.all()
-                        .prefetch_related('items__payment')
-                        .order_by('-updated'))
+        context['test_items'] = (patient.test_items.all().prefetch_related('items__payment').order_by('-updated'))
         context['visits'] = patient.visit_record.all().order_by('-updated')
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
         # context['payments'] = patient.patient_payments.all().order_by('-updated')

@@ -91,7 +91,7 @@ class HematologyRequestListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(payment__unit__iexact="Hematology",cleared=False).order_by('-updated')
+        queryset = super().get_queryset().filter(test_handler__lab__iexact="Hematology",cleared=False).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -116,7 +116,7 @@ class HematologyListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(payment__unit__iexact='Hematology',cleared=True).order_by('-updated')
+        queryset = super().get_queryset().filter(test_handler__lab__iexact='Hematology',cleared=True).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -233,7 +233,7 @@ class ChempathRequestListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset=super().get_queryset().filter(payment__unit__iexact="Chemical pathology",cleared=False).order_by('-updated')
+        queryset=super().get_queryset().filter(test_handler__lab__iexact="Chemical pathology",cleared=False).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -258,7 +258,7 @@ class ChempathListView(ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        queryset=super().get_queryset().filter(payment__unit__iexact='Chemical pathology',cleared=True).order_by('-updated')
+        queryset=super().get_queryset().filter(test_handler__lab__iexact='Chemical pathology',cleared=True).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -283,7 +283,7 @@ class MicroRequestListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset=super().get_queryset().filter(payment__unit__iexact="Microbiology",cleared=False).order_by('-updated')
+        queryset=super().get_queryset().filter(test_handler__lab__iexact="Microbiology",cleared=False).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -308,7 +308,7 @@ class MicroListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset=super().get_queryset().filter(payment__unit__iexact='Microbiology',cleared=True).order_by('-updated')
+        queryset=super().get_queryset().filter(test_handler__lab__iexact='Microbiology',cleared=True).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -333,7 +333,7 @@ class SerologyRequestListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(payment__unit__iexact="Serology",cleared=False).order_by('-updated')
+        queryset = super().get_queryset().filter(test_handler__lab__iexact="Serology",cleared=False).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -359,7 +359,7 @@ class SerologyListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(payment__unit__iexact='Serology',cleared=True).order_by('-updated')
+        queryset = super().get_queryset().filter(test_handler__lab__iexact='Serology',cleared=True).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -449,7 +449,7 @@ class GeneralTestCreateView(LoginRequiredMixin, CreateView):
         general_result = form.save(commit=False)
         payment = Paypoint.objects.create(
             patient=patient,
-            status=False,
+            status=False,            
             service=test_info.code,  # Use the test_info we created above
             unit='general',
             price=general_result.price,
@@ -627,13 +627,13 @@ class BloodGroupCreateView(View):
         try:
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Blood Group')
+
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -641,7 +641,7 @@ class BloodGroupCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             blood_group = BloodGroup.objects.create(
@@ -649,12 +649,10 @@ class BloodGroupCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Blood Group template created successfully')
+            messages.success(request, 'Blood Group result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Blood Group test: {str(e)}')
-        
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
-
 
 class GenotypeCreateView(View):
     @transaction.atomic
@@ -663,12 +661,11 @@ class GenotypeCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Genotype')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -676,7 +673,7 @@ class GenotypeCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             geno = Genotype.objects.create(
@@ -684,12 +681,10 @@ class GenotypeCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Genotype template created successfully')
+            messages.success(request, 'Genotype result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Genotype test: {str(e)}')
-        
-        return redirect(reverse('results:update_genotype', kwargs={'file_no': file_no,'test_info_pk':test_info.id}))
-        # return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
+        return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
 
 class FBCCreateView(View):
@@ -699,12 +694,11 @@ class FBCCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Full Blood Count')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -712,7 +706,7 @@ class FBCCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             fbc = FBC.objects.create(
@@ -720,10 +714,9 @@ class FBCCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'FBC template created successfully')
+            messages.success(request, 'FBC result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating FBC test: {str(e)}')
-        
         return redirect(reverse('patient_details', kwargs={'file_no': file_no}))
 
 # chempath 
@@ -734,12 +727,12 @@ class UECreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Urea & Electrolyte')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -747,7 +740,7 @@ class UECreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             ue = UreaAndElectrolyte.objects.create(
@@ -755,7 +748,7 @@ class UECreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'UREA & ELCTROLYTE template created successfully')
+            messages.success(request, 'UREA & ELCTROLYTE result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating UREA & ELCTROLYTE test: {str(e)}')
         
@@ -769,12 +762,12 @@ class LiverFunctionCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Liver Function')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -782,7 +775,7 @@ class LiverFunctionCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             liver_function = LiverFunction.objects.create(
@@ -790,7 +783,7 @@ class LiverFunctionCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Liver Function template created successfully')
+            messages.success(request, 'Liver Function result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Liver Function test: {str(e)}')
         
@@ -804,12 +797,12 @@ class LipidProfileCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Lipid Profile')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -817,7 +810,7 @@ class LipidProfileCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             lipid_profile = LipidProfile.objects.create(
@@ -825,7 +818,7 @@ class LipidProfileCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Lipid Profile template created successfully')
+            messages.success(request, 'Lipid Profile result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Lipid Profile test: {str(e)}')
         
@@ -839,12 +832,12 @@ class SerumProteinsCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Serum Proteins')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -852,7 +845,7 @@ class SerumProteinsCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             serum_proteins = SerumProteins.objects.create(
@@ -860,7 +853,7 @@ class SerumProteinsCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Serum Proteins template created successfully')
+            messages.success(request, 'Serum Proteins result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Serum Proteins test: {str(e)}')
         
@@ -874,12 +867,12 @@ class CerebroSpinalFluidCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Cerebro Spinal Fluid')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -887,7 +880,7 @@ class CerebroSpinalFluidCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             cerebro_spinal_fluid = CerebroSpinalFluid.objects.create(
@@ -895,7 +888,7 @@ class CerebroSpinalFluidCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Cerebro Spinal Fluid template created successfully')
+            messages.success(request, 'Cerebro Spinal Fluid result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Cerebro Spinal Fluid test: {str(e)}')
         
@@ -909,12 +902,12 @@ class BoneChemistryCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Bone Chemistry')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -922,7 +915,7 @@ class BoneChemistryCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             bone_chemistry = BoneChemistry.objects.create(
@@ -930,7 +923,7 @@ class BoneChemistryCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Bone Chemistry template created successfully')
+            messages.success(request, 'Bone Chemistry result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Bone Chemistry test: {str(e)}')
         
@@ -944,12 +937,12 @@ class MiscellaneousChempathTestsCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Miscellaneous Chempath Tests')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -957,7 +950,7 @@ class MiscellaneousChempathTestsCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             miscellaneous_chempath_tests = MiscellaneousChempathTests.objects.create(
@@ -965,7 +958,7 @@ class MiscellaneousChempathTestsCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Miscellaneous Chempath Tests created successfully')
+            messages.success(request, 'Miscellaneous Chempath Tests created ')
         except Exception as e:
             messages.error(request, f'Error creating Miscellaneous Chempath Tests: {str(e)}')
         
@@ -979,12 +972,12 @@ class BloodGlucoseCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Blood Glucose')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -992,7 +985,7 @@ class BloodGlucoseCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             blood_glucose = BloodGlucose.objects.create(
@@ -1000,7 +993,7 @@ class BloodGlucoseCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Blood Glucose template created successfully')
+            messages.success(request, 'Blood Glucose result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Blood Glucose test: {str(e)}')
         
@@ -1014,12 +1007,12 @@ class WidalCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='MP/Widal')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1027,7 +1020,7 @@ class WidalCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             widal = Widal.objects.create(
@@ -1035,7 +1028,7 @@ class WidalCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Widal template created successfully')
+            messages.success(request, 'Widal result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Widal test: {str(e)}')
         
@@ -1048,12 +1041,12 @@ class RheumatoidFactorCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Rheumatoid Factor')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1061,7 +1054,7 @@ class RheumatoidFactorCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             rheumatoid_factor = RheumatoidFactor.objects.create(
@@ -1069,7 +1062,7 @@ class RheumatoidFactorCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Rheumatoid Factor template created successfully')
+            messages.success(request, 'Rheumatoid Factor result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Rheumatoid Factor test: {str(e)}')
         
@@ -1082,12 +1075,12 @@ class HepatitisBCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Hepatitis B')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1095,7 +1088,7 @@ class HepatitisBCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             hpb = HPB.objects.create(
@@ -1103,7 +1096,7 @@ class HepatitisBCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Hepatitis B template created successfully')
+            messages.success(request, 'Hepatitis B result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Hepatitis B test: {str(e)}')
         
@@ -1116,12 +1109,12 @@ class HepatitisCCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Hepatitis C')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1129,7 +1122,7 @@ class HepatitisCCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             hcv = HCV.objects.create(
@@ -1137,7 +1130,7 @@ class HepatitisCCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Hepatitis C template created successfully')
+            messages.success(request, 'Hepatitis C result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Hepatitis C test: {str(e)}')
         
@@ -1150,12 +1143,12 @@ class VDRLCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='VDRL')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1163,7 +1156,7 @@ class VDRLCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             vdrl = VDRL.objects.create(
@@ -1171,7 +1164,7 @@ class VDRLCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'VDRL template created successfully')
+            messages.success(request, 'VDRL result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating VDRL test: {str(e)}')
         
@@ -1184,12 +1177,12 @@ class MantouxCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Mantoux')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1197,7 +1190,7 @@ class MantouxCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             mantoux = Mantoux.objects.create(
@@ -1205,7 +1198,7 @@ class MantouxCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Mantoux template created successfully')
+            messages.success(request, 'Mantoux result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Mantoux test: {str(e)}')
         
@@ -1218,12 +1211,12 @@ class AsoTitreCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Aso Titre')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1231,7 +1224,7 @@ class AsoTitreCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             aso_titre = AsoTitre.objects.create(
@@ -1239,7 +1232,7 @@ class AsoTitreCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Aso Titre template created successfully')
+            messages.success(request, 'Aso Titre result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Aso Titre test: {str(e)}')
         
@@ -1252,12 +1245,12 @@ class CRPCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='CRP')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1265,7 +1258,7 @@ class CRPCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             crp = CRP.objects.create(
@@ -1273,7 +1266,7 @@ class CRPCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'CRP template created successfully')
+            messages.success(request, 'CRP result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating CRP test: {str(e)}')
         
@@ -1286,12 +1279,12 @@ class HIVScreeningCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='HIV Screening')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1299,7 +1292,7 @@ class HIVScreeningCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             hiv_screening = HIVScreening.objects.create(
@@ -1307,7 +1300,7 @@ class HIVScreeningCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'HIV Screening template created successfully')
+            messages.success(request, 'HIV Screening result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating HIVScreening test: {str(e)}')
         
@@ -1322,12 +1315,12 @@ class UrineMicroscopyCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Urine MCS')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1335,7 +1328,7 @@ class UrineMicroscopyCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             urine_microscopy = UrineMicroscopy.objects.create(
@@ -1343,7 +1336,7 @@ class UrineMicroscopyCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Urine Microscopy template created successfully')
+            messages.success(request, 'Urine Microscopy result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Urine Microscopy test: {str(e)}')
         
@@ -1356,12 +1349,12 @@ class HVSCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='HVS MCS')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1369,7 +1362,7 @@ class HVSCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             hvs = HVS.objects.create(
@@ -1377,7 +1370,7 @@ class HVSCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'HVS template created successfully')
+            messages.success(request, 'HVS result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating HVS test: {str(e)}')
         
@@ -1390,12 +1383,12 @@ class StoolCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Stool MCS')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1403,7 +1396,7 @@ class StoolCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             stool = Stool.objects.create(
@@ -1411,7 +1404,7 @@ class StoolCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Stool template created successfully')
+            messages.success(request, 'Stool result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Stool test: {str(e)}')
         
@@ -1424,12 +1417,12 @@ class SwabPusAspirateCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='SWAB PUS ASPIRATE (MCS)')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1437,7 +1430,7 @@ class SwabPusAspirateCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             swab_pus_aspirate_mcs = Swab_Pus_Aspirate_MCS.objects.create(
@@ -1445,7 +1438,7 @@ class SwabPusAspirateCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'swab pus aspirate template created successfully')
+            messages.success(request, 'swab pus aspirate result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating SWAB PUS ASPIRATE (MCS) test: {str(e)}')
         
@@ -1458,12 +1451,12 @@ class BloodCultureCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Blood Culture')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1471,7 +1464,7 @@ class BloodCultureCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             blood_culture = BloodCulture.objects.create(
@@ -1479,7 +1472,7 @@ class BloodCultureCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Blood Culture template created successfully')
+            messages.success(request, 'Blood Culture result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Blood Culture test: {str(e)}')
         
@@ -1492,12 +1485,12 @@ class OccultBloodCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Occult Blood')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1505,7 +1498,7 @@ class OccultBloodCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             occult_blood = OccultBlood.objects.create(
@@ -1513,7 +1506,7 @@ class OccultBloodCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Occult Blood template created successfully')
+            messages.success(request, 'Occult Blood result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Occult Blood test: {str(e)}')
         
@@ -1526,12 +1519,12 @@ class SputumMCSCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Sputum MCS')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1539,7 +1532,7 @@ class SputumMCSCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             sputum_mcs = SputumMCS.objects.create(
@@ -1547,7 +1540,7 @@ class SputumMCSCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Sputum MCS template created successfully')
+            messages.success(request, 'Sputum MCS result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Sputum MCS test: {str(e)}')
         
@@ -1560,12 +1553,12 @@ class GramStainCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Gram Stain')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1573,7 +1566,7 @@ class GramStainCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             gram_stain = GramStain.objects.create(
@@ -1581,7 +1574,7 @@ class GramStainCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Gram Stain template created successfully')
+            messages.success(request, 'Gram Stain result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Gram Stain test: {str(e)}')
         
@@ -1594,12 +1587,12 @@ class ZNStainCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='ZN Stain')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1607,7 +1600,7 @@ class ZNStainCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             zn_stain = ZNStain.objects.create(
@@ -1615,7 +1608,7 @@ class ZNStainCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'ZN Stain template created successfully')
+            messages.success(request, 'ZN Stain result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating ZN Stain test: {str(e)}')
         
@@ -1628,12 +1621,12 @@ class SemenAnalysisCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Semen Analysis')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1641,7 +1634,7 @@ class SemenAnalysisCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             semen_analysis = SemenAnalysis.objects.create(
@@ -1649,7 +1642,7 @@ class SemenAnalysisCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Semen Analysis template created successfully')
+            messages.success(request, 'Semen Analysis result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Semen Analysis Stain test: {str(e)}')
         
@@ -1662,12 +1655,12 @@ class UrinalysisCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Urinalysis')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1675,7 +1668,7 @@ class UrinalysisCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             urinalysis = Urinalysis.objects.create(
@@ -1683,7 +1676,7 @@ class UrinalysisCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Urinalysis template created successfully')
+            messages.success(request, 'Urinalysis result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Urinalysis test: {str(e)}')
         
@@ -1696,12 +1689,12 @@ class PregnancyCreateView(View):
             patient = get_object_or_404(PatientData, file_no=file_no)
             generic_test = get_object_or_404(GenericTest, name__iexact='Pregnancy Test')
             
-            # Create Paypoint first
-            payment = Paypoint.objects.create(
+            
+            test_handler = TestHandler.objects.create(
                 patient=patient,
-                status=False,
-                unit=generic_test.lab,
-                service=generic_test.name,
+                
+                lab=generic_test.lab,
+                test=generic_test.name,
                 price=generic_test.price,
             )
             
@@ -1709,7 +1702,7 @@ class PregnancyCreateView(View):
             test_info = Testinfo.objects.create(
                 patient=patient,
                 collected_by=request.user,
-                payment=payment
+                test_handler = test_handler
             )
             
             pregnancy = Pregnancy.objects.create(
@@ -1717,7 +1710,7 @@ class PregnancyCreateView(View):
                 test_info=test_info
             )
 
-            messages.success(request, 'Pregnancy template created successfully')
+            messages.success(request, 'Pregnancy result template added, now we can enter the result ')
         except Exception as e:
             messages.error(request, f'Error creating Pregnancy test: {str(e)}')
         
@@ -1727,11 +1720,11 @@ class PregnancyCreateView(View):
 class BaseLabResultUpdateView(UpdateView):
     template_name = 'shared_test_form.html'
     def get_success_url(self):
-        messages.success(self.request, f'{self.model.__name__} result added successfully')
+        messages.success(self.request, f'{self.model.name} result added successfully')
         next_url = self.request.GET.get('next')
         if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts=None):
             return next_url
-        return reverse_lazy("results:dashboard")
+        return reverse_lazy("results:all_test")
     
     def get_object(self, queryset=None):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
@@ -2100,7 +2093,7 @@ class MicrobiologyTestListView(LoginRequiredMixin, ListView):
     model = LabTesting
     template_name = 'incoming_req.html'
     context_object_name = 'tests'
-    paginate_by = 50  # Adjust as needed
+    paginate_by = 10  # Adjust as needed
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(lab__icontains='MICROBIOLOGY').select_related(
@@ -2134,7 +2127,7 @@ class ChempathTestListView(LoginRequiredMixin, ListView):
     model = LabTesting
     template_name = 'incoming_req.html'
     context_object_name = 'tests'
-    paginate_by = 50  # Adjust as needed
+    paginate_by = 10  # Adjust as needed
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(lab__icontains='CHEMICAL PATHOLOGY').select_related(
@@ -2166,7 +2159,7 @@ class HematologyTestListView(LoginRequiredMixin, ListView):
     model = LabTesting
     template_name = 'incoming_req.html'
     context_object_name = 'tests'
-    paginate_by = 50  # Adjust as needed
+    paginate_by = 10  # Adjust as needed
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(lab__icontains='HEMATOLOGY').select_related(
@@ -2194,11 +2187,12 @@ class HematologyTestListView(LoginRequiredMixin, ListView):
         context['query'] = self.request.GET.get('q', '')       
         return context
 
+
 class SerologyTestListView(LoginRequiredMixin, ListView):
     model = LabTesting
     template_name = 'incoming_req.html'
     context_object_name = 'tests'
-    paginate_by = 50  # Adjust as needed
+    paginate_by = 10  # Adjust as needed
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(lab__icontains='SEROLOGY').select_related(
@@ -2223,5 +2217,22 @@ class SerologyTestListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['lab_name'] = 'SEROLOGY'
         context['dashboard_url'] = 'results:serology'
+        context['query'] = self.request.GET.get('q', '')       
+        return context
+
+
+class AllTestListView(LoginRequiredMixin, ListView):
+    model = LabTesting
+    template_name = 'incoming_req.html'
+    context_object_name = 'tests'
+    paginate_by = 10  # Adjust as needed
+    def get_queryset(self):
+        queryset = super().get_queryset().order_by('-labtest__created')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lab_name'] = 'GENERAL'
+        context['dashboard_url'] = 'results:dashboard'
         context['query'] = self.request.GET.get('q', '')       
         return context
