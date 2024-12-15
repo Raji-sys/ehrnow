@@ -3,8 +3,27 @@
 {% block title %}Expiry Date Notification{% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'pharm:main_store' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Drug Expiry Notifications</div>{%endblock%}
 {% block content %}
+
 <div class="md:container p-2 mx-auto w-fit shadow-2xl overflow-hidden mt-4 rounded-xl bg-white">
+    
     <div class="flex justify-center gap-4">
+                       <!-- Search Form -->
+                       <form method="get" class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 ">
+                        <div class="flex items-center w-full sm:w-auto">
+                            <label for="q" class="sr-only">Search</label>
+                            <input type="text" name="q" id="q" value="{{ query|default_if_none:'' }}" placeholder="Search Drugs..."
+                                class="focus:ring-amber-500 focus:border-amber-500 block shadow-sm text-xs border-gray-300 rounded-md w-full sm:w-60">
+                        </div>
+                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        {% if request.GET.urlencode %}
+                        <a href="?" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                            <i class="fas fa-rotate"></i>
+                        </a>
+                        {% endif %}
+            
+                    </form>
         <!-- Notification Box -->
         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-2 mb-2 text-xs w-fit" role="alert">
             <div class="md:flex md:items-center md:space-x-4 grid grid-cols-2 gap-4">
@@ -44,9 +63,9 @@
             </thead>
             <tbody class="bg-white divide-y divide-blue-200">
                 {% for drug in drugs %}
-                <tr class="hover:bg-yellow-50 transition ease-in-out duration-150 text-xs text-center">
+                <tr class="hover:bg-yellow-50 transition ease-in-out duration-150 text-xs text-center uppercase">
                     <td class="p-2 whitespace-nowrap  font-medium text-gray-900">{{ forloop.counter }}</td>
-                    <td class="p-2 whitespace-nowrap  text-gray-600">{{ drug.generic_name }}</td>
+                    <td class="p-2 whitespace-nowrap  text-gray-600">{{ drug.name }}</td>
                     <td class="p-2 whitespace-nowrap  text-gray-600">{{ drug.trade_name }}</td>
                     <td class="p-2 whitespace-nowrap  text-gray-600">{{ drug.strength }}</td>
                     <td class="p-2 whitespace-nowrap  text-gray-600">{{ drug.expiration_date }}</td>

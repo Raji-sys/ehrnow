@@ -59,9 +59,8 @@ class RecordForm(forms.ModelForm):
 class RestockForm(forms.ModelForm):
     class Meta:
         model = Restock
-        fields = ['category', 'drug', 'quantity','date','expiration_date']
+        fields = ['category', 'drug', 'quantity','expiration_date']
         widgets = {
-            'date': DateInput(attrs={'type': 'date'}),
             'expiration_date': DateInput(attrs={'type': 'date'}),
         }
 
@@ -280,13 +279,12 @@ class DispenseRecordForm(forms.ModelForm):
 class ReturnDrugForm(forms.ModelForm):
     class Meta:
         model = ReturnedDrugs
-        fields = ['category', 'drug', 'quantity', 'patient_info', 'date']
+        fields = ['category', 'drug', 'quantity', 'patient_info',]
 
     def __init__(self, *args, **kwargs):
         self.unit = kwargs.pop('unit', None)
         super(ReturnDrugForm, self).__init__(*args, **kwargs) 
         self.fields['category'].widget.attrs.update({'onchange': 'load_drugs()'})
-        self.fields['date'].widget = forms.DateInput(attrs={'type': 'date'})
         
         if self.unit:
             # Adjust this queryset as needed based on your specific requirements for returns

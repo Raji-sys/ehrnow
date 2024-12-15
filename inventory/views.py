@@ -47,7 +47,8 @@ def items_list(request):
 @login_required
 def records(request):
     records = Record.objects.all().order_by('-updated_at')
-        # Search functionality
+    
+    # Search functionality
     query = request.GET.get('q')
     if query:
         records = records.filter(

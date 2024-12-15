@@ -42,7 +42,6 @@ urlpatterns=[
     
     path('unit-issue-record/new/<int:unit_id>/', views.unitissuerecord, name='unit_issue_record_create'),
     path('box/new/<int:unit_id>/', views.boxrecord, name='box_record_create'),
-    path('unit-issue-records/', UnitIssueRecordListView.as_view(), name='unit_issue_record_list'),
     path('unit-issue-report/<int:pk>/', views.unitissue_report, name='unitissue_report'),
     path('unitissue-pdf/', views.unitissue_pdf, name='unitissue_pdf'),
 

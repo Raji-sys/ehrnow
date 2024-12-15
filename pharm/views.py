@@ -210,7 +210,13 @@ class ExpiryNotificationView(LoginRequiredMixin, ListView):
                 output_field=CharField(),
             )
         ).order_by('expiration_date')
-
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+            Q(name__icontains=query) |
+            Q(trade_name__icontains=query)|
+            Q(category__name__icontains=query)
+            )
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -226,6 +232,7 @@ class ExpiryNotificationView(LoginRequiredMixin, ListView):
         context['total_expiring_in_1_month'] = queryset.filter(expiration_date__gt=today, expiration_date__lte=one_month_later).count()
         context['total_expiring_in_3_months'] = queryset.filter(expiration_date__gt=one_month_later, expiration_date__lte=three_months_later).count()
         context['total_expiring_in_6_months'] = queryset.filter(expiration_date__gt=three_months_later, expiration_date__lte=six_months_later).count()
+        context['query'] = self.request.GET.get('q', '')       
 
         return context
 
@@ -263,11 +270,21 @@ def drug_report(request):
 @group_required('STORE')
 def records(request):
     records = Record.objects.all().order_by('-updated_at')
+
+    # Search functionality
+    query = request.GET.get('q')
+    if query:
+        records = records.filter(
+            Q(drug__name__icontains=query) |
+            Q(drug__trade_name__icontains=query)|
+            Q(category__name__icontains=query)|
+            Q(unit_issued_to__name__icontains=query)
+        )
     pgn=Paginator(records,10)
     pn=request.GET.get('page')
     po=pgn.get_page(pn)
 
-    context = {'records': records, 'po':po}
+    context = {'records': records, 'po':po,'query': query or ''}
     return render(request, 'store/record.html', context)
 
 @group_required('STORE')
@@ -400,11 +417,19 @@ class RestockUpdateView(LoginRequiredMixin, StoreGroupRequiredMixin,UpdateView):
 @group_required('STORE')
 def restocked_list(request):
     restock = Restock.objects.all().order_by('-updated')
+    # Search functionality
+    query = request.GET.get('q')
+    if query:
+        restock = restock.filter(
+            Q(drug__name__icontains=query) |
+            Q(drug__trade_name__icontains=query)|
+            Q(category__name__icontains=query)
+        )
     pgn=Paginator(restock,10)
     pn=request.GET.get('page')
     po=pgn.get_page(pn)
 
-    context = {'restock': restock, 'po':po}
+    context = {'restock': restock, 'po':po,'query':query or ''}
     return render(request, 'store/restocked_list.html', context)
     
 
@@ -669,7 +694,14 @@ class UnitBulkLockerDetailView(LoginRequiredMixin, UnitGroupRequiredMixin, Detai
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         unit_store_drugs = UnitStore.objects.filter(unit=self.object).select_related('drug').order_by('-updated_at')
-        
+
+        query = self.request.GET.get('q')
+        if query:
+            unit_store_drugs = unit_store_drugs.filter(
+                Q(drug__name__icontains=query) |
+                Q(drug__trade_name__icontains=query)|
+                Q(drug__category__name__icontains=query)
+            )        
         # Pagination
         paginator = Paginator(unit_store_drugs, self.paginate_by)
         page_number = self.request.GET.get('page')
@@ -706,6 +738,7 @@ class UnitBulkLockerDetailView(LoginRequiredMixin, UnitGroupRequiredMixin, Detai
         context['one_month_later'] = one_month_later
         context['three_months_later'] = three_months_later
         context['six_months_later'] = six_months_later
+        context['query'] = self.request.GET.get('q', '')       
 
         return context
 
@@ -724,7 +757,13 @@ class UnitDispensaryLockerView(LoginRequiredMixin, UnitGroupRequiredMixin, Detai
         total_worth = dispensary_drugs.aggregate(
             total=Sum(F('drug__cost_price') * F('quantity'))
         )['total'] or 0
-
+        query = self.request.GET.get('q')
+        if query:
+            dispensary_drugs = dispensary_drugs.filter(
+                Q(drug__name__icontains=query) |
+                Q(drug__trade_name__icontains=query)|
+                Q(drug__category__name__icontains=query)
+            )        
         # Order the drugs and paginate
         ordered_drugs = dispensary_drugs.order_by('drug__name')
         paginator = Paginator(ordered_drugs, self.paginate_by)
@@ -734,6 +773,7 @@ class UnitDispensaryLockerView(LoginRequiredMixin, UnitGroupRequiredMixin, Detai
         context['dispensary_drugs'] = page_obj
         context['total_worth'] = total_worth
         context['page_obj'] = page_obj
+        context['query'] = self.request.GET.get('q', '')       
         return context
 
 class UnitTransferView(LoginRequiredMixin, UnitGroupRequiredMixin, DetailView):
@@ -751,14 +791,21 @@ class UnitTransferView(LoginRequiredMixin, UnitGroupRequiredMixin, DetailView):
             issued_to__isnull=False, 
             issued_to_locker__isnull=True
         ).order_by('-date_issued')
-
+        query = self.request.GET.get('q')
+        if query:
+            unit_issue_records = unit_issue_records.filter(
+                Q(drug__name__icontains=query) |
+                Q(drug__trade_name__icontains=query)|
+                Q(drug__category__name__icontains=query)
+            )        
         # Paginate the results
         paginator = Paginator(unit_issue_records, self.paginate_by)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
-
         context['unit_issue_records'] = page_obj
         context['page_obj'] = page_obj
+        context['query'] = self.request.GET.get('q', '')       
+
         return context
 
 
@@ -840,8 +887,6 @@ class TransferUpdateView(LoginRequiredMixin,UnitGroupRequiredMixin,UpdateView):
     def form_invalid(self, form):
         messages.error(self.request, "There was an error updating the record. Please check the form.")
         return super().form_invalid(form)
-
-
 
 
 @unit_group_required
@@ -1057,16 +1102,6 @@ def transfer_pdf(request):
     response = StreamingHttpResponse(pdf_generator(pdf_buffer), content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="gen_by_{request.user}_{filename}"'
     return response
-
-
-class UnitIssueRecordListView(LoginRequiredMixin,UnitGroupRequiredMixin,ListView):
-    model = UnitIssueRecord
-    template_name = 'store/unitissuerecord_list.html'
-    context_object_name = 'unit_issue_records'
-    paginate_by = 10  # Optional: for pagination
-
-    def get_queryset(self):
-        return DispenseRecord.objects.all().order_by('-date_issued')
     
 
 @login_required
@@ -1229,6 +1264,7 @@ def dispense_pdf(request):
     response['Content-Disposition'] = f'attachment; filename="gen_by_{request.user}_{filename}"'
     return response
 
+
 class BoxView(LoginRequiredMixin, UnitGroupRequiredMixin, DetailView):
     model = Unit
     template_name = 'store/unit_box.html'
@@ -1244,7 +1280,13 @@ class BoxView(LoginRequiredMixin, UnitGroupRequiredMixin, DetailView):
             moved_to__isnull=False, 
             issued_to_locker__isnull=True
         ).order_by('-date_issued')
-
+        query = self.request.GET.get('q')
+        if query:
+            unit_issue_records = unit_issue_records.filter(
+                Q(drug__name__icontains=query) |
+                Q(drug__trade_name__icontains=query)|
+                Q(drug__category__name__icontains=query)
+            )        
         # Paginate the results
         paginator = Paginator(unit_issue_records, self.paginate_by)
         page_number = self.request.GET.get('page')
@@ -1252,6 +1294,7 @@ class BoxView(LoginRequiredMixin, UnitGroupRequiredMixin, DetailView):
 
         context['unit_issue_records'] = page_obj
         context['page_obj'] = page_obj
+        context['query'] = self.request.GET.get('q', '')       
         return context
 
 @unit_group_required
@@ -1450,11 +1493,21 @@ class ReturnedDrugsListView(ListView):
     def get_queryset(self):
         unit_id = self.kwargs.get('unit_id')
         self.unit = get_object_or_404(Unit, id=unit_id)
-        return ReturnedDrugs.objects.filter(unit=self.unit).order_by('-updated')
-
+        queryset= ReturnedDrugs.objects.filter(unit=self.unit).order_by('-updated')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(drug__name__icontains=query) |
+                Q(drug__trade_name__icontains=query)|
+                Q(drug__category__name__icontains=query) |
+                Q(patient_info__icontains=query)
+            )
+        
+        return queryset
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['unit'] = self.unit  # Pass the unit to the template
+        context['query'] = self.request.GET.get('q', '') 
         return context
 
 @login_required

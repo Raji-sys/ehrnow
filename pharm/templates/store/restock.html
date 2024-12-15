@@ -3,7 +3,8 @@
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'pharm:restocked' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Restock Drugs</div>{%endblock%}
 
 {% block content %}
-<div class="py-4 px-4 sm:px-6 lg:px-6 max-w-7xl mx-auto">
+
+<div class="py-4 px-4 sm:px-6 lg:px-6 max-w-4xl mx-auto">
     <div class="bg-blue-100 shadow-xl rounded-lg overflow-hidden">
       <form id="recordForm" action="" method="POST" enctype="multipart/form-data" class="p-3 text-xs text-center">
         {% csrf_token %}
@@ -15,7 +16,7 @@
                 {{ form.non_field_errors.0 }}
               </div>
             {% endif %}
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-5">
+            <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
               <div class="space-y-1">
                 <label class="block text-xs font-medium text-gray-700">Class</label>
                 <div class="mt-1">
@@ -45,15 +46,6 @@
               </div>
 
               <div class="space-y-1">
-                <label class="block text-sm font-medium text-gray-700">Date</label>
-                <div class="mt-1">
-                    {{ form.date }}
-                </div>
-                {% if form.date.errors %}
-                <p class="text-red-600 text-xs mt-1">{{ form.date.errors.0 }}</p>
-                {% endif %}
-            </div>
-              <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700">Expiry Date</label>
                 <div class="mt-1">
                     {{ form.expiration_date }}
@@ -76,34 +68,34 @@
 </div>
 
 <script>
-function initializePage() {
-  function load_drugs(index) {
-    const categoryId = document.getElementsByName(`form-${index}-category`)[0].value;
-    const url = `/get_drugs_by_category/${categoryId}/`;
-
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const drugSelect = document.getElementsByName(`form-${index}-drug`)[0];
-        drugSelect.innerHTML = '';  // Clear existing options
-
-        data.drugs.forEach(drug => {
-          const option = document.createElement('option');
-          option.value = drug.id;
-          option.text = drug.name;
-          drugSelect.add(option);
-        });
-      })
-      .catch(error => console.error('Error:', error));
+  function initializePage() {
+    function load_drugs(index) {
+      const categoryId = document.getElementsByName(`form-${index}-category`)[0].value;
+      const url = `/pharm/get_drugs_by_category/${categoryId}/`;
+  
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const drugSelect = document.getElementsByName(`form-${index}-drug`)[0];
+          drugSelect.innerHTML = '';  // Clear existing options
+  
+          data.drugs.forEach(drug => {
+            const option = document.createElement('option');
+            option.value = drug.id;
+            option.text = drug.name;
+            drugSelect.add(option);
+          });
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  
+    {% for form in formset %}
+    document.getElementsByName('{{ form.category.html_name }}')[0].addEventListener('change', function() {
+      load_drugs('{{ forloop.counter0 }}');
+    });
+    {% endfor %}
   }
-
-  {% for form in formset %}
-  document.getElementsByName('{{ form.category.html_name }}')[0].addEventListener('change', function() {
-    load_drugs('{{ forloop.counter0 }}');
-  });
-  {% endfor %}
-}
-
-window.addEventListener('load', initializePage);
-</script>
+  
+  window.addEventListener('load', initializePage);
+  </script>
 {% endblock %}
