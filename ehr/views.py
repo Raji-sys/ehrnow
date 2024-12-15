@@ -33,8 +33,8 @@ from xhtml2pdf import pisa
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.db import transaction
-from django.db.models import Sum, Count
-from django.db.models import Q
+from django.db.models import Sum, Count, Q
+
 import os
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage

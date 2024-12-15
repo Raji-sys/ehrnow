@@ -1,16 +1,41 @@
 {% extends "base.html" %}
 {% load humanize %}
 {% load static %}
-{% block title %}INVENTORY{% endblock %}
+{% block title %}INVENTORY LIST{% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'inventory:store_inventory' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>inventory list</div>{%endblock%}
 
 {% block content %}
-<div class="p-2 bg-white w-fit mx-auto flex justify-center rounded-xl">
-    <a href="{%url 'inventory:create_item'%}" class="focus:opacity-10 bg-zinc-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-plus fa-sm "></i></a>
-    <a href="{%url 'inventory:item_report' %}" class="focus:opacity-10 bg-zinc-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-file fa-sm"></i></a>
-    <a href="{%url 'inventory:restock' %}" class="focus:opacity-10 bg-zinc-600 p-2 px-4 rounded-2xl ml-2"><i class="text-white fa-solid fa-plus-circle fa-sm"></i></a>
+<div class="p-2 bg-white w-full max-w-md mx-auto flex flex-col md:flex-row gap-2 justify-center rounded-xl">
+    <div class="flex justify-center space-x-2 mb-2 md:mb-0">
+        <a href="{% url 'inventory:create_item' %}" class="bg-zinc-600 p-2 px-4 rounded-2xl focus:opacity-70 transition-all">
+            <i class="text-white fa-solid fa-plus fa-sm"></i>
+        </a>
+        <a href="{% url 'inventory:item_report' %}" class="bg-zinc-600 p-2 px-4 rounded-2xl focus:opacity-70 transition-all">
+            <i class="text-white fa-solid fa-file fa-sm"></i>
+        </a>
+        <a href="{% url 'inventory:restock' %}" class="bg-zinc-600 p-2 px-4 rounded-2xl focus:opacity-70 transition-all">
+            <i class="text-white fa-solid fa-plus-circle fa-sm"></i>
+        </a>
+    </div>
+    
+    <div class="flex-grow">
+        <form method="get" class="flex">
+            <input type="text" name="q" placeholder="Search items..." value="{{ query|default:'' }}"
+            class="flex-grow p-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs">
+            <button type="submit"
+            class="p-3 bg-gray-500 text-white rounded-r hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs">
+                <i class="fa-solid fa-search fa-xl"></i>
+            </button>
+            {% if request.GET.urlencode %}
+            <a href="?"
+            class="p-3 bg-amber-600 text-white rounded-r-md hover:bg-white focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs ml-2">
+                <i class="fa fa-solid fa-rotate fa-xl"></i>
+            </a>
+            {% endif %}
+        </form>
+    </div>
 </div>
-<div class="p-1 max-sm:p-1 text-sm rounded-2xl text-center mt-2">    
+<div class="p-1 max-sm:p-1 text-sm rounded-2xl text-center mt-2 md:mx-20">    
     <table class="table-auto max-sm:flex flex rounded-2xl items-center justify-center">
         <tbody class="bg-white border-1 shadow-2xl rounded-2xl max-sm:p-3 p-2 overflow-x-auto border-zinc-700">
             <div class="flex justify-center items-center gap-2">

@@ -13,7 +13,7 @@ import os
 from django.core.paginator import Paginator
 from .decorators import superuser_required
 from django.db import transaction
-
+from django.db.models import Q
 
 @login_required
 def index(request):
@@ -22,23 +22,49 @@ def index(request):
 
 @login_required
 def items_list(request):
-    items = Item.objects.all().order_by('-updated_at')
-    pgn=Paginator(items,10)
-    pn=request.GET.get('page')
-    po=pgn.get_page(pn)
-
-    context = {'items': items,'po':po}
+    queryset = Item.objects.all().order_by('-updated_at')
+    
+    # Search functionality
+    query = request.GET.get('q')
+    if query:
+        queryset = queryset.filter(
+            Q(name__icontains=query) |
+            Q(vendor__icontains=query)
+        )
+    
+    # Pagination
+    paginator = Paginator(queryset, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'po': page_obj,
+        'query': query or ''
+    }
+    
     return render(request, 'main_store/items_list.html', context)
-
 
 @login_required
 def records(request):
     records = Record.objects.all().order_by('-updated_at')
+        # Search functionality
+    query = request.GET.get('q')
+    if query:
+        records = records.filter(
+            Q(item__name__icontains=query) |
+            Q(item__vendor__icontains=query)|
+            Q(unit__name__icontains=query)|
+            Q(issued_to__name__icontains=query)|
+            Q(issued_by__username__icontains=query)|
+            Q(issued_by__first_name__icontains=query)|
+            Q(issued_by__last_name__icontains=query)
+        )
+
     pgn=Paginator(records,10)
     pn=request.GET.get('page')
     po=pgn.get_page(pn)
 
-    context = {'records': records, 'po':po}
+    context = {'records': records, 'po':po,'query': query or ''}
     return render(request, 'main_store/record.html', context)
 
 

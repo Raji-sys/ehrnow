@@ -46,34 +46,34 @@
         <table class="min-w-full divide-y divide-emerald-200">
           <thead class="bg-emerald-50">
             <tr class="text-xs text-left">
-                <th class="p-3  text-emerald-500 uppercase tracking-wider">
+                <th class="p-2  text-emerald-500 uppercase tracking-wider">
                     #
                 </th>
-              <th class="p-3  text-emerald-500 uppercase tracking-wider">
+              <th class="p-2  text-emerald-500 uppercase tracking-wider">
                 FILE NO
               </th>
-              <th class="p-3 text-emerald-500 uppercase tracking-wider">
+              <th class="p-2 text-emerald-500 uppercase tracking-wider">
                 NAME
               </th>
-              <th class="p-3  text-emerald-500 uppercase tracking-wider">
+              <th class="p-2  text-emerald-500 uppercase tracking-wider">
                 PHONE
               </th>
-              <th class="p-3  text-emerald-500 uppercase tracking-wider">
+              <th class="p-2  text-emerald-500 uppercase tracking-wider">
                 GENDER
               </th>
-              <th class="p-3  text-emerald-500 uppercase tracking-wider">
+              <th class="p-2  text-emerald-500 uppercase tracking-wider">
                 AGE
               </th>
-              <th class="p-3  text-emerald-500 uppercase tracking-wider text-center">
+              <th class="p-2  text-emerald-500 uppercase tracking-wider text-left">
                 NEXT OF KIN INFORMATION
               </th>
-              <th class="p-3  text-emerald-500 uppercase tracking-wider">
+              <th class="p-2  text-emerald-500 uppercase tracking-wider">
                 DATE REGISTERED
               </th>
-              <th class="p-3 text-emerald-500 uppercase tracking-wider">
+              <th class="p-2 text-emerald-500 uppercase tracking-wider">
                 EDIT
               </th>
-              <th class="p-3 text-emerald-500 uppercase tracking-wider">
+              <th class="p-2 text-emerald-500 uppercase tracking-wider">
                 VISIT
               </th>
             </tr>
@@ -81,40 +81,40 @@
           <tbody class="bg-white divide-y divide-emerald-200">
             {% for p in patients %}
             <tr class="text-xs bg-emerald-100 hover:bg-emerald-200 transition-colors duration-300">
-                <td class="p-3 whitespace-nowrap">
+                <td class="p-2 whitespace-nowrap">
                     {{forloop.counter}}
                 </td>
-                <td class="p-3 whitespace-nowrap">
+                <td class="p-2 whitespace-nowrap">
                   {{ p.file_no|default_if_none:'N/A' }}
                 </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-2 whitespace-nowrap">
                 <a href="{{p.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">
                 {{ p.full_name|default_if_none:'N/A' }}
                 </a>
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-2 whitespace-nowrap">
                 {{ p.phone|default_if_none:'N/A' }}
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-2 whitespace-nowrap">
                 {{ p.gender|default_if_none:'N/A' }}
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-2 whitespace-nowrap">
                 {{ p.age|default_if_none:'N/A' }}
               </td>
-              <td class="p-3 whitespace-nowrap text-center">
-                {{ p.nok_name|default_if_none:'N/A' }} <br>
-                {{ p.nok_phone|default_if_none:'N/A' }} <br>
-                {{ p.nok_rel|default_if_none:'N/A' }}
+              <td class="p-2 whitespace-nowrap text-left normal-case">
+                Name: <span class="m-2 uppercase font-medium text-blue-500">{{ p.nok_name|default_if_none:'N/A' }}</span> <br>
+                Phone: <span class="m-2 uppercase font-medium text-blue-500">{{ p.nok_phone|default_if_none:'N/A' }} </span><br>
+                Relationship: <span class="uppercase font-medium text-blue-500">{{ p.nok_rel|default_if_none:'N/A' }}</span>
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-2 whitespace-nowrap">
                 {{ p.updated }}
               </td>
-            <td class="p-3 whitespace-nowrap">
+            <td class="p-2 whitespace-nowrap">
                 <span class="space-x-4">
                     <a href="{% url 'update_patient' p.pk %}" class="text-blue-500 hover:text-blue-700"><i class="fa-solid fa-pen-nib fa-xl"></i></a>
                 </span>
               </td>
-              <td class="p-3 whitespace-nowrap">
+              <td class="p-2 whitespace-nowrap">
                 <span class="space-x-4">
                   <a href="{% url 'visit_record' p.file_no %}" class="text-emerald-500 hover:text-emerald-700"><i class="fa-solid fa-plus-circle fa-xl"></i></a>
               </span>
@@ -123,7 +123,7 @@
             
             {% empty %}
             <tr class="bg-white">
-              <td colspan="10" class="p-3 text-center text-emerald-500">
+              <td colspan="10" class="p-2 text-center text-emerald-500">
                 No patients found
               </td>
             </tr>
@@ -133,14 +133,14 @@
           <div class="pagination flex justify-center">
               <span class="flex items-center">
                   {% if page_obj.has_previous %}
-                  <a href="?page=1" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
-                  <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
+                  <a href="?page=1" class="p-1 rounded-lg bg-emerald-600 text-white mr-2"><i class="fa-solid fa-angle-double-left fa-md"></i></a>
+                  <a href="?page={{page_obj.previous_page_number}}" class="p-1 rounded-lg bg-emerald-600 text-white"><i class="fa-solid fa-angle-left fa-md"></i></a>
                   {% endif %}
               </span>
                   <span class="flex item-center"> 
                       {% if page_obj.has_next %}
-                      <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-amber-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
-                      <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-amber-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
+                      <a href="?page={{page_obj.next_page_number}}" class="p-1 rounded-lg bg-emerald-600 text-white mr-2"><i class="fa-solid fa-angle-right fa-md"></i></a>
+                      <a href="?page={{page_obj.paginator.num_pages}}" class="p-1 rounded-lg bg-emerald-600 text-white"><i class="fa-solid fa-angle-double-right fa-md"></i></a>
                       {% endif %}
                   </span>
               </div>
