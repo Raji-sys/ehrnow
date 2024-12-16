@@ -1,0 +1,174 @@
+<!-- ehr/revenue/test_pdf.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ doc_title }}</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 1cm;
+            margin-top: 2cm;
+
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #020b85; 
+            font-weight: 700;
+        }
+        .lab-container {
+            padding: 14px;
+            max-width: 21cm;
+            margin: 0 auto;
+            background: white;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .header h1 {
+            color: #034a2a;
+            font-size: 28px;
+            margin-bottom: 5px;
+            font-weight: 700;
+            margin-top: 0;
+        }
+        .meta-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 10px;
+            text-align: left;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        table td {
+            /* border: 1px solid #e0e0e0; */
+            padding: 5px;
+            color:black;
+            font-weight: bold;
+            /* color: #1d2bf5;  */
+            text-align: center;
+            border:solid #034a2a;
+        }
+        table th {
+            /* background-color: #034a2a;; */
+            text-align: center;
+            border: solid #034a2a;
+            /* background-color: #f0f0f0;   */
+            background-color: #d6d4d4;
+            /* color:black; */
+            padding: 5px;
+            color: #020b85; 
+            font-weight: bold;
+            font-weight: 700;
+        }
+        .test-info {
+            background-color: #d6d4d4;
+            /* background-color: #f0f0f0;   */
+            font-weight: bold;
+            color: black;
+        }
+        .parameters {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .values {
+            background-color: #ffffff;
+        }
+        .result-section {
+            margin-bottom: 30px;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 9px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+        }
+        .patient-info {
+            background-color: #034a2a;
+            color: black;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .logo-container{
+            text-align: center;
+            margin-top: 0;
+        }
+        p{
+            padding: 0;
+        }
+        .sg{
+            text-align: center;
+            width: 5%;
+        }
+</style>
+</head>
+
+<body>
+    <div id="headerContent">
+        <div class="header">
+            <h1>EMR NOW RADIOLOGY REQUEST SHEET</h1>
+        </div>
+    </div>
+
+    <div class="patient-info">
+        <table class="patient-table">
+            <tr>
+                <td><strong>Patient Name:</strong> {{ radiologytest.patient }}</td>
+                <td><strong>File No:</strong> {{ radiologytest.patient.file_no }}</td>
+            </tr>
+            <tr>
+                <td><strong>Gender:</strong> {{ radiologytest.patient.gender }}</td>
+                <td><strong>Age:</strong> {{ radiologytest.patient.age }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="lab-table">
+        <thead>
+            <tr>
+                <th class="sg">#</th>
+                <th>Test</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in radiology_items %}
+            <tr>
+                <td class="sg">{{ forloop.counter }}</td>
+                <td>{{ item.item.name }}</td>
+                <td>N{{ item.item.price|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
+    <div class="total">
+        <p>Total Amount: N{{ radiologytest.total_amount|floatformat:2 }}</p>
+    </div>
+
+    <div id="footerContent" class="footer">
+        <p>Generated on: {{ generated_date }} | Requested by: {{ radiologytest.user }}</p>
+        <p>This is a computer-generated document. No signature is required.</p>
+    </div>
+</body>
+</html>

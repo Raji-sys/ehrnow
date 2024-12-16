@@ -16,7 +16,6 @@ from django.contrib.auth import get_user_model
 from io import BytesIO
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-from datetime import datetime
 from django.conf import settings
 import os
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
@@ -549,27 +548,6 @@ def general_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-# class PathologyPayListView(ListView):
-#     model = Paypoint
-#     template_name = 'revenue/pathology_pay_list.html'
-#     paginate_by = 10
-#     context_object_name = 'pathology_pays'  # Add this to match your template
-
-#     def get_queryset(self):
-#         return Paypoint.objects.filter(test_payments__isnull=False,).order_by('-updated')
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-
-#         pathology_pays=self.get_queryset()
-#         pathology_pay_total = pathology_pays.count()
-#         pathology_paid_transactions = pathology_pays.filter(status=True)
-#         pathology_total_worth = pathology_paid_transactions.aggregate(total_worth=Sum('price'))['total_worth'] or 0
-
-#         context['pathology_pay_total'] = pathology_pay_total
-
-#         context['pathology_total_worth'] = pathology_total_worth
-#         return context
 class PathologyPayListView(ListView):
     model = Paypoint
     template_name = 'revenue/pathology_pay_list.html'
@@ -1929,8 +1907,6 @@ class LabTestingCreateView(DoctorRequiredMixin, FormView):
 
     def post(self, request, *args, **kwargs):
         formset = self.get_form()
-        print("POST Data:", request.POST)  # Debug print
-        print("Formset is valid:", formset.is_valid())  # Debug print
         if not formset.is_valid():
             print("Formset errors:", formset.errors)  # Debug print
         if formset.is_valid():
@@ -1978,9 +1954,7 @@ class LabTestingCreateView(DoctorRequiredMixin, FormView):
 
 
 def get_lab(request, lab_name):
-    print(f"Received request for lab: {lab_name}")
     items = GenericTest.objects.filter(lab=lab_name)
-    print(f"Found {items.count()} items")
     item_list = [{
         'id': item.id,
         'name': item.name,
@@ -2228,6 +2202,16 @@ class AllTestListView(LoginRequiredMixin, ListView):
     paginate_by = 10  # Adjust as needed
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-labtest__created')
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(labtest__patient__first_name__icontains=query) |
+                Q(labtest__patient__last_name__icontains=query) |
+                Q(labtest__patient__other_name__icontains=query) |
+                Q(labtest__patient__file_no__icontains=query)|
+                Q(labtest__patient__phone__icontains=query)|
+                Q(labtest__patient__title__icontains=query)
+            )
         return queryset
 
     def get_context_data(self, **kwargs):

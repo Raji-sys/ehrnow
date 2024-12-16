@@ -34,7 +34,7 @@ from django.forms import modelformset_factory
 from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import Sum, Count, Q
-
+from datetime import datetime
 import os
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -494,7 +494,7 @@ class PatientReportView(ListView):
 
 @login_required
 def patient_report_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
     f = PatientReportFilter(request.GET, queryset=PatientData.objects.all()).qs
     values = []
@@ -504,7 +504,7 @@ def patient_report_pdf(request):
     
     result = ", ".join(values)
 
-    context = {'generated_date': datetime.datetime.now().strftime('%d-%h-%Y'),
+    context = {'generated_date': datetime.now().strftime('%d-%h-%Y'),
             'user': request.user.username.upper(),'f': f, 'pagesize': 'A4',
             'orientation': 'landscape', 'result': result,}
 
@@ -559,7 +559,7 @@ from django.db.models import Subquery, OuterRef
 
 @login_required
 def visit_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('on__%d/%m/%Y__at__%I.%M%p.pdf')
 
     # Subquery to get the latest clinical note for each patient
@@ -587,7 +587,7 @@ def visit_pdf(request):
     
     result = ", ".join(values)
 
-    context = {'generated_date': datetime.datetime.now().strftime('%d-%h-%Y'),
+    context = {'generated_date': datetime.now().strftime('%d-%h-%Y'),
             'user': request.user.username.upper(),'f': f, 'pagesize': 'A4',
             'orientation': 'landscape', 'result': result,'patient': patient,}
 
@@ -691,6 +691,7 @@ class PatientFolderView(DetailView):
         patient = self.get_object()
         context['patient'] = patient
         context['test_items'] = (patient.test_items.all().prefetch_related('items__payment').order_by('-updated'))
+        context['radiology_test_items'] = (patient.radiology_test_items.all().prefetch_related('payment').order_by('-updated'))
         context['visits'] = patient.visit_record.all().order_by('-updated')
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
         # context['payments'] = patient.patient_payments.all().order_by('-updated')
@@ -1434,7 +1435,7 @@ class PayListView(ListView):
 # FOR ALL TRANSACTION SEARCH 
 @login_required
 def thermal_receipt(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('Receipt__%d_%m_%Y__%I_%M%p.pdf')
     base_queryset = Paypoint.objects.filter(status=True)
     
@@ -1455,7 +1456,7 @@ def thermal_receipt(request):
         'patient': patient,
         'result': result,
         'receipt_no': f'RCP-{ndate.strftime("%Y%m%d%H%M%S")}',
-        'generated_date': datetime.datetime.now().strftime('%d-%m-%Y %H:%M'),
+        'generated_date': datetime.now().strftime('%d-%m-%Y %H:%M'),
         'user': request.user.username.upper(),
     })
 
@@ -1470,7 +1471,7 @@ def thermal_receipt(request):
 
 @login_required
 def pharm_receipt(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('Receipt__%d_%m_%Y__%I_%M%p.pdf')
     
     # Start with pharmacy payments and status=True
@@ -1499,7 +1500,7 @@ def pharm_receipt(request):
         'patient': patient,
         'result': result,
         'receipt_no': f'RCP-{ndate.strftime("%Y%m%d%H%M%S")}',
-        'generated_date': datetime.datetime.now().strftime('%d-%m-%Y %H:%M'),
+        'generated_date': datetime.now().strftime('%d-%m-%Y %H:%M'),
         'user': request.user.username.upper(),
     })
     
@@ -1523,7 +1524,7 @@ def pharm_receipt(request):
 
 @login_required
 def record_receipt(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     filename = ndate.strftime('Receipt__%d_%m_%Y__%I_%M%p.pdf')
     
     base_queryset = Paypoint.objects.filter(record_payment__isnull=False,status=True)
@@ -1547,7 +1548,7 @@ def record_receipt(request):
         'patient': patient,
         'result': result,
         'receipt_no': f'RCP-{ndate.strftime("%Y%m%d%H%M%S")}',
-        'generated_date': datetime.datetime.now().strftime('%d-%m-%Y %H:%M'),
+        'generated_date': datetime.now().strftime('%d-%m-%Y %H:%M'),
         'user': request.user.username.upper(),
     })
     
@@ -1576,7 +1577,7 @@ def format_currency(amount):
 
 # FOR NORMAL PAYMENT
 def print_receipt_pdf(request):
-    ndate = datetime.datetime.now()
+    ndate = datetime.now()
     payment_id = request.GET.get('id')
     payment = get_object_or_404(Paypoint, id=payment_id)
     patient = payment.patient
@@ -1587,7 +1588,7 @@ def print_receipt_pdf(request):
         'payment': payment,
         'patient': patient,
         'total': payment.price or 0,
-        'generated_date': datetime.datetime.now().strftime('%d-%m-%Y %H:%M'),
+        'generated_date': datetime.now().strftime('%d-%m-%Y %H:%M'),
         'user': request.user.username.upper(),
     }
     
@@ -1601,7 +1602,7 @@ def print_receipt_pdf(request):
     
     if not pisa_status.err:
         buffer.seek(0)
-        ndate = datetime.datetime.now()
+        ndate = datetime.now()
         filename = ndate.strftime('on__%d_%m_%Y_at_%I_%M%p.pdf')
         return HttpResponse(
             buffer.getvalue(),
@@ -1884,32 +1885,25 @@ class WardShiftNotesUpdateView(NurseRequiredMixin, UpdateView):
         return self.object.patient.get_absolute_url()
     
 
-class RadiologyTestCreateView(LoginRequiredMixin, CreateView):
+class RadiologyResultCreateView(LoginRequiredMixin, CreateView):
     model = RadiologyResult
-    form_class = RadiologyTestForm
+    form_class = RadiologyResultForm
     template_name = 'ehr/radiology/radiology_result.html'
-        
+
     def form_valid(self, form):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
         form.instance.user = self.request.user
-
         radiology_result = form.save(commit=False)
-        payment = Paypoint.objects.create(
-            patient=patient,
-            status=False,
-            service=radiology_result.test,
-            unit='radiology',
-            price=radiology_result.test.price,
-        )
-        radiology_result.payment = payment 
+        radiology_result.comments = form.cleaned_data['comments']
         radiology_result.save()
+
         messages.success(self.request, 'Radiology test created successfully')
         return super().form_valid(form)
     
     def get_success_url(self):
-        return self.object.patient.get_absolute_url()
-
+        return reverse('all_radiology_req')
+    
 
 class RadiologyListView(ListView):
     model=RadiologyResult
@@ -1917,7 +1911,7 @@ class RadiologyListView(ListView):
     context_object_name='radiology_results'
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(payment__status__isnull=False,cleared=True).order_by('-updated')
+        queryset = super().get_queryset().filter(cleared=True).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -1934,25 +1928,6 @@ class RadiologyListView(ListView):
         context['query'] = self.request.GET.get('q', '')       
         return context  
     
-
-class RadiologyResultCreateView(LoginRequiredMixin, UpdateView):
-    model = RadiologyResult
-    form_class = RadiologyResultForm
-    template_name = 'ehr/radiology/radiology_result.html'
-    success_url=reverse_lazy('radiology_request')
-
-    def get_object(self, queryset=None):
-        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        return get_object_or_404(RadiologyResult, patient=patient, pk=self.kwargs['pk'])
-
-    def form_valid(self, form):
-        form.instance.updated_by = self.request.user
-        radiology_result = form.save(commit=False)
-        radiology_result.comments = form.cleaned_data['comments']
-        radiology_result.save()
-        messages.success(self.request, 'Radiology result updated successfully')
-        return super().form_valid(form)
-
 
 class RadiologyRequestListView(ListView):
     model=RadiologyResult
@@ -2012,7 +1987,7 @@ class RadiologyPayListView(ListView):
         return reverse_lazy("pay_list")
     
     def get_queryset(self):
-        queryset = super().get_queryset().filter(radiology_result_payment__isnull=False).order_by('-updated')
+        queryset = super().get_queryset().filter(radiology_payment__isnull=False).order_by('-updated')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -3045,3 +3020,199 @@ class CashPayListView(ListView):
         context['next'] = self.request.GET.get('next', reverse_lazy("pay_list"))
         context['query'] = self.request.GET.get('q', '')       
         return context
+    
+
+class RadiologyInvestigationsCreateView(DoctorRequiredMixin, FormView):
+    template_name = 'ehr/radiology/radiology_req_form.html'
+    form_class = RadiologyInvestigationsForm
+
+    def get_form(self):
+        RadiologyInvestigationsFormSet = modelformset_factory(
+            RadiologyInvestigations,
+            form=RadiologyInvestigationsForm,
+            extra=10
+        )
+        if self.request.method == 'POST':
+            return RadiologyInvestigationsFormSet(self.request.POST)
+        return RadiologyInvestigationsFormSet(queryset=RadiologyInvestigations.objects.none())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = self.get_form()
+        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        return context
+
+    def post(self, request, *args, **kwargs):
+        formset = self.get_form()
+        print("POST Data:", request.POST)  # Debug print
+        print("Formset is valid:", formset.is_valid())  # Debug print
+        if not formset.is_valid():
+            print("Formset errors:", formset.errors)  # Debug print
+        if formset.is_valid():
+            return self.formset_valid(formset)
+        return self.formset_invalid(formset)
+
+    @transaction.atomic
+    def formset_valid(self, formset):
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+
+        radiologytest = RadiologyTests.objects.create(
+            user=self.request.user,
+            patient=patient,
+        )
+        total_amount = 0
+        instances = formset.save(commit=False)
+
+        for instance in instances:
+            if instance.item:
+                instance.radiologytest = radiologytest
+                total_amount += instance.item.price
+                instance.save()
+
+        radiologytest.total_amount = total_amount
+        radiologytest.save()
+
+        paypoint = Paypoint.objects.create(
+            user=self.request.user,
+            patient=patient,
+            service=f"Radiology Investigation",
+            unit='radiology',
+            price=total_amount,
+            status=False
+        )
+        radiologytest.payment = paypoint
+        radiologytest.save()
+
+        messages.success(self.request, 'RADIOLOGY REQUEST ADDED')
+        return HttpResponseRedirect(self.get_success_url())
+
+    def formset_invalid(self, formset):
+        return self.render_to_response(self.get_context_data(formset=formset))
+
+    def get_success_url(self):
+        return reverse('patient_details', kwargs={'file_no': self.kwargs['file_no']})
+
+
+from django.db.models import Prefetch
+class RadiologyTestDetailView(DetailView):
+    model = RadiologyTests
+    template_name = 'ehr/radiology/radiology_req_details.html'
+    context_object_name = 'tests'  # Changed to match your template
+
+    def get_queryset(self):
+        return RadiologyTests.objects.select_related(
+            'user',
+            'patient',
+        ).prefetch_related(
+            Prefetch(
+                'radiology_items',
+                queryset=RadiologyInvestigations.objects.select_related(
+                    'item',
+                )
+            )
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['radiology_items'] = self.object.radiology_items.all()
+        return context
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    
+    
+    pdf = pisa.pisaDocument(
+        BytesIO(html.encode("UTF-8")), 
+        result,
+        encoding='UTF-8'
+    )
+    
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+class RadiologyTestPDFView(DetailView):
+    model = RadiologyTests
+    template_name = 'ehr/radiology/radiology_pdf.html'
+    
+    def get_queryset(self):
+        return RadiologyTests.objects.select_related(
+            'user',
+            'patient'
+        ).prefetch_related(
+            Prefetch(
+                'radiology_items',
+                queryset=RadiologyInvestigations.objects.select_related('item',)
+            )
+        )
+
+    def get(self, request, *args, **kwargs):
+        radiologytest = self.get_object()
+        radiology_items = radiologytest.radiology_items.all()
+        
+        context = {
+            'radiologytest': radiologytest,
+            'radiology_items': radiology_items,
+            'generated_date': datetime.now().strftime('%d-%m-%Y %H:%M'),
+            'doc_title': 'RADIOLOGY REQUEST',
+        }
+        
+        pdf = render_to_pdf(self.template_name, context)
+        
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            if 'download' in request.GET:
+                filename = f"RADIOLOGY_REQ_{radiologytest.patient.file_no}_{datetime.now().strftime('%Y%m%d')}.pdf"
+                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            else:
+                response['Content-Disposition'] = 'inline'
+            return response
+            
+        return HttpResponse("Error Generating PDF", status=500)
+    
+
+class AllRadiologyTestListView(LoginRequiredMixin, ListView):
+    model = RadiologyTests
+    template_name = 'ehr/radiology/incoming_radiology_req.html'
+    context_object_name = 'tests'
+    paginate_by = 10  # Adjust as needed
+    def get_queryset(self):
+        queryset = super().get_queryset().order_by('-updated')
+    # rest of your code remains the same
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(patient__first_name__icontains=query) |
+                Q(patient__last_name__icontains=query) |
+                Q(patient__other_name__icontains=query) |
+                Q(patient__file_no__icontains=query)|
+                Q(patient__phone__icontains=query)|
+                Q(patient__title__icontains=query)
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        return context
+
+class RadiologyUpdateView(LoginRequiredMixin, UpdateView):
+    model = RadiologyResult
+    form_class = RadiologyResultForm
+    template_name = 'ehr/radiology/radiology_result.html'
+    success_url=reverse_lazy('radiology_request')
+
+    def get_object(self, queryset=None):
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        return get_object_or_404(RadiologyResult, patient=patient, pk=self.kwargs['pk'])
+
+    def form_valid(self, form):
+        form.instance.updated_by = self.request.user
+        radiology_result = form.save(commit=False)
+        radiology_result.comments = form.cleaned_data['comments']
+        radiology_result.save()
+        messages.success(self.request, 'Radiology result updated successfully')
+        return super().form_valid(form)

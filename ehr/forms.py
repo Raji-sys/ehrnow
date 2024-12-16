@@ -541,3 +541,19 @@ class PhysioResultForm(forms.ModelForm):
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
+
+class RadiologyInvestigationsForm(forms.ModelForm):
+    class Meta:
+        model = RadiologyInvestigations
+        fields = ['item']
+
+    def __init__(self, *args, **kwargs):
+        super(RadiologyInvestigationsForm, self).__init__(*args, **kwargs)
+
+        self.fields['item'].required = True
+
+        # Apply styling to all fields
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })

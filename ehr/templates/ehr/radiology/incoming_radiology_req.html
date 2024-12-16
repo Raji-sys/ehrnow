@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}RADIOLOGY REQUEST DIRECTORY {% endblock %}
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'radiology' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>RADIOLOGY REQUEST DIRECTORY</div>{%endblock%}
+
+{% block content %}
+<form method="get" class="m-2 flex justify-center">
+    <input type="text" name="q" placeholder="Search patients..." value="{{ query|default:'' }}"
+           class="p-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+           <button type="submit"
+           class="p-3 bg-blue-500 text-white rounded-r hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
+           <i class="fa fa-solid fa-search fa-xl"></i>
+   </button>
+   {% if request.GET.urlencode %}
+    <a href="?"
+       class="p-3 bg-white text-amber-600 rounded-r-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs">
+       <i class="fa-solid fa-rotate fa-xl"></i>
+      </a>
+      {%endif%}
+  </form>
+<div class="p-2">
+    <div class="max-w-7xl mx-auto bg-gray-100 rounded-lg shadow-md p-2">
+
+        {% if tests %}
+        <div class="overflow-x-auto">
+            <div class="max-h-[70vh] overflow-y-auto">
+                <table class="w-full table-auto">
+                    <thead class="bg-blue-600 ">
+                        <tr class="text-xs uppercase text-gray-50 text-left">
+                            <th class="px-4 py-2">#</th>
+                            <th class="px-4 py-2">Date</th>
+                            <th class="px-4 py-2">Patient</th>
+                            <th class="px-4 py-2">file no</th>
+                            <th class="px-4 py-2">Price</th>
+                            <th class="px-4 py-2">Payment</th>
+                            <th class="px-4 py-2">Request Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in tests %}
+                        <tr class="{% cycle 'bg-white' 'bg-gray-50' %} text-xs text-left uppercase">
+                            <td class="px-4 py-2">{{ forloop.counter }}</td>
+                            <td class="px-4 py-2">{{ test.updated }}</td>
+                            {% if test.payment.status %}
+                            <td class="px-4 py-2"><a href="{{test.patient.get_absolute_url}}" target="_blank">{{ test.patient }}</a></td>
+                            {%else%}
+                            <td class="px-4 py-2">{{ test.patient }}</td>
+                            {%endif%}
+                            <td class="px-4 py-2">{{ test.patient.file_no }}</td>
+                            <td class="px-4 py-2">&#x20A6;{{ test.total_amount }}</td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {% if test.payment.status %}
+                                        bg-green-100 text-green-800
+                                    {% else %}
+                                        bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {% if test.payment.status %}
+                                    <i class="fa-solid fa-check-circle text-green-700 fa-2xl"></i>
+                                    {% else %}
+                            
+                                    <i class="fa-solid fa-xmark-circle text-red-700 fa-2xl"></i>
+                                    {% endif %}
+                                    
+                                </span>
+                                <td class=" p-3 whitespace-nowrap"> <a href="{% url 'radiology_test_detail' test.id %}" class="text-blue-500 hover:underline"><i class="fa-solid fa-eye fa-2xl"></i></a></td>
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% if is_paginated %}
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" 
+                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" 
+                       class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Next
+                    </a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Showing 
+                        <span class="font-medium">{{ page_obj.start_index }}</span>
+                        to
+                        <span class="font-medium">{{ page_obj.end_index }}</span>
+                        of
+                        <span class="font-medium">{{ paginator.count }}</span>
+                        results
+                    </p>
+                </div>
+                <div>
+                    {% if is_paginated %}
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                        {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            Previous
+                        </a>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600">
+                                    {{ num }}
+                                </span>
+                            {% else %}
+                                <a href="?page={{ num }}" 
+                                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            Next
+                        </a>
+                        {% endif %}
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-4">
+            <p class="text-gray-500">No tests found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{%endblock%}

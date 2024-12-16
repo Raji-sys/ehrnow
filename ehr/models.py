@@ -412,22 +412,6 @@ class RadiologyTest(models.Model):
         return f"{self.name}"
     
 
-class RadiologyResult(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    test = models.ForeignKey(RadiologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="radiology_results")
-    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="radiology_results")
-    cleared = models.BooleanField(default=False)
-    comments=QuillField(null=True, blank=True)
-    payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="radiology_result_payment")
-    updated = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        verbose_name_plural = 'radiology results'
-
-    def __str__(self):
-        return str(self.patient)
-
-
 class Admission(models.Model):
     payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE, related_name="admission_payment")
     STATUS = [
@@ -893,3 +877,43 @@ class PhysioRequest(models.Model):
 
     def __str__(self):
         return f"{self.patient} - {self.test.name}"
+    
+class RadiologyResult(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    test = models.ForeignKey(RadiologyTest, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="radiology_results")
+    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="radiology_results")
+    cleared = models.BooleanField(default=False)
+    comments=QuillField(null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name_plural = 'radiology results'
+
+    def __str__(self):
+        return str(self.patient)
+
+
+class RadiologyTests(models.Model):
+    radiology_test = models.ForeignKey(RadiologyResult, null=True, on_delete=models.CASCADE, related_name="radiology_result")
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)
+    patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='radiology_test_items',null=True)
+    created = models.DateTimeField(auto_now_add=True,null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,null=True)
+    payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="radiology_payment")
+    updated = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"RADIOLOGY REQUEST"
+
+class RadiologyInvestigations(models.Model):
+    radiologytest = models.ForeignKey(RadiologyTests, on_delete=models.CASCADE, related_name='radiology_items', null=True)
+    item = models.ForeignKey(RadiologyTest, on_delete=models.CASCADE, null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.radiologytest.patient.file_no} {self.item.name}"
+    
+    @property
+    def total_item_price(self):
+        return self.item.price if self.item else 0
+    

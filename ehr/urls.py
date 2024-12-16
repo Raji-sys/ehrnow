@@ -137,9 +137,14 @@ urlpatterns = [
     #radiology
     path('radiology-list/', RadiologyListView.as_view(), name='radiology_list'),
     path('radiology-request/', RadiologyRequestListView.as_view(), name='radiology_request'),
-    path('radiology-test/create/<str:file_no>/', RadiologyTestCreateView.as_view(), name='radiology_test'),
-    path('radiology-result/create/<str:file_no>/<int:pk>/', RadiologyResultCreateView.as_view(), name='radiology_result'),
+    path('radiology-result/create/<str:file_no>/', RadiologyResultCreateView.as_view(), name='radiology_result'),
     path('radiology-report/', RadioReportView.as_view(), name='radiology_report'),
+
+    path('radiology/investigations/<str:file_no>/', RadiologyInvestigationsCreateView.as_view(), name='create_radiology_req'),   
+    path('radiology/detail/<int:pk>/', RadiologyTestDetailView.as_view(), name='radiology_test_detail'),
+    path('radiology/pdf/<int:pk>/', RadiologyTestPDFView.as_view(), name='radiology_test_pdf'),
+    path('all-radiology/list/',AllRadiologyTestListView.as_view(),name='all_radiology_req'),
+    path('radiology-result/create/<str:file_no>/<int:pk>/', RadiologyUpdateView.as_view(), name='radiology_result'),
 
     #billing
     path('theatre/theatre-bill/<str:file_no>/', BillingCreateView.as_view(), name='surgery_bill'),   
