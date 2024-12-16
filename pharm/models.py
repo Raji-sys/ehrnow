@@ -8,6 +8,7 @@ from datetime import timedelta
 import logging
 logger = logging.getLogger(__name__)
 from ehr.models import PatientData, Paypoint
+from django.core.validators import MinValueValidator
 
 class Unit(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
@@ -249,6 +250,7 @@ class Restock(models.Model):
     class Meta:
         verbose_name_plural = 'restocking record'
 
+
 class UnitStore(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE, related_name='unit_store')
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, related_name='unit_store_drugs')
@@ -262,12 +264,14 @@ class UnitStore(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.drug.name} in {self.unit.name}"
 
+
 class DispensaryLocker(models.Model):
     unit = models.OneToOneField(Unit, on_delete=models.CASCADE, related_name='dispensary_locker')
     name = models.CharField(max_length=100, default="Dispensary Locker")
     
     def __str__(self):
         return f"{self.unit.name} {self.name}"
+
 
 class LockerInventory(models.Model):
     locker = models.ForeignKey(DispensaryLocker, on_delete=models.CASCADE, related_name='inventory')
@@ -280,6 +284,7 @@ class LockerInventory(models.Model):
 
     def __str__(self):
         return f"{self.drug} in {self.locker}"
+
 
 class Box(models.Model):
     boxes=[('expiry box','expiry box'),('damaged box','damaged box'),('others','others')]
@@ -343,7 +348,7 @@ class Prescription(models.Model):
             return self.drug.cost_price * self.quantity
 
     def __str__(self):
-        return f"{self.patient.file_no}"
+        return f"{self.patient}"
     
     def can_be_dispensed(self):
         """Check if the prescription can be dispensed"""
@@ -406,8 +411,6 @@ class ReturnedDrugs(models.Model):
     class Meta:
         verbose_name_plural = 'returned drugs record'
 
-from django.db import models
-from django.core.validators import MinValueValidator
 
 class PrescriptionDrug(models.Model):
     prescription = models.ForeignKey(

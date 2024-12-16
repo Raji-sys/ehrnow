@@ -2,8 +2,27 @@
 {% block title %}{{ dispensary.unit.name }} | DISPENSARY FORM{% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{% url 'pharm:prescription_list' dispensary.unit.id %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ dispensary.unit.name }} dispense form</div>{%endblock%}
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        {% if prescription %}
+        <div class="bg-gradient-to-r from-sky-600  to-emerald-600 text-white p-2 rounded-lg shadow-md border border-gray-200 m-2">
+            <div class="flex justify-center text-gray-50 text-xs uppercase gap-4 mb-4">
+                <div>Patient: {{ patient }}</div>
+                <div>
+                   Age: {{ patient.age }}
+                </div>
+            </div>
+                    {% for drug in prescription_drugs %}
+                    <div class="flex justify-start text-xs normal-case">
+                        <div class="flex justify-center">Drug: {{ drug.drug.name }}
+                            <span class="ml-2">Dosage: {{ drug.dosage }}</span>
+                        <span class="ml-2">Qty Costed: {{ drug.quantity }}</span>
+                    </div>
+                    </div>
+                    {% endfor %}
+        </div>
+        {% endif %}
+        
         {% if messages %}
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
             {% for message in messages %}
@@ -11,7 +30,7 @@
             {% endfor %}
         </div>
         {% endif %}
-        <form method="post" class="bg-white p-2 rounded-lg shadow-md uppercase">
+        <form method="post" class="bg-gray-100 m-2 p-2 rounded-lg shadow-md uppercase">
             {% csrf_token %}
             {{ formset.management_form }}
             {% for form in formset %}
@@ -42,7 +61,7 @@
             </div>
             {% endfor %}
             <div class="mt-8 flex justify-center">
-                <button type="submit" class="bg-fuchsia-600 text-white font-bold py-3 px-6 rounded hover:bg-blue-700 text-xs inline-flex items-center justify-center">
+                <button type="submit" class="bg-fuchsia-600 text-white  py-3 px-6 rounded hover:bg-blue-700 text-xs inline-flex items-center justify-center">
                     <i class="fas fa-save mr-2"></i> Save
                 </button>
             </div>

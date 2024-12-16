@@ -73,7 +73,8 @@ urlpatterns=[
   
     path('update_prescription/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
   # Dispensary
-    path('unit/dispensary/<int:dispensary_id>/dispense/<int:patient_id>', views.dispenserecord, name='dispense'),
+    path('dispense/<int:dispensary_id>/<int:patient_id>/<int:prescription_id>/', views.dispenserecord, name='dispense'),
+    # path('unit/dispensary/<int:dispensary_id>/dispense/<int:patient_id>', views.dispenserecord, name='dispense'),
     path('unit/dispensary/dispensed-list/<int:pk>/', DispenseRecordView.as_view(), name='dispensed_list'),
     path('dispense-report/<int:pk>/', views.dispense_report, name='dispense_report'),
     path('dispense-pdf/', views.dispense_pdf, name='dispense_pdf'),
