@@ -468,7 +468,7 @@ ConsumableUsageFormSet = inlineformset_factory(
     TheatreOperationRecord,
     ConsumableUsage,
     fields=('consumable', 'quantity'),
-    extra=1,
+    extra=10,
     can_delete=False
 )
 
@@ -476,7 +476,7 @@ ImplantUsageFormSet = inlineformset_factory(
     TheatreOperationRecord,
     ImplantUsage,
     fields=('implant', 'quantity'),
-    extra=1,
+    extra=10,
     can_delete=False
 )
 

@@ -2666,7 +2666,7 @@
                       <td class=" p-3 whitespace-nowrap">{{ t.instrument_nurse|default_if_none:'' }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.circulating_nurse|default_if_none:'' }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.anaesthetist|default_if_none:'' }}</td>
-                      <td class=" p-3 whitespace-nowrap">{{ t.comments|default_if_none:'' }}</td>
+                      <td class=" p-3 whitespace-nowrap">{{ t.comments.html|safe }}</td>
                       <td class=" p-3 whitespace-nowrap">{{ t.date_of_operation|default_if_none:'' }}</td>
                     </tr>
                     {%empty%}

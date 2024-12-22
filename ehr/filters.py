@@ -32,7 +32,7 @@ class PatientReportFilter(django_filters.FilterSet):
 class VisitFilter(django_filters.FilterSet):
     clinic = django_filters.ModelChoiceFilter(
         label='CLINIC',
-        queryset=Clinic.objects.all(),empty_label="CLINIC",
+        queryset=Clinic.objects.all(),
         widget=forms.Select(attrs={
             'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
         })
@@ -40,7 +40,7 @@ class VisitFilter(django_filters.FilterSet):
     
     team = django_filters.ModelChoiceFilter(
         queryset=Team.objects.all(),
-        label='TEAM',empty_label="TEAM",
+        label='TEAM',
         widget=forms.Select(attrs={
             'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
         }),
@@ -59,7 +59,7 @@ class VisitFilter(django_filters.FilterSet):
     gender = django_filters.ChoiceFilter(
         field_name='patient__gender',
         choices=PatientData.sex,
-        label='GENDER',empty_label="GENDER",
+        label='GENDER',
         widget=forms.Select(attrs={
             'class': 'text-center text-xs focus:outline-none w-1/3 sm:w-fit text-zinc-800 rounded shadow-sm shadow-zinc-600 border-zinc-600 border'
         })

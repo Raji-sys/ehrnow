@@ -120,7 +120,7 @@ class OperationNotesAdmin(admin.ModelAdmin):
 
 @admin.register(TheatreOperationRecord)
 class TheatreOperationRecordeAdmin(admin.ModelAdmin):
-    list_display = ('patient','updated')
+    list_display = ('patient','ward','theatre','updated')
     search_fields = ('patient','updated')
     list_filter = ('patient','updated')
 

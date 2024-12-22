@@ -4,7 +4,7 @@
 {%block page_title%}<div class="flex justify-center"><a href="#"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>NEW OPERATION RECORD</div>{%endblock%}
 
 {% block content %}
-<div class="bg-white shadow-md rounded-lg overflow-hidden md:p-10 w-fit md:mx-20 sm:mx-4  overflow-y-auto max-h-[80vh] uppercase">
+<div class="bg-white shadow-md rounded-lg overflow-hidden md:p-10 w-fit md:mx-20 sm:mx-4  overflow-y-auto max-h-[80vh] normal-case">
   <form method="post" class="p-3 text-center">
     {% csrf_token %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -43,11 +43,11 @@
                 {% endif %}
               </div>
             {% endfor %}
-            <button type="button" class="remove-form text-red-500 text-xs">Remove</button>
+            <!-- <button type="button" class="remove-form text-red-500 text-xs">Remove</button> -->
           </div>
         {% endfor %}
       </div>
-      <button type="button" id="add-consumable" class="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-1 px-2 rounded mt-2">Add Consumable</button>
+      <!-- <button type="button" id="add-consumable" class="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-1 px-2 rounded mt-2">Add Consumable</button> -->
     </div>
     <div class="mb-4">
       {{ implants.management_form }}
@@ -71,11 +71,11 @@
                 {% endif %}
               </div>
             {% endfor %}
-            <button type="button" class="remove-form text-red-500 text-xs">Remove</button>
+            <!-- <button type="button" class="remove-form text-red-500 text-xs">Remove</button> -->
           </div>
         {% endfor %}
       </div>
-      <button type="button" id="add-implant" class="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-1 px-2 rounded mt-2">Add Implant</button>
+      <!-- <button type="button" id="add-implant" class="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-1 px-2 rounded mt-2">Add Implant</button> -->
     </div>
   </div>
 

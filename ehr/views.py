@@ -809,7 +809,7 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
 
         if existing_open_visit:
             form.add_error(None, ValidationError(
-                _("This patient already has an open visit. Please close the existing visit before creating a new one."),
+                _("This patient already has an open visit. Please close the existing visit by adding clinical notes, before creating a new one visit instance."),
                 code='duplicate_visit'
             ))
             return self.form_invalid(form)
@@ -841,8 +841,6 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
         
         return super().form_valid(form)
 
-    # def get_success_url(self):
-    #     return self.object.patient.get_absolute_url()
     def get_success_url(self):
         return reverse_lazy('patient_list')
 
@@ -2675,6 +2673,11 @@ class TheatreOperationRecordCreateView(CreateView):
     model = TheatreOperationRecord
     form_class = TheatreOperationRecordForm
     template_name = 'ehr/theatre/theatre_record.html'
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related(
+            'consumableusage_set__consumable',
+            'implantusage_set__implant'
+        )
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -2709,7 +2712,7 @@ class TheatreOperationRecordCreateView(CreateView):
             if implants.is_valid():
                 implants.instance = self.object
                 implants.save()
-        self.object=form.save()
+        # self.object=form.save()
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -2721,6 +2724,11 @@ class TheatreOperationRecordDetailView(DetailView):
     model = TheatreOperationRecord
     template_name = 'ehr/theatre/theatre_record_details.html'
 
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related(
+            Prefetch('consumableusage_set', queryset=ConsumableUsage.objects.select_related('consumable')),
+            Prefetch('implantusage_set', queryset=ImplantUsage.objects.select_related('implant'))
+        )
 
 class TheatreOperationRecordListView(DoctorRequiredMixin, ListView):
     model = TheatreOperationRecord

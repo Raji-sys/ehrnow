@@ -784,7 +784,7 @@ class TheatreOperationRecord(models.Model):
     tourniquet_off_by = models.CharField(max_length=100, blank=True)
     tourniquet_off_time = models.TimeField(null=True, blank=True)
     
-    comments =QuillField(null=True, blank=True)
+    comments = QuillField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
