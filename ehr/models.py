@@ -686,6 +686,9 @@ class AnaesthesiaChecklist(models.Model):
     past_medical_history = QuillField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def get_absolute_url(self):
+        return reverse('anaesthesia_checklist_details', args=[self.id])
+
     def __str__(self):
         return f"{self.patient}"
 

@@ -133,7 +133,7 @@ urlpatterns = [
 
     path('theatre/anaesthesia-checklist/<str:file_no>/', AnaesthesiaChecklistCreateView.as_view(), name='anaesthesia_checklist'),
     path('theatre/<int:theatre_id>/anaesthesia-checklist_list/', AnaesthesiaChecklistListView.as_view(), name="anaesthesia_checklist_list"),
-
+    path('theatre/<int:pk>/anaesthesia-checklist-details/', AnaesthesiaChecklistDetailView.as_view(), name="anaesthesia_checklist_details"),
     #radiology
     path('radiology-list/', RadiologyListView.as_view(), name='radiology_list'),
     path('radiology-request/', RadiologyRequestListView.as_view(), name='radiology_request'),

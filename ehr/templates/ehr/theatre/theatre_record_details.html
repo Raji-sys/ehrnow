@@ -2,10 +2,10 @@
 {% block title %}OPERATION RECORD DETAILS{% endblock %}
 {%block page_title%}<div class="flex justify-center text-blue-700 uppercase"><a href="{%url 'theatre_operation_record_list' object.theatre.pk %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Theatre Operation Record Details</div>{%endblock%}
 {% block content %}
-  <div class="p-2 md:mx-20 mx-auto bg-sky-800 rounded-lg">
+  <div class="p-2 md:mx-20 mx-auto bg-sky-800 rounded-lg mt-2">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2 text-xs">
       <div class="bg-white shadow-md rounded px-4 py-4">
-        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Patient Information</h3>
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase"><i class="fa-solid fa-user mr-2"></i>Patient Information</h3>
         <table class="table-auto w-full mb-2 text-left">
           <tbody>
             <tr class="">
@@ -36,7 +36,7 @@
         </table>
       </div>
       <div class="bg-white shadow-md rounded px-4 py-4">
-        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Operation Details</h3>
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase"><i class="fa-solid fa-notes-medical mr-2"></i>Operation Details</h3>
         <table class="table-auto w-full mb-2 text-left">
           <tbody>
             <tr>
@@ -63,7 +63,7 @@
         </table>
       </div>
       <div class="bg-white shadow-md rounded px-4 py-4">
-        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Staff Information</h3>
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase"><i class="fa-solid fa-user-md mr-2"></i>Staff Information</h3>
         <table class="table-auto w-full mb-2 text-left">
           <tbody>
             <tr>
@@ -98,7 +98,7 @@
         </table>
       </div>
       <div class="bg-white shadow-md rounded px-4 py-4">
-        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Consumables</h3>
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase"><i class="fa-solid fa-syringe mr-2"></i>Consumables</h3>
         <ul class="list-disc list-inside mb-2 text-left">
           {% for usage in object.consumableusage_set.all %}
           <li>{{ usage.consumable.name }} ({{ usage.quantity }})</li>
@@ -106,7 +106,7 @@
         </ul>
       </div>
       <div class="bg-white shadow-md rounded px-4 py-4">
-        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Implants</h3>
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase"><i class="fa-solid fa-bone mr-2"></i>Implants</h3>
         <ul class="list-disc list-inside mb-2 text-left">
           {% for usage in object.implantusage_set.all %}
           <li>{{ usage.implant.name }} ({{ usage.quantity }})</li>
@@ -114,7 +114,7 @@
         </ul>
       </div>
       <div class="bg-white shadow-md rounded px-4 py-4">
-        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Instrument Count</h3>
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase"><i class="fa-solid fa-tools mr-2"></i>Instrument Count</h3>
         <table class="table-auto w-full mb-2 text-left">
           <tbody>
             <tr>
@@ -141,7 +141,7 @@
         </table>
       </div>
       <div class="bg-white shadow-md rounded px-4 py-4">
-        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase">Tourniquet</h3>
+        <h3 class="text-sm font-medium mb-1 text-blue-700 uppercase"><i class="fa-solid fa-band-aid mr-2"></i>Tourniquet</h3>
         <table class="table-auto w-full mb-2 text-left">
           <tbody>
             <tr>
@@ -168,7 +168,7 @@
         </table>
       </div>
       <div class="bg-white shadow-md rounded px-4 py-4">
-        <h3 class="text-sm font-medium text-blue-700 uppercase">Comments</h3>
+        <h3 class="text-sm font-medium text-blue-700 uppercase"><i class="fa-solid fa-comment-dots mr-2"></i>Comments</h3>
         <p class="px-2 py-1">{{ object.comments.html|safe }}</p>
       </div>
     </div>

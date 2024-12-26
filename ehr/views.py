@@ -2540,9 +2540,23 @@ class AnaesthesiaChecklistListView(DoctorRequiredMixin,ListView):
         context = super().get_context_data(**kwargs)
         theatre_id = self.kwargs.get('theatre_id')
         theatre = get_object_or_404(Theatre, id=theatre_id)
-
+        total_operations = self.get_queryset().count()
+        context['total_operations'] = total_operations
         context['theatre'] = theatre
+        return context
 
+
+class AnaesthesiaChecklistDetailView(DetailView):
+    model = AnaesthesiaChecklist
+    template_name = 'ehr/theatre/anaesthesia_checklist_details.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['concurrent_medical_illnesses'] = self.object.concurrent_medical_illnesses.all()
+        context['past_surgical_histories'] = self.object.past_surgical_history.all()
+        context['drug_histories'] = self.object.drug_history.all()
+        context['social_histories'] = self.object.social_history.all()
+        context['last_meals'] = self.object.last_meals.all()
         return context
 
 

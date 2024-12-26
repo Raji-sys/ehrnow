@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %}Anaesthesia Chart Details{% endblock %}
+
+{% block page_title %}
+<div class="flex justify-center items-center text-blue-700 uppercase">
+    <a href="{% url 'anaesthesia_checklist_list' object.theatre.pk %}" class="hover:text-blue-500">
+        <i class="fa-solid fa-backward fa-2xl mr-4"></i>
+    </a>
+    Anaesthesia Chart Details
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="P-2 md:mx-20 mx-auto  text-xs bg-slate-800 rounded-lg shadow-md p-6 text-white mt-2">
+        <!-- Patient Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white text-gray-700 shadow-lg rounded-lg px-6 py-4">
+                <h3 class="text-sm font-semibold mb-4 text-blue-700 uppercase">
+                    <i class="fa-solid fa-user mr-2"></i> Patient Information
+                </h3>
+                <table class="table-auto w-full text-xs">
+                    <tbody>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">File No.</th>
+                            <td class="px-2 py-1">{{ object.patient.file_no }}</td>
+                        </tr>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">Name</th>
+                            <td class="px-2 py-1">{{ object.patient }}</td>
+                        </tr>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">Gender</th>
+                            <td class="px-2 py-1">{{ object.patient.gender }}</td>
+                        </tr>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">Age</th>
+                            <td class="px-2 py-1">{{ object.patient.age }}</td>
+                        </tr>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">Phone</th>
+                            <td class="px-2 py-1">{{ object.patient.phone }}</td>
+                        </tr>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">Next of Kin</th>
+                            <td class="px-2 py-1">
+                                {{ object.patient.nok_name }} <br>
+                                {{ object.patient.nok_phone }} <br>
+                                {{ object.patient.nok_rel }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Operation Details -->
+            <div class="bg-white text-gray-700 shadow-lg rounded-lg px-6 py-4">
+                <h3 class="text-sm font-semibold mb-4 text-blue-700 uppercase">
+                    <i class="fa-solid fa-syringe mr-2"></i> Operation Details
+                </h3>
+                <table class="table-auto w-full text-xs">
+                    <tbody>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">Anaesthetist</th>
+                            <td class="px-2 py-1">{{ object.doctor }}</td>
+                        </tr>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">Theatre</th>
+                            <td class="px-2 py-1">{{ object.theatre }}</td>
+                        </tr>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">Ward</th>
+                            <td class="px-2 py-1">{{ object.ward }}</td>
+                        </tr>
+                        <tr>
+                            <th class="px-2 py-1 text-left font-medium">Date</th>
+                            <td class="px-2 py-1">{{ object.updated }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Medical Details -->
+        <div class="bg-white text-gray-700 shadow-lg rounded-lg px-6 py-4 mb-6">
+            <h4 class="text-sm font-semibold text-blue-700 uppercase mb-4">
+                <i class="fa-solid fa-notes-medical mr-2"></i> Medical Details
+            </h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-1">
+                <div>
+                    <p><span class="font-medium">Transfusion:</span> {{ object.transfussion }}</p>
+                    <p><span class="font-medium">Dentures:</span> {{ object.denctures }}</p>
+                    <p><span class="font-medium">Permanent:</span> {{ object.permanent }}</p>
+                </div>
+                <div>
+                    <p><span class="font-medium">Temporary:</span> {{ object.temporary }}</p>
+                    <p><span class="font-medium">Loose Teeth:</span> {{ object.lose_teeth }}</p>
+                </div>
+                <div>
+                    <p><span class="font-medium">Past Medical History:</span> {{ object.past_medical_history.html|safe }}</p>
+                    <p><span class="font-medium">Comment:</span> {{ object.comment.html|safe }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Concurrent Medical Illnesses -->
+            <div class="bg-white text-gray-700 shadow-lg rounded-lg px-6 py-4">
+                <h4 class="text-sm font-semibold text-blue-700 uppercase mb-4">
+                    <i class="fa-solid fa-heartbeat mr-2"></i> Concurrent Medical Illnesses
+                </h4>
+                <ul class="list-disc pl-4">
+                    {% for illness in concurrent_medical_illnesses %}
+                        <li>{{ illness.illness }} - {{ illness.description|safe }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Past Surgical History -->
+            <div class="bg-white text-gray-700 shadow-lg rounded-lg px-6 py-4">
+                <h4 class="text-sm font-semibold text-blue-700 uppercase mb-4">
+                    <i class="fa-solid fa-scalpel mr-2"></i> Past Surgical History
+                </h4>
+                <ul class="list-disc pl-4">
+                    {% for surgical in past_surgical_histories %}
+                        <li>{{ surgical.surgery }} - {{ surgical.when }} - {{ surgical.where }} - {{ surgical.LA_GA }} - {{ surgical.outcome|safe }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Drug and Social History -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+            <div class="bg-white text-gray-700 shadow-lg rounded-lg px-6 py-4">
+                <h4 class="text-sm font-semibold text-blue-700 uppercase mb-4">
+                    <i class="fa-solid fa-pills mr-2"></i> Drug History
+                </h4>
+                <ul class="list-disc pl-4">
+                    {% for drug in drug_histories %}
+                        <li>{{ drug.medication }} - {{ drug.allergies }} - {{ drug.is_present }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="bg-white text-gray-700 shadow-lg rounded-lg px-6 py-4">
+                <h4 class="text-sm font-semibold text-blue-700 uppercase mb-4">
+                    <i class="fa-solid fa-glass-cheers mr-2"></i> Social History
+                </h4>
+                <ul class="list-disc pl-4">
+                    {% for social in social_histories %}
+                        <li>{{ social.item }} - {{ social.quantity }} - {{ social.duration }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Last Meals -->
+        <div class="bg-white text-gray-700 shadow-lg rounded-lg px-6 py-4">
+            <h4 class="text-sm font-semibold text-blue-700 uppercase mb-4">
+                <i class="fa-solid fa-utensils mr-2"></i> Last Meals
+            </h4>
+            <ul class="list-disc pl-4">
+                {% for meal in last_meals %}
+                    <li>{{ meal.when }} - {{ meal.meal_type }} - {{ meal.quantity }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

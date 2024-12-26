@@ -498,7 +498,7 @@ class LastMealForm(forms.ModelForm):
         model = LastMeal
         fields = ('when', 'meal_type', 'quantity')
         widgets = {
-            'when': forms.DateTimeInput(attrs={'type': 'date'})
+            'when': forms.DateTimeInput(attrs={'type': 'datetime-local'})
         }
     def __init__(self, *args, **kwargs):
         super(LastMealForm, self).__init__(*args, **kwargs)
