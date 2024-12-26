@@ -125,18 +125,16 @@ class TheatreOperationRecordeAdmin(admin.ModelAdmin):
     list_filter = ('patient','updated')
 
 
-@admin.register(AnaesthisiaChecklist)
+@admin.register(AnaesthesiaChecklist)
 class AnaesthisiaChecklistAdmin(admin.ModelAdmin):
     list_display = ('patient','doctor','updated')
     search_fields = ('doctor','updated')
     list_filter = ('doctor','updated')
 
-@admin.register(MedicalIllness)
-class MedicalIllnesstAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
-    list_filter = ('name',)
-    # filter_horizontal = ('concurrent_medical_illnesses',)
+@admin.register(PastSurgicalHistory)
+class PastSurgicalHistoryAdmin(admin.ModelAdmin):
+    list_display = ('anaesthesia_checklist','id','surgery','when','where','LA_GA','outcome')
+
 
 @admin.register(WardShiftNote)
 class WardShiftNoteAdmin(admin.ModelAdmin):

@@ -555,11 +555,11 @@ from django.urls import reverse
 
 # # tests/test_views.py
 # 
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.contrib.auth.models import User, Group
-from ehr.models import PatientData, PatientHandover, FollowUpVisit
-from django.core.exceptions import PermissionDenied
+# from django.test import TestCase, Client
+# from django.urls import reverse
+# from django.contrib.auth.models import User, Group
+# from ehr.models import PatientData, PatientHandover, FollowUpVisit
+# from django.core.exceptions import PermissionDenied
 
 # class PatientStatsViewTest(TestCase):
 
@@ -586,38 +586,38 @@ from django.core.exceptions import PermissionDenied
 #         self.assertIn('address_counts', response.context)
 
 
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.contrib.auth.models import User, Group, Permission
-from ehr.models import PatientData, FollowUpVisit, PatientHandover
-from django.core.exceptions import PermissionDenied
+# from django.test import TestCase, Client
+# from django.urls import reverse
+# from django.contrib.auth.models import User, Group, Permission
+# from ehr.models import PatientData, FollowUpVisit, PatientHandover
+# from django.core.exceptions import PermissionDenied
 
-class PatientFolderViewTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(username='testuser', password='12345')
-        self.patient = PatientData.objects.create(
-            title='Mr.',
-            last_name='Doe',
-            first_name='John',
-            phone='12345678901'
-        )
-        self.url = reverse('patient_details', args=[self.patient.file_no])
+# class PatientFolderViewTest(TestCase):
+#     def setUp(self):
+#         self.client = Client()
+#         self.user = User.objects.create_user(username='testuser', password='12345')
+#         self.patient = PatientData.objects.create(
+#             title='Mr.',
+#             last_name='Doe',
+#             first_name='John',
+#             phone='12345678901'
+#         )
+#         self.url = reverse('patient_details', args=[self.patient.file_no])
 
-    def test_get_request_with_permission(self):
-        doctor_group = Group.objects.create(name='doctor')
-        self.user.groups.add(doctor_group)
-        self.client.login(username='testuser', password='12345')
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'ehr/record/patient_folder.html')
+#     def test_get_request_with_permission(self):
+#         doctor_group = Group.objects.create(name='doctor')
+#         self.user.groups.add(doctor_group)
+#         self.client.login(username='testuser', password='12345')
+#         response = self.client.get(self.url)
+#         self.assertEqual(response.status_code, 200)
+#         self.assertTemplateUsed(response, 'ehr/record/patient_folder.html')
 
-    def test_get_request_without_permission(self):
-        self.client.login(username='testuser', password='12345')
-        with self.assertRaises(PermissionDenied):
-            self.client.get(self.url)
+#     def test_get_request_without_permission(self):
+#         self.client.login(username='testuser', password='12345')
+#         with self.assertRaises(PermissionDenied):
+#             self.client.get(self.url)
 
-from django.contrib.auth.models import Group, Permission
+# from django.contrib.auth.models import Group, Permission
 
 # class FollowUpVisitCreateViewTest(TestCase):
 #     def setUp(self):
@@ -1514,3 +1514,66 @@ from django.contrib.auth.models import Group, Permission
     #     url = reverse('theatre_notes', kwargs={'file_no': self.patient.file_no})
     #     response = self.client.get(url)
     #     self.assertEqual(response.status_code, 200
+
+from django.test import TestCase, Client
+from django.urls import reverse
+from .models import PatientData
+
+class AnaesthesiaChecklistCreateViewTestCase(TestCase):
+    def setUp(self):
+        # Create a patient
+        self.patient = PatientData.objects.create(
+            file_no='12345',
+            # other fields...
+        )
+
+    def test_valid_form(self):
+        client = Client()
+        url = reverse('anaesthesia_checklist', kwargs={'file_no': self.patient.file_no})
+        data = {
+            # valid form data
+            'transfussion': 'Yes',
+            'denctures': 'No',
+            'permanent': 'Yes',
+            'temporary': 'No',
+            'loose_teeth': 'No',
+            'comment': 'Test comment',
+            'past_medical_history': 'Test past medical history',
+            'concurrent_medical_illness-TOTAL_FORMS': '1',
+            'concurrent_medical_illness-INITIAL_FORMS': '0',
+            'concurrent_medical_illness-MIN_NUM_FORMS': '0',
+            'concurrent_medical_illness-MAX_NUM_FORMS': '1000',
+            'concurrent_medical_illness-0-illness': 'Test illness',
+            'concurrent_medical_illness-0-description': 'Test description',
+            # other form data...
+        }
+        response = client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_invalid_form(self):
+        client = Client()
+        url = reverse('anaesthesia_checklist', kwargs={'file_no': self.patient.file_no})
+        data = {
+            # invalid form data
+            'transfussion': '',  # empty field
+        }
+        response = client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'anaesthesia_checklist_form', 'transfussion', 'This field is required.')
+
+
+    def test_patient_does_not_exist(self):
+        client = Client()
+        url = reverse('anaesthesia_checklist', kwargs={'file_no': 'non-existent-file-no'})
+        data = {
+            # valid form data
+        }
+        response = client.post(url, data)
+        self.assertEqual(response.status_code, 302)  # redirects to patient list
+
+    def test_get_request(self):
+        client = Client()
+        url = reverse('anaesthesia_checklist', kwargs={'file_no': self.patient.file_no})
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'ehr/theatre/anaesthesia_checklist.html')

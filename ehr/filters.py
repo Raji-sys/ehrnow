@@ -173,7 +173,7 @@ class AnaesthisiaChecklistFilter(django_filters.FilterSet):
     date = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
 
     class Meta:
-        model = AnaesthisiaChecklist
+        model = AnaesthesiaChecklist
         fields = ['patient','date']
 
 

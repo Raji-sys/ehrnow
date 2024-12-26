@@ -434,18 +434,74 @@ class OperationNotesForm(forms.ModelForm):
             })
 
 
-class AnaesthisiaChecklistForm(forms.ModelForm):
-    concurrent_medical_illnesses=forms.ModelMultipleChoiceField(
-        queryset=MedicalIllness.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
+class AnaesthesiaChecklistForm(forms.ModelForm):
     class Meta:
-        model=AnaesthisiaChecklist
-        exclude=['theatre','doctor','updated','concurrent_medical_illness','comment','patient']
+        model = AnaesthesiaChecklist
+        fields = ( 'transfussion', 'denctures', 'permanent', 'temporary', 'lose_teeth', 'comment', 'past_medical_history')
 
     def __init__(self, *args, **kwargs):
-        super(AnaesthisiaChecklistForm, self).__init__(*args, **kwargs)
+        super(AnaesthesiaChecklistForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+class ConcurrentMedicalIllnessForm(forms.ModelForm):
+    class Meta:
+        model = ConcurrentMedicalIllness
+        fields = ('illness', 'description')
+    def __init__(self, *args, **kwargs):
+        super(ConcurrentMedicalIllnessForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+class PastSurgicalHistoryForm(forms.ModelForm):
+    class Meta:
+        model = PastSurgicalHistory
+        fields = ('surgery', 'when', 'where', 'LA_GA', 'outcome')
+        widgets = {
+            'when': forms.DateInput(attrs={'type': 'date'})
+        }
+    def __init__(self, *args, **kwargs):
+        super(PastSurgicalHistoryForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+class DrugHistoryForm(forms.ModelForm):
+    class Meta:
+        model = DrugHistory
+        fields = ('medication', 'allergies', 'is_present')
+    def __init__(self, *args, **kwargs):
+        super(DrugHistoryForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+class SocialHistoryForm(forms.ModelForm):
+    class Meta:
+        model = SocialHistory
+        fields = ('item', 'quantity', 'duration')
+    def __init__(self, *args, **kwargs):
+        super(SocialHistoryForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
+class LastMealForm(forms.ModelForm):
+    class Meta:
+        model = LastMeal
+        fields = ('when', 'meal_type', 'quantity')
+        widgets = {
+            'when': forms.DateTimeInput(attrs={'type': 'date'})
+        }
+    def __init__(self, *args, **kwargs):
+        super(LastMealForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'

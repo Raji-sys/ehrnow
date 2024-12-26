@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib import messages
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, View
 from django.utils import timezone
 from datetime import timedelta
 User = get_user_model()
@@ -31,7 +31,7 @@ from django.conf import settings
 import datetime
 from xhtml2pdf import pisa
 from django.forms import modelformset_factory
-from django.http import JsonResponse
+from django.http import JsonResponse, request
 from django.db import transaction
 from django.db.models import Sum, Count, Q
 from datetime import datetime
@@ -719,6 +719,9 @@ class PatientFolderView(DetailView):
         context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
         context['operation_notes'] = patient.operation_notes.all().order_by('-updated')
         context['anaesthesia_checklist'] = patient.anaesthesia_checklist.all().order_by('-updated')
+
+        context['anaesthesia_checklist'] = (patient.anaesthesia_checklist.all().prefetch_related('concurrent_medical_illnesses','past_surgical_history','drug_history','social_history','last_meals').order_by('-updated'))
+
         context['theatre_operation_record'] = patient.theatre_operation_record.all().order_by('-updated')
         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
         context['private_bill'] = patient.private_bill.all().order_by('-created')
@@ -2379,55 +2382,167 @@ class OperationNotesUpdateView(DoctorRequiredMixin, UpdateView):
         return self.object.patient.get_absolute_url()
 
 
-class AnaesthesiaChecklistCreateView(DoctorRequiredMixin,CreateView):
-    model = AnaesthisiaChecklist
-    form_class = AnaesthisiaChecklistForm
+ConcurrentMedicalIllnessFormSet = inlineformset_factory(
+    AnaesthesiaChecklist,
+    ConcurrentMedicalIllness,
+    form=ConcurrentMedicalIllnessForm,
+    extra=3
+)
+PastSurgicalHistoryFormSet = inlineformset_factory(
+    AnaesthesiaChecklist,
+    PastSurgicalHistory,
+    form=PastSurgicalHistoryForm,
+    extra=3
+)
+
+DrugHistoryFormSet = inlineformset_factory(
+    AnaesthesiaChecklist,
+    DrugHistory,
+    form=DrugHistoryForm,
+    extra=3
+)
+
+SocialHistoryFormSet = inlineformset_factory(
+    AnaesthesiaChecklist,
+    SocialHistory,
+    form=SocialHistoryForm,
+    extra=3
+)
+LastMealFormSet = inlineformset_factory(
+    AnaesthesiaChecklist,
+    LastMeal,
+    form=LastMealForm,
+    extra=3
+)
+
+class AnaesthesiaChecklistCreateView(LoginRequiredMixin, CreateView):
+    model = AnaesthesiaChecklist
+    form_class = AnaesthesiaChecklistForm
     template_name = 'ehr/theatre/anaesthesia_checklist.html'
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+
+        if self.request.method == 'POST':
+            data['concurrent_medical_illness_formset'] = ConcurrentMedicalIllnessFormSet(self.request.POST)
+            data['past_surgical_history_formset'] = PastSurgicalHistoryFormSet(self.request.POST)
+            data['drug_history_formset'] = DrugHistoryFormSet(self.request.POST)
+            data['social_history_formset'] = SocialHistoryFormSet(self.request.POST)
+            data['last_meal_formset'] = LastMealFormSet(self.request.POST)
+        else:
+            data['concurrent_medical_illness_formset'] = ConcurrentMedicalIllnessFormSet()
+            data['past_surgical_history_formset'] = PastSurgicalHistoryFormSet()
+            data['drug_history_formset'] = DrugHistoryFormSet()
+            data['social_history_formset'] = SocialHistoryFormSet()
+            data['last_meal_formset'] = LastMealFormSet()
+
+        return data
+
     def form_valid(self, form):
+        context = self.get_context_data()
+        concurrent_medical_illness_formset = context['concurrent_medical_illness_formset']
+        past_surgical_history_formset = context['past_surgical_history_formset']
+        drug_history_formset = context['drug_history_formset']
+        social_history_formset = context['social_history_formset']
+        last_meal_formset = context['last_meal_formset']
+
+        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.doctor = self.request.user
+
         patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+
+        admission_info = Admission.objects.filter(patient=patient_data).order_by('-id').first()
+        if admission_info:
+            form.instance.ward = admission_info.ward
+
         theatre_booking = TheatreBooking.objects.filter(patient=patient_data).order_by('-id').first()
         if theatre_booking:
             form.instance.theatre = theatre_booking.theatre
-        form.instance.patient = patient_data
+            form.instance.patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+
         self.object = form.save()
+
+        if concurrent_medical_illness_formset.is_valid():
+            concurrent_medical_illness_formset.instance = self.object
+            concurrent_medical_illness_formset.save()
+
+        if past_surgical_history_formset.is_valid():
+            past_surgical_history_formset.instance = self.object
+            past_surgical_history_formset.save()
+        else:
+            # Display more specific error messages
+            messages.error(self.request, 'Past Surgical History form is not valid:')
+            for error in past_surgical_history_formset.errors:
+                messages.error(self.request, error)
+            for form in past_surgical_history_formset:
+                for field, error in form.errors.items():
+                    messages.error(self.request, f'{field}: {error}')
+
+            return self.render_to_response(self.get_context_data())
+
+        if drug_history_formset.is_valid():
+            drug_history_formset.instance = self.object
+            drug_history_formset.save()
+        else:
+            # Display more specific error messages
+            messages.error(self.request, 'Drug History form is not valid:')
+            for error in drug_history_formset.errors:
+                messages.error(self.request, error)
+            for form in drug_history_formset:
+                for field, error in form.errors.items():
+                    messages.error(self.request, f'{field}: {error}')
+       
+        if social_history_formset.is_valid():
+            social_history_formset.instance = self.object
+            social_history_formset.save()
+        else:
+            # Display more specific error messages
+            messages.error(self.request, 'Social History form is not valid:')
+            for error in social_history_formset.errors:
+                messages.error(self.request, error)
+            for form in social_history_formset:
+                for field, error in form.errors.items():
+                    messages.error(self.request, f'{field}: {error}')
+
+        if last_meal_formset.is_valid():
+            last_meal_formset.instance = self.object
+            last_meal_formset.save()
+        else:
+            # Display more specific error messages
+            messages.error(self.request, 'Last Meal form is not valid:')
+            for error in last_meal_formset.errors:
+                messages.error(self.request, error)
+            for form in last_meal_formset:
+                for field, error in form.errors.items():
+                    messages.error(self.request, f'{field}: {error}')
+
+            return self.render_to_response(self.get_context_data())
 
         return super().form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        return context
-
     def get_success_url(self):
-        messages.success(self.request, 'ANAESTHESIA CHECKLIST ADDED')
-        return self.object.patient.get_absolute_url()
+        messages.success(self.request, 'SUCCESSFULLY ADDED')
+        return self.object.patient.get_absolute_url()        
 
 
 class AnaesthesiaChecklistListView(DoctorRequiredMixin,ListView):
-    model=AnaesthisiaChecklist
-    template_name='ehr/theatre/anaesthesia_checklist_list.html'
-    context_object_name='anaesthesia_checklist'
+    model = AnaesthesiaChecklist
+    template_name = 'ehr/theatre/anaesthesia_checklist_list.html'
+    context_object_name = 'anaesthesia_checklists'
     paginate_by = 10
 
     def get_queryset(self):
         theatre_id = self.kwargs.get('theatre_id')
         theatre = get_object_or_404(Theatre, id=theatre_id)
-        anaesthesia_checklist = super().get_queryset().filter(theatre=theatre).order_by('-updated')
-        anaesthesia_checklist_filter = AnaesthisiaChecklistFilter(self.request.GET, queryset=anaesthesia_checklist)
-        return anaesthesia_checklist_filter.qs
+        return super().get_queryset().filter(theatre=theatre).order_by('-updated')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         theatre_id = self.kwargs.get('theatre_id')
         theatre = get_object_or_404(Theatre, id=theatre_id)
-        
-        total_operations = self.get_queryset().count()
-        context['theatre'] = theatre
-        context['total_operations'] = total_operations
 
-        context['anaesthesia_checklistFilter'] = AnaesthisiaChecklistFilter(self.request.GET, queryset=self.get_queryset())
+        context['theatre'] = theatre
+
         return context
 
 

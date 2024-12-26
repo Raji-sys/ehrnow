@@ -672,65 +672,71 @@ class OperationNotes(models.Model):
         return f"{self.patient}"
 
 
-class MedicalIllness(models.Model):
-    name=models.CharField(max_length=100,null=True)
-    def __str__(self):
-        return self.name
-
-class PastSurgicalHistory(models.Model):
-    surgery=models.CharField(max_length=100,null=True)
-    when=models.CharField(max_length=100,null=True)
-    where=models.CharField(max_length=100,null=True)
-    LA_GA=models.CharField('L.A/G.A',max_length=100,null=True)
-    outcome=models.CharField(max_length=100,null=True)
-    def __str__(self):
-        return self.surgery
-
-class DrugHistory(models.Model):
-    present_medication=models.CharField(max_length=100,null=True)
-    allergies=models.CharField(max_length=100,null=True)
-    def __str__(self):
-        return f"{self.present_medication} {self.allergies}"
-
-class SocialHistory(models.Model):
-    item=models.CharField(max_length=100,null=True)
-    qty=models.CharField(max_length=100,null=True)
-    duration=models.CharField(max_length=100,null=True)
-
-    def __str__(self):
-        return f"{self.item} {self.qty} {self.duration}"
-
-class LastMeal(models.Model):
-    when=models.CharField(max_length=100,null=True)
-    type=models.CharField(max_length=100,null=True)
-    qty=models.CharField(max_length=100,null=True)
-
-    def __str__(self):
-        return f"{self.when} {self.type} {self.qty}"
-        
-class AnaesthisiaChecklist(models.Model):
+class AnaesthesiaChecklist(models.Model):
     doctor = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     theatre = models.ForeignKey(Theatre, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name="anaesthesia_checklist")
-    concurrent_medical_illness=models.ManyToManyField(MedicalIllness,blank=True)
-    past_medical_history=QuillField(null=True, blank=True)
-    past_surgical_history=models.ForeignKey(PastSurgicalHistory,on_delete=models.CASCADE,null=True)
-    options=(('YES','YES'),('NO','NO'))
-    transfussion=models.CharField(choices=options,null=True, max_length=100)
-    drug_history=models.ForeignKey(DrugHistory,on_delete=models.CASCADE,null=True)
-    social_history=models.ForeignKey(SocialHistory,on_delete=models.CASCADE,null=True)
-    denctures=models.CharField(choices=options,null=True, max_length=100)
-    permanent=models.CharField(choices=options,null=True, max_length=100)
-    temporary=models.CharField(choices=options,null=True, max_length=100)
-    loose_teeth=models.CharField(choices=options,null=True, max_length=100)
-    last_meal=models.ForeignKey(LastMeal,on_delete=models.CASCADE,null=True)
-    comment=QuillField(null=True, blank=True)
+    ward = models.ForeignKey(Ward, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="anaesthesia_checklist")
+    transfussion = models.CharField(choices=[('YES', 'YES'), ('NO', 'NO')], null=True, max_length=100)
+    denctures = models.CharField(choices=[('YES', 'YES'), ('NO', 'NO')], null=True, max_length=100)
+    permanent = models.CharField(choices=[('YES', 'YES'), ('NO', 'NO')], null=True, max_length=100)
+    temporary = models.CharField(choices=[('YES', 'YES'), ('NO', 'NO')], null=True, max_length=100)
+    lose_teeth = models.CharField(choices=[('YES', 'YES'), ('NO', 'NO')], null=True, max_length=100)
+    comment = QuillField(null=True, blank=True)
+    past_medical_history = QuillField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"{self.patient}"
-    
 
+class ConcurrentMedicalIllness(models.Model):
+    anaesthesia_checklist = models.ForeignKey(AnaesthesiaChecklist, null=True, on_delete=models.CASCADE, related_name="concurrent_medical_illnesses")
+    illness = models.CharField(max_length=255,null=True,blank=True) 
+    description = QuillField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.anaesthesia_checklist.patient} - {self.illness}"
+
+
+class PastSurgicalHistory(models.Model):
+    anaesthesia_checklist = models.ForeignKey(AnaesthesiaChecklist, null=True, on_delete=models.CASCADE, related_name="past_surgical_history")
+    surgery = models.CharField(max_length=255,null=True,blank=True)
+    when = models.DateField(null=True,blank=True)
+    where = models.CharField(max_length=255,null=True,blank=True)
+    LA_GA = models.CharField(max_length=255,null=True,blank=True, choices=[('LA', 'Local Anaesthesia'), ('GA', 'General Anaesthesia')])
+    outcome = QuillField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.anaesthesia_checklist.patient} - {self.surgery}"
+
+class DrugHistory(models.Model):
+    anaesthesia_checklist = models.ForeignKey(AnaesthesiaChecklist, null=True, on_delete=models.CASCADE, related_name="drug_history")
+    medication = models.CharField(max_length=255,null=True,blank=True)
+    allergies = models.CharField(max_length=255,null=True,blank=True)
+    is_present = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.anaesthesia_checklist.patient} - {self.medication}"
+
+class SocialHistory(models.Model):
+    anaesthesia_checklist = models.ForeignKey(AnaesthesiaChecklist, null=True, on_delete=models.CASCADE, related_name="social_history")
+    item = models.CharField(max_length=255,null=True,blank=True)
+    quantity = models.IntegerField(null=True,blank=True)
+    duration = models.CharField(max_length=255,null=True,blank=True)
+
+    def __str__(self):
+        return f"{self.anaesthesia_checklist.patient} - {self.item}"
+
+class LastMeal(models.Model):
+    anaesthesia_checklist = models.ForeignKey(AnaesthesiaChecklist, null=True, on_delete=models.CASCADE, related_name="last_meals")
+    when = models.DateTimeField(null=True,blank=True)
+    meal_type = models.CharField(max_length=255,null=True,blank=True)
+    quantity = models.CharField(max_length=255,null=True,blank=True)
+
+    def __str__(self):
+        return f"{self.anaesthesia_checklist.patient} - {self.when}"
+
+    
 class Consumable(models.Model):
     name = models.CharField(max_length=100,null=True,blank=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
