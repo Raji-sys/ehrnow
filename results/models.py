@@ -31,7 +31,6 @@ class GenericTest(models.Model):
         ('Hematology', 'Hematology'),
         ('Microbiology', 'Microbiology'),
         ('Serology', 'Serology'),
-        ('Radiology', 'Radiology'),
     ]
     lab = models.CharField(choices=LABS, max_length=300,null=True, blank=True)
     name = models.CharField(max_length=1000, unique=True,null=True, blank=True)

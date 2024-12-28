@@ -272,14 +272,14 @@
               <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 normal-case">
                 <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
                 <td class=" p-3 whitespace-nowrap uppercase">{{ v.user }}</td>
-                <td class=" p-3 whitespace-nowrap">{%if v.body_temperature %}{{ v.body_temperature|default:'' }}K{%else%}{%endif%}</td>
-                <td class=" p-3 whitespace-nowrap">{%if v.pulse_rate %}{{ v.pulse_rate }}BPM{%else%}{%endif%}</td>
-                <td class=" p-3 whitespace-nowrap">{%if v.respiration_rate %}{{ v.respiration_rate }}BPM{%else%}{%endif%}</td>
-                <td class=" p-3 whitespace-nowrap">{%if v.blood_pressure %}{{ v.blood_pressure }}mmHg{%else%}{%endif%}</td>
-                <td class=" p-3 whitespace-nowrap">{%if v.blood_oxygen %}{{ v.blood_oxygen }}%{%else%}{%endif%}</td>
-                <td class=" p-3 whitespace-nowrap">{%if v.blood_glucose %}{{ v.blood_glucose }}mmol/L{%else%}{%endif%}</td>
-                <td class=" p-3 whitespace-nowrap">{%if v.weight %}{{ v.weight }}kg{%else%}{%endif%}</td>
-                <td class=" p-3 whitespace-nowrap">{%if v.height %}{{ v.height }}m{%else%}{%endif%}</td>
+                <td class=" p-3 whitespace-nowrap">{%if v.body_temperature %}{{ v.body_temperature|default:'' }} K{%else%}{%endif%}</td>
+                <td class=" p-3 whitespace-nowrap">{%if v.pulse_rate %}{{ v.pulse_rate }} BPM{%else%}{%endif%}</td>
+                <td class=" p-3 whitespace-nowrap">{%if v.respiration_rate %}{{ v.respiration_rate }} BPM{%else%}{%endif%}</td>
+                <td class=" p-3 whitespace-nowrap">{%if v.blood_pressure %}{{ v.blood_pressure }} mmHg{%else%}{%endif%}</td>
+                <td class=" p-3 whitespace-nowrap">{%if v.blood_oxygen %}{{ v.blood_oxygen }} %{%else%}{%endif%}</td>
+                <td class=" p-3 whitespace-nowrap">{%if v.blood_glucose %}{{ v.blood_glucose }} mmol/L{%else%}{%endif%}</td>
+                <td class=" p-3 whitespace-nowrap">{%if v.weight %}{{ v.weight }} kg{%else%}{%endif%}</td>
+                <td class=" p-3 whitespace-nowrap">{%if v.height %}{{ v.height }} cm{%else%}{%endif%}</td>
                 <td class=" p-3 whitespace-nowrap">{{ v.updated }}</td>
               </tr>
               {%empty%}
@@ -2323,14 +2323,14 @@
                   {% for w in ward_vital_signs %}
                   <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 normal-case">
                     <td class=" p-3 whitespace-nowrap uppercase">{{ w.user }}</td>
-                    <td class=" p-3 whitespace-nowrap">{%if w.body_temperature %}{{ w.body_temperature|default:'' }}K{%else%}{%endif%}</td>
-                    <td class=" p-3 whitespace-nowrap">{%if w.pulse_rate %}{{ w.pulse_rate }}BPM{%else%}{%endif%}</td>
-                    <td class=" p-3 whitespace-nowrap">{%if w.respiration_rate %}{{ w.respiration_rate }}BPM{%else%}{%endif%}</td>
-                    <td class=" p-3 whitespace-nowrap">{%if w.blood_pressure %}{{ w.blood_pressure }}mmHg{%else%}{%endif%}</td>
-                    <td class=" p-3 whitespace-nowrap">{%if w.blood_oxygen %}{{ w.blood_oxygen }}%{%else%}{%endif%}</td>
-                    <td class=" p-3 whitespace-nowrap">{%if w.blood_glucose %}{{ w.blood_glucose }}mmol/L{%else%}{%endif%}</td>
-                    <td class=" p-3 whitespace-nowrap">{%if w.weight %}{{ w.weight }}kg{%else%}{%endif%}</td>
-                    <td class=" p-3 whitespace-nowrap">{%if w.height %}{{ w.height }}m{%else%}{%endif%}</td>
+                    <td class=" p-3 whitespace-nowrap">{%if w.body_temperature %}{{ w.body_temperature|default:'' }} K{%else%}{%endif%}</td>
+                    <td class=" p-3 whitespace-nowrap">{%if w.pulse_rate %}{{ w.pulse_rate }} BPM{%else%}{%endif%}</td>
+                    <td class=" p-3 whitespace-nowrap">{%if w.respiration_rate %}{{ w.respiration_rate }} BPM{%else%}{%endif%}</td>
+                    <td class=" p-3 whitespace-nowrap">{%if w.blood_pressure %}{{ w.blood_pressure }} mmHg{%else%}{%endif%}</td>
+                    <td class=" p-3 whitespace-nowrap">{%if w.blood_oxygen %}{{ w.blood_oxygen }} %{%else%}{%endif%}</td>
+                    <td class=" p-3 whitespace-nowrap">{%if w.blood_glucose %}{{ w.blood_glucose }} mmol/L{%else%}{%endif%}</td>
+                    <td class=" p-3 whitespace-nowrap">{%if w.weight %}{{ w.weight }} kg{%else%}{%endif%}</td>
+                    <td class=" p-3 whitespace-nowrap">{%if w.height %}{{ w.height }} m{%else%}{%endif%}</td>
                     <td class=" p-3 whitespace-nowrap">{{ w.updated }}</td>
                       </tr>
                   {%empty%}

@@ -1698,7 +1698,7 @@ class PregnancyCreateView(View):
 class BaseLabResultUpdateView(UpdateView):
     template_name = 'shared_test_form.html'
     def get_success_url(self):
-        messages.success(self.request, f'{self.model.name} result added successfully')
+        messages.success(self.request, f'test result added successfully')
         next_url = self.request.GET.get('next')
         if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts=None):
             return next_url
