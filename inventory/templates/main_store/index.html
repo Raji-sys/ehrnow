@@ -3,20 +3,25 @@
 {% block title %}Store Inventory{% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>store inventory management</div>{%endblock%}
 {% block content %}
-<div class="mx-2 md:mx-20">
-
-    <div class="p-10 bg-white uppercase text-white text-center  shadow-2xl rounded-2xl mt-4 mx-2 md:mx-20">
-        <div class="md:flex md:flex-row border-zinc-700 p-4 mx-auto justify-center items-center gap-6 grid grid-cols-1 ">
-            <a href="{% url "inventory:list" %}" class="">
-                <div class="text-xs px-20 py-12 bg-zinc-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-zinc-600 focus:opacity-10 text-white ">items</div>
-            </a>
-            <a href="{% url "inventory:record" %}" class="">
-                <div class="text-xs px-20 py-12 bg-amber-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-amber-600 focus:opacity-10 text-white">record</div>
-            </a>
-            <a href="{% url "inventory:worth" %}" class="">
-                <div class="text-xs px-20 py-12 bg-green-600 rounded-xl shadow-2xl hover:text-zinc-700 hover:bg-white hover:border-2 hover:border-green-600 focus:opacity-10 text-white">worth</div>
+<div class="w-fit mx-auto">
+    <div class="p-10 bg-white uppercase text-white text-center shadow-2xl rounded-2xl mt-4 mx-2 md:mx-20">
+        <div class="md:flex md:flex-row border-zinc-700 p-4 mx-auto justify-center items-center gap-6 grid grid-cols-1">
+            <a href="{% url 'inventory:list' %}" class="">
+            <div class="text-xs px-20 py-12 bg-zinc-600 rounded-xl shadow-2xl hover:text-zinc-600 hover:bg-white hover:border-2 hover:border-zinc-600 focus:opacity-10 text-white">
+                <i class="fa-solid fa-box fa-2xl mr-2"></i>items
             </div>
-    </a>
-</div>
+            </a>
+            <a href="{% url 'inventory:record' %}" class="">
+            <div class="text-xs px-20 py-12 bg-amber-600 rounded-xl shadow-2xl hover:text-amber-600 hover:bg-white hover:border-2 hover:border-amber-600 focus:opacity-10 text-white">
+                <i class="fa-solid fa-clipboard-list fa-2xl mr-2"></i>record
+            </div>
+            </a>
+            <a href="{% url 'inventory:worth' %}" class="">
+            <div class="text-xs px-20 py-12 bg-green-600 rounded-xl shadow-2xl hover:text-green-600 hover:bg-white hover:border-2 hover:border-green-600 focus:opacity-10 text-white">
+                <i class="fa-solid fa-naira-sign fa-2xl mr-2"></i>worth
+            </div>
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}
