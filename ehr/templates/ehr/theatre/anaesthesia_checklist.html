@@ -2,113 +2,113 @@
 {% block title %}ANAESTHESIA CHECKLIST{% endblock %}
 {% block page_title %}<div class="flex justify-center">ANAESTHESIA CHECKLIST</div>{% endblock %}
 {% block content %}
-  <div class="container mx-auto px-4">
+  <div class="md:mx-20 mx-auto px-2">
     <section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
       {% for message in messages %}
       <div class="">
         <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
-          <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
+          <a href class="uk-alert-close font-medium text-rose-900" uk-close></a>
           <p class="text-green-700  uppercase">{{ message }}</p>
         </div>
       </div>
       {% endfor %}
     </section>
     <div class="flex justify-center">
-      <div class="w-full max-w-7xl">
-        <form method="post" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="">
+        <form method="post" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 text-xs">
+          <h2 class="text-sm text-center uppercase font-semibold m-3">ANAESTHESIA CHECKLIST</h2>
           {% csrf_token %}
-          <h2 class="text-xl font-bold mb-4">Anaesthesia Checklist</h2>
-          <div class="flex flex-wrap gap-4 py-10">
+          <div class="md:grid grid-cols-5 flex flex-wrap gap-4 py-6 md:pb-24 justify-center">
             {% for field in form %}
-              <div class="flex flex-col">
-                <label class="block text-gray-700 text-sm font-bold mb-2">{{ field.label }}</label>
+              <div class="flex flex-col text-xs">
+                <label class="block text-gray-700 text-xs font-medium mb-2">{{ field.label }}</label>
                 {{ field }}
               </div>
             {% endfor %}
           </div>
 <hr>          
-          <h2 class="text-xl font-bold mb-2">Concurrent Medical Illness</h2>
+          <h2 class="text-sm text-center uppercase font-semibold m-3">Concurrent Medical Illness</h2>
           <div class="flex flex-col gap-4">
             {{ concurrent_medical_illness_formset.management_form }}
             {% for form in concurrent_medical_illness_formset %}
-              <div class="flex items-center gap-4">
+              <div class="flex items-center gap-4 justify-center">
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.illness.label }}</label>
+                  <label class="block text-gray-700 text-xs  text-center mb-2">{{ form.illness.label }}</label>
                   {{ form.illness }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.description.label }}</label>
+                  <label class="block text-gray-700 text-xs  text-center mb-2">{{ form.description.label }}</label>
                   {{ form.description }}
                 </div>
               </div>
             {% endfor %}
           </div>
           <hr>  
-          <h2 class="text-xl font-bold mb-2">Past Surgical History</h2>
+          <h2 class="text-sm font-semibold text-center mb-2 uppercase">Past Surgical History</h2>
           <div id="past-surgical-history-formset" class="flex flex-col gap-4 ">
             {{ past_surgical_history_formset.management_form }}
             {% for form in past_surgical_history_formset %}
-              <div class="flex flex-wrap gap-4 py-10">
+              <div class="md:grid grid-cols-5 flex flex-wrap gap-4 pb-24 justify-center">
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.surgery.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.surgery.label }}</label>
                   {{ form.surgery }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.when.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.when.label }}</label>
                   {{ form.when }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.where.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.where.label }}</label>
                   {{ form.where }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.LA_GA.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.LA_GA.label }}</label>
                   {{ form.LA_GA }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.outcome.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.outcome.label }}</label>
                   {{ form.outcome }}
                 </div>
               </div>
             {% endfor %}
           </div>
           <hr>      
-          <h2 class="text-xl font-bold mb-4">Drug History</h2>
+          <h2 class="text-sm font-semibold text-center m-3 uppercase">Drug History</h2>
           <div id="drug-history-formset" class="flex flex-col gap-4">
             {{ drug_history_formset.management_form }}
             {% for form in drug_history_formset %}
-              <div class="flex flex-wrap gap-4">
+              <div class="flex flex-wrap gap-4 justify-center">
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.medication.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.medication.label }}</label>
                   {{ form.medication }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.allergies.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.allergies.label }}</label>
                   {{ form.allergies }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.is_present.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.is_present.label }}</label>
                   {{ form.is_present }}
                 </div>
               </div>
             {% endfor %}
           </div>
           <hr>          
-          <h2 class="text-xl font-bold mb-4">Social History</h2>
+          <h2 class="text-sm font-semibold text-center m-3 uppercase">Social History</h2>
           <div id="social-history-formset" class="flex flex-col gap-4">
             {{ social_history_formset.management_form }}
             {% for form in social_history_formset %}
-              <div class="flex flex-wrap gap-4">
+              <div class="flex flex-wrap gap-4 justify-center">
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.item.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.item.label }}</label>
                   {{ form.item }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.quantity.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.quantity.label }}</label>
                   {{ form.quantity }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.duration.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.duration.label }}</label>
                   {{ form.duration }}
                 </div>
               </div>
@@ -116,29 +116,29 @@
           </div>
           
           <hr>
-          <h2 class="text-xl font-bold mb-4">Last Meal</h2>
+          <h2 class="text-sm font-semibold text-center m-3 uppercase">Last Meal</h2>
           <div id="last-meal-formset" class="flex flex-col gap-4">
             {{ last_meal_formset.management_form }}
             {% for form in last_meal_formset %}
-              <div class="flex flex-wrap gap-4">
+              <div class="flex flex-wrap gap-4 justify-center">
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.when.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.when.label }}</label>
                   {{ form.when }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.meal_type.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.meal_type.label }}</label>
                   {{ form.meal_type }}
                 </div>
                 <div class="flex flex-col">
-                  <label class="block text-gray-700 text-sm font-bold mb-2">{{ form.quantity.label }}</label>
+                  <label class="block text-gray-700 text-xs font-medium mb-2">{{ form.quantity.label }}</label>
                   {{ form.quantity }}
                 </div>
               </div>
             {% endfor %}
           </div>
 
-          <div class="flex items-center justify-between mt-6">
-            <input type="submit" value="Submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          <div class="flex items-center justify-center mt-6">
+            <input type="submit" value="save" class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline">
           </div>
           
         </form>
