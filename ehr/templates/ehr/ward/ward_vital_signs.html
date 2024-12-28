@@ -3,45 +3,57 @@
 {% block title %}IN-PATIENT VITAL SIGNS{% endblock%}
 {%block page_title%}<div class="flex justify-center">IN-PATIENT VITAL SIGNS</div>{%endblock%}
 {% block content %}
-<div class="">
-  <div class="mt-4  mx-2  md:mx-20 rounded-xl bg-white">
+<div class="container mx-auto">
+  <div class="mt-4 mx-2 md:mx-20 rounded-xl bg-white">
       <section class="text-center border-cyan-700 p-4 m-2">
           {% for message in messages %}
-        <div class="mt-2">
+          <div class="mt-2">
              <div class="uk-alert-success rounded-2xl text-sm" uk-alert>
-              <a href class="uk-alert-close font-bold" uk-close></a>
-              <p class="text-green-700 font-semibold">{{ message }}</p>
-              </div>
-        </div>
-        {% endfor %}
+                <a href class="uk-alert-close font-bold" uk-close></a>
+                <p class="text-green-700 font-semibold">{{ message }}</p>
+             </div>
+          </div>
+          {% endfor %}
       </section>
+      
       {% if form.errors %}
       <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
           <a href class="uk-alert-close font-bold" uk-close></a>
           <p>{{form.errors}}</p>
       </div>
-          {% endif %}
-<form method="post" enctype="multipart/form-data" class="text-xs">
-  {% csrf_token %}
-  <div class="mb-2 uppercase text-cyan-900 px-10">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-    {% for field in form %}
-    <div>
-    <div class="flex justify-center">
-      <label for="{{field.id_for_label}}" class="block">{{ field.label_tag }}</label>
-    </div>
-    <div class="flex justify-center mb-2">
-      {{ field }}
-    </div>
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data" class="text-xs">
+        {% csrf_token %}
+        <div class="px-4 md:px-6 mb-2 text-cyan-900">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+            {% for field in form %}
+            <div class="flex flex-col items-center space-y-1">
+              <label for="{{field.id_for_label}}" class="font-medium">
+                {{ field.label }}
+              </label>
+              <div class="w-full flex flex-col items-center">
+                {{ field }}
+                {% if field.help_text %}
+                <p class="text-xs text-gray-500 text-center mt-1">{{ field.help_text }}</p>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="flex justify-center p-4">
+          <button type="submit" 
+                  class="uppercase bg-green-700 text-white px-6 py-3 rounded shadow-lg
+                         hover:bg-white hover:text-green-600 hover:border-2 
+                         hover:border-green-600 hover:shadow-xl
+                         focus:opacity-10 focus:border-green-900
+                         transition-all duration-200">
+            Save
+          </button>
+        </div>
+      </form>
   </div>
-  {%endfor%}
 </div>
-  </div>
-  <div class="gap-2 flex justify-center align-middle p-2">
-    <input type="submit" value="submit" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
-bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
-  </div>
-  </form>
-  </div>
-  </div>
 {% endblock %}
