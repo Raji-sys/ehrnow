@@ -846,6 +846,7 @@ class PhysioTestCategory(models.Model):
         ("ergonomic_workplace", "Ergonomic and Workplace Assessments"),
         ("pediatric", "Pediatric Physiotherapy Tests"),
         ("geriatric", "Geriatric Specific Tests"),
+        ("other", "Other Tests"),
     ]
     name = models.CharField(max_length=100,choices=CATEGORY_CHOICES,unique=True)
 
