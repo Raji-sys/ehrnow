@@ -1829,6 +1829,9 @@ class WardNotesCreateView(NurseRequiredMixin,CreateView):
     form_class = WardNotesForm
     template_name = 'ehr/ward/ward_notes.html'
 
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
+
     def form_valid(self, form):
         form.instance.doctor = self.request.user
         patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
