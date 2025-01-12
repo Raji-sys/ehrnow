@@ -829,7 +829,7 @@ class Archive(models.Model):
         return self.title
     
 
-class PhysioTestCategory(models.Model):
+class PhysioTest(models.Model):
     CATEGORY_CHOICES = [
         ("manual_muscle_strength", "Manual Muscle Strength Tests"),
         ("range_of_motion", "Range of Motion Tests"),
@@ -848,14 +848,7 @@ class PhysioTestCategory(models.Model):
         ("geriatric", "Geriatric Specific Tests"),
         ("other", "Other Tests"),
     ]
-    name = models.CharField(max_length=100,choices=CATEGORY_CHOICES,unique=True)
-
-   
-    def __str__(self):
-        return self.name
-
-class PhysioTest(models.Model):
-    category = models.ForeignKey(PhysioTestCategory, on_delete=models.CASCADE, related_name='tests')
+    category = models.CharField(null=True, choices=CATEGORY_CHOICES,related_name='tests')
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     updated = models.DateTimeField(auto_now=True)
