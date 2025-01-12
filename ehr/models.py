@@ -857,7 +857,6 @@ class PhysioTest(models.Model):
     category = models.ForeignKey(PhysioTestCategory, on_delete=models.CASCADE, related_name='tests')
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    description = QuillField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
