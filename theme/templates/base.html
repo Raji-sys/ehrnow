@@ -172,7 +172,51 @@
             </nav>
         </header>
         <div class="page-title">
-            {% block page_title %}{% endblock %}
+            {% if request.path_info != "/get-started/" %}
+            <nav class="flex justify-center items-center gap-4 rounded-lg mb-4 border border-gray-300 bg-white shadow-sm">
+                <a href="{% url 'patient_list' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-emerald-600 hover:text-emerald-800 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-user-injured fa-xs mr-2"></i>PATIENTS
+                </a>
+                <a href="{% url 'revenue' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-green-500 hover:text-green-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-dollar-sign fa-xs mr-2"></i>REVENUE
+                </a>
+                <a href="{% url 'nursing_desks_list' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-purple-500 hover:text-purple-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-stethoscope fa-xs mr-2"></i>NURSING
+                </a>
+                <a href="{% url 'clinic_list' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-red-500 hover:text-red-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-clinic-medical fa-xs mr-2"></i>CLINICS
+                </a>
+                <a href="{% url 'pharm:index' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-indigo-500 hover:text-indigo-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-prescription fa-xs mr-2"></i>PHARMACY
+                </a>
+                <a href="{% url 'results:dashboard' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-fuchsia-500 hover:text-fuchsia-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-microscope fa-xs mr-2"></i>PATHOLOGY
+                </a>
+                <a href="{% url 'radiology' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-amber-500 hover:text-amber-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-x-ray fa-xs mr-2"></i>RADIOLOGY
+                </a>
+                <a href="{% url 'ward_list' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-purple-500 hover:text-purple-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-bed-pulse fa-xs mr-2"></i>WARDS
+                </a>
+                <a href="{% url 'theatre' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-pink-500 hover:text-pink-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-head-side-mask fa-xs mr-2"></i>THEATRE
+                </a>
+                <a href="{% url 'physio' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-gray-500 hover:text-gray-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-wheelchair-move fa-xs mr-2"></i>PHYSIO
+                </a>
+                <a href="{% url 'inventory:store_inventory' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-rose-500 hover:text-rose-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-warehouse fa-xs mr-2"></i>INVENTORY
+                </a>
+                <a href="{% url 'visit_report' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-teal-500 hover:text-teal-700 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-bar-chart fa-xs mr-2"></i>ACTIVITY
+                </a>
+            </nav>
+            
+            {%endif%}
+            <div class="text-xs">
+                {% block page_title %}{% endblock %}
+            </div>
+            
         </div>
         {% endif %}
         <main class="main-content mb-10">

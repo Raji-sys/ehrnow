@@ -13,6 +13,7 @@ urlpatterns = [
     path('inventory/', include('inventory.urls',namespace='inventory')),
     path('lab/', include('results.urls',namespace='results')),
     path('',include('ehr.urls')),
+    path('site/',include('page.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

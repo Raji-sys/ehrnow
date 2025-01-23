@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -11,11 +11,10 @@ from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib import messages
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, View
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, FormView
 from django.utils import timezone
 from datetime import timedelta
 User = get_user_model()
-from django.db.models import Sum
 from django.http import HttpResponse
 from django.conf import settings
 import os
@@ -35,7 +34,6 @@ from django.http import JsonResponse, request
 from django.db import transaction
 from django.db.models import Sum, Count, Q
 from datetime import datetime
-import os
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Prefetch
@@ -45,12 +43,12 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import get_template
 from django.http import JsonResponse
-from django.views.generic.edit import UpdateView, FormView
 from django.urls import reverse_lazy
 from django.db import transaction
 from django.contrib import messages
 from django.shortcuts import redirect
 from results.models import GenericTest 
+from django.db.models import OuterRef, Subquery
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -370,7 +368,7 @@ class WardDetailView(DoctorNurseRequiredMixin, DetailView):
         context['discharged_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'discharge'})
         return context
 
-class GenericWardListView(DoctorRequiredMixin, ListView):
+class GenericWardListView(DoctorNurseRequiredMixin, ListView):
     model = Admission  # Changed from Ward to Admission
     context_object_name = 'admissions'  # Changed from 'ward' to 'admissions'
     template_name = 'ehr/ward/generic_ward_list.html'
@@ -523,8 +521,6 @@ def patient_report_pdf(request):
         return response
     return HttpResponse('Error generating PDF', status=500)
 
-
-from django.db.models import OuterRef, Subquery
 
 class VisitReportView(ListView):
     model = VisitRecord

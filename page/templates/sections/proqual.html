@@ -1,0 +1,38 @@
+<!-- Combined Fellow and Pro Qualification section -->
+<section id="education" class="bg-gray-50 py-20 rounded-2xl">
+	<div class="container mx-auto px-6">
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+			<!-- Fellowship Section -->
+			<div>
+				<h2 class="text-2xl font-medium text-center mb-2 text-gray-600" data-aos="zoom-in" data-aos-delay="100">Fellowship</h2>
+				<div class="space-y-4">
+					<!-- Dynamic fellowship entries from the database -->
+					{% for f in fellowship %}
+						<ul class="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}">
+							<li class="text-sm font-medium mb-2 text-blue-600">{{ f.institution }} &nbsp;
+							<span class="text-gray-600 text-xs">{{ f.date|default_if_none:'' }} </span> </li>
+						</ul>
+					{% empty %}
+						<p class="text-center text-gray-500">No information available.</p>
+					{% endfor %}
+				</div>
+			</div>
+
+			<!-- Professional Qualification Section -->
+			<div>
+				<h2 class="text-2xl font-medium text-center mb-2 text-gray-600" data-aos="zoom-in" data-aos-delay="100">Pro Qualification</h2>
+				<div class="space-y-4">
+					<!-- Dynamic proqual entries from the database -->
+					{% for f in proqual %}
+						<ul class="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}">
+							<li class="text-sm font-medium mb-2 text-blue-600">{{ f.institution }} &nbsp;
+								<span class="text-gray-600 text-xs">{{ f.date|default_if_none:'' }} </span> </li>
+							</ul>
+					{% empty %}
+						<p class="text-center text-gray-500">No information available.</p>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

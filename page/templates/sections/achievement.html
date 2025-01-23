@@ -1,0 +1,29 @@
+				<!-- Achievements, Awards, and Recognition section -->
+				<section id="achievements" class="bg-gray-50 py-20 rounded-2xl">
+					<div class="container mx-auto px-6">
+						<h2 class="text-2xl font-bold text-center mb-2 text-gray-600">Achievements, Awards & Recognition</h2>
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+							{% for item in achievements_awards %}
+								<div class="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}">
+									<div class="flex items-center mb-4">
+										{% if item.type == 'achievement' %}
+											<i class="fas fa-trophy text-2xl text-yellow-500 mr-3"></i>
+										{% elif item.type == 'award' %}
+											<i class="fas fa-medal text-2xl text-blue-500 mr-3"></i>
+										{% else %}
+											<i class="fas fa-award text-2xl text-green-500 mr-3"></i>
+										{% endif %}
+										<h3 class="text-xl font-bold">{{ item.title }}</h3>
+									</div>
+									<p class="text-gray-600 mb-2">{{ item.description }}</p>
+									{% if item.issuer %}
+										<p class="text-gray-500 mb-2">Issued by: {{ item.issuer }}</p>
+									{% endif %}
+									<p class="text-gray-500">{{ item.date|date:"F Y" }}</p>
+								</div>
+							{% empty %}
+								<p class="text-center text-gray-500 col-span-3">No achievements or awards information available.</p>
+							{% endfor %}
+						</div>
+					</div>
+				</section>

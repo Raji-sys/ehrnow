@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>
+			{% block title %}{% endblock %}
+		</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		
+		<!-- Tailwind CSS -->
+		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+		
+		<!-- FontAwesome for Icons -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+		
+		<!-- AOS for Scroll Animations -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+		<!-- Custom CSS for further styling -->
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+		
+		<!-- jQuery -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		
+		<!-- AOS Animation Script -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+	</head>
+	<body class="min-h-screen flex flex-col bg-gray-50 font-sans text-gray-800">
+		<!-- Header Include -->
+		{% include 'includes/header.html' %}
+
+		<!-- Main Content Area -->
+		<main class="flex-grow container mx-auto px-4 md:px-8 py-8">
+			{% block content %}
+			
+			{% endblock %}
+		</main>
+
+		<!-- Footer Include -->
+		{% include 'includes/footer.html' %}
+
+		<!-- AOS Initialization and Smooth Scrolling Script -->
+		<script>
+			$(document).ready(function() {
+				// Initialize AOS for smooth animations on scroll
+				AOS.init({
+					duration: 1000,
+					once: true
+				});
+
+				// Smooth scrolling for anchor links
+				$('a[href^="#"]').on('click', function(event) {
+					var target = $(this.getAttribute('href'));
+					if( target.length ) {
+						event.preventDefault();
+						$('html, body').stop().animate({
+							scrollTop: target.offset().top - 60
+						}, 1000);
+					}
+				});
+
+				// Animated counter function for statistics
+				function animateCounter(elementId, targetValue) {
+					$({ Counter: 0 }).animate({
+						Counter: targetValue
+					}, {
+						duration: 2000,
+						easing: 'swing',
+						step: function() {
+							$(elementId).text(Math.ceil(this.Counter));
+						}
+					});
+				}
+
+				// Trigger counter animation when the stats section is visible
+				var statsSection = $('#stats');
+				var statsSectionTop = statsSection.offset().top;
+				var windowHeight = $(window).height();
+				var hasAnimated = false;
+
+				$(window).scroll(function() {
+					var windowScrollTop = $(this).scrollTop();
+					if (!hasAnimated && windowScrollTop > statsSectionTop - windowHeight + 200) {
+						animateCounter('#surgeryCount');
+						animateCounter('#blogCount');
+						hasAnimated = true;
+					}
+				});
+			});
+			document.addEventListener('DOMContentLoaded', function () {
+		        const menuButton = document.getElementById('mobile-menu-button');
+		        const mobileMenu = document.getElementById('mobile-menu');
+		        const closeButton = document.getElementById('close-menu');
+
+		        menuButton.addEventListener('click', function () {
+		            mobileMenu.classList.toggle('hidden');
+		        });
+
+		        closeButton.addEventListener('click', function () {
+		            mobileMenu.classList.add('hidden');
+		        });
+		    });
+		</script>
+	</body>
+</html>

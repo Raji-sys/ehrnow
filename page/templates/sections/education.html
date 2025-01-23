@@ -1,0 +1,32 @@
+<!-- Education section -->
+<section id="education" class="bg-blue-100 py-10 rounded-2xl">
+	<div class="container mx-auto px-6">
+		<h2 class="text-2xl font-medium text-center mb-2 text-gray-600" data-aos="zoom-in" data-aos-delay="100">Education</h2>
+		<div class="flex flex-col md:flex-row items-center md:space-x-12">
+
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<!-- Static summary of educational background -->
+			<div class="col-span-2 w-full space-y-6 text-sm" data-aos="fade-left" data-aos-delay="200">
+				<p><strong>Dr. Mamman</strong> attended his primary and secondary school education in <strong>Okene</strong> and <strong>Zaria</strong> respectively, completing his secondary education at <em>Science Secondary School</em>, Giwa, Kaduna State. He served as both <strong>house captain</strong> and <strong>senior prefect (Headboy)</strong>.</p>
+				
+				<p>He earned his <strong>MBBS</strong> in 2004 from <em>Ahmadu Bello University, Zaria</em>, before obtaining a <strong>fellowship</strong> from the <em>West African College of Surgeons</em> in Orthopaedic and Trauma between 2006 and 2013 at <strong>NOH Kano</strong>.</p>
+				
+				<p>In 2012, his spine surgery training began at <em>Ghurki Trust Teaching Hospital</em> in Lahore, Pakistan, specializing in spine surgeries. This was followed by international training in countries such as <strong>Egypt, Turkey, Dubai, and South Africa</strong>.</p>
+				
+				<p>Additionally, <strong>Dr. Mamman</strong> holds a <strong>Master’s degree in Health Economics</strong> and is a part-time lecturer.</p>
+			</div>
+
+			<!-- Dynamic education entries from the database -->
+			{% for edu in education %}
+				<div class="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}">
+					<h3 class="text-lg font-medium mb-2 text-blue-600">{{ edu.certificate }}</h3>
+					<p class="text-gray-600 text-sm">{{ edu.institution }}</p>
+					<p class="text-gray-500 text-xs">{{ edu.year_start }} - {{ edu.year_end|default:"Present" }}</p>
+				</div>
+			{% empty %}
+				<p class="text-center text-gray-500 col-span-2">No education information available.</p>
+			{% endfor %}
+		</div>
+	</div>
+	</div>
+</section>

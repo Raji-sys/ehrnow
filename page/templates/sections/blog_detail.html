@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>
+            blog details
+        </title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		
+		<!-- Tailwind CSS -->
+		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+		
+		<!-- FontAwesome for Icons -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+		
+		<!-- AOS for Scroll Animations -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+		<!-- Custom CSS for further styling -->
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+		
+		<!-- jQuery -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		
+		<!-- AOS Animation Script -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+	</head>
+	<body class="min-h-screen flex flex-col bg-gray-50 font-sans text-gray-800">
+        <main class="flex-grow container mx-auto px-4  py-2">
+            {% block content %}
+            <div class="container mx-auto px-6 py-10 bg-gray-50 rounded-xl shadow-md shadow-black">
+                <p class="mb-6">
+                    <a href="{% url 'index' %}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-chevron-left mr-2"></i>
+                        Back to Posts
+                    </a>
+                </p>
+                <div class="max-w-2xl mx-auto ">
+                    <h1 class="text-2xl font-bold text-gray-600 mb-2">{{ post.title }}</h1>
+                    <p class="text-gray-500 mb-6 text-sm">{{ post.pub_date|date:"F j, Y" }}</p>
+                    <div class="prose max-w-none text-xs">
+                        {{ post.content|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+    </main>
+</body>
+</html>

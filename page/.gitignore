@@ -1,0 +1,27 @@
+# Ignore virtual environment directories
+bin/
+include/
+lib/
+lib64/
+pyvenv.cfg
+
+# Ignore system files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore static and media files (assuming you don’t want them in your repo)
+staticfiles/
+media/
+
+# Ignore migrations (optional)
+**/migrations/
+
+# Ignore logs
+*.log
+
+# Explicitly allow relevant files and directories
+!manage.py
+!page/
+!portfolio/
+!theme/

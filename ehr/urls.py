@@ -81,9 +81,6 @@ urlpatterns = [
     path('nursing-desks/', NursingDeskListView.as_view(), name='nursing_desks_list'),
     path('nursing-station/<int:pk>/', NursingStationDetailView.as_view(), name='nursing_station_detail'),
     
-    # AE
-    # path('nursing/nursing-station-ae/', AENursingDeskView.as_view(), name='nursing_station_ae'),
-    # Consultation
     path('clinics/', ClinicDashView.as_view(), name='clinic_list'),
     path('clinic/<int:pk>/', ClinicDetailView.as_view(), name='clinic_details'),
     path('clinic/room/<int:pk>/', RoomDetailView.as_view(), name='room'),
