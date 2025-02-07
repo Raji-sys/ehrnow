@@ -64,8 +64,8 @@
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">LAB REQUEST</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">LAB RESULT</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">PRESCRIPTION</a></li>
-        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">RADIOLOGY INVESTIGATION</a></li>
-        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">RADIOLOGY</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">X-RAY REQUEST</a></li>
+        <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">X-RAY REPORT</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">PHYSIO</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">ADMISSION</a></li>
         <li><a href="#" class="block px-3 py-2 rounded-lg bg-cyan-100 text-cyan-800 border border-cyan-200 hover:bg-cyan-200 transition-colors duration-300 font-medium shadow-sm hover:shadow-md active:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300">SURGERY BILL</a></li>
@@ -2090,7 +2090,7 @@
                 <td class="p-3 whitespace-nowrap">{{ p.request_date|default_if_none:'' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ p.diagnosis|default_if_none:'' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ p.remark|default_if_none:'' }}</td>
-                <td class="p-3 whitespace-nowrap">{{ p.comment|default_if_none:'' }}</td>
+                <td class="p-3 whitespace-nowrap">{{ p.comment.hmtl|safe|default_if_none:'' }}</td>
                 <td class=" p-3 whitespace-nowrap">{{ p.physiotherapist|default_if_none:'' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ p.result_details|default_if_none:'' }}</td>
                 <td class="p-3 whitespace-nowrap">{{ p.result_date|default_if_none:'' }}</td>

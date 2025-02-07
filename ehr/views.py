@@ -456,7 +456,9 @@ class PatientListView(ListView):
                 Q(other_name__icontains=query) |
                 Q(file_no__icontains=query)|
                 Q(phone__icontains=query)|
-                Q(title__icontains=query)
+                Q(title__icontains=query)|
+                Q(gender__iexact=query)
+    
             )
         return queryset
 
@@ -1895,7 +1897,6 @@ class RadiologyResultCreateView(LoginRequiredMixin, CreateView):
         form.instance.patient = patient
         form.instance.user = self.request.user
         radiology_result = form.save(commit=False)
-        radiology_result.comments = form.cleaned_data['comments']
         radiology_result.save()
 
         messages.success(self.request, 'Radiology test created successfully')
@@ -3337,7 +3338,7 @@ class AllRadiologyTestListView(LoginRequiredMixin, ListView):
 
 class RadiologyUpdateView(LoginRequiredMixin, UpdateView):
     model = RadiologyResult
-    form_class = RadiologyResultForm
+    form_class = RadiologyUpdateResultForm
     template_name = 'ehr/radiology/radiology_result.html'
     success_url=reverse_lazy('radiology_request')
 

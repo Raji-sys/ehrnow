@@ -397,13 +397,26 @@ class RadiologyTestForm(forms.ModelForm):
 class RadiologyResultForm(forms.ModelForm):
     class Meta:
         model = RadiologyResult
-        fields = ['test', 'comments','cleared']
+        fields = ['test']
     def __init__(self, *args, **kwargs):
         super(RadiologyResultForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
+
+
+class RadiologyUpdateResultForm(forms.ModelForm):
+    class Meta:
+        model = RadiologyResult
+        fields = ['test', 'comments','cleared']
+    def __init__(self, *args, **kwargs):
+        super(RadiologyUpdateResultForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-4 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+
 
 
 class TheatreBookingForm(forms.ModelForm):

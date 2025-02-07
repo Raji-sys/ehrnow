@@ -125,6 +125,7 @@ DATETIME_INPUT_FORMAT=['%d-%m-%Y']
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL="/login/"
+LOGOUT_REDIRECT_URL = '/logout/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

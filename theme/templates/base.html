@@ -68,7 +68,7 @@
             height: 100%;
             margin: 0;
             font-family: 'Lato', sans-serif;
-            background-image: url('{% static "images/4.jpg" %}');
+            background-image: url('{% static "images/2.png" %}');
             background-repeat: no-repeat;
             background-size: cover;
             background-attachment: fixed;
@@ -172,10 +172,10 @@
             </nav>
         </header>
         <div class="page-title">
-            {% if request.path_info != "/get-started/" %}
-            <nav class="flex justify-center items-center gap-4 rounded-lg mb-4 border border-gray-300 bg-white shadow-sm">
-                <a href="{% url 'patient_list' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-emerald-600 hover:text-emerald-800 transition duration-300 border-x border-gray-300">
-                    <i class="fa-solid fa-user-injured fa-xs mr-2"></i>PATIENTS
+            {% if request.path_info != "/get-started/" and request.path_info != "/home/" %}
+                        <nav class="lg:flex justify-center grid grid-cols-3 items-center md:gap-4 gap-1 rounded-lg mb-4 border border-gray-300 bg-white shadow-sm">
+                <a href="{% url 'medical_record' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-emerald-600 hover:text-emerald-800 transition duration-300 border-x border-gray-300">
+                    <i class="fa-solid fa-user-injured fa-xs mr-2"></i>HIM
                 </a>
                 <a href="{% url 'revenue' %}" class="flex items-center justify-center px-2 py-2 text-xs font-medium text-green-500 hover:text-green-700 transition duration-300 border-x border-gray-300">
                     <i class="fa-solid fa-dollar-sign fa-xs mr-2"></i>REVENUE

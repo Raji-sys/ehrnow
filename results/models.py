@@ -75,10 +75,9 @@ class Testinfo(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.code} for {self.patient} - {self.updated}"
-    def __str__(self):
-        return f"{self.code} - {self.patient}"
-
+            patient_str = str(self.patient) if self.patient else "No Patient"
+            return f"{self.code} - {patient_str}"
+        
 
 class GeneralTestResult(models.Model):
     test_info = models.OneToOneField(Testinfo, on_delete=models.CASCADE, related_name='general_results', null=True, blank=True)

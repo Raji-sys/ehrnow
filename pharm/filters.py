@@ -175,13 +175,13 @@ class DispenseFilter(django_filters.FilterSet):
     )
     patient_info = django_filters.CharFilter(
         label="PATIENT INFO",
-        field_name='patient_info',
+        field_name='patient_file_no',
         lookup_expr='icontains'
     )
 
     class Meta:
         model = DispenseRecord
-        fields = ['date_exact', 'date_start', 'date_end', 'dispensary', 'category', 'drug', 'dispensed_by', 'patient_info']
+        fields = ['date_exact', 'date_start', 'date_end', 'dispensary', 'category', 'drug', 'dispensed_by', 'patient']
 
 
 class UnitIssueFilter(django_filters.FilterSet):
