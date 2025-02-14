@@ -2,7 +2,8 @@
 {% load static %}
 {%block title%}get started{%endblock%}
 {%block content %}
-<section class="text-center border-cyan-700 p-2">
+<div class="rounded-2xl bg-white p-3 mt-32 md:p-6 mx-auto w-fit">
+    <section class="text-center border-cyan-700 p-2">
   {% for message in messages %}
   <div class="">
       <div class="uk-alert-success rounded-2xl text-xs md:text-sm w-fit mx-auto" uk-alert>
@@ -20,7 +21,6 @@
         </div>
       </div>
         {% endif %}
-              <div class="rounded-2xl bg-white p-3 mt-32 md:p-6 mx-auto w-fit">
           <form action="" method="POST" class="text-center text-xs">
             {% csrf_token %}
             <div class="mb-2 uppercase text-cyan-900 px-8 w-fit max-w-fit">
@@ -40,6 +40,7 @@
                   <div class="flex justify-center align-middle">
                   <input type="submit" value="Login" class="focus:opacity-10 uppercase focus:border-green-900 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600
              bg-green-700 text-white py-2 px-4 rounded shadow-lg hover:shadow-xl">
+             <a href="{%url 'register' %}">register</a>
                 </div>
               </div>
             </form>    
