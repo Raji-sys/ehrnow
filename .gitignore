@@ -13,3 +13,10 @@ db.sqlite3
 **/__pycache__/
 .vscode/
 node_modules/
+.env
+*.egg-info/
+*.egg
+*.log
+*.DS_Store
+*.swp
+*.swo
