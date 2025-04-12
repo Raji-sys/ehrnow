@@ -1,18 +1,14 @@
 from pathlib import Path
 import os
-# import dj_database_url
+from dotenv import load_dotenv
+import dj_database_url
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-jy__!sq&0g^l(!21u%+ab8_iuq8j%nv-!g-ft2k1!@-k%pleln'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+CSRF_TRUSTED_ORIGINS = ['https://*.railway.app']
 ALLOWED_HOSTS = ['*']
 
 
@@ -39,11 +35,13 @@ INSTALLED_APPS = [
     'inventory',
     'results',    
     'page',
+    'easyaudit',
 ]
 
 MIDDLEWARE = [
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -52,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'ehrnow.urls'
@@ -78,16 +77,12 @@ NPM_BIN_PATH = "/usr/bin/npm"
 
 WSGI_APPLICATION = 'ehrnow.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 CACHES = {
     "default": {
@@ -97,27 +92,27 @@ CACHES = {
 }
 
 CACHE_MIDDLEWARE_ALIAS= 'default'
-CACHE_MIDDLEWARE_SECONDS = 60 * 60 * 24
+CACHE_MIDDLEWARE_SECONDS = 5000
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 # DATABASES = {
 #     'default': dj_database_url.config(
-#         default='postgresql://postgres:postgres@localhost:5432/audaxemr',
+#         default='postgresql://raji:8080mali@localhost:5432/emr',
 #         conn_max_age=600
 #     )
 # }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'emr',
-#         'USER': 'raji',
-#         'PASSWORD': '8080mali',
-#         'HOST': 'localhost',
-#         'PORT': '',
-#     }
-# }
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ["PGDATABASE"],
+        'USER': os.environ["PGUSER"],
+        'PASSWORD': os.environ["PGPASSWORD"],
+        'HOST': os.environ["PGHOST"],
+        'PORT': os.environ["PGPORT"],
+    }
+}
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -134,9 +129,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -162,18 +154,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# This production code might break development mode, so we check whether we're in DEBUG mode
-# if not DEBUG:
-#     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-#     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'node_modules', 'cornerstone-tools', 'dist'),
-# ]
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

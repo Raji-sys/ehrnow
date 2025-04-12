@@ -49,6 +49,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from results.models import GenericTest 
 from django.db.models import OuterRef, Subquery
+from django.core.paginator import Paginator
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -609,7 +610,6 @@ def visit_pdf(request):
         return response
     
     return HttpResponse('Error generating PDF', status=500)
-
 
 
 
@@ -1184,7 +1184,7 @@ class AppointmentListView(ListView):
         return context
 
 
-from django.core.paginator import Paginator
+
 class HospitalServicesListView(TemplateView):
     template_name = 'ehr/dashboard/services.html'
 
