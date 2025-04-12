@@ -96,23 +96,23 @@ WSGI_APPLICATION = 'ehrnow.wsgi.application'
 # CACHE_MIDDLEWARE_SECONDS = 5000
 # CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         default='postgresql://raji:8080mali@localhost:5432/emr',
-#         conn_max_age=600
-#     )
-# }
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ["PGDATABASE"],
-        'USER': os.environ["PGUSER"],
-        'PASSWORD': os.environ["PGPASSWORD"],
-        'HOST': os.environ["PGHOST"],
-        'PORT': os.environ["PGPORT"],
-    }
+    'default': dj_database_url.config(
+        default='postgresql://raji:8080mali@localhost:5432/emr',
+        conn_max_age=600
+    )
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ["PGDATABASE"],
+#         'USER': os.environ["PGUSER"],
+#         'PASSWORD': os.environ["PGPASSWORD"],
+#         'HOST': os.environ["PGHOST"],
+#         'PORT': os.environ["PGPORT"],
+#     }
+# }
 
 
 AUTH_PASSWORD_VALIDATORS = [
