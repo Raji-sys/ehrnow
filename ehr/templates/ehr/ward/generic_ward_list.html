@@ -71,7 +71,7 @@
                   <i class="fa-solid fa-handshake fa-2x"></i><br>Accept Patient
                 </a>
               </td>
-              <td class="p-3 whitespace-nowrap text-xs font-medium">{{ a.date_admitted }}</td>
+              <td class="p-3 whitespace-nowrap text-xs font-medium">{{ a.created }}</td>
               {% elif a.status == 'RECEIVED' %}
               <td class="p-3 whitespace-nowrap text-xs font-medium">
                 <a href="{% url 'ward_vital_signs' a.patient.file_no %}" class="text-blue-600 hover:text-blue-900 mr-3">

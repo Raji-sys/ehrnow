@@ -2534,13 +2534,24 @@ class AnaesthesiaChecklistListView(DoctorRequiredMixin,ListView):
     def get_queryset(self):
         theatre_id = self.kwargs.get('theatre_id')
         theatre = get_object_or_404(Theatre, id=theatre_id)
-        return super().get_queryset().filter(theatre=theatre).order_by('-updated')
-
+        queryset = super().get_queryset().filter(theatre=theatre).order_by('-updated')
+        
+        # Apply filter if GET parameters exist
+        if self.request.GET:
+            f = AnaesthesiaChecklistFilter(self.request.GET, queryset=queryset)
+            return f.qs
+        return queryset
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         theatre_id = self.kwargs.get('theatre_id')
         theatre = get_object_or_404(Theatre, id=theatre_id)
         total_operations = self.get_queryset().count()
+
+        # Add filter to context
+        f = AnaesthesiaChecklistFilter(self.request.GET, queryset=self.get_queryset())
+        context['anaesthesia_checklistFilter'] = f
+
         context['total_operations'] = total_operations
         context['theatre'] = theatre
         return context

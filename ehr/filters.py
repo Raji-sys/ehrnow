@@ -167,7 +167,7 @@ class OperationNotesFilter(django_filters.FilterSet):
         model = OperationNotes
         fields = ['file_no','type_of_anaesthesia','findings','date']
 
-class AnaesthisiaChecklistFilter(django_filters.FilterSet):
+class AnaesthesiaChecklistFilter(django_filters.FilterSet):
     patient=django_filters.CharFilter(label='FILE NO',field_name="patient__file_no",lookup_expr='iexact')                                                                                                     
     patient_phone=django_filters.CharFilter(label='PHONE',field_name="patient__phone",lookup_expr='iexact')            
     date = django_filters.DateFilter(label="DATE", field_name="updated", lookup_expr='exact', widget=forms.DateInput(attrs={'type': 'date'}), input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y'])
