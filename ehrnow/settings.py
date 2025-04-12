@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'ehrnow.urls'
@@ -85,16 +85,16 @@ WSGI_APPLICATION = 'ehrnow.wsgi.application'
 #     }
 # }
 
-CACHES = {
-    "default": {
-    "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-    "LOCATION": "127.0.0.1:11211",
-    }
-}
+# CACHES = {
+#     "default": {
+#     "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+#     "LOCATION": "127.0.0.1:11211",
+#     }
+# }
 
-CACHE_MIDDLEWARE_ALIAS= 'default'
-CACHE_MIDDLEWARE_SECONDS = 5000
-CACHE_MIDDLEWARE_KEY_PREFIX = ''
+# CACHE_MIDDLEWARE_ALIAS= 'default'
+# CACHE_MIDDLEWARE_SECONDS = 5000
+# CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 # DATABASES = {
 #     'default': dj_database_url.config(
