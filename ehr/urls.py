@@ -93,6 +93,7 @@ urlpatterns = [
     path('waiting-consultation/clinical_note_update/<int:pk>/', ClinicalNoteUpdateView.as_view(), name='clinical_note_update'),
    
     path('clinic/report/', VisitReportView.as_view(), name='visit_report'),
+    path('clinic/visit/stat-card/', VisitStatCardView.as_view(), name='visit_stat_card'),
     path('clinic/report/pdf', views.visit_pdf, name='visit_pdf'),
 
     #admission

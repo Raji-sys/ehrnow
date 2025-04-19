@@ -50,6 +50,7 @@ from django.shortcuts import redirect
 from results.models import GenericTest 
 from django.db.models import OuterRef, Subquery
 from django.core.paginator import Paginator
+from django.db.models import Subquery, OuterRef
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -602,7 +603,86 @@ class VisitReportView(ListView):
         context['awaiting_review_count'] = self.filterset.qs.filter(review=True).count()
         
         return context
-from django.db.models import Subquery, OuterRef
+
+
+class VisitStatCardView(TemplateView):
+    template_name = 'ehr/clinic/report_stat_card.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get current date and time periods
+        now = timezone.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        year_start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        # Basic stats
+        context['total_patient'] = PatientData.objects.count()
+        
+        # Time period stats for all visits
+        visits_all_time = VisitRecord.objects.filter(seen=True)
+        context['total_patients_seen'] = visits_all_time.count()
+        context['patients_seen_today'] = visits_all_time.filter(updated__gte=today_start).count()
+        context['patients_seen_this_week'] = visits_all_time.filter(updated__gte=week_start).count()
+        context['patients_seen_this_month'] = visits_all_time.filter(updated__gte=month_start).count()
+        context['patients_seen_this_year'] = visits_all_time.filter(updated__gte=year_start).count()
+        
+        # Recent visits stats (100 days)
+        days_filter = 100
+        time_threshold = timezone.now() - timedelta(days=days_filter)
+        visits = VisitRecord.objects.filter(updated__gte=time_threshold)
+        context['filtered_count'] = visits.count()
+        
+        # Gender breakdown
+        male_patients = visits_all_time.filter(patient__gender='MALE').count()
+        female_patients = visits_all_time.filter(patient__gender='FEMALE').count()
+        
+        context['male_patients_seen'] = male_patients
+        context['female_patients_seen'] = female_patients
+        
+        # Per clinic stats
+        clinics = Clinic.objects.all()
+        context['clinic_count'] = clinics.count()
+        
+        clinic_stats = []
+        for clinic in clinics:
+            clinic_stats.append({
+                'name': clinic.name,
+                'total_seen': visits_all_time.filter(clinic=clinic).count(),
+                'seen_today': visits_all_time.filter(clinic=clinic, updated__gte=today_start).count(),
+                'seen_this_week': visits_all_time.filter(clinic=clinic, updated__gte=week_start).count(),
+                'seen_this_month': visits_all_time.filter(clinic=clinic, updated__gte=month_start).count(),
+                'seen_this_year': visits_all_time.filter(clinic=clinic, updated__gte=year_start).count()
+            })
+        context['clinic_stats'] = clinic_stats
+        
+        # Per team stats
+        teams = Team.objects.all()
+        context['team_count'] = teams.count()
+        
+        team_stats = []
+        for team in teams:
+            team_stats.append({
+                'name': team.name,
+                'total_seen': visits_all_time.filter(team=team).count(),
+                'seen_today': visits_all_time.filter(team=team, updated__gte=today_start).count(),
+                'seen_this_week': visits_all_time.filter(team=team, updated__gte=week_start).count(),
+                'seen_this_month': visits_all_time.filter(team=team, updated__gte=month_start).count(),
+                'seen_this_year': visits_all_time.filter(team=team, updated__gte=year_start).count()
+            })
+        context['team_stats'] = team_stats
+        
+        # Get counts for each status
+        context['awaiting_nurse_count'] = visits.filter(vitals=False).count()
+        context['awaiting_doctor_count'] = visits.filter(
+            vitals=True, seen=False, review=False
+        ).count()
+        context['seen_count'] = visits.filter(seen=True, review=False).count()
+        context['awaiting_review_count'] = visits.filter(review=True).count()
+        
+        return context
 
 @login_required
 def visit_pdf(request):
