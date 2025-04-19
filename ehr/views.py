@@ -952,7 +952,7 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
             patient=patient,
             status=False,
             service=visit.record,
-            unit='record',
+            unit='medical record',
             price=visit.record.price,
         )
         visit.payment = payment
@@ -1644,6 +1644,124 @@ class PayListView(ListView):
         
         return context
     
+# In your app's urls.py file
+class UnitRevenueView(TemplateView):
+    template_name = 'ehr/revenue/unit_revenue.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get current date
+        today = timezone.now().date()
+        
+        # Calculate date ranges
+        start_of_week = today - timezone.timedelta(days=today.weekday())
+        start_of_month = today.replace(day=1)
+        
+        # Calculate start of quarter
+        current_month = today.month
+        current_quarter = (current_month - 1) // 3 + 1
+        quarter_start_month = (current_quarter - 1) * 3 + 1
+        start_of_quarter = today.replace(month=quarter_start_month, day=1)
+        
+        # Calculate start of year
+        start_of_year = today.replace(month=1, day=1)
+        
+        # Get all distinct units
+        units = Paypoint.objects.filter(status=True).values_list('unit', flat=True).distinct()
+        
+        # Prepare data structure directly accessible in templates without custom filters
+        unit_revenues = []
+        
+        for unit in units:
+            if not unit:  # Skip empty unit names
+                continue
+                
+            # Get base queryset for this unit with approved payments
+            unit_qs = Paypoint.objects.filter(unit=unit, status=True)
+            
+            # Calculate revenue for different time periods
+            today_revenue = unit_qs.filter(created=today).aggregate(total=Sum('price'))['total'] or 0
+            weekly_revenue = unit_qs.filter(created__gte=start_of_week).aggregate(total=Sum('price'))['total'] or 0
+            monthly_revenue = unit_qs.filter(created__gte=start_of_month).aggregate(total=Sum('price'))['total'] or 0
+            quarterly_revenue = unit_qs.filter(created__gte=start_of_quarter).aggregate(total=Sum('price'))['total'] or 0
+            yearly_revenue = unit_qs.filter(created__gte=start_of_year).aggregate(total=Sum('price'))['total'] or 0
+            all_time_revenue = unit_qs.aggregate(total=Sum('price'))['total'] or 0
+            
+            # Count transactions for each period
+            today_count = unit_qs.filter(created=today).count()
+            weekly_count = unit_qs.filter(created__gte=start_of_week).count()
+            monthly_count = unit_qs.filter(created__gte=start_of_month).count()
+            quarterly_count = unit_qs.filter(created__gte=start_of_quarter).count()
+            yearly_count = unit_qs.filter(created__gte=start_of_year).count()
+            all_time_count = unit_qs.count()
+            
+            unit_revenues.append({
+                'name': unit,
+                'today_revenue': today_revenue,
+                'today_count': today_count,
+                'week_revenue': weekly_revenue,
+                'week_count': weekly_count,
+                'month_revenue': monthly_revenue,
+                'month_count': monthly_count,
+                'quarter_revenue': quarterly_revenue,
+                'quarter_count': quarterly_count,
+                'year_revenue': yearly_revenue,
+                'year_count': yearly_count,
+                'all_time_revenue': all_time_revenue,
+                'all_time_count': all_time_count
+            })
+        
+        # Sort units by yearly revenue (highest first)
+        unit_revenues.sort(key=lambda x: x['year_revenue'], reverse=True)
+        
+        # Calculate overall totals (flattened for direct template access)
+        total_today = Paypoint.objects.filter(status=True, created=today).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        total_week = Paypoint.objects.filter(status=True, created__gte=start_of_week).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        total_month = Paypoint.objects.filter(status=True, created__gte=start_of_month).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        total_quarter = Paypoint.objects.filter(status=True, created__gte=start_of_quarter).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        total_year = Paypoint.objects.filter(status=True, created__gte=start_of_year).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        total_all_time = Paypoint.objects.filter(status=True).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        
+        # Replace None with 0
+        context['total_today'] = total_today['total'] or 0
+        context['count_today'] = total_today['count'] or 0
+        context['total_week'] = total_week['total'] or 0
+        context['count_week'] = total_week['count'] or 0
+        context['total_month'] = total_month['total'] or 0
+        context['count_month'] = total_month['count'] or 0
+        context['total_quarter'] = total_quarter['total'] or 0
+        context['count_quarter'] = total_quarter['count'] or 0
+        context['total_year'] = total_year['total'] or 0
+        context['count_year'] = total_year['count'] or 0
+        context['total_all_time'] = total_all_time['total'] or 0
+        context['count_all_time'] = total_all_time['count'] or 0
+        
+        context['unit_revenues'] = unit_revenues
+        
+        # Define periods for the tab navigation
+        context['periods'] = [
+            {'id': 'today', 'name': 'Today'},
+            {'id': 'week', 'name': 'This Week'},
+            {'id': 'month', 'name': 'This Month'},
+            {'id': 'quarter', 'name': 'This Quarter'},
+            {'id': 'year', 'name': 'This Year'},
+            {'id': 'all_time', 'name': 'All Time'}
+        ]
+        
+        return context
 
 # FOR ALL TRANSACTION SEARCH 
 @login_required

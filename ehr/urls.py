@@ -68,6 +68,7 @@ urlpatterns = [
     path('revenue/cash-list/', CashPayListView.as_view(), name='cash_pay_list'),
 
     path('revenue/payment-list/', PayListView.as_view(), name='pay_list'),
+    path('unit-revenue/', UnitRevenueView.as_view(), name='unit_revenue'),
     path('revenue/update-payment/<int:pk>/', PayUpdateView.as_view(), name='update_pay'),
     # path('revenue/receipt/', views.receipt_pdf, name='receipt_pdf'),
     
