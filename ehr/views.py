@@ -525,35 +525,83 @@ def patient_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
+# class VisitReportView(ListView):
+#     model = VisitRecord
+#     filterset_class = VisitFilter
+#     template_name = 'ehr/clinic/report.html'
+#     context_object_name = 'visits'
+#     paginate_by = 10
+
+#     def get_queryset(self):
+#         # Subquery to get the latest ClinicalNote for each patient
+#         latest_note = ClinicalNote.objects.filter(patient=OuterRef('patient')).order_by('-updated').values('diagnosis')[:1]
+
+#         # Annotate the VisitRecord queryset with the latest clinical note's diagnosis
+#         self.filterset = VisitFilter(
+#             self.request.GET, 
+#             queryset=VisitRecord.objects.select_related('patient', 'clinic', 'team')
+#             .annotate(latest_diagnosis=Subquery(latest_note))
+#         )
+#         return self.filterset.qs.order_by('-updated')
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+        
+#         # Add total patient count and filtered count to the context
+#         context['total_patient'] = PatientData.objects.count()
+#         context['filtered_count'] = self.filterset.qs.count()
+#         context['visitFilter'] = self.filterset
+
+#         return context
 class VisitReportView(ListView):
     model = VisitRecord
     filterset_class = VisitFilter
     template_name = 'ehr/clinic/report.html'
     context_object_name = 'visits'
     paginate_by = 10
-
+    
     def get_queryset(self):
-        # Subquery to get the latest ClinicalNote for each patient
-        latest_note = ClinicalNote.objects.filter(patient=OuterRef('patient')).order_by('-updated').values('diagnosis')[:1]
-
-        # Annotate the VisitRecord queryset with the latest clinical note's diagnosis
-        self.filterset = VisitFilter(
-            self.request.GET, 
-            queryset=VisitRecord.objects.select_related('patient', 'clinic', 'team')
-            .annotate(latest_diagnosis=Subquery(latest_note))
-        )
+        # Default time filter if none specified (100 days)
+        days_filter = 100
+        time_threshold = timezone.now() - timedelta(days=days_filter)
+        
+        # Base queryset with time filter
+        queryset = VisitRecord.objects.select_related('patient', 'clinic', 'team')
+        
+        # Apply date filter if not explicitly provided in request
+        if not (self.request.GET.get('date_from') or self.request.GET.get('date_to')):
+            queryset = queryset.filter(updated__gte=time_threshold)
+            
+        # Get latest clinical note for diagnosis
+        latest_note = ClinicalNote.objects.filter(
+            patient=OuterRef('patient')
+        ).order_by('-updated').values('diagnosis')[:1]
+        
+        # Annotate with diagnosis
+        queryset = queryset.annotate(latest_diagnosis=Subquery(latest_note))
+        
+        # Apply filters
+        self.filterset = VisitFilter(self.request.GET, queryset=queryset)
+        
         return self.filterset.qs.order_by('-updated')
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Add total patient count and filtered count to the context
+        # Add total patient count and filtered count
         context['total_patient'] = PatientData.objects.count()
         context['filtered_count'] = self.filterset.qs.count()
         context['visitFilter'] = self.filterset
-
+        
+        # Get counts for each status
+        context['awaiting_nurse_count'] = self.filterset.qs.filter(vitals=False).count()
+        context['awaiting_doctor_count'] = self.filterset.qs.filter(
+            vitals=True, seen=False, review=False
+        ).count()
+        context['seen_count'] = self.filterset.qs.filter(seen=True, review=False).count()
+        context['awaiting_review_count'] = self.filterset.qs.filter(review=True).count()
+        
         return context
-
 from django.db.models import Subquery, OuterRef
 
 @login_required
@@ -895,10 +943,14 @@ class NursingStationDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         # Fetch patients whose payment is complete and who are assigned to the current nursing desk's clinic
+        # visits = VisitRecord.objects.filter(
+        #     clinic=self.object.clinic,  # Match the clinic with the nursing desk
+        #     payment__status=True,
+        #     vitals=False
+        # ).select_related('patient', 'payment', 'record')
         visits = VisitRecord.objects.filter(
-            clinic=self.object.clinic,  # Match the clinic with the nursing desk
-            payment__status=True,
-            vitals=False
+            clinic=self.object.clinic,
+            vitals=False  # Just check if they need vitals
         ).select_related('patient', 'payment', 'record')
         query = self.request.GET.get('q')
 
@@ -944,23 +996,33 @@ class VitalSignCreateView(NurseRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        visit_record = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).latest('id')
+        
+        # Optimized query with select_related
+        visit_record = VisitRecord.objects.filter(
+            patient__file_no=self.kwargs['file_no']
+        ).select_related('clinic').latest('id')
+        
         kwargs['clinic'] = visit_record.clinic
         return kwargs
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        visit_record = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).latest('id')
+        
+        # Optimized query with select_related
+        visit_record = VisitRecord.objects.filter(
+            patient__file_no=self.kwargs['file_no']
+        ).select_related('patient', 'clinic').latest('id')
+        
         form.instance.patient = visit_record.patient
         form.instance.clinic = visit_record.clinic
         room = form.cleaned_data.get('room')
-
+        
         self.object = form.save()
-
+        
         visit_record.vitals = True
         visit_record.room = room
         visit_record.save()
-
+        
         messages.success(self.request, 'Vital signs recorded. Patient has been moved to consultation.')
         return super().form_valid(form)
 
@@ -970,6 +1032,45 @@ class VitalSignCreateView(NurseRequiredMixin, CreateView):
         return context
     
 
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
+#     model = Clinic
+#     context_object_name = 'clinic'
+#     template_name = "ehr/clinic/clinic_details.html"
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         rooms = self.object.consultation_rooms.all()
+#         context['rooms'] = rooms        
+#         for room in rooms:
+#             room.waiting_count = VisitRecord.objects.filter(
+#                 clinic=self.object,
+#                 room=room,
+#                 vitals=True,
+#                 seen=False
+#             ).count()
+#         days_filter = 7  # Set this to whatever number you prefer
+#         time_threshold = timezone.now() - timedelta(days=days_filter)
+
+#         context['waiting_count'] = VisitRecord.objects.filter(
+#             clinic=self.object,
+#             vitals=True,
+#             seen=False,
+#             review=False,
+#             updated__gte=time_threshold  # Apply the time filter
+#         ).count()
+#         context['seen_count'] = VisitRecord.objects.filter(
+#             clinic=self.object,
+#             seen=True,
+#             updated__gte=time_threshold  # Apply the time filter
+#         ).count()
+#         context['review_count'] = VisitRecord.objects.filter(
+#             clinic=self.object,
+#             review=True,
+#             updated__gte=time_threshold  # Apply the time filter
+#         ).count()
+#         return context
+    
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
     model = Clinic
@@ -979,31 +1080,42 @@ class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         rooms = self.object.consultation_rooms.all()
-        context['rooms'] = rooms        
+        context['rooms'] = rooms
+        
+        # Standardize time filter with other views
+        days_filter = 7  # This should match the same value used in VisitListView
+        time_threshold = timezone.now() - timedelta(days=days_filter)
+        
         for room in rooms:
             room.waiting_count = VisitRecord.objects.filter(
                 clinic=self.object,
                 room=room,
                 vitals=True,
-                seen=False
+                seen=False,
+                updated__gte=time_threshold  # Apply time filter
             ).count()
 
         context['waiting_count'] = VisitRecord.objects.filter(
             clinic=self.object,
             vitals=True,
             seen=False,
-            review=False
+            review=False,
+            updated__gte=time_threshold  # Apply time filter
         ).count()
+        
         context['seen_count'] = VisitRecord.objects.filter(
             clinic=self.object,
             seen=True,
+            updated__gte=time_threshold  # Apply time filter
         ).count()
+        
         context['review_count'] = VisitRecord.objects.filter(
             clinic=self.object,
-            review=True
+            review=True,
+            updated__gte=time_threshold  # Apply time filter
         ).count()
+        
         return context
-    
     
 class VisitListView(DoctorNurseRecordRequiredMixin, ListView):
     model = VisitRecord
@@ -1015,7 +1127,7 @@ class VisitListView(DoctorNurseRecordRequiredMixin, ListView):
         self.clinic = get_object_or_404(Clinic, pk=self.kwargs['clinic_id'])
         queryset = VisitRecord.objects.filter(
             clinic=self.clinic,
-            updated__gte=timezone.now() - timedelta(days=100),
+            updated__gte=timezone.now() - timedelta(days=7),
             **self.filter_params
         ).order_by('-updated')
         query = self.request.GET.get('q')
@@ -1079,23 +1191,42 @@ class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
     form_class = ClinicalNoteForm
     template_name = 'ehr/doctor/clinical_note.html'
 
+    # def form_valid(self, form):
+    #     form.instance.user = self.request.user
+    #     patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+    #     form.instance.patient = patient_data
+    #     self.object = form.save()
+        
+    #     visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()        
+    #     if form.instance.needs_review:
+    #         visit.review = True
+    #         visit.save()
+    #         messages.success(self.request, 'Clinical note created. Patient awaiting review.')
+    #     else:
+    #         visit.close_visit()
+    #         messages.success(self.request, 'Clinical note created. Patient consultation completed.')
+
+    #     return super().form_valid(form)
     def form_valid(self, form):
         form.instance.user = self.request.user
         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         form.instance.patient = patient_data
         self.object = form.save()
         
-        visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()        
+        visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()
+        
         if form.instance.needs_review:
+            # Set proper flags for review
             visit.review = True
+            visit.seen = True  # Mark as seen even if needs review
             visit.save()
             messages.success(self.request, 'Clinical note created. Patient awaiting review.')
         else:
+            # Close visit - properly set all flags
             visit.close_visit()
             messages.success(self.request, 'Clinical note created. Patient consultation completed.')
 
         return super().form_valid(form)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
@@ -1113,20 +1244,23 @@ class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        self.object=form.save()
-        visit=VisitRecord.objects.filter(patient__file_no=self.object.patient.file_no).order_by('-id').first()
-
+        patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
+        self.object = form.save()
+        
+        visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()
+        
         if form.instance.needs_review:
-            visit.review=True
+            # Set proper flags for review
+            visit.review = True
+            visit.seen = True  # Mark as seen even if needs review
             visit.save()
-            messages.success(self.request, 'Clinical note updated successfully, patient awaiting review')
+            messages.success(self.request, 'Clinical note created. Patient awaiting review.')
         else:
+            # Close visit - properly set all flags
             visit.close_visit()
-            messages.success(self.request, 'Clinical note updated successfully, patient consultation completed')
-        visit.save()
-        return super().form_valid(form)
+            messages.success(self.request, 'Clinical note created. Patient consultation completed.')
 
-    def get_success_url(self):
         return self.object.patient.get_absolute_url()
 
 

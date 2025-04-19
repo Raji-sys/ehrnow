@@ -76,18 +76,19 @@
                   <td class="p-3 text-left whitespace-nowrap  text-gray-500">{{ p.patient.phone }}</td>
                   <td class="p-3 text-left whitespace-nowrap  text-gray-500">{{ p.patient.age }}</td>
                   <td class="p-3 text-left whitespace-nowrap">
-                    <span class="px-2 inline-flex  leading-5 rounded-full
-                    {% if not p.vitals %}bg-blue-100 text-blue-800
-                    {% elif p.seen %}bg-green-100 text-green-800
-                    {% elif not p.consultation and not p.seen %}bg-yellow-100 text-yellow-800
-                    {% elif not p.review %}bg-blue-100 text-blue-800
-                    {% else %}bg-gray-100 text-gray-800{% endif %}">
-                    {% if not p.vitals %}Waiting for nurse
-                    {% elif p.seen %}Seen
-                    {% elif not p.consultation and not p.seen %}Waiting for doctor
-                    {% elif not p.review %}Waiting for review
-                    {% else %}Completed{% endif %}
-                    </span>                  </td>
+                    <span class="px-2 inline-flex leading-5 rounded-full
+                        {% if not p.vitals %}bg-blue-100 text-blue-800
+                        {% elif not p.seen and not p.review %}bg-yellow-100 text-yellow-800
+                        {% elif p.seen and not p.review %}bg-green-100 text-green-800
+                        {% elif p.review %}bg-orange-100 text-orange-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {% if not p.vitals %}Waiting for nurse
+                        {% elif not p.seen and not p.review %}Waiting for doctor
+                        {% elif p.seen and not p.review %}Seen
+                        {% elif p.review %}Waiting for review
+                        {% else %}Completed{% endif %}
+                    </span>
+                </td>
                     <td class="p-3 text-left whitespace-nowrap  text-gray-500">{{ p.clinic.name }}</td>
                     <td class="p-3 text-left whitespace-nowrap  text-gray-500">{{ p.team.name }}</td>
                     <td class="p-3 text-left whitespace-nowrap  text-gray-500">

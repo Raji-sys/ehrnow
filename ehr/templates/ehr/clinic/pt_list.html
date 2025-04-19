@@ -53,6 +53,7 @@
                         <th class="p-2 text-left font-medium uppercase">Team</th>
                         <th class="p-2 text-left font-medium uppercase">Room</th>
                         <th class="p-2 text-left font-medium uppercase">Process</th>
+                        <th class="p-2 text-left font-medium uppercase">Date</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-sky-100">
@@ -72,6 +73,7 @@
                                 <i class="fa-solid fa-folder-closed text-base"></i>
                             </a>
                         </td>
+                        <td class="p-2 whitespace-nowrap">{{ v.updated }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

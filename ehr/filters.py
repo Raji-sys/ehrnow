@@ -92,26 +92,68 @@ class VisitFilter(django_filters.FilterSet):
             'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200',
         })
     )
-    seen = django_filters.BooleanFilter(
-        label='SEEN',
-        widget=forms.Select(choices=[('', '---------'), (True, 'Yes'), (False, 'No')],
-            attrs={
-                'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
-            }
-        )
-    )
 
-    review = django_filters.BooleanFilter(
-        label='REVIEW',
-        widget=forms.Select(choices=[('', '---------'), (True, 'Yes'), (False, 'No')],
-            attrs={
-                'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
-            }
-        )
+    status = django_filters.ChoiceFilter(
+        label='STATUS',
+        method='filter_status',
+        choices=[
+            ('awaiting_nurse', 'Waiting for Nurse'),
+            ('awaiting_doctor', 'Waiting for Doctor'),
+            ('seen', 'Seen'),
+            ('awaiting_review', 'Waiting for Review'),
+            ('completed', 'Completed')
+        ],
+        widget=forms.Select(attrs={
+            'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
+        })
     )
+    
+    # Filter by date range instead of just a single date
+    date_from = django_filters.DateFilter(
+        field_name="created", 
+        lookup_expr='gte',
+        label="FROM DATE",
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
+        }),
+        input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y']
+    )
+    
+    date_to = django_filters.DateFilter(
+        field_name="created", 
+        lookup_expr='lte',
+        label="TO DATE",
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
+        }),
+        input_formats=['%d-%m-%Y', '%Y-%m-%d', '%m/%d/%Y']
+    )
+    
+    def filter_status(self, queryset, name, value):
+        if value == 'awaiting_nurse':
+            return queryset.filter(vitals=False)
+        elif value == 'awaiting_doctor':
+            return queryset.filter(vitals=True, seen=False, review=False)
+        elif value == 'seen':
+            return queryset.filter(seen=True, review=False)
+        elif value == 'awaiting_review':
+            return queryset.filter(review=True)
+        elif value == 'completed':
+            return queryset.filter(seen=True, review=False)
+        return queryset
+    
     class Meta:
         model = VisitRecord
-        fields = ['clinic', 'team', 'created', 'gender', 'age_min', 'age_max', 'diagnosis', 'seen', 'review']
+        fields = [
+            'clinic', 'team', 'gender', 'age_min', 'age_max', 
+            'diagnosis', 'status', 'date_from', 'date_to'
+        ]
+
+    # class Meta:
+    #     model = VisitRecord
+    #     fields = ['clinic', 'team', 'created', 'gender', 'age_min', 'age_max', 'diagnosis', 'seen', 'review']
 
 
 class AppointmentFilter(django_filters.FilterSet):

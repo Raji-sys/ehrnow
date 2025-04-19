@@ -343,7 +343,19 @@ class VisitRecord(models.Model):
     review=models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateField(auto_now=True)
-    
+
+    def get_status_display(self):
+        if not self.vitals:
+            return "Waiting for nurse"
+        elif not self.seen and not self.review:
+            return "Waiting for doctor"
+        elif self.seen and not self.review:
+            return "Seen"
+        elif self.review:
+            return "Waiting for review"
+        else:
+            return "Completed"
+
     def close_visit(self):
         self.consultation = False
         self.seen = True
