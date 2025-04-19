@@ -8,9 +8,10 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
-CSRF_TRUSTED_ORIGINS = ['https://*.railway.app']
+# DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+# CSRF_TRUSTED_ORIGINS = ['https://*.railway.app']
 ALLOWED_HOSTS = ['*']
+DJANGO_DEBUG = True
 
 
 # Application definition
@@ -40,18 +41,14 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.cache.FetchFromCacheMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'ehrnow.urls'
@@ -84,18 +81,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# CACHES = {
-#     "default": {
-#     "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-#     "LOCATION": "127.0.0.1:11211",
-#     }
-# }
-
-# CACHE_MIDDLEWARE_ALIAS= 'default'
-# CACHE_MIDDLEWARE_SECONDS = 5000
-# CACHE_MIDDLEWARE_KEY_PREFIX = ''
-
 # DATABASES = {
 #     'default': dj_database_url.config(
 #         default='postgresql://raji:8080mali@localhost:5432/emr',

@@ -92,10 +92,26 @@ class VisitFilter(django_filters.FilterSet):
             'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200',
         })
     )
+    seen = django_filters.BooleanFilter(
+        label='SEEN',
+        widget=forms.Select(choices=[('', '---------'), (True, 'Yes'), (False, 'No')],
+            attrs={
+                'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
+            }
+        )
+    )
 
+    review = django_filters.BooleanFilter(
+        label='REVIEW',
+        widget=forms.Select(choices=[('', '---------'), (True, 'Yes'), (False, 'No')],
+            attrs={
+                'class': 'text-center text-xs focus:outline-none border border-indigo-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-indigo-200'
+            }
+        )
+    )
     class Meta:
         model = VisitRecord
-        fields = ['clinic', 'team', 'created', 'gender', 'age_min', 'age_max', 'diagnosis']
+        fields = ['clinic', 'team', 'created', 'gender', 'age_min', 'age_max', 'diagnosis', 'seen', 'review']
 
 
 class AppointmentFilter(django_filters.FilterSet):
