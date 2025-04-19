@@ -1643,8 +1643,7 @@ class PayListView(ListView):
         context['today_worth'] = self.get_queryset().filter(created=today, status=True).aggregate(total=Sum('price'))['total'] or 0
         
         return context
-    
-# In your app's urls.py file
+
 class UnitRevenueView(TemplateView):
     template_name = 'ehr/revenue/unit_revenue.html'
     
@@ -1654,24 +1653,93 @@ class UnitRevenueView(TemplateView):
         # Get current date
         today = timezone.now().date()
         
-        # Calculate date ranges
+        # Calculate current date ranges
         start_of_week = today - timezone.timedelta(days=today.weekday())
         start_of_month = today.replace(day=1)
         
-        # Calculate start of quarter
         current_month = today.month
         current_quarter = (current_month - 1) // 3 + 1
         quarter_start_month = (current_quarter - 1) * 3 + 1
         start_of_quarter = today.replace(month=quarter_start_month, day=1)
         
-        # Calculate start of year
         start_of_year = today.replace(month=1, day=1)
+        
+        # Calculate previous date ranges for comparison
+        yesterday = today - timezone.timedelta(days=1)
+        
+        prev_week_start = start_of_week - timezone.timedelta(days=7)
+        prev_week_end = start_of_week - timezone.timedelta(days=1)
+        
+        if start_of_month.month == 1:
+            prev_month_start = start_of_month.replace(year=start_of_month.year-1, month=12)
+        else:
+            prev_month_start = start_of_month.replace(month=start_of_month.month-1)
+        prev_month_end = start_of_month - timezone.timedelta(days=1)
+        
+        if quarter_start_month == 1:
+            prev_quarter_start = today.replace(year=today.year-1, month=10, day=1)
+        elif quarter_start_month == 4:
+            prev_quarter_start = today.replace(month=1, day=1)
+        elif quarter_start_month == 7:
+            prev_quarter_start = today.replace(month=4, day=1)
+        else:  # quarter_start_month == 10
+            prev_quarter_start = today.replace(month=7, day=1)
+        prev_quarter_end = start_of_quarter - timezone.timedelta(days=1)
+        
+        prev_year_start = start_of_year.replace(year=start_of_year.year-1)
+        prev_year_end = start_of_year - timezone.timedelta(days=1)
         
         # Get all distinct units
         units = Paypoint.objects.filter(status=True).values_list('unit', flat=True).distinct()
         
-        # Prepare data structure directly accessible in templates without custom filters
+        # Prepare data structure for units
         unit_revenues = []
+        chart_labels = []
+        chart_datasets = []
+        chart_colors = [
+            'rgba(54, 162, 235, 0.8)',  # blue
+            'rgba(255, 99, 132, 0.8)',   # red
+            'rgba(75, 192, 192, 0.8)',   # green
+            'rgba(255, 159, 64, 0.8)',   # orange
+            'rgba(153, 102, 255, 0.8)',  # purple
+            'rgba(255, 205, 86, 0.8)',   # yellow
+            'rgba(201, 203, 207, 0.8)'   # grey
+        ]
+        
+        # Track total revenue by day for the past 30 days
+        thirty_days_ago = today - timezone.timedelta(days=30)
+        daily_revenues = {}
+        
+        for i in range(31):
+            date = today - timezone.timedelta(days=i)
+            daily_revenues[date] = 0
+        
+        thirty_day_revenue_data = Paypoint.objects.filter(
+            status=True, 
+            created__gte=thirty_days_ago
+        ).values('created').annotate(
+            daily_total=Sum('price')
+        ).order_by('created')
+        
+        for entry in thirty_day_revenue_data:
+            if entry['created'] in daily_revenues:
+                daily_revenues[entry['created']] = float(entry['daily_total'] or 0)
+        
+        # Payment method distribution
+        payment_methods = Paypoint.objects.filter(
+            status=True
+        ).values('payment_method').annotate(
+            total=Sum('price'),
+            count=Count('id')
+        ).order_by('-total')
+        
+        # Collect unit data
+        color_index = 0
+        yearly_dataset = {
+            'label': 'Yearly Revenue by Unit',
+            'data': [],
+            'backgroundColor': []
+        }
         
         for unit in units:
             if not unit:  # Skip empty unit names
@@ -1680,42 +1748,114 @@ class UnitRevenueView(TemplateView):
             # Get base queryset for this unit with approved payments
             unit_qs = Paypoint.objects.filter(unit=unit, status=True)
             
-            # Calculate revenue for different time periods
+            # Calculate revenue for current periods
             today_revenue = unit_qs.filter(created=today).aggregate(total=Sum('price'))['total'] or 0
-            weekly_revenue = unit_qs.filter(created__gte=start_of_week).aggregate(total=Sum('price'))['total'] or 0
-            monthly_revenue = unit_qs.filter(created__gte=start_of_month).aggregate(total=Sum('price'))['total'] or 0
-            quarterly_revenue = unit_qs.filter(created__gte=start_of_quarter).aggregate(total=Sum('price'))['total'] or 0
-            yearly_revenue = unit_qs.filter(created__gte=start_of_year).aggregate(total=Sum('price'))['total'] or 0
+            week_revenue = unit_qs.filter(created__gte=start_of_week).aggregate(total=Sum('price'))['total'] or 0
+            month_revenue = unit_qs.filter(created__gte=start_of_month).aggregate(total=Sum('price'))['total'] or 0
+            quarter_revenue = unit_qs.filter(created__gte=start_of_quarter).aggregate(total=Sum('price'))['total'] or 0
+            year_revenue = unit_qs.filter(created__gte=start_of_year).aggregate(total=Sum('price'))['total'] or 0
             all_time_revenue = unit_qs.aggregate(total=Sum('price'))['total'] or 0
             
-            # Count transactions for each period
+            # Calculate revenue for previous periods
+            yesterday_revenue = unit_qs.filter(created=yesterday).aggregate(total=Sum('price'))['total'] or 0
+            prev_week_revenue = unit_qs.filter(created__gte=prev_week_start, created__lte=prev_week_end).aggregate(total=Sum('price'))['total'] or 0
+            prev_month_revenue = unit_qs.filter(created__gte=prev_month_start, created__lte=prev_month_end).aggregate(total=Sum('price'))['total'] or 0
+            prev_quarter_revenue = unit_qs.filter(created__gte=prev_quarter_start, created__lte=prev_quarter_end).aggregate(total=Sum('price'))['total'] or 0
+            prev_year_revenue = unit_qs.filter(created__gte=prev_year_start, created__lte=prev_year_end).aggregate(total=Sum('price'))['total'] or 0
+            
+            # Calculate growth percentages
+            day_growth = self.calculate_growth(today_revenue, yesterday_revenue)
+            week_growth = self.calculate_growth(week_revenue, prev_week_revenue)
+            month_growth = self.calculate_growth(month_revenue, prev_month_revenue)
+            quarter_growth = self.calculate_growth(quarter_revenue, prev_quarter_revenue)
+            year_growth = self.calculate_growth(year_revenue, prev_year_revenue)
+            
+            # Get transaction counts
             today_count = unit_qs.filter(created=today).count()
-            weekly_count = unit_qs.filter(created__gte=start_of_week).count()
-            monthly_count = unit_qs.filter(created__gte=start_of_month).count()
-            quarterly_count = unit_qs.filter(created__gte=start_of_quarter).count()
-            yearly_count = unit_qs.filter(created__gte=start_of_year).count()
+            week_count = unit_qs.filter(created__gte=start_of_week).count()
+            month_count = unit_qs.filter(created__gte=start_of_month).count()
+            quarter_count = unit_qs.filter(created__gte=start_of_quarter).count()
+            year_count = unit_qs.filter(created__gte=start_of_year).count()
             all_time_count = unit_qs.count()
             
-            unit_revenues.append({
+            # Calculate average transaction values
+            avg_today = self.calculate_average(today_revenue, today_count)
+            avg_week = self.calculate_average(week_revenue, week_count)
+            avg_month = self.calculate_average(month_revenue, month_count)
+            avg_quarter = self.calculate_average(quarter_revenue, quarter_count)
+            avg_year = self.calculate_average(year_revenue, year_count)
+            avg_all_time = self.calculate_average(all_time_revenue, all_time_count)
+            
+            # Payment method distribution for this unit
+            unit_payment_methods = unit_qs.values('payment_method').annotate(
+                total=Sum('price'),
+                count=Count('id')
+            ).order_by('-total')
+            
+            unit_data = {
                 'name': unit,
+                # Current period revenues
                 'today_revenue': today_revenue,
-                'today_count': today_count,
-                'week_revenue': weekly_revenue,
-                'week_count': weekly_count,
-                'month_revenue': monthly_revenue,
-                'month_count': monthly_count,
-                'quarter_revenue': quarterly_revenue,
-                'quarter_count': quarterly_count,
-                'year_revenue': yearly_revenue,
-                'year_count': yearly_count,
+                'week_revenue': week_revenue,
+                'month_revenue': month_revenue,
+                'quarter_revenue': quarter_revenue,
+                'year_revenue': year_revenue,
                 'all_time_revenue': all_time_revenue,
-                'all_time_count': all_time_count
-            })
+                
+                # Transaction counts
+                'today_count': today_count,
+                'week_count': week_count,
+                'month_count': month_count,
+                'quarter_count': quarter_count,
+                'year_count': year_count,
+                'all_time_count': all_time_count,
+                
+                # Growth percentages
+                'day_growth': day_growth,
+                'week_growth': week_growth,
+                'month_growth': month_growth,
+                'quarter_growth': quarter_growth,
+                'year_growth': year_growth,
+                
+                # Average transaction values
+                'avg_today': avg_today,
+                'avg_week': avg_week,
+                'avg_month': avg_month,
+                'avg_quarter': avg_quarter,
+                'avg_year': avg_year,
+                'avg_all_time': avg_all_time,
+                
+                # Payment methods
+                'payment_methods': unit_payment_methods,
+                
+                # Chart color
+                'color': chart_colors[color_index % len(chart_colors)]
+            }
+            
+            unit_revenues.append(unit_data)
+            
+            # Add to chart data
+            chart_labels.append(unit)
+            yearly_dataset['data'].append(float(year_revenue))
+            yearly_dataset['backgroundColor'].append(chart_colors[color_index % len(chart_colors)])
+            
+            color_index += 1
         
         # Sort units by yearly revenue (highest first)
         unit_revenues.sort(key=lambda x: x['year_revenue'], reverse=True)
         
-        # Calculate overall totals (flattened for direct template access)
+        # Prepare time series data for trend chart
+        trend_labels = []
+        trend_data = []
+        
+        # Sort dates for trend chart
+        sorted_dates = sorted(daily_revenues.keys())
+        for date in sorted_dates:
+            trend_labels.append(date.strftime('%b %d'))
+            trend_data.append(daily_revenues[date])
+        
+        # Calculate overall totals with comparisons
+        # Current periods
         total_today = Paypoint.objects.filter(status=True, created=today).aggregate(
             total=Sum('price'), count=Count('id')
         )
@@ -1735,21 +1875,98 @@ class UnitRevenueView(TemplateView):
             total=Sum('price'), count=Count('id')
         )
         
-        # Replace None with 0
-        context['total_today'] = total_today['total'] or 0
-        context['count_today'] = total_today['count'] or 0
-        context['total_week'] = total_week['total'] or 0
-        context['count_week'] = total_week['count'] or 0
-        context['total_month'] = total_month['total'] or 0
-        context['count_month'] = total_month['count'] or 0
-        context['total_quarter'] = total_quarter['total'] or 0
-        context['count_quarter'] = total_quarter['count'] or 0
-        context['total_year'] = total_year['total'] or 0
-        context['count_year'] = total_year['count'] or 0
-        context['total_all_time'] = total_all_time['total'] or 0
-        context['count_all_time'] = total_all_time['count'] or 0
+        # Previous periods
+        total_yesterday = Paypoint.objects.filter(status=True, created=yesterday).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        total_prev_week = Paypoint.objects.filter(status=True, created__gte=prev_week_start, created__lte=prev_week_end).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        total_prev_month = Paypoint.objects.filter(status=True, created__gte=prev_month_start, created__lte=prev_month_end).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        total_prev_quarter = Paypoint.objects.filter(status=True, created__gte=prev_quarter_start, created__lte=prev_quarter_end).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
+        total_prev_year = Paypoint.objects.filter(status=True, created__gte=prev_year_start, created__lte=prev_year_end).aggregate(
+            total=Sum('price'), count=Count('id')
+        )
         
-        context['unit_revenues'] = unit_revenues
+        # Calculate growth
+        today_growth = self.calculate_growth(
+            total_today['total'] or 0, 
+            total_yesterday['total'] or 0
+        )
+        week_growth = self.calculate_growth(
+            total_week['total'] or 0, 
+            total_prev_week['total'] or 0
+        )
+        month_growth = self.calculate_growth(
+            total_month['total'] or 0, 
+            total_prev_month['total'] or 0
+        )
+        quarter_growth = self.calculate_growth(
+            total_quarter['total'] or 0, 
+            total_prev_quarter['total'] or 0
+        )
+        year_growth = self.calculate_growth(
+            total_year['total'] or 0, 
+            total_prev_year['total'] or 0
+        )
+        
+        # Calculate averages
+        avg_today = self.calculate_average(total_today['total'] or 0, total_today['count'] or 0)
+        avg_week = self.calculate_average(total_week['total'] or 0, total_week['count'] or 0)
+        avg_month = self.calculate_average(total_month['total'] or 0, total_month['count'] or 0)
+        avg_quarter = self.calculate_average(total_quarter['total'] or 0, total_quarter['count'] or 0)
+        avg_year = self.calculate_average(total_year['total'] or 0, total_year['count'] or 0)
+        avg_all_time = self.calculate_average(total_all_time['total'] or 0, total_all_time['count'] or 0)
+        
+        # Add period data to context
+        context.update({
+            # Total revenue
+            'total_today': total_today['total'] or 0,
+            'total_week': total_week['total'] or 0,
+            'total_month': total_month['total'] or 0,
+            'total_quarter': total_quarter['total'] or 0,
+            'total_year': total_year['total'] or 0,
+            'total_all_time': total_all_time['total'] or 0,
+            
+            # Transaction counts
+            'count_today': total_today['count'] or 0,
+            'count_week': total_week['count'] or 0,
+            'count_month': total_month['count'] or 0,
+            'count_quarter': total_quarter['count'] or 0,
+            'count_year': total_year['count'] or 0,
+            'count_all_time': total_all_time['count'] or 0,
+            
+            # Growth percentages
+            'today_growth': today_growth,
+            'week_growth': week_growth,
+            'month_growth': month_growth,
+            'quarter_growth': quarter_growth,
+            'year_growth': year_growth,
+            
+            # Average transaction values
+            'avg_today': avg_today,
+            'avg_week': avg_week,
+            'avg_month': avg_month,
+            'avg_quarter': avg_quarter,
+            'avg_year': avg_year,
+            'avg_all_time': avg_all_time,
+            
+            # Unit data
+            'unit_revenues': unit_revenues,
+            
+            # Chart data
+            'chart_labels': chart_labels,
+            'yearly_dataset': yearly_dataset,
+            'trend_labels': trend_labels,
+            'trend_data': trend_data,
+            
+            # Payment method distribution
+            'payment_methods': payment_methods,
+        })
         
         # Define periods for the tab navigation
         context['periods'] = [
@@ -1762,8 +1979,136 @@ class UnitRevenueView(TemplateView):
         ]
         
         return context
+    
+    def calculate_growth(self, current, previous):
+        """Calculate percentage growth between two values"""
+        if previous == 0:
+            return 100 if current > 0 else 0
+        return round(((current - previous) / previous) * 100, 1)
+    
+    def calculate_average(self, total, count):
+        """Calculate average transaction value"""
+        if count == 0:
+            return 0
+        return round(total / count, 2)  
+# class UnitRevenueView(TemplateView):
+#     template_name = 'ehr/revenue/unit_revenue.html'
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+        
+#         # Get current date
+#         today = timezone.now().date()
+        
+#         # Calculate date ranges
+#         start_of_week = today - timezone.timedelta(days=today.weekday())
+#         start_of_month = today.replace(day=1)
+        
+#         # Calculate start of quarter
+#         current_month = today.month
+#         current_quarter = (current_month - 1) // 3 + 1
+#         quarter_start_month = (current_quarter - 1) * 3 + 1
+#         start_of_quarter = today.replace(month=quarter_start_month, day=1)
+        
+#         # Calculate start of year
+#         start_of_year = today.replace(month=1, day=1)
+        
+#         # Get all distinct units
+#         units = Paypoint.objects.filter(status=True).values_list('unit', flat=True).distinct()
+#         # Prepare data structure directly accessible in templates without custom filters
+#         unit_revenues = []
+        
+#         for unit in units:
+#             if not unit:  # Skip empty unit names
+#                 continue
+                
+#             # Get base queryset for this unit with approved payments
+#             unit_qs = Paypoint.objects.filter(unit=unit, status=True)
+            
+#             # Calculate revenue for different time periods
+#             today_revenue = unit_qs.filter(created=today).aggregate(total=Sum('price'))['total'] or 0
+#             weekly_revenue = unit_qs.filter(created__gte=start_of_week).aggregate(total=Sum('price'))['total'] or 0
+#             monthly_revenue = unit_qs.filter(created__gte=start_of_month).aggregate(total=Sum('price'))['total'] or 0
+#             quarterly_revenue = unit_qs.filter(created__gte=start_of_quarter).aggregate(total=Sum('price'))['total'] or 0
+#             yearly_revenue = unit_qs.filter(created__gte=start_of_year).aggregate(total=Sum('price'))['total'] or 0
+#             all_time_revenue = unit_qs.aggregate(total=Sum('price'))['total'] or 0
+            
+#             # Count transactions for each period
+#             today_count = unit_qs.filter(created=today).count()
+#             weekly_count = unit_qs.filter(created__gte=start_of_week).count()
+#             monthly_count = unit_qs.filter(created__gte=start_of_month).count()
+#             quarterly_count = unit_qs.filter(created__gte=start_of_quarter).count()
+#             yearly_count = unit_qs.filter(created__gte=start_of_year).count()
+#             all_time_count = unit_qs.count()
+            
+#             unit_revenues.append({
+#                 'name': unit,
+#                 'today_revenue': today_revenue,
+#                 'today_count': today_count,
+#                 'week_revenue': weekly_revenue,
+#                 'week_count': weekly_count,
+#                 'month_revenue': monthly_revenue,
+#                 'month_count': monthly_count,
+#                 'quarter_revenue': quarterly_revenue,
+#                 'quarter_count': quarterly_count,
+#                 'year_revenue': yearly_revenue,
+#                 'year_count': yearly_count,
+#                 'all_time_revenue': all_time_revenue,
+#                 'all_time_count': all_time_count,
 
-# FOR ALL TRANSACTION SEARCH 
+#             })
+        
+#         # Sort units by yearly revenue (highest first)
+#         unit_revenues.sort(key=lambda x: x['year_revenue'], reverse=True)
+        
+#         # Calculate overall totals (flattened for direct template access)
+#         total_today = Paypoint.objects.filter(status=True, created=today).aggregate(
+#             total=Sum('price'), count=Count('id')
+#         )
+#         total_week = Paypoint.objects.filter(status=True, created__gte=start_of_week).aggregate(
+#             total=Sum('price'), count=Count('id')
+#         )
+#         total_month = Paypoint.objects.filter(status=True, created__gte=start_of_month).aggregate(
+#             total=Sum('price'), count=Count('id')
+#         )
+#         total_quarter = Paypoint.objects.filter(status=True, created__gte=start_of_quarter).aggregate(
+#             total=Sum('price'), count=Count('id')
+#         )
+#         total_year = Paypoint.objects.filter(status=True, created__gte=start_of_year).aggregate(
+#             total=Sum('price'), count=Count('id')
+#         )
+#         total_all_time = Paypoint.objects.filter(status=True).aggregate(
+#             total=Sum('price'), count=Count('id')
+#         )
+#         # Replace None with 0
+#         context['total_today'] = total_today['total'] or 0
+#         context['count_today'] = total_today['count'] or 0
+#         context['total_week'] = total_week['total'] or 0
+#         context['count_week'] = total_week['count'] or 0
+#         context['total_month'] = total_month['total'] or 0
+#         context['count_month'] = total_month['count'] or 0
+#         context['total_quarter'] = total_quarter['total'] or 0
+#         context['count_quarter'] = total_quarter['count'] or 0
+#         context['total_year'] = total_year['total'] or 0
+#         context['count_year'] = total_year['count'] or 0
+#         context['total_all_time'] = total_all_time['total'] or 0
+#         context['count_all_time'] = total_all_time['count'] or 0
+        
+#         context['unit_revenues'] = unit_revenues
+        
+#         # Define periods for the tab navigation
+#         context['periods'] = [
+#             {'id': 'today', 'name': 'Today'},
+#             {'id': 'week', 'name': 'This Week'},
+#             {'id': 'month', 'name': 'This Month'},
+#             {'id': 'quarter', 'name': 'This Quarter'},
+#             {'id': 'year', 'name': 'This Year'},
+#             {'id': 'all_time', 'name': 'All Time'}
+#         ]
+        
+#         return context
+
+    
 @login_required
 def thermal_receipt(request):
     ndate = datetime.now()

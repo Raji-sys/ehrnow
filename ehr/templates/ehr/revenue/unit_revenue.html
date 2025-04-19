@@ -6,17 +6,40 @@
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'revenue' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>REVENUE STATS</div>{%endblock%}
 {%block content %}
 <div class="mx-2 md:mx-20 rounded-b-xl p-2 shadow-black shadow-sm bg-white mt-4">
-    <!-- Overall Summary Cards -->
-    <div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+    <div class="flex justify-center">
+        <p class="text-gray-800 font-medium text-xs text-center mt-2">
+          This is the <span class="text-blue-700">Statistics Dashboard</span>. For a comprehensive analysis,
+          <a href="{% url 'pay_list' %}"
+             class="group inline-flex items-center px-3 py-2 rounded-md shadow transition duration-300 ml-1 bg-rose-600 text-white hover:from-rose-600 hover:to-rose-700">
+            <i class="fa-solid fa-file-pdf mr-1 text-white"></i>
+            <span>Generate Full Report</span>
+            <i class="fa-solid fa-arrow-right ml-1 text-white opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300"></i>
+          </a>
+        </p>
+      </div>
+    <!-- Overall Summary Cards with Growth Indicators -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-6">
         <!-- Today Card -->
         <div class="bg-blue-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-xs mb-1 text-white ">Today</h5>
-                <h2 class="text-xl font-bold text-white">
-                    <i class="fas fa-naira-sign fa-sm"></i>
-                    {{ total_today|floatformat:2|intcomma }}</h2>
-                <div class="text-xs text-blue-100 mt-1">
-                    {{ count_today }} transactions
+                <h5 class="font-medium text-sm mb-1">Today</h5>
+                <h2 class="text-xl font-bold">{{ total_today|floatformat:2|intcomma }}</h2>
+                <div class="flex justify-between items-center mt-1">
+                    <div class="text-xs text-blue-100">
+                        {{ count_today }} transactions
+                    </div>
+                    <div class="text-xs font-medium {% if today_growth > 0 %}text-green-300{% elif today_growth < 0 %}text-red-300{% else %}text-blue-100{% endif %}">
+                        {% if today_growth > 0 %}
+                            <i class="fas fa-arrow-up mr-1"></i>{{ today_growth }}%
+                        {% elif today_growth < 0 %}
+                            <i class="fas fa-arrow-down mr-1"></i>{{ today_growth|cut:'-' }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="text-xs mt-1 text-blue-100">
+                    Avg: {{ avg_today|floatformat:2|intcomma }} per tx
                 </div>
             </div>
         </div>
@@ -24,13 +47,25 @@
         <!-- Week Card -->
         <div class="bg-indigo-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-xs mb-1 text-white">This Week</h5>
-                <h2 class="text-xl font-bold text-white">
-                    <i class="fas fa-naira-sign fa-sm"></i>
-                
-                    {{ total_week|floatformat:2|intcomma }}</h2>
-                <div class="text-xs text-indigo-100 mt-1">
-                    {{ count_week }} transactions
+                <h5 class="font-medium text-sm mb-1">This Week</h5>
+                <h2 class="text-xl font-bold">{{ total_week|floatformat:2|intcomma }}</h2>
+                <div class="flex justify-between items-center mt-1">
+                    <div class="text-xs text-indigo-100">
+                        {{ count_week }} transactions
+                    </div>
+                    <div class="text-xs font-medium {% if week_growth > 0 %}text-green-300{% elif week_growth < 0 %}text-red-300{% else %}text-indigo-100{% endif %}">
+<!-- For the main summary cards -->
+{% if week_growth < 0 %}
+    <i class="fas fa-arrow-down mr-1"></i>{{ week_growth|floatformat:1|cut:'-' }}%
+{% elif week_growth > 0 %}
+    <i class="fas fa-arrow-up mr-1"></i>{{ week_growth|floatformat:1 }}%
+{% else %}
+    0%
+{% endif %}
+                    </div>
+                </div>
+                <div class="text-xs mt-1 text-indigo-100">
+                    Avg: {{ avg_week|floatformat:2|intcomma }} per tx
                 </div>
             </div>
         </div>
@@ -38,13 +73,24 @@
         <!-- Month Card -->
         <div class="bg-purple-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-xs mb-1 text-white">This Month</h5>
-                <h2 class="text-xl font-bold text-white">
-                    <i class="fas fa-naira-sign fa-sm"></i>
-                
-                    {{ total_month|floatformat:2|intcomma }}</h2>
-                <div class="text-xs text-purple-100 mt-1">
-                    {{ count_month }} transactions
+                <h5 class="font-medium text-sm mb-1">This Month</h5>
+                <h2 class="text-xl font-bold">{{ total_month|floatformat:2|intcomma }}</h2>
+                <div class="flex justify-between items-center mt-1">
+                    <div class="text-xs text-purple-100">
+                        {{ count_month }} transactions
+                    </div>
+                    <div class="text-xs font-medium {% if month_growth > 0 %}text-green-300{% elif month_growth < 0 %}text-red-300{% else %}text-purple-100{% endif %}">
+                        {% if month_growth > 0 %}
+                            <i class="fas fa-arrow-up mr-1"></i>{{ month_growth }}%
+                        {% elif month_growth < 0 %}
+                            <i class="fas fa-arrow-down mr-1"></i>{{ month_growth|cut:'-' }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="text-xs mt-1 text-purple-100">
+                    Avg: {{ avg_month|floatformat:2|intcomma }} per tx
                 </div>
             </div>
         </div>
@@ -52,13 +98,24 @@
         <!-- Quarter Card -->
         <div class="bg-green-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-xs mb-1 text-white">This Quarter</h5>
-                <h2 class="text-xl font-bold text-white">
-                    <i class="fas fa-naira-sign fa-sm"></i>
-                    
-                    {{ total_quarter|floatformat:2|intcomma }}</h2>
-                <div class="text-xs text-pink-100 mt-1">
-                    {{ count_quarter }} transactions
+                <h5 class="font-medium text-sm mb-1">This Quarter</h5>
+                <h2 class="text-xl font-bold">{{ total_quarter|floatformat:2|intcomma }}</h2>
+                <div class="flex justify-between items-center mt-1">
+                    <div class="text-xs text-green-100">
+                        {{ count_quarter }} transactions
+                    </div>
+                    <div class="text-xs font-medium {% if quarter_growth > 0 %}text-green-300{% elif quarter_growth < 0 %}text-red-300{% else %}text-green-100{% endif %}">
+                        {% if quarter_growth > 0 %}
+                            <i class="fas fa-arrow-up mr-1"></i>{{ quarter_growth }}%
+                        {% elif quarter_growth < 0 %}
+                            <i class="fas fa-arrow-down mr-1"></i>{{ quarter_growth|cut:'-' }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="text-xs mt-1 text-green-100">
+                    Avg: {{ avg_quarter|floatformat:2|intcomma }} per tx
                 </div>
             </div>
         </div>
@@ -66,13 +123,24 @@
         <!-- Year Card -->
         <div class="bg-red-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-xs mb-1 text-white">This Year</h5>
-                <h2 class="text-xl font-bold text-white">
-                    <i class="fas fa-naira-sign fa-sm"></i>
-                    
-                    {{ total_year|floatformat:2|intcomma }}</h2>
-                <div class="text-xs text-red-100 mt-1">
-                    {{ count_year }} transactions
+                <h5 class="font-medium text-sm mb-1">This Year</h5>
+                <h2 class="text-xl font-bold">{{ total_year|floatformat:2|intcomma }}</h2>
+                <div class="flex justify-between items-center mt-1">
+                    <div class="text-xs text-red-100">
+                        {{ count_year }} transactions
+                    </div>
+                    <div class="text-xs font-medium {% if year_growth > 0 %}text-green-300{% elif year_growth < 0 %}text-red-300{% else %}text-red-100{% endif %}">
+                        {% if year_growth > 0 %}
+                            <i class="fas fa-arrow-up mr-1"></i>{{ year_growth }}%
+                        {% elif year_growth < 0 %}
+                            <i class="fas fa-arrow-down mr-1"></i>{{ year_growth|cut:'-' }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="text-xs mt-1 text-red-100">
+                    Avg: {{ avg_year|floatformat:2|intcomma }} per tx
                 </div>
             </div>
         </div>
@@ -80,15 +148,69 @@
         <!-- All Time Card -->
         <div class="bg-gray-800 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-xs mb-1 text-white">All Time</h5>
-                <h2 class="text-xl font-bold text-white">
-                    <i class="fas fa-naira-sign fa-sm"></i>
-                    
-                    {{ total_all_time|floatformat:2|intcomma }}</h2>
-                <div class="text-xs text-gray-300 mt-1">
-                    {{ count_all_time }} paid transactions
+                <h5 class="font-medium text-sm mb-1">All Time</h5>
+                <h2 class="text-xl font-bold">{{ total_all_time|floatformat:2|intcomma }}</h2>
+                <div class="flex justify-between items-center mt-1">
+                    <div class="text-xs text-gray-300">
+                        {{ count_all_time }} transactions
+                    </div>
+                </div>
+                <div class="text-xs mt-1 text-gray-300">
+                    Avg: {{ avg_all_time|floatformat:2|intcomma }} per tx
                 </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Revenue by Unit Chart -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-700">Revenue by Unit (Yearly)</h3>
+            </div>
+            <div class="p-4">
+                <canvas id="unitRevenueChart" height="100"></canvas>
+            </div>
+        </div>
+        
+        <!-- Trend Chart (Last 30 days) -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-700">Revenue Trend (Last 30 Days)</h3>
+            </div>
+            <div class="p-4">
+                <canvas id="revenueTrendChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Method Distribution -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+        <div class="px-4 py-3 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-700">Payment Method Distribution</h3>
+        </div>
+        <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {% for method in payment_methods %}
+            <div class="border rounded-lg p-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h4 class="text-lg font-bold">{{ method.payment_method }}</h4>
+                        <div class="text-gray-500 text-sm">{{ method.count }} transactions</div>
+                    </div>
+                    <div class="text-xl font-bold text-blue-600">
+                        {{ method.total|floatformat:2|intcomma }}
+                    </div>
+                </div>
+                <div class="mt-2 text-sm">
+                    Avg: {{ method.total|floatformat:2|default:0|intcomma }} per transaction
+                </div>
+                        </div>
+            {% empty %}
+            <div class="col-span-3 text-center py-4 text-gray-500">
+                No payment method data available
+            </div>
+            {% endfor %}
         </div>
     </div>
     
@@ -96,9 +218,9 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
         <!-- Tab Navigation -->
         <div class="bg-gray-100 px-2 border-b">
-            <div class="flex -mb-px justify-center">
+            <div class="flex -mb-px">
                 {% for period in periods %}
-                <button class="py-3 px-4 text-xs font-medium {% if forloop.first %}border-b-2 border-blue-500 text-blue-500{% else %}text-gray-600 hover:text-blue-500{% endif %}"
+                <button class="py-3 px-4 text-sm font-medium {% if forloop.first %}border-b-2 border-blue-500 text-blue-500{% else %}text-gray-600 hover:text-blue-500{% endif %}"
                         id="{{ period.id }}-tab"
                         onclick="showTab('{{ period.id }}')"
                         role="tab"
@@ -117,7 +239,7 @@
                  class="{% if not forloop.first %}hidden{% endif %} tab-panel"
                  role="tabpanel">
                 
-                <div class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {% for unit in unit_revenues %}
                     <div class="bg-white rounded-lg shadow border-l-4 border-green-500 hover:shadow-lg transition-shadow duration-200">
                         <div class="p-4">
@@ -126,49 +248,122 @@
                                     <div class="text-xs font-semibold text-green-600 uppercase mb-1">
                                         {{ unit.name }}
                                     </div>
-                                    <div class="text-sm font-bold text-gray-800">
-                                        {% if period.id == 'today' %}
-                                            {{ unit.today_revenue|floatformat:2|intcomma }}
-                                        {% elif period.id == 'week' %}
-                                            {{ unit.week_revenue|floatformat:2|intcomma }}
-                                        {% elif period.id == 'month' %}
-                                            {{ unit.month_revenue|floatformat:2|intcomma }}
-                                        {% elif period.id == 'quarter' %}
+                                    <div class="flex items-center">
+                                        <div class="text-lg font-bold text-gray-800">
+                                            {% if period.id == 'today' %}
+                                                {{ unit.today_revenue|floatformat:2|intcomma }}
+                                            {% elif period.id == 'week' %}
+                                                {{ unit.week_revenue|floatformat:2|intcomma }}
+                                            {% elif period.id == 'month' %}
+                                                {{ unit.month_revenue|floatformat:2|intcomma }}
+                                            {% elif period.id == 'quarter' %}
                                             {{ unit.quarter_revenue|floatformat:2|intcomma }}
-                                        {% elif period.id == 'year' %}
-                                            {{ unit.year_revenue|floatformat:2|intcomma }}
-                                        {% elif period.id == 'all_time' %}
-                                            {{ unit.all_time_revenue|floatformat:2|intcomma }}
+                                            {% elif period.id == 'year' %}
+                                                {{ unit.year_revenue|floatformat:2|intcomma }}
+                                            {% elif period.id == 'all_time' %}
+                                                {{ unit.all_time_revenue|floatformat:2|intcomma }}
+                                            {% endif %}
+                                        </div>
+                                        <div class="ml-2 text-sm 
+                                            {% if period.id == 'today' and unit.day_growth > 0 %}text-green-500
+                                            {% elif period.id == 'today' and unit.day_growth < 0 %}text-red-500
+                                            {% elif period.id == 'week' and unit.week_growth > 0 %}text-green-500
+                                            {% elif period.id == 'week' and unit.week_growth < 0 %}text-red-500
+                                            {% elif period.id == 'month' and unit.month_growth > 0 %}text-green-500
+                                            {% elif period.id == 'month' and unit.month_growth < 0 %}text-red-500
+                                            {% elif period.id == 'quarter' and unit.quarter_growth > 0 %}text-green-500
+                                            {% elif period.id == 'quarter' and unit.quarter_growth < 0 %}text-red-500
+                                            {% elif period.id == 'year' and unit.year_growth > 0 %}text-green-500
+                                            {% elif period.id == 'year' and unit.year_growth < 0 %}text-red-500
+                                            {% else %}text-gray-500{% endif %}">
+                                            {% if period.id == 'today' %}
+                                                {% if unit.day_growth > 0 %}
+                                                    <i class="fas fa-arrow-up mr-1"></i>{{ unit.day_growth }}%
+                                                {% elif unit.day_growth < 0 %}
+                                                    <i class="fas fa-arrow-down mr-1"></i>{{ unit.day_growth|cut:'-' }}%
+                                                {% else %}
+                                                    0%
+                                                {% endif %}
+                                            {% elif period.id == 'week' %}
+                                            {% if unit.week_growth < 0 %}
+                                            <i class="fas fa-arrow-down mr-1"></i>{{ unit.week_growth|floatformat:1|cut:'-' }}%
+                                        {% elif unit.week_growth > 0 %}
+                                            <i class="fas fa-arrow-up mr-1"></i>{{ unit.week_growth|floatformat:1 }}%
+                                        {% else %}
+                                            0%
                                         {% endif %}
-                                    </div>
-                                    <div class="text-xs text-gray-500 mt-1">
-                                        {% if period.id == 'today' %}
-                                            {{ unit.today_count }} transactions
-                                        {% elif period.id == 'week' %}
-                                            {{ unit.week_count }} transactions
-                                        {% elif period.id == 'month' %}
-                                            {{ unit.month_count }} transactions
-                                        {% elif period.id == 'quarter' %}
-                                            {{ unit.quarter_count }} transactions
-                                        {% elif period.id == 'year' %}
-                                            {{ unit.year_count }} transactions
-                                        {% elif period.id == 'all_time' %}
-                                            {{ unit.all_time_count }} transactions
-                                        {% endif %}
+                                            {% elif period.id == 'month' %}
+                                                {% if unit.month_growth > 0 %}
+                                                    <i class="fas fa-arrow-up mr-1"></i>{{ unit.month_growth }}%
+                                                {% elif unit.month_growth < 0 %}
+                                                    <i class="fas fa-arrow-down mr-1"></i>{{ unit.month_growth|cut:'-' }}%
+                                                {% else %}
+                                                    0%
+                                                {% endif %}
+                                            {% elif period.id == 'quarter' %}
+                                                {% if unit.quarter_growth > 0 %}
+                                                    <i class="fas fa-arrow-up mr-1"></i>{{ unit.quarter_growth }}%
+                                                {% elif unit.quarter_growth < 0 %}
+                                                    <i class="fas fa-arrow-down mr-1"></i>{{ unit.quarter_growth|cut:'-' }}%
+                                                {% else %}
+                                                    0%
+                                                {% endif %}
+                                            {% elif period.id == 'year' %}
+                                                {% if unit.year_growth > 0 %}
+                                                    <i class="fas fa-arrow-up mr-1"></i>{{ unit.year_growth }}%
+                                                {% elif unit.year_growth < 0 %}
+                                                    <i class="fas fa-arrow-down mr-1"></i>{{ unit.year_growth|cut:'-' }}%
+                                                {% else %}
+                                                    0%
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="text-gray-300">
-                                    <i class="fas fa-naira-sign fa-xl"></i>
+                                <div class="mt-2">
+                                    <div class="flex justify-between text-sm">
+                                        <div class="text-gray-600">Transactions</div>
+                                        <div class="font-medium text-gray-800">
+                                            {% if period.id == 'today' %}
+                                                {{ unit.today_count }}
+                                            {% elif period.id == 'week' %}
+                                                {{ unit.week_count }}
+                                            {% elif period.id == 'month' %}
+                                                {{ unit.month_count }}
+                                            {% elif period.id == 'quarter' %}
+                                                {{ unit.quarter_count }}
+                                            {% elif period.id == 'year' %}
+                                                {{ unit.year_count }}
+                                            {% elif period.id == 'all_time' %}
+                                                {{ unit.all_time_count }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between text-sm mt-1">
+                                        <div class="text-gray-600">Avg per Tx</div>
+                                        <div class="font-medium text-gray-800">
+                                            {% if period.id == 'today' %}
+                                                {{ unit.avg_today|floatformat:2|intcomma }}
+                                            {% elif period.id == 'week' %}
+                                                {{ unit.avg_week|floatformat:2|intcomma }}
+                                            {% elif period.id == 'month' %}
+                                                {{ unit.avg_month|floatformat:2|intcomma }}
+                                            {% elif period.id == 'quarter' %}
+                                                {{ unit.avg_quarter|floatformat:2|intcomma }}
+                                            {% elif period.id == 'year' %}
+                                                {{ unit.avg_year|floatformat:2|intcomma }}
+                                            {% elif period.id == 'all_time' %}
+                                                {{ unit.avg_all_time|floatformat:2|intcomma }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     {% empty %}
-                    <div class="col-span-full p-4 bg-blue-50 text-blue-700 rounded">
-                        <div class="flex items-center">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            <span>No revenue data available for this period.</span>
-                        </div>
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        No revenue data available for this period
                     </div>
                     {% endfor %}
                 </div>
@@ -178,30 +373,91 @@
     </div>
 </div>
 
-{% block extra_js %}
+<!-- JavaScript for Tab Switching -->
 <script>
     function showTab(tabId) {
         // Hide all tab panels
-        document.querySelectorAll('.tab-panel').forEach(function(panel) {
+        document.querySelectorAll('.tab-panel').forEach(panel => {
             panel.classList.add('hidden');
         });
         
         // Show the selected tab panel
         document.getElementById(tabId + '-panel').classList.remove('hidden');
         
-        // Update tab button styles
-        document.querySelectorAll('[id$="-tab"]').forEach(function(tab) {
+        // Update active state for tab buttons
+        document.querySelectorAll('[role="tab"]').forEach(tab => {
             tab.classList.remove('border-b-2', 'border-blue-500', 'text-blue-500');
             tab.classList.add('text-gray-600');
             tab.setAttribute('aria-selected', 'false');
         });
         
-        // Style the active tab
+        // Set active tab
         const activeTab = document.getElementById(tabId + '-tab');
         activeTab.classList.remove('text-gray-600');
         activeTab.classList.add('border-b-2', 'border-blue-500', 'text-blue-500');
         activeTab.setAttribute('aria-selected', 'true');
     }
+
+    // Initialize Charts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Unit Revenue Chart (Doughnut chart)
+        const unitRevenueCtx = document.getElementById('unitRevenueChart').getContext('2d');
+        new Chart(unitRevenueCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    data: {{ yearly_dataset.data|safe }},
+                    backgroundColor: {{ yearly_dataset.backgroundColor|safe }},
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Revenue Trend Chart (Line chart)
+        const trendCtx = document.getElementById('revenueTrendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: {{ trend_labels|safe }},
+                datasets: [{
+                    label: 'Daily Revenue',
+                    data: {{ trend_data|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
 </script>
-{%endblock%}
-{%endblock%}
+{% endblock %}
