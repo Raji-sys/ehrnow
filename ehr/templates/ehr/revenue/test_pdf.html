@@ -142,12 +142,16 @@
                 <td><strong>Age:</strong> {{ labtest.patient.age }}</td>
             </tr>
             <tr>
-                <td><strong>Test Date:</strong> {{ labtest.created|date:"d-m-Y H:i" }}</td>
+                <td><strong>Test Date:</strong> {{ labtest.created }}</td>
                 <td><strong>Status:</strong> 
                     <span class="status {% if payment_status %}status-paid{% else %}status-unpaid{% endif %}">
                         {% if payment_status %}PAID{% else %}UNPAID{% endif %}
                     </span>
                 </td>
+            </tr>
+            <tr>
+                <td><strong>Request By:</strong> Doctor: {{ labtest.user }}</td>
+                <td><strong>signature:</strong> </td>
             </tr>
         </table>
     </div>
@@ -179,7 +183,7 @@
     </div>
 
     <div id="footerContent" class="footer">
-        <p>Generated on: {{ generated_date }} | Requested by: {{ labtest.user }}</p>
+        <p>Generated on: {{ generated_date }}</p>
         <p>This is a computer-generated document. No signature is required.</p>
     </div>
 </body>

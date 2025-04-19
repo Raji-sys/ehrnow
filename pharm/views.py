@@ -502,7 +502,7 @@ def drug_pdf(request):
         return HttpResponse('Error generating PDF', status=500)
     
     response = StreamingHttpResponse(pdf_generator(pdf_buffer), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="gen_by_{request.user}_{filename}"'
+    response['Content-Disposition'] = f'inline; filename="gen_by_{request.user}_{filename}"'
     return response
 
 
@@ -540,7 +540,7 @@ def record_pdf(request):
         return HttpResponse('Error generating PDF', status=500)
     
     response = StreamingHttpResponse(pdf_generator(pdf_buffer), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="gen_by_{request.user}_{filename}"'
+    response['Content-Disposition'] = f'inline; filename="gen_by_{request.user}_{filename}"'
     return response
 
 
@@ -578,7 +578,7 @@ def restock_pdf(request):
         return HttpResponse('Error generating PDF', status=500)
     
     response = StreamingHttpResponse(pdf_generator(pdf_buffer), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="gen_by_{request.user}_{filename}"'
+    response['Content-Disposition'] = f'inline; filename="gen_by_{request.user}_{filename}"'
     return response
 
 
@@ -1025,7 +1025,7 @@ def unitissue_pdf(request):
         return HttpResponse('Error generating PDF', status=500)
     
     response = StreamingHttpResponse(pdf_generator(pdf_buffer), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="gen_by_{request.user}_{filename}"'
+    response['Content-Disposition'] = f'inline; filename="gen_by_{request.user}_{filename}"'
     return response
 
 
@@ -1100,7 +1100,7 @@ def transfer_pdf(request):
         return HttpResponse('Error generating PDF', status=500)
     
     response = StreamingHttpResponse(pdf_generator(pdf_buffer), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="gen_by_{request.user}_{filename}"'
+    response['Content-Disposition'] = f'inline; filename="gen_by_{request.user}_{filename}"'
     return response
     
 
@@ -1316,7 +1316,7 @@ def dispense_pdf(request):
         return HttpResponse('Error generating PDF', status=500)
     
     response = StreamingHttpResponse(pdf_generator(pdf_buffer), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="gen_by_{request.user}_{filename}"'
+    response['Content-Disposition'] = f'inline; filename="gen_by_{request.user}_{filename}"'
     return response
 
 
@@ -1502,7 +1502,7 @@ def box_pdf(request):
         return HttpResponse('Error generating PDF', status=500)
     
     response = StreamingHttpResponse(pdf_generator(pdf_buffer), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="gen_by_{request.user}_{filename}"'
+    response['Content-Disposition'] = f'inline; filename="gen_by_{request.user}_{filename}"'
     return response
 
 

@@ -27,7 +27,10 @@
                     </tr>
                     <tr class="value">
                         <td class="prescription-meta">
-                            <div><strong>Prescribed by:</strong> {{prescription.prescribed_by|default_if_none:"N/A"|upper}}</div>
+                            <div>
+                                <strong>Prescribed by Doctor:</strong> {{prescription.prescribed_by|default_if_none:"N/A"|upper}} <br> <br>
+                                <strong>Signature:</strong> 
+                            </div>
                         </td>
                         <td class="prescription-meta">
                             <div><strong>Sent to:</strong> {{ prescription.unit|default:"N/A" }}</div>

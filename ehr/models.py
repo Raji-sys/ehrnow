@@ -134,6 +134,9 @@ class Profile(models.Model):
 class PatientData(models.Model):
     # types = (('REGULAR', 'REGULAR'), ('NHIS', 'NHIS'),('RETAINER','RETAINER'))
     # patient_type = models.CharField(choices=types, max_length=100, null=True, blank=True)
+    types_of_id = (('NIN', 'NIN'), ('Voters Card', 'Voters Card'),('Drivers Liscence','Drivers Liscence'),('International Passport','International Passport'))
+    means_of_id = models.CharField('Means of Identification',choices=types_of_id, max_length=200, null=True, blank=True)
+    id_number = models.CharField(max_length=200, null=True, blank=True)
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     file_no = SerialNumberField(default="", editable=False,max_length=20,null=False,blank=True)
     titles = (('Mr.','Mr.'),('Mrs.','Mrs.'),('Miss','Miss'),('Alhaji','Alhaji'),('Mallam','Mallam'),('Chief','Chief'),('Prof.','Prof.'),('Dr.','Dr.'),('Engr.','Engr.'),('Ach.','Ach.'))

@@ -2055,7 +2055,7 @@ class TestPDFView(DetailView):
             response = HttpResponse(pdf, content_type='application/pdf')
             if 'download' in request.GET:
                 filename = f"LAB_TEST_{labtest.patient.file_no}_{datetime.now().strftime('%Y%m%d')}.pdf"
-                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                response['Content-Disposition'] = f'inline; filename="{filename}"'
             else:
                 response['Content-Disposition'] = 'inline'
             return response

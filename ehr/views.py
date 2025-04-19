@@ -2233,7 +2233,7 @@ class BillPDFView(DetailView):
             response = HttpResponse(pdf, content_type='application/pdf')
             if 'download' in request.GET:
                 filename = f"Bill_{bill.id}.pdf"
-                content = f"attachment; filename={filename}"
+                content = f"inline; filename={filename}"
                 response['Content-Disposition'] = content
             return response
         return HttpResponse("Error generating PDF", status=400)
@@ -2764,7 +2764,7 @@ class PrivateBillPDFView(DetailView):
             response = HttpResponse(pdf, content_type='application/pdf')
             if 'download' in request.GET:
                 filename = f"Bill_{private_bill.id}.pdf"
-                content = f"attachment; filename={filename}"
+                content = f"inline; filename={filename}"
                 response['Content-Disposition'] = content
             return response
         return HttpResponse("Error generating PDF", status=400) 
@@ -3313,7 +3313,7 @@ class RadiologyTestPDFView(DetailView):
             response = HttpResponse(pdf, content_type='application/pdf')
             if 'download' in request.GET:
                 filename = f"RADIOLOGY_REQ_{radiologytest.patient.file_no}_{datetime.now().strftime('%Y%m%d')}.pdf"
-                response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                response['Content-Disposition'] = f'inline; filename="{filename}"'
             else:
                 response['Content-Disposition'] = 'inline'
             return response
