@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "django.middleware.common.CommonMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -75,12 +75,12 @@ NPM_BIN_PATH = "/usr/bin/npm"
 
 WSGI_APPLICATION = 'ehrnow.wsgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 # DATABASES = {
 #     'default': dj_database_url.config(
 #         default='postgresql://raji:8080mali@localhost:5432/emr',
@@ -88,16 +88,16 @@ WSGI_APPLICATION = 'ehrnow.wsgi.application'
 #     )
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ["PGDATABASE"],
-        'USER': os.environ["PGUSER"],
-        'PASSWORD': os.environ["PGPASSWORD"],
-        'HOST': os.environ["PGHOST"],
-        'PORT': os.environ["PGPORT"],
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ["PGDATABASE"],
+#         'USER': os.environ["PGUSER"],
+#         'PASSWORD': os.environ["PGPASSWORD"],
+#         'HOST': os.environ["PGHOST"],
+#         'PORT': os.environ["PGPORT"],
+#     }
+# }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -135,16 +135,45 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL="/login/"
 LOGOUT_REDIRECT_URL = '/logout/'
 
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# -----------------------------------------------------------------------------
+# RAILWAY / PaaS CONFIGURATION
+# Uncomment this entire block when you’re deploying on Railway (or similar PaaS)
+# -----------------------------------------------------------------------------
+
 # STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static'),
+# ]
+# # let Django + WhiteNoise serve your static files
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# -----------------------------------------------------------------------------
+# LOCAL UBUNTU + NGINX CONFIGURATION (active)
+# -----------------------------------------------------------------------------
+# URL prefix for static files
+STATIC_URL = '/static/'
+
+# where `collectstatic` will deposit everything
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# if you keep “source” assets here for collectstatic to pick up
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+
+# -----------------------------------------------------------------------------
+# MEDIA (uploads) – same for both
+# -----------------------------------------------------------------------------
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
