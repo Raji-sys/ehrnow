@@ -173,7 +173,7 @@
         </header>
         <div class="page-title ">
             {% if request.path_info != "/get-started/" and request.path_info != "/" %}
-            <nav class="flex justify-start overflow-x-auto whitespace-nowrap rounded-lg mb-4 bg-sky-50 shadow-sm shadow-black ring-1 ring-sky-100">
+            <nav class="flex justify-around overflow-x-auto whitespace-nowrap rounded-lg mb-4 bg-sky-50 shadow-sm shadow-black ring-1 ring-sky-100">
                 <a href="{% url 'patient_list' %}"
                    class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
                   <i class="fa-solid fa-user-injured fa-xs mr-2"></i>Patients
