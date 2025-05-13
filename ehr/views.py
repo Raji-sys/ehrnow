@@ -2293,7 +2293,7 @@ class AdmissionCreateView(RevenueRequiredMixin, CreateView):
     model = Admission
     form_class = AdmissionForm
     template_name = 'ehr/ward/new_admission.html'
-
+    
     def form_valid(self, form):
         form.instance.user = self.request.user
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
@@ -2310,25 +2310,37 @@ class AdmissionCreateView(RevenueRequiredMixin, CreateView):
         else:
             # Default to 1 day if no expected discharge date is provided
             days_count = 1
-
+        
         admission_fee = form.save(commit=False)
+        
+        # Handle case where ward price might be missing
+        # We assume ward exists but check to be safe
+        if not admission_fee.ward:
+            # This shouldn't happen if form validation is correct, but just in case
+            raise ValueError("Ward is required for admission")
+            
+        ward_name = admission_fee.ward.name
+        # Safely get ward price - default to 0 if None
+        ward_price = getattr(admission_fee.ward, 'price', 0) or 0
+        
         payment = Paypoint.objects.create(
             patient=patient,
             status=False,
-            service=f"{admission_fee.ward.name} admission Fees",
+            service=f"{ward_name} admission Fees",
             unit='admission',
-            # Multiply ward price by number of days
-            price=admission_fee.ward.price * days_count,
+            # Safely calculate price
+            price=ward_price * days_count,
         )
-        admission_fee.payment = payment 
+        
+        admission_fee.payment = payment
         admission_fee.save()
-
         return super().form_valid(form)
-    
+        
     def get_success_url(self):
         messages.success(self.request, 'PATIENT ADMITTED')
         return self.object.patient.get_absolute_url()
 
+        
 class AdmissionListView(ListView):
     model=Admission
     template_name='ehr/ward/admission_list.html'

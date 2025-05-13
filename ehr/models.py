@@ -428,7 +428,7 @@ class RadiologyTest(models.Model):
     
 
 class Admission(models.Model):
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE, related_name="admission_payment")
+    payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="admission_payment")
     STATUS = [
         ('ADMIT', 'ADMIT'),
         ('RECEIVED', 'RECEIVED'),
@@ -440,8 +440,8 @@ class Admission(models.Model):
     ward = models.ForeignKey(Ward, on_delete=models.CASCADE, null=True)
     bed_number = models.CharField(max_length=300, null=True, blank=True)
     expected_discharge_date = models.DateField(null=True, blank=True)
-    notes=QuillField(null=True, blank=True)
-    created = models.DateTimeField(auto_now_add=True,null=True)
+    notes = QuillField(null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
     updated = models.DateTimeField(auto_now=True)
 
     def days_on_admission(self):
@@ -452,21 +452,37 @@ class Admission(models.Model):
         return 0
     
     def calculate_total_cost(self):
-        if self.ward and self.expected_discharge_date:
+        # Safely handle ward price being None or missing
+        if not self.ward:
+            return 0
+            
+        # Safely get ward price - default to 0 if None
+        ward_price = getattr(self.ward, 'price', 0) or 0
+        
+        if self.expected_discharge_date:
             days = (self.expected_discharge_date - self.created.date()).days + 1
             days = max(days, 1)
-            return self.ward.price * days
-        return 0
-
-    def expected_days(self):
-        if self.ward and self.expected_discharge_date:
-            days = (self.expected_discharge_date - self.created.date()).days + 1
-            return days
+            return ward_price * days
+        
+        # Handle case where expected_discharge_date is None
+        if self.created:
+            # Use days_on_admission instead
+            days = self.days_on_admission() or 1
+            return ward_price * days
+        
         return 0
     
+    def expected_days(self):
+        if not self.expected_discharge_date or not self.created:
+            return 0
+            
+        days = (self.expected_discharge_date - self.created.date()).days + 1
+        return max(days, 0)  # Ensure non-negative value
+    
     def __str__(self):
-        return f"{self.patient} - {self.status}"
-
+        patient_name = str(self.patient) if self.patient else "Unknown Patient"
+        status = self.status or "Unknown Status"
+        return f"{patient_name} - {status}"
 
 class WardVitalSigns(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
