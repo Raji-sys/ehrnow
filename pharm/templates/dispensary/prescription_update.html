@@ -9,13 +9,13 @@
       
       <div id="selected-drugs-container" class="flex flex-col space-y-2">
         {% for drug in object.prescription_drugs.all %}
-          <div class="p-2">
-            <select name="drug_{{ forloop.counter0 }}" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+          <div class="p-2 drug-row" data-drug-id="{{ drug.drug.id }}" data-price="{{ drug.drug.selling_price|default:0 }}">
+            <select name="drug_{{ forloop.counter0 }}" class="drug-select text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
               {% for drug_option in drugs %}
-                <option value="{{ drug_option.id }}" {% if drug_option.id == drug.drug.id %}selected{% endif %}>{{ drug_option.name }}</option>
+                <option value="{{ drug_option.id }}" data-price="{{ drug_option.selling_price|default:0 }}" {% if drug_option.id == drug.drug.id %}selected{% endif %}>{{ drug_option.name }}</option>
               {% endfor %}
             </select>
-            <input type="number" name="quantity_{{ forloop.counter0 }}" value="{{ drug.quantity }}" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+            <input type="number" name="quantity_{{ forloop.counter0 }}" value="{{ drug.quantity }}" class="quantity-input text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
             <input type="text" name="dose_{{ forloop.counter0 }}" value="{{ drug.dosage }}" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
             <button type="button" class="remove-drug bg-red-500 text-white p-2 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-red-600 hover:bg-white hover:text-red-600 hover:border-2 hover:border-red-600 text-xs"><i class="fa fa-solid fa-xmark-circle fa-lg"></i></button>
           </div>
@@ -32,17 +32,19 @@
         <th>Price</th>
         <th>Total</th>
       </tr>
-      {% for pd in prescription_drugs %}
-        <tr>
-          <td>{{ pd.drug.name }}</td>
-          <td>{{ pd.quantity }}</td>
-          <td>{{ pd.drug.cost_price }}</td>
-          <td>{{ pd.total_price }}</td>
-        </tr>
-      {% endfor %}
+      <tbody id="drug-table-body">
+        {% for pd in prescription_drugs %}
+          <tr class="drug-table-row" data-drug-id="{{ pd.drug.id }}">
+            <td class="drug-name">{{ pd.drug.name }}</td>
+            <td class="drug-quantity">{{ pd.quantity }}</td>
+            <td class="drug-price">{{ pd.drug.selling_price|default_if_none:'N/A' }}</td>
+            <td class="drug-total">{{ pd.total_price }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
       <tr class="uppercase text-xs text-green-500">
         <td colspan="3">Total:</td>
-        <td>{{ total_price }}</td>
+        <td id="grand-total">{{ total_price }}</td>
       </tr>
     </table>
   </div>
@@ -50,6 +52,77 @@
 
 <script>
 $(document).ready(function() {
+    // Function to calculate and update total price
+    function updateTotal() {
+        let grandTotal = 0;
+        
+        $('#selected-drugs-container .drug-row').each(function() {
+            const $row = $(this);
+            const $select = $row.find('.drug-select');
+            const $quantityInput = $row.find('.quantity-input');
+            
+            const selectedOption = $select.find('option:selected');
+            const price = parseFloat(selectedOption.data('price')) || 0;
+            const quantity = parseInt($quantityInput.val()) || 0;
+            const total = price * quantity;
+            
+            if (price > 0) {
+                grandTotal += total;
+            }
+        });
+        
+        $('#grand-total').text(grandTotal.toLocaleString());
+    }
+    
+    // Function to update table row
+    function updateTableRow($drugRow) {
+        const drugId = $drugRow.find('.drug-select').val();
+        const $selectedOption = $drugRow.find('.drug-select option:selected');
+        const drugName = $selectedOption.text();
+        const price = parseFloat($selectedOption.data('price')) || 0;
+        const quantity = parseInt($drugRow.find('.quantity-input').val()) || 0;
+        const total = price * quantity;
+        
+        // Find corresponding table row
+        const $tableRow = $(`.drug-table-row[data-drug-id="${$drugRow.data('drug-id')}"]`);
+        if ($tableRow.length) {
+            $tableRow.find('.drug-name').text(drugName);
+            $tableRow.find('.drug-quantity').text(quantity);
+            $tableRow.find('.drug-price').text(price > 0 ? price : 'N/A');
+            $tableRow.find('.drug-total').text(total);
+            $tableRow.data('drug-id', drugId);
+        }
+    }
+    
+    // Update total when drug selection changes
+    $(document).on('change', '.drug-select', function() {
+        const $drugRow = $(this).closest('.drug-row');
+        updateTableRow($drugRow);
+        updateTotal();
+    });
+    
+    // Update total when quantity changes
+    $(document).on('input change', '.quantity-input', function() {
+        const $drugRow = $(this).closest('.drug-row');
+        updateTableRow($drugRow);
+        updateTotal();
+    });
+    
+    // Update total when drug is removed
+    $(document).on('click', '.remove-drug', function() {
+        const $drugRow = $(this).closest('.drug-row');
+        const drugId = $drugRow.data('drug-id');
+        
+        // Remove from form
+        $drugRow.remove();
+        
+        // Remove from table
+        $(`.drug-table-row[data-drug-id="${drugId}"]`).remove();
+        
+        // Update total
+        updateTotal();
+    });
+
     $('#category-selector').change(function() {
         var categoryId = $(this).val();
         $.ajax({
@@ -68,34 +141,25 @@ $(document).ready(function() {
     });
 
     $('#add-drug-btn').click(function() {
-    var categoryName = $('#category-selector option:selected').text();
-    var drugName = $('#drug-selector option:selected').text();
-    var categoryId = $('#category-selector').val();
-    var drugId = $('#drug-selector').val();
-    var quantity = $('#quantity-input').val();
-    var dose = $('#dose-input').val();
+        var categoryName = $('#category-selector option:selected').text();
+        var drugName = $('#drug-selector option:selected').text();
+        var categoryId = $('#category-selector').val();
+        var drugId = $('#drug-selector').val();
+        var quantity = $('#quantity-input').val();
+        var dose = $('#dose-input').val();
 
-    var drugHtml = `
-        <div>
-            <input type="hidden" name="selected_drugs" value="${drugId}" data-category="${categoryId}">
-            <input type="hidden" name="selected_quantities" value="${quantity}">
-            <input type="hidden" name="selected_doses" value="${dose}">
-            ${categoryName}: ${drugName} (Quantity: ${quantity}) - Dose: ${dose}
-            <button type="button" class="remove-drug">Remove</button>
-        </div>
-    `;
+        var drugHtml = `
+            <div>
+                <input type="hidden" name="selected_drugs" value="${drugId}" data-category="${categoryId}">
+                <input type="hidden" name="selected_quantities" value="${quantity}">
+                <input type="hidden" name="selected_doses" value="${dose}">
+                ${categoryName}: ${drugName} (Quantity: ${quantity}) - Dose: ${dose}
+                <button type="button" class="remove-drug">Remove</button>
+            </div>
+        `;
 
-    $('#selected-drugs-container').append(drugHtml);
+        $('#selected-drugs-container').append(drugHtml);
+    });
 });
-
-$(document).on('click', '.remove-drug', function() {
-    $(this).parent().find('input[name="selected_drugs"]').remove();
-    $(this).parent().find('input[name="selected_quantities"]').remove();
-    $(this).parent().find('input[name="selected_doses"]').remove();
-    $(this).parent().remove();
-});
-
-});
-
 </script>
 {% endblock %}

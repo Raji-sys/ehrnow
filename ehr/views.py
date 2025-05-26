@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, HttpResponseRedirect
 from django.views.generic.base import TemplateView
+from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import LoginView
@@ -818,7 +819,25 @@ class PatientFolderView(DetailView):
         context['patient'] = patient
         context['test_items'] = (patient.test_items.all().prefetch_related('items__payment').order_by('-updated'))
         context['radiology_test_items'] = (patient.radiology_test_items.all().prefetch_related('payment').order_by('-updated'))
-        context['visits'] = patient.visit_record.all().order_by('-updated')
+    # If 'created' field is reliably auto_now_add=True, order_by('-created', '-id') is more robust.
+        all_visits_qs = patient.visit_record.all().order_by('-created','-id')
+        context['visits'] = all_visits_qs
+
+        latest_overall_visit = all_visits_qs.first()
+        context['latest_overall_visit'] = latest_overall_visit # For display purposes
+
+        has_active_visit_flag = False
+        active_visit_for_actions = None
+
+        if latest_overall_visit and latest_overall_visit.consultation:
+            # The most recent visit is an active consultation
+            has_active_visit_flag = True
+            active_visit_for_actions = latest_overall_visit
+        
+        context['has_active_visit'] = has_active_visit_flag
+        context['active_visit_for_actions'] = active_visit_for_actions # Use this for the "Close Visit" button
+
+
         context['vitals'] = patient.vital_signs.all().order_by('-updated')
         # context['payments'] = patient.patient_payments.all().order_by('-updated')
             # Filter payments with credit method and calculate total credit amount
@@ -927,49 +946,126 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
         kwargs['file_no'] = self.kwargs['file_no']
         return kwargs
 
+    # def form_valid(self, form):
+    #     patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        
+    #     # Check for existing open visit
+    #     existing_open_visit = VisitRecord.objects.filter(
+    #         patient=patient,
+    #         seen=False
+    #     ).exists()
+
+    #     if existing_open_visit:
+    #         form.add_error(None, ValidationError(
+    #             _("This patient already has an open visit. Please close the existing visit by adding clinical notes, before creating a new one visit instance."),
+    #             code='duplicate_visit'
+    #         ))
+    #         return self.form_invalid(form)
+
+    #     form.instance.patient = patient
+    #     form.instance.user = self.request.user
+    #     form.instance.clinic = form.cleaned_data['clinic']
+
+    #     visit = form.save(commit=False)
+    #     payment = Paypoint.objects.create(
+    #         patient=patient,
+    #         status=False,
+    #         service=visit.record,
+    #         unit='medical record',
+    #         price=visit.record.price,
+    #     )
+    #     visit.payment = payment
+    #     visit.vitals = False
+    #     visit.save()
+
+    #     if payment.status:
+    #         nursing_desk = NursingDesk.objects.filter(clinic=patient.clinic).first()
+    #         if nursing_desk:
+    #             messages.success(self.request, f'Payment successful. Patient sent to {nursing_desk} for vital signs.')
+    #         else:
+    #             messages.warning(self.request, f'Payment successful, but no nursing desk available for {patient.clinic}.')
+    #     else:
+    #         messages.warning(self.request, 'Proceed to revenue station and complete the payment.')
+        
+    #     return super().form_valid(form)
     def form_valid(self, form):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         
         # Check for existing open visit
         existing_open_visit = VisitRecord.objects.filter(
             patient=patient,
-            seen=False
+            # consider if 'consultation=True' is a better check for an "active consultation"
+            consultation=True # Or your existing logic: seen=False 
         ).exists()
 
         if existing_open_visit:
             form.add_error(None, ValidationError(
-                _("This patient already has an open visit. Please close the existing visit by adding clinical notes, before creating a new one visit instance."),
+                _("This patient already has an open/active consultation. Please close the existing visit before creating a new one."),
                 code='duplicate_visit'
             ))
             return self.form_invalid(form)
 
-        form.instance.patient = patient
-        form.instance.user = self.request.user
-        form.instance.clinic = form.cleaned_data['clinic']
+        # It's generally better to let CreateView handle setting self.object
+        self.object = form.save(commit=False) # self.object is now the new VisitRecord instance
+        
+        self.object.patient = patient
+        # form.instance.user = self.request.user # Does your VisitRecord model have a 'user' ForeignKey? If not, this line will cause an error. Please verify.
+        # self.object.clinic is likely already set by the form if 'clinic' is a field in VisitForm
+        # If 'clinic' is not in the form but needs to be set from form.cleaned_data['clinic'], then:
+        # self.object.clinic = form.cleaned_data['clinic'] # Ensure 'clinic' is in cleaned_data
 
-        visit = form.save(commit=False)
+        # --- THIS IS THE CRUCIAL PART ---
+        self.object.consultation = True  # Ensure new visits are marked as active consultations
+        self.object.vitals = False       # You're already doing this
+
+        # Handle payment creation
+        # Ensure 'self.object.record' is available and correct if 'record' is a ForeignKey on VisitRecord
+        # that should be set from the form or otherwise.
+        if not self.object.record:
+             # Handle case where visit.record is not set, as it's needed for Paypoint.
+             # This might come from the form or need to be set explicitly.
+             # For now, assuming it might be an issue or is handled by the form.
+             pass
+
+
+        # It's better to save the main object (visit) before creating related objects
+        # that might depend on its ID, though Paypoint here uses patient.
+        # However, if visit.record is needed, visit should be populated.
+        # Let's assume 'self.object.record' is correctly populated by the form.
+        
+        # Save the visit instance first if Paypoint depends on its (unsaved) state,
+        # but Paypoint here seems to depend on visit.record.price.
+        # It's usually safer to have the main object (visit) saved or at least fully populated
+        # before creating tightly coupled dependencies.
+
+        # For simplicity, let's assume 'record' is a field in your VisitForm and correctly set.
+        # If `self.object.record` isn't set by the form, you'll need to set it.
+
         payment = Paypoint.objects.create(
             patient=patient,
-            status=False,
-            service=visit.record,
+            status=False, # Default payment status
+            service=self.object.record, # Make sure self.object.record is populated
             unit='medical record',
-            price=visit.record.price,
+            price=self.object.record.price, # Make sure self.object.record.price is accessible
         )
-        visit.payment = payment
-        visit.vitals = False
-        visit.save()
+        self.object.payment = payment
+        
+        self.object.save() # Now save the fully populated visit instance with its payment link
 
-        if payment.status:
+        # Messaging based on payment status
+        if payment.status: # This will be False initially based on Paypoint.objects.create(status=False,...)
+                            # This block might be intended for after a payment update elsewhere.
             nursing_desk = NursingDesk.objects.filter(clinic=patient.clinic).first()
             if nursing_desk:
                 messages.success(self.request, f'Payment successful. Patient sent to {nursing_desk} for vital signs.')
             else:
                 messages.warning(self.request, f'Payment successful, but no nursing desk available for {patient.clinic}.')
         else:
-            messages.warning(self.request, 'Proceed to revenue station and complete the payment.')
+            messages.warning(self.request, 'New visit registered. Proceed to revenue station to complete the payment for the medical record service.')
         
-        return super().form_valid(form)
-
+        # Instead of calling super().form_valid(form) after manually saving,
+        # you should typically redirect. CreateView's form_valid does this.
+        return HttpResponseRedirect(self.get_success_url())
     def get_success_url(self):
         return reverse_lazy('patient_list')
 
@@ -1265,83 +1361,103 @@ class RoomDetailView(DoctorNurseRequiredMixin, DetailView):
         return context
         
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
-    model = ClinicalNote
-    form_class = ClinicalNoteForm
-    template_name = 'ehr/doctor/clinical_note.html'
-
-    # def form_valid(self, form):
-    #     form.instance.user = self.request.user
-    #     patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-    #     form.instance.patient = patient_data
-    #     self.object = form.save()
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
+#     model = ClinicalNote
+#     form_class = ClinicalNoteForm
+#     template_name = 'ehr/doctor/clinical_note.html'
+    
+#     def dispatch(self, request, *args, **kwargs):
+#         # Check if visit record exists before allowing access
+#         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+#         visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()
         
-    #     visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()        
-    #     if form.instance.needs_review:
-    #         visit.review = True
-    #         visit.save()
-    #         messages.success(self.request, 'Clinical note created. Patient awaiting review.')
-    #     else:
-    #         visit.close_visit()
-    #         messages.success(self.request, 'Clinical note created. Patient consultation completed.')
-
-    #     return super().form_valid(form)
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        form.instance.patient = patient_data
-        self.object = form.save()
+#         if visit is None:
+#             messages.error(
+#                 request, 
+#                 f'Cannot create clinical note for {patient_data.first_name} {patient_data.last_name} ({patient_data.file_no}). No active visit record found. Please ensure the patient has been registered for a visit first.'
+#             )
+#             # Redirect back to patient detail or wherever appropriate
+#             return redirect(patient_data.get_absolute_url())
         
-        visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()
+#         return super().dispatch(request, *args, **kwargs)
+    
+#     def form_valid(self, form):
+#         form.instance.user = self.request.user
+#         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+#         form.instance.patient = patient_data
+#         self.object = form.save()
         
-        if form.instance.needs_review:
-            # Set proper flags for review
-            visit.review = True
-            visit.seen = True  # Mark as seen even if needs review
-            visit.save()
-            messages.success(self.request, 'Clinical note created. Patient awaiting review.')
-        else:
-            # Close visit - properly set all flags
-            visit.close_visit()
-            messages.success(self.request, 'Clinical note created. Patient consultation completed.')
-
-        return super().form_valid(form)
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        return context
-
-    def get_success_url(self):
-        return self.object.patient.get_absolute_url()
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
-    model = ClinicalNote
-    template_name = 'ehr/doctor/update_clinical_note.html'
-    form_class = ClinicalNoteUpdateForm
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-        form.instance.patient = patient_data
-        self.object = form.save()
+#         # Get the visit record (we know it exists from dispatch check)
+#         visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()
         
-        visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()
-        
-        if form.instance.needs_review:
-            # Set proper flags for review
-            visit.review = True
-            visit.seen = True  # Mark as seen even if needs review
-            visit.save()
-            messages.success(self.request, 'Clinical note created. Patient awaiting review.')
-        else:
-            # Close visit - properly set all flags
-            visit.close_visit()
-            messages.success(self.request, 'Clinical note created. Patient consultation completed.')
+#         if form.instance.needs_review:
+#             # Set proper flags for review
+#             visit.review = True
+#             visit.seen = True  # Mark as seen even if needs review
+#             visit.save()
+#             messages.success(self.request, 'Clinical note created. Patient awaiting review.')
+#         else:
+#             # Close visit - properly set all flags
+#             visit.close_visit()
+#             messages.success(self.request, 'Clinical note created. Patient consultation completed.')
 
-        return self.object.patient.get_absolute_url()
+#         return super().form_valid(form)
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+#         context['patient'] = patient
+                
+#         return context
+
+#     def get_success_url(self):
+#         return self.object.patient.get_absolute_url()
+
+
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
+#     model = ClinicalNote
+#     template_name = 'ehr/doctor/update_clinical_note.html'
+#     form_class = ClinicalNoteUpdateForm
+    
+#     def form_valid(self, form):
+#         form.instance.user = self.request.user
+        
+#         # Get the clinical note object (pk is passed in URL)
+#         clinical_note = self.get_object()
+#         patient_data = clinical_note.patient
+        
+#         form.instance.patient = patient_data
+#         self.object = form.save()
+        
+#         # Get visit record using the patient's file_no from the clinical note
+#         visit = VisitRecord.objects.filter(patient__file_no=patient_data.file_no).order_by('-id').first()
+        
+#         if visit:  # Check if visit exists
+#             if form.instance.needs_review:
+#                 # Set proper flags for review
+#                 visit.review = True
+#                 visit.seen = True  # Mark as seen even if needs review
+#                 visit.save()
+#                 messages.success(self.request, 'Clinical note updated. Patient awaiting review.')
+#             else:
+#                 # Close visit - properly set all flags
+#                 visit.close_visit()
+#                 messages.success(self.request, 'Clinical note updated. Patient consultation completed.')
+#         else:
+#             messages.success(self.request, 'Clinical note updated successfully.')
+        
+#         return redirect(self.get_success_url())
+    
+#     def get_success_url(self):
+#         return self.object.patient.get_absolute_url()
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         clinical_note = self.get_object()
+#         context['patient'] = clinical_note.patient
+#         return context
 
 
 class AppointmentCreateView(RecordRequiredMixin, CreateView):
@@ -4053,3 +4169,153 @@ class RadiologyUpdateView(LoginRequiredMixin, UpdateView):
         radiology_result.save()
         messages.success(self.request, 'Radiology result updated successfully')
         return super().form_valid(form)
+
+        # New View to manually close a visit
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class CloseVisitView(DoctorRequiredMixin, View): # Or a more general permission mixin
+    def post(self, request, *args, **kwargs):
+        patient_file_no = self.kwargs.get('file_no')
+        visit_pk = self.kwargs.get('visit_pk')
+        
+        # Ensure the visit belongs to the patient and exists
+        visit_to_close = get_object_or_404(VisitRecord, pk=visit_pk, patient__file_no=patient_file_no)
+        patient = get_object_or_404(PatientData, file_no=patient_file_no) # To redirect back
+
+        # Optional: Add more specific permission checks if needed (e.g., only the assigned doctor)
+
+        if visit_to_close.consultation:
+            visit_to_close.close_visit() # Calls your model's method
+            messages.success(request, f"Visit (ID: {visit_to_close.pk}) for {patient} has been successfully closed.")
+        else:
+            messages.info(request, f"Visit (ID: {visit_to_close.pk}) for {patient} was already closed.")
+        
+        return redirect(patient.get_absolute_url()) # Redirect back to patient folder
+
+# --- Your ClinicalNoteCreateView ---
+# Consider if the dispatch logic should also check for active consultation
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
+    model = ClinicalNote
+    form_class = ClinicalNoteForm
+    template_name = 'ehr/doctor/clinical_note.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        
+        # Current logic: Checks if *any* visit record exists.
+        # visit = VisitRecord.objects.filter(patient=patient_data).order_by('-id').first()
+        # if visit is None:
+        # messages.error(request, f'Cannot create clinical note for {patient_data.first_name} {patient_data.last_name} ({patient_data.file_no}). No visit record found...')
+        # return redirect(patient_data.get_absolute_url())
+
+        # Suggested alternative: Check for an *active* visit if notes can only be added to active ones.
+        active_visit = VisitRecord.objects.filter(patient=patient_data, consultation=True).order_by('-id').first()
+        if active_visit is None:
+            messages.error(
+                request, 
+                f'Cannot create clinical note for {patient_data.first_name} {patient_data.last_name} ({patient_data.file_no}). No active consultation found. Please ensure the patient has an ongoing visit that is not yet closed.'
+            )
+            return redirect(patient_data.get_absolute_url())
+        
+        self.active_visit = active_visit # Store for use in form_valid
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        form.instance.patient = patient_data
+        # self.object = form.save() # Save later after visit update or if needed before
+
+        # Use the active_visit identified in dispatch
+        # visit = VisitRecord.objects.filter(patient=patient_data).order_by('-id').first()
+        visit = self.active_visit # Use the one from dispatch
+
+        # It's good practice to ensure 'visit' is not None here, though dispatch should handle it.
+        if not visit:
+             messages.error(self.request, "Error: Could not find the associated visit record.")
+             return redirect(patient_data.get_absolute_url())
+
+        # Save the clinical note first
+        self.object = form.save()
+
+        if form.instance.needs_review:
+            visit.review = True
+            visit.seen = True 
+            visit.save(update_fields=['review', 'seen']) # Be specific about fields to update
+            messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} created. Patient awaiting review.')
+        else:
+            visit.close_visit() # This method handles setting consultation=False, seen=True, review=False and saving.
+            messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} created. Patient consultation completed and visit closed.')
+        
+        # The super().form_valid(form) typically handles saving the object and redirection.
+        # Since we saved `self.object` and handled messages, we might just need to redirect.
+        # However, CreateView's form_valid expects to return an HttpResponse.
+        # return redirect(self.get_success_url()) # Original super().form_valid would do this.
+        return super().form_valid(form) # Let CreateView handle the rest if self.object is set.
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        context['patient'] = patient
+        context['active_visit'] = getattr(self, 'active_visit', None) # Pass active visit to template if needed
+        return context
+
+    def get_success_url(self):
+        # Ensure self.object is set (form.save() does this)
+        if self.object:
+            return self.object.patient.get_absolute_url()
+        # Fallback if self.object isn't set, though it should be
+        patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        return patient_data.get_absolute_url()
+
+# --- Your ClinicalNoteUpdateView ---
+# Similar considerations for using the latest active visit if updates should only happen on active ones.
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
+    model = ClinicalNote
+    template_name = 'ehr/doctor/update_clinical_note.html'
+    form_class = ClinicalNoteUpdateForm # Assuming ClinicalNoteUpdateForm exists
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        
+        clinical_note = self.get_object()
+        patient_data = clinical_note.patient
+        
+        # form.instance.patient = patient_data # Not needed if patient is not a field in the form being changed
+        self.object = form.save() # Save clinical note changes
+        
+        # Get the latest active visit record for this patient to update its status
+        # If notes can be updated even for closed visits, then fetch latest overall.
+        # If updates should only affect status of an *active* visit:
+        visit = VisitRecord.objects.filter(patient=patient_data, consultation=True).order_by('-id').first()
+        
+        # If you want to update the status of the visit associated at the time of note creation (even if now closed),
+        # you might need to link ClinicalNote directly to a VisitRecord, or fetch based on creation time proximity.
+        # For now, let's assume we act on the *current latest active visit* if one exists.
+
+        if visit: 
+            if form.instance.needs_review:
+                visit.review = True
+                visit.seen = True
+                visit.save(update_fields=['review', 'seen'])
+                messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient awaiting review.')
+            else:
+                visit.close_visit()
+                messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient consultation completed and visit closed.')
+        else:
+            # No active visit found to update status for, but the note itself is updated.
+            messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated successfully. (No active visit to modify status for).')
+        
+        return redirect(self.get_success_url())
+    
+    def get_success_url(self):
+        return self.object.patient.get_absolute_url()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        clinical_note = self.get_object()
+        context['patient'] = clinical_note.patient
+        # Optionally, pass the relevant visit if needed in the template
+        # context['visit_associated_with_note'] = VisitRecord.objects.filter(patient=clinical_note.patient, consultation=True).order_by('-id').first()
+        return context

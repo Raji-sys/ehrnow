@@ -21,6 +21,179 @@
     </section>
 
     <div class="md:mx-20  mx-2 text-xs text-center">
+        <!-- Warning Banner -->
+<style>
+  .info-box {
+    background: linear-gradient(to right, #fff8e1, #fff3cd);
+    border-left: 6px solid #f0ad4e;
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    text-align: center;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .info-box i {
+    font-size: 2.5rem;
+    color: #f0ad4e;
+    animation: ping 2s infinite ease-in-out;
+  }
+
+  .info-box p.title {
+    color: #c9302c;
+    font-weight: bold;
+    font-size: 0.95rem;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  .info-box p.desc {
+    font-size: 0.85rem;
+    color: #a94442;
+    margin-top: 4px;
+  }
+
+.visit-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom right, #e8f4fd, #ffffff);
+  border: 1px solid #b3d7f5;
+  border-radius: 16px;
+  padding: 12px 20px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+  margin-top: 12px;
+  margin-bottom: 6px;
+  animation: fadeInSlow 0.8s ease;
+  gap: 16px;
+}
+
+.visit-tag {
+  background-color: #007bff;
+  color: #fff;
+  font-size: 10px;
+  padding: 14px 20px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  animation: bounce 1s infinite;
+  white-space: nowrap;
+}
+
+.visit-info-section {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.visit-info {
+  font-size: 0.9rem;
+  color: #333;
+  margin: 2px 0;
+}
+
+.close-button {
+  padding: 10px 20px;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+  .status-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 999px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .status-waiting-nurse { background: #ffe0b2; color: #e65100; animation: pulse 2s infinite; }
+  .status-waiting-doctor { background: #bbdefb; color: #0d47a1; animation: pulse 2s infinite; }
+  .status-review { background: #e1bee7; color: #6a1b9a; animation: pulse 2s infinite; }
+  .status-ended { background: #ffcdd2; color: #c62828; }
+  .status-ok { background: #c8e6c9; color: #2e7d32; }
+
+  .close-button:hover {
+    background-color: #c9302c;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInSlow {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  @keyframes ping {
+    0% { transform: scale(1); opacity: 1; }
+    75% { transform: scale(1.3); opacity: 0; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+</style>
+
+{% if not has_active_visit %}
+  <div class="info-box">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <p class="title">🚫 Access Restricted</p>
+    <p class="desc">
+      No active visit record found. All medical functions, documentation, and patient interactions are disabled until an active visit is registered.
+    </p>
+  </div>
+{% endif %}
+
+{% if has_active_visit and active_visit_for_actions %}
+  <div class="visit-box">
+    <div class="visit-tag">Active Visit</div>
+
+    <div class="visit-info-section">
+      <div class="visit-info"><strong>Visit ID:</strong> {{ active_visit_for_actions.id }}&nbsp;&nbsp;<strong>Started:</strong> {{ active_visit_for_actions.updated }}&nbsp;&nbsp;<strong>Status:</strong>
+        <span class="status-pill
+          {% if 'Waiting for Nurse' in active_visit_for_actions.get_status_display %} status-waiting-nurse
+          {% elif 'Waiting for Doctor' in active_visit_for_actions.get_status_display %} status-waiting-doctor
+          {% elif 'Awaiting Review' in active_visit_for_actions.get_status_display %} status-review
+          {% elif 'Consultation Ended' in active_visit_for_actions.get_status_display %} status-ended
+          {% else %} status-ok {% endif %}">
+          {{ active_visit_for_actions.get_status_display }}
+        </span>
+      </div>
+    </div>
+
+    <form method="POST"
+          action="{% url 'close_visit' file_no=patient.file_no visit_pk=active_visit_for_actions.pk %}"
+          onsubmit="return confirm('Are you sure you want to manually close this visit? This will end the current consultation for Visit ID {{ active_visit_for_actions.id }}. and you have to initialize another visit work on this patient'); ">
+      {% csrf_token %}
+      <button type="submit" class="close-button">
+        <i class="fa-solid fa-door-closed" style="margin-right: 5px;"></i> Close Visit
+      </button>
+    </form>
+  </div>
+{% endif %}
+
+
       <div class="rounded-t-xl flex items-center gap-2 justify-between md:flex-row flex-col p-2 bg-gradient-to-r from-emerald-700 to-sky-700">
         <div>
           <h1 class="text-sm font-semibold text-gray-200 sm:mb-0 sm:mr-4 uppercase p-2">{{patient.full_name}} </h1>
@@ -293,65 +466,152 @@
      </div>
     <!-- break -->
       <!-- break -->
-      <div> 
-        <div>
-        <a href="{%url 'clinical_note' patient.file_no%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-notes-medical fa-2xl"></i></a>
-      </div>     
+<div class="bg-white rounded-lg shadow-lg p-6"> 
+  <!-- Header Section -->
+  <div class="flex flex-col items-center text-center mb-3 pb-2 ">
+  
+  {% if has_active_visit %}
+    <a href="{% url 'clinical_note' patient.file_no %}" 
+       class="text-xs text-green-600 hover:text-green-700">
+          <i class="fa-solid fa-notes-medical text-green-600 text-2xl"></i>
+    </a>
+  {% else %}
+    <div class="relative group">
+      <button disabled 
+              class="text-xs text-green-600 hover:text-green-700">
+            <i class="fa-solid fa-notes-medical text-green-600 text-2xl"></i>
 
-        <div class="overflow-x-auto max-h-[100vh] p-2 ">
-          <table class="min-w-full divide-y divide-cyan-200 mb-4">
-            <thead class="bg-cyan-50">
-              <tr class="text-xs ">
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NOTE</th>
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">UPDATE</th> 
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-cyan-200">
-              {% for c in clinical_notes %}
-              <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                <td class="p-3 whitespace-nowrap">
-                  <details>
-                    <summary class="bg-blue-600 py-2 px-4 text-white rounded-lg text-center cursor-pointer">
-                      OPEN NOTE
-                    </summary>
-                    <div class="bg-white text-blue-600 rounded-md p-4 m-4 max-h-[50vh] overflow-y-auto overflow-x-auto">
-                      <ul class="space-y-4">
-                        <li class="text-xs uppercase text-left">
-                          <strong class="text-blue-600">Diagnosis:</strong>
-                          <span class="text-gray-700 font-semibold">{{ c.diagnosis|default:'N/A' }}</span>
-                        </li>
-                        <li class="text-xs uppercase text-left flex justify-between">
-                          <div>
-                            <strong class="text-blue-600">Doctor:</strong>
-                            <span class="text-gray-700 font-semibold">{{ c.user|default:'N/A' }}</span>
-                          </div>
-                          <div>
-                            <strong class="text-blue-600">Date:</strong>
-                            <span class="text-gray-700 font-semibold">{{ c.updated }}</span>
-                          </div>
-                        </li>
-                        <hr class="my-4 border-blue-600">
-                        <li class="text-xs text-left text-gray-700 normal-case">
-                          {{ c.note.html|safe }}
-                        </li>
-                      </ul>
+      </button>
+<p class="bg-black text-white text-xs p-2 rounded">
+  Clinical notes can only be added when the patient has an active visit. Please ensure an active visit is registered before proceeding.
+</p>
+
+    </div>
+  {% endif %}
+</div>
+
+
+
+  <!-- Notes Table -->
+  <div class="overflow-hidden rounded-lg border border-gray-200">
+    {% if clinical_notes %}
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gradient-to-r from-green-50 to-cyan-50">
+          <tr>
+            <th class="p-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              #
+            </th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Clinical Note
+            </th>
+            <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-20">
+              Update
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for c in clinical_notes %}
+            <tr class="hover:bg-gray-50 transition-colors duration-200">
+              <td class="text-left p-2 whitespace-nowrap text-xs font-medium text-gray-900">
+                {{ forloop.counter }}
+              </td>
+              <td class="text-left px-3 py-2">
+                <details class="group">
+                  <summary class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-6 rounded-lg cursor-pointer transition-all duration-200 inline-flex items-center gap-2 font-medium text-xs">
+                    <i class="fa-solid fa-file-medical group-open:rotate-90 transition-transform duration-200"></i>
+                    View - {{ c.updated }} Clinical Note
+                    <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-200 ml-auto"></i>
+                  </summary>
+                  
+                  <div class="mt-2 bg-gray-50 rounded-lg p-2 border border-gray-200 max-h-50 overflow-y-auto">
+                    <!-- Note Header -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-2 bg-white rounded-lg border border-gray-200">
+                      <div>
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Diagnosis</label>
+                        <p class="text-xs text-gray-900 font-medium mt-1">
+                          {{ c.diagnosis|default:'Not specified' }}
+                        </p>
+                      </div>
+                      <div>
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Appointment</label>
+                        <p class="text-xs text-gray-900 font-medium mt-1">
+                          {{ c.appointment|default:'Not specified' }}
+                        </p>
+                      </div>
+                      <div>
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Doctor</label>
+                        <p class="text-xs text-gray-900 font-medium mt-1">
+                          Dr. {{ c.user.get_full_name|default:c.user.username }}
+                        </p>
+                      </div>
+                      <div>
+                        <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Date & Time</label>
+                        <p class="text-xs text-gray-900 font-medium mt-1">
+                          {{ c.updated }}
+                        </p>
+                      </div>
+                      {% if c.needs_review %}
+                        <div class="md:col-span-2">
+                          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <i class="fa-solid fa-clock mr-1"></i>
+                            Needs Review
+                          </span>
+                        </div>
+                      {% endif %}
                     </div>
-                  </details>
-                </td>
-                <td class=" p-3 whitespace-nowrap"><a href="{%url 'clinical_note_update' c.id%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-pen-square fa-2xl"></i></a>
-                </td>
-              </tr>
-              {%empty%}
-              <div class="p-2">
-                  <p>No clinical notes found</p>
-              </div>
-         {%endfor%}
-            </tbody>
-          </table>
+                    
+                    <!-- Note Content -->
+<!-- Note Content -->
+<div class="bg-white rounded-lg p-6 border border-gray-200">
+  <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-3 block">Clinical Notes</label>
+
+  <div class="overflow-y-auto max-h-[50vh] border rounded-md p-3 bg-gray-50">
+    <div class="prose prose-sm max-w-none text-gray-700 w-full">
+      {% if c.note.html %}
+        <div class="text-xs whitespace-pre-wrap text-left">
+          {{ c.note.html|safe }}
         </div>
-     </div>
+      {% else %}
+        <p class="text-gray-500 italic text-xs">No clinical notes recorded</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+                  </div>
+                </details>
+              </td>
+              <td class="text-left px-3 py-2 whitespace-nowrap">
+                <a href="{% url 'clinical_note_update' c.id %}" 
+                   class="bg-green-100 hover:bg-green-200 text-green-700 p-2 rounded-lg transition-colors duration-200 inline-flex items-center justify-center"
+                   title="Edit Note">
+                  <i class="fa-solid fa-pen text-sm"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <!-- Empty State -->
+      <div class="text-center py-12">
+        <p class="text-gray-500 mb-6 text-sm">No clinical notes have been created for this patient yet.</p>
+        {% if has_active_visit %}
+          <a href="{% url 'clinical_note' patient.file_no %}" 
+             class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 inline-flex items-center gap-2 font-medium text-sm">
+            <i class="fa-solid fa-plus"></i>
+            Create First Clinical Note
+          </a>
+        {% else %}
+          <p class="text-xs text-amber-600 bg-amber-50 px-4 py-2 rounded-lg inline-block">
+            <i class="fa-solid fa-info-circle mr-1"></i>
+            Register a visit to create clinical notes
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
     <!-- break -->
       <!-- break -->
            <!-- break -->

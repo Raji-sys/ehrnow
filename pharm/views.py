@@ -1911,17 +1911,28 @@ class PrescriptionUpdateView(UpdateView):
         # Calculate total price for each prescription drug
         prescription_drugs = self.object.prescription_drugs.all()
         prescription_drugs_with_total_price = []
+        drugs_without_price = []
+        
         for pd in prescription_drugs:
-            pd.total_price = pd.drug.cost_price * pd.quantity
+            selling_price = getattr(pd.drug, 'selling_price', None)
+            if selling_price is None or selling_price == 0:
+                pd.total_price = 0
+                drugs_without_price.append(pd.drug.name)
+            else:
+                pd.total_price = selling_price * pd.quantity
             prescription_drugs_with_total_price.append(pd)
+        
         context['prescription_drugs'] = prescription_drugs_with_total_price
+        context['drugs_without_price'] = drugs_without_price
 
         # Calculate total price for all prescription drugs
         total_price = 0
         for pd in prescription_drugs:
-            total_price += pd.drug.cost_price * pd.quantity
+            selling_price = getattr(pd.drug, 'selling_price', None)
+            if selling_price is not None and selling_price > 0:
+                total_price += selling_price * pd.quantity
+        
         context['total_price'] = total_price
-
         return context
 
     def form_valid(self, form):
@@ -1929,43 +1940,110 @@ class PrescriptionUpdateView(UpdateView):
         prescription.prescribed_by = self.request.user
         prescription.save()
 
-        # Update prescription drugs
-        for i, drug in enumerate(prescription.prescription_drugs.all()):
-            drug_id = self.request.POST.get(f'drug_{i}')
-            quantity = self.request.POST.get(f'quantity_{i}')
-            dose = self.request.POST.get(f'dose_{i}')
+        # Get all existing prescription drugs
+        existing_drugs = list(prescription.prescription_drugs.all())
+        
+        # Debug: Print all POST data
+        print("POST data:", dict(self.request.POST))
+        
+        # Collect drug data from form - check all possible indices
+        drugs_to_keep = []
+        
+        # Find all drug fields in POST data
+        for key in self.request.POST.keys():
+            if key.startswith('drug_'):
+                try:
+                    index = key.split('_')[1]
+                    drug_id = self.request.POST.get(f'drug_{index}')
+                    quantity = self.request.POST.get(f'quantity_{index}')
+                    dose = self.request.POST.get(f'dose_{index}')
+                    
+                    print(f"Index {index}: drug_id={drug_id}, quantity={quantity}, dose={dose}")
+                    
+                    if drug_id and quantity:  # Only process if both exist
+                        drugs_to_keep.append({
+                            'drug_id': int(drug_id),
+                            'quantity': int(quantity),
+                            'dosage': dose or ''
+                        })
+                except (ValueError, IndexError):
+                    continue
+        
+        print("Drugs to keep:", drugs_to_keep)
 
-            pd = PrescriptionDrug.objects.get(prescription=prescription, drug_id=drug.drug.id)
-            pd.drug_id = drug_id
-            pd.quantity = quantity
-            pd.dosage = dose
-            pd.save()
-
-        # Calculate total price
+        # Delete all existing prescription drugs
+        prescription.prescription_drugs.all().delete()
+        
+        # Calculate total price and track drugs without pricing while creating
         total_price = 0
-        for pd in prescription.prescription_drugs.all():
-            total_price += pd.drug.cost_price * pd.quantity
+        drugs_without_price = []
+        
+        # Create new prescription drugs from the form data and calculate price
+        for drug_data in drugs_to_keep:
+            # Get the drug to check its selling price
+            try:
+                drug = Drug.objects.get(id=drug_data['drug_id'])
+                selling_price = getattr(drug, 'selling_price', None)
+                
+                if selling_price is None or selling_price == 0:
+                    drugs_without_price.append(drug.name)
+                else:
+                    total_price += selling_price * drug_data['quantity']
+                
+                # Create the prescription drug
+                PrescriptionDrug.objects.create(
+                    prescription=prescription,
+                    drug_id=drug_data['drug_id'],
+                    quantity=drug_data['quantity'],
+                    dosage=drug_data['dosage']
+                )
+            except Drug.DoesNotExist:
+                continue  # Skip if drug doesn't exist
 
-        # Create paypoint
-        paypoint = Paypoint.objects.create(
-            user=self.request.user,
-            patient=prescription.patient,
-            service='drug payment',
-            unit='pharmacy',
-            price=total_price,
-            status=False
-        )
-        # Update prescription payment
-        prescription.payment = paypoint
-        prescription.save()
-        messages.success(self.request, 'Prescription costed successfully, proceed to revenue and make payment')
+        # Create paypoint only if there's a total price
+        if total_price > 0:
+            paypoint = Paypoint.objects.create(
+                user=self.request.user,
+                patient=prescription.patient,
+                service='drug payment',
+                unit='pharmacy',
+                price=total_price,
+                status=False
+            )
+            # Update prescription payment
+            prescription.payment = paypoint
+            prescription.save()
+            
+            # Success message with pricing info
+            if drugs_without_price:
+                messages.warning(
+                    self.request, 
+                    f'Prescription costed successfully. Note: The following drugs have no selling price set: {", ".join(drugs_without_price)}. Proceed to revenue and make payment for available items.'
+                )
+            else:
+                messages.success(
+                    self.request, 
+                    'Prescription costed successfully, proceed to revenue and make payment'
+                )
+        else:
+            # No paypoint created if no items have prices
+            if drugs_without_price:
+                messages.error(
+                    self.request, 
+                    f'Prescription created but no payment required. All drugs have no selling price set: {", ".join(drugs_without_price)}. Please update drug prices in inventory.'
+                )
+            else:
+                messages.info(
+                    self.request, 
+                    'Prescription created but no payment required as total price is zero.'
+                )
+        
         return super().form_valid(form)
 
     def get_success_url(self):
         # Assuming you want to redirect to the list view for the current unit/store
         return reverse('pharm:prescription_list', kwargs={'store_pk': self.object.unit.pk})
-
-
+    
 class InPatientPrescriptionCreateView(LoginRequiredMixin, CreateView):
     model = Prescription
     form_class = PrescriptionForm
