@@ -22,8 +22,8 @@
         <!-- Today Card -->
         <div class="bg-blue-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-sm mb-1">Today</h5>
-                <h2 class="text-xl font-bold">{{ total_today|floatformat:2|intcomma }}</h2>
+                <h5 class="font-medium text-white text-sm mb-1">Today</h5>
+                <h2 class="text-white text-xl font-bold">{{ total_today|floatformat:2|intcomma }}</h2>
                 <div class="flex justify-between items-center mt-1">
                     <div class="text-xs text-blue-100">
                         {{ count_today }} transactions
@@ -47,8 +47,8 @@
         <!-- Week Card -->
         <div class="bg-indigo-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-sm mb-1">This Week</h5>
-                <h2 class="text-xl font-bold">{{ total_week|floatformat:2|intcomma }}</h2>
+                <h5 class="font-medium text-white text-sm mb-1">This Week</h5>
+                <h2 class="text-white text-xl font-bold">{{ total_week|floatformat:2|intcomma }}</h2>
                 <div class="flex justify-between items-center mt-1">
                     <div class="text-xs text-indigo-100">
                         {{ count_week }} transactions
@@ -73,8 +73,8 @@
         <!-- Month Card -->
         <div class="bg-purple-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-sm mb-1">This Month</h5>
-                <h2 class="text-xl font-bold">{{ total_month|floatformat:2|intcomma }}</h2>
+                <h5 class="font-medium text-white text-sm mb-1">This Month</h5>
+                <h2 class="text-white text-xl font-bold">{{ total_month|floatformat:2|intcomma }}</h2>
                 <div class="flex justify-between items-center mt-1">
                     <div class="text-xs text-purple-100">
                         {{ count_month }} transactions
@@ -98,8 +98,8 @@
         <!-- Quarter Card -->
         <div class="bg-green-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-sm mb-1">This Quarter</h5>
-                <h2 class="text-xl font-bold">{{ total_quarter|floatformat:2|intcomma }}</h2>
+                <h5 class="font-medium text-white text-sm mb-1">This Quarter</h5>
+                <h2 class="text-white text-xl font-bold">{{ total_quarter|floatformat:2|intcomma }}</h2>
                 <div class="flex justify-between items-center mt-1">
                     <div class="text-xs text-green-100">
                         {{ count_quarter }} transactions
@@ -123,8 +123,8 @@
         <!-- Year Card -->
         <div class="bg-red-600 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-sm mb-1">This Year</h5>
-                <h2 class="text-xl font-bold">{{ total_year|floatformat:2|intcomma }}</h2>
+                <h5 class="font-medium text-white text-sm mb-1">This Year</h5>
+                <h2 class="text-white text-white text-xl font-bold">{{ total_year|floatformat:2|intcomma }}</h2>
                 <div class="flex justify-between items-center mt-1">
                     <div class="text-xs text-red-100">
                         {{ count_year }} transactions
@@ -148,8 +148,8 @@
         <!-- All Time Card -->
         <div class="bg-gray-800 text-white rounded shadow-md overflow-hidden">
             <div class="p-4">
-                <h5 class="font-medium text-sm mb-1">All Time</h5>
-                <h2 class="text-xl font-bold">{{ total_all_time|floatformat:2|intcomma }}</h2>
+                <h5 class="font-medium text-white text-sm mb-1  ">All Time</h5>
+                <h2 class="text-white text-xl font-bold ">{{ total_all_time|floatformat:2|intcomma }}</h2>
                 <div class="flex justify-between items-center mt-1">
                     <div class="text-xs text-gray-300">
                         {{ count_all_time }} transactions
@@ -198,7 +198,7 @@
                         <h4 class="text-lg font-bold">{{ method.payment_method }}</h4>
                         <div class="text-gray-500 text-sm">{{ method.count }} transactions</div>
                     </div>
-                    <div class="text-xl font-bold text-blue-600">
+                    <div class="text-white text-xl font-bold text-blue-600">
                         {{ method.total|floatformat:2|intcomma }}
                     </div>
                 </div>

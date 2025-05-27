@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Expense Details</h1>
+  <dl>
+    <dt>Date:</dt>
+    <dd>{{ expense.date }}</dd>
+    
+    <dt>Amount:</dt>
+    <dd>${{ expense.amount }}</dd>
+    
+    <dt>Category:</dt>
+    <dd>{{ expense.get_category_display }}</dd>
+    
+    <dt>Description:</dt>
+    <dd>{{ expense.description }}</dd>
+    
+    <dt>Status:</dt>
+    <dd>{{ expense.get_status_display }}</dd>
+    
+    {% if expense.receipt %}
+    <dt>Receipt:</dt>
+    <dd><a href="{{ expense.receipt.url }}">Download</a></dd>
+    {% endif %}
+  </dl>
+  
+  <a href="{% url 'expense_list' %}">Back to List</a>
+{% endblock %}

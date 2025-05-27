@@ -12,6 +12,7 @@ urlpatterns = [
     path('pharm/', include('pharm.urls',namespace='pharm')),
     path('inventory/', include('inventory.urls',namespace='inventory')),
     path('lab/', include('results.urls',namespace='results')),
+    path('account/', include('accounting.urls',namespace='erp')),
     path('',include('ehr.urls')),
     path('site/',include('page.urls')),
 ]

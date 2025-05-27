@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}COMPANY ACCOUNT {% endblock %}
+{% block content %}
+<div class="container mx-auto p-4">
+    <div class="flex justify-center p-4 gap-4 text-xl">
+        <div>
+            <h1 class="text-lg text-zinc-800 text-center uppercase">COMPANY ACCOUNT</h1>
+        </div>
+    </div>
+ 
+    <div class="mb-4 flex justify-center">
+        <!-- Search Form -->
+        <form method="get" class="flex flex-col space-y-3">
+            <!-- Buttons and Links Row -->
+            <div class="flex flex-wrap gap-2 items-center justify-center">
+                <a href="{% url 'erp:transaction_list' %}" 
+                   class="py-2 px-4 bg-blue-600 text-white uppercase rounded text-center text-xs hover:bg-blue-700 transition">
+                    Account Statement
+                </a>
+                
+                <a href="{% url 'erp:account_transfer' %}" 
+                   class="py-2 px-4 bg-purple-600 text-white rounded uppercase text-center text-xs hover:bg-purple-700 transition">
+                    Transfer Between Accounts
+                </a>
+                
+                <a href="{% url 'erp:company_account_create' %}" 
+                   class="py-2 px-4 bg-emerald-600 text-white rounded text-center text-xs uppercase hover:bg-emerald-700 transition">
+                    <i class="fa-solid fa-plus"></i> Add account
+                </a>
+    
+
+            </div>
+    
+            <!-- Input Fields Row -->
+            <div class="flex flex-wrap gap-2 items-center justify-center">
+                <div class="w-full sm:w-auto">
+                    <label for="q" class="sr-only">Search</label>
+                    <input type="text" name="q" id="q" 
+                           value="{{ query|default_if_none:'' }}" 
+                           placeholder="search..."
+                           class="focus:ring-amber-500 focus:border-amber-500 block shadow-sm text-xs border-gray-300 rounded-md w-full sm:w-60">
+                </div>
+                
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-xs font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                    <i class="fas fa-search"></i>
+                </button>
+                
+                <div class="flex items-center px-4 py-2 border border-transparent text-xs font-medium rounded-md text-white bg-green-500">
+                    <i class="fas fa-file-invoice-dollar mr-2"></i>
+                    TOTAL COMPANY ACCOUNTS: {{ total_entry }}
+                </div>
+                
+                {% if request.GET.urlencode %}
+                <a href="?" class="inline-flex items-center px-4 py-2 border border-transparent text-xs font-medium rounded-md text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                    <i class="fas fa-rotate"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <div class="rounded-xl shadow-lg bg-white uppercase">
+        <div class="overflow-x-auto rounded-lg">
+            <table class="min-w-full border border-emerald-200 shadow-md rounded-lg overflow-hidden">
+                <thead class="bg-emerald-600 text-white text-xs uppercase tracking-wider">
+                    <tr class="text-left">
+                        <th class="p-3">#</th>
+                        <th class="px-4 py-2 text-left">NAME</th>
+                        <th class="px-4 py-2 text-left">ACCOUNT NUMBER</th>
+                        <th class="px-4 py-2 text-left">BALANCE</th>
+                        <th class="px-4 py-2 text-left">EDIT</th>
+                        <th class="px-4 py-2 text-left">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-emerald-100">
+                    {% for e in company_accounts %}
+                    <tr class="hover:bg-emerald-50 transition-all duration-300 text-xs text-left">
+                        <td class="p-3 whitespace-nowrap text-gray-700">{{ forloop.counter }}</td>
+                        <td class="px-4 py-2 text-left">{{ e.name|default_if_none:"N/A" }}</td>
+                        <td class="px-4 py-2 text-left">{{ e.account_number|default_if_none:"N/A" }}</td>
+                        <td class="px-4 py-2 text-left">{{ e.balance|default_if_none:"N/A"}}</td>
+                        <td class="px-4 py-2 text-left">
+                            <span class="space-x-4">
+                                <a href="{%url 'erp:company_account_update' e.id %}" class="text-blue-500 hover:text-blue-700">
+                                  <i class="fa fa-solid fa-edit fa-xl"></i>
+                                  </a>
+                              </span>
+                        </td>
+                        <td class="px-4 py-2">
+                            <div class="flex space-x-2">
+                                <a href="{% url 'erp:fund_account' e.pk %}" 
+                                   class="py-1 px-2 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition">
+                                    Fund
+                                </a>
+                                <!-- <a href="{% url 'erp:deduct_account' e.pk %}" 
+                                   class="py-1 px-2 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition">
+                                    Deduct
+                                </a> -->
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="p-3 text-center text-gray-500">No account found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+                        
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#q").autocomplete({
+            source: "{% url 'erp:company_account_autocomplete' %}",
+            minLength: 1,
+            select: function(event, ui) {
+            // Set the input value to the selected item's label
+            $(this).val(ui.item.label);
+            // Add a hidden input with the selected company_acct ID
+            if (!$("#selected_company_acct_id").length) {
+                $("<input>").attr({
+                    type: "hidden",
+                    id: "selected_company_acct_id",
+                    name: "company_acct_id",
+                    value: ui.item.id
+                }).appendTo($(this).closest('form'));
+            } else {
+                $("#selected_company_acct_id").val(ui.item.id);
+            }
+            // Submit the form to filter the table
+            $(this).closest('form').submit();
+            return false;
+        },
+            focus: function(event, ui) {
+                // Prevent automatically filling the input on focus
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function(ul, item) {
+            // Custom rendering for dropdown items
+            return $("<li>")
+                .append("<div class='py-1'>" + item.label + "</div>")
+                .appendTo(ul);
+        };
+    });
+    </script>
+    
+    <style>
+        .ui-autocomplete {
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 9999 !important;
+            font-size: 0.75rem;
+        }
+        .ui-menu-item {
+            padding: 4px 8px;
+        }
+        .ui-state-active {
+            background-color: #0e7490 !important;
+            border-color: #0e7490 !important;
+        }
+    </style>
+{% endblock %}

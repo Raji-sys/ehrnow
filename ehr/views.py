@@ -251,7 +251,7 @@ class StaffListView(ListView):
     model = Profile
     template_name = "stafflist.html"
     context_object_name = 'profiles'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-user_id')
@@ -375,7 +375,7 @@ class GenericWardListView(DoctorNurseRequiredMixin, ListView):
     model = Admission  # Changed from Ward to Admission
     context_object_name = 'admissions'  # Changed from 'ward' to 'admissions'
     template_name = 'ehr/ward/generic_ward_list.html'
-    paginate_by = 10  # Add pagination
+    paginate_by = 20  # Add pagination
 
     def get_queryset(self):
         ward = get_object_or_404(Ward, pk=self.kwargs['ward_id'])
@@ -446,7 +446,7 @@ class PatientListView(ListView):
     model=PatientData
     template_name='ehr/record/patient_list.html'
     context_object_name='patients'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-file_no')
@@ -480,7 +480,7 @@ class PatientReportView(ListView):
     model = PatientData
     template_name = 'ehr/report/patient_report.html'
     context_object_name = 'patients'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-updated')
@@ -532,7 +532,7 @@ def patient_report_pdf(request):
 #     filterset_class = VisitFilter
 #     template_name = 'ehr/clinic/report.html'
 #     context_object_name = 'visits'
-#     paginate_by = 10
+#     paginate_by = 20
 
 #     def get_queryset(self):
 #         # Subquery to get the latest ClinicalNote for each patient
@@ -560,7 +560,7 @@ class VisitReportView(ListView):
     filterset_class = VisitFilter
     template_name = 'ehr/clinic/report.html'
     context_object_name = 'visits'
-    paginate_by = 10
+    paginate_by = 20
     
     def get_queryset(self):
         # Default time filter if none specified (100 days)
@@ -1073,7 +1073,7 @@ class VisitPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/visit_pay_list.html'
     context_object_name = 'visit_pays'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -1501,7 +1501,7 @@ class AppointmentListView(ListView):
     model=Appointment
     template_name='ehr/record/appointment.html'
     context_object_name='appointments'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         appointment = super().get_queryset().order_by('-updated')
@@ -1712,7 +1712,7 @@ class PayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/transaction.html'
     context_object_name = 'pays'
-    paginate_by = 10
+    paginate_by = 50
 
     def get_queryset(self):
         # Start with an optimized queryset
@@ -1734,8 +1734,11 @@ class PayListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Add annotations for quick access to key metrics
-        summary = Paypoint.objects.aggregate(
+        # Get the filtered queryset
+        filtered_queryset = self.get_queryset()
+        
+        # Calculate totals based on filtered results
+        filtered_summary = filtered_queryset.aggregate(
             total_count=Count('id'),
             approved_count=Count('id', filter=Q(status=True)),
             pending_count=Count('id', filter=Q(status=False)),
@@ -1743,20 +1746,38 @@ class PayListView(ListView):
             total_pending=Sum('price', filter=Q(status=False))
         )
         
+        # Calculate overall database totals (unfiltered)
+        overall_summary = Paypoint.objects.aggregate(
+            overall_total_count=Count('id'),
+            overall_approved_count=Count('id', filter=Q(status=True)),
+            overall_pending_count=Count('id', filter=Q(status=False)),
+            overall_total_worth=Sum('price', filter=Q(status=True)),
+            overall_total_pending=Sum('price', filter=Q(status=False))
+        )
+        
         context.update({
-            'total_count': summary['total_count'],
-            'approved_count': summary['approved_count'],
-            'pending_count': summary['pending_count'],
-            'total_worth': summary['total_worth'] or 0,
-            'total_pending': summary['total_pending'] or 0,
+            # Filtered totals (for current view)
+            'total_count': filtered_summary['total_count'],
+            'approved_count': filtered_summary['approved_count'],
+            'pending_count': filtered_summary['pending_count'],
+            'total_worth': filtered_summary['total_worth'] or 0,
+            'total_pending': filtered_summary['total_pending'] or 0,
+            
+            # Overall database totals
+            'overall_total_count': overall_summary['overall_total_count'],
+            'overall_approved_count': overall_summary['overall_approved_count'],
+            'overall_pending_count': overall_summary['overall_pending_count'],
+            'overall_total_worth': overall_summary['overall_total_worth'] or 0,
+            'overall_total_pending': overall_summary['overall_total_pending'] or 0,
+            
             'current_filter': self.request.GET.get('status', 'all'),
             'payFilter': PayFilter(self.request.GET, queryset=self.get_queryset())
         })
         
-        # Add date-based metrics
+        # Add date-based metrics using filtered queryset
         today = timezone.now().date()
-        context['today_transactions'] = self.get_queryset().filter(created=today).count()
-        context['today_worth'] = self.get_queryset().filter(created=today, status=True).aggregate(total=Sum('price'))['total'] or 0
+        context['today_transactions'] = filtered_queryset.filter(created=today).count()
+        context['today_worth'] = filtered_queryset.filter(created=today, status=True).aggregate(total=Sum('price'))['total'] or 0
         
         return context
 
@@ -2228,7 +2249,7 @@ class UnitRevenueView(TemplateView):
 @login_required
 def thermal_receipt(request):
     ndate = datetime.now()
-    filename = ndate.strftime('Receipt__%d_%m_%Y__%I_%M%p.pdf')
+    filename = ndate.strftime('Report__%d_%m_%Y__%I_%M%p.pdf')
     base_queryset = Paypoint.objects.filter(status=True)
     
     # Then apply the filter
@@ -2236,12 +2257,33 @@ def thermal_receipt(request):
     patient = f.first().patient if f.exists() else None
     total_price = f.aggregate(total_price=Sum('price'))['total_price']
 
-    result = ""
+
+    label_map = {
+        'user': 'STAFF',
+        'patient': 'FILE NO',
+        'service': 'SERVICE',
+        'unit': 'UNIT',
+        'created1': 'FROM',
+        'created2': 'TO',
+    }
+
+    filters_applied = []
     for key, value in request.GET.items():
-        if value:
-            result += f" {value.upper()} receipt, Generated on: {ndate.strftime('%d-%B-%Y at %I:%M %p')} By: {request.user.username.upper()}"
-    
-    template = get_template('ehr/revenue/thermal_receipt.html')
+        if value and key in label_map:
+            if "created" in key:
+                try:
+                    date_obj = datetime.strptime(value, '%Y-%m-%d')
+                    value = date_obj.strftime('%d-%m-%Y')
+                except ValueError:
+                    pass
+            filters_applied.append(f"{label_map[key]}: {value.upper()}")
+
+    result = " | ".join(filters_applied)
+
+
+    template = get_template('ehr/revenue/revenue_report.html')
+
+    # template = get_template('ehr/revenue/thermal_receipt.html')
     html = template.render({
         'f': f,
         'total_price':total_price,
@@ -2488,7 +2530,7 @@ class AdmissionPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/admission_pay_list.html'
     context_object_name = 'admission_pays'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -2764,7 +2806,7 @@ class RadiologyRequestListView(ListView):
 class RadioReportView(ListView):
     model = RadiologyResult
     template_name = 'ehr/radiology/radiology_report.html'
-    paginate_by = 10
+    paginate_by = 20
     context_object_name = 'patient'
 
     def get_queryset(self):
@@ -2784,7 +2826,7 @@ class RadiologyPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/radiology_pay_list.html'
     context_object_name = 'radiology_pays'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -2959,7 +3001,7 @@ class BillingPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/bill_pay_list.html'
     context_object_name = 'bill_pays'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -3000,7 +3042,7 @@ class BillListView(DoctorRequiredMixin, LoginRequiredMixin, ListView):
     model = Bill
     template_name = 'ehr/revenue/bill_list.html'
     context_object_name = 'bills'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         return Bill.objects.filter(user=self.request.user).prefetch_related('items').order_by('-created')
@@ -3087,7 +3129,7 @@ class TheatreBookingListView(DoctorRequiredMixin, ListView):
     model = TheatreBooking
     template_name = 'ehr/theatre/theatre_bookings.html'
     context_object_name = 'bookings'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         theatre_id = self.kwargs.get('theatre_id')
@@ -3155,7 +3197,7 @@ class OperationNotesListView(DoctorRequiredMixin,ListView):
     model=OperationNotes
     template_name='ehr/theatre/operated_list.html'
     context_object_name='operated'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         theatre_id = self.kwargs.get('theatre_id')
@@ -3334,7 +3376,7 @@ class AnaesthesiaChecklistListView(DoctorRequiredMixin,ListView):
     model = AnaesthesiaChecklist
     template_name = 'ehr/theatre/anaesthesia_checklist_list.html'
     context_object_name = 'anaesthesia_checklists'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         theatre_id = self.kwargs.get('theatre_id')
@@ -3455,7 +3497,7 @@ class PrivateBillingPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/private_bill_pay_list.html'
     context_object_name = 'private_bill_pays'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -3497,7 +3539,7 @@ class PrivateBillListView(DoctorRequiredMixin, LoginRequiredMixin, ListView):
     model = PrivateBill
     template_name = 'ehr/revenue/private_bill_list.html'
     context_object_name = 'private_bills'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         return PrivateBill.objects.filter(user=self.request.user).prefetch_related('private_items').order_by('-created')
@@ -3601,7 +3643,7 @@ class AllTransactionsListView(LoginRequiredMixin, ListView):
     model = WalletTransaction
     template_name = 'ehr/revenue/wallet_transaction_list.html'
     context_object_name = 'transactions'
-    paginate_by = 10 
+    paginate_by = 20 
 
     def get_queryset(self):
         return WalletTransaction.objects.all().order_by('-created_at')
@@ -3679,7 +3721,7 @@ class TheatreOperationRecordListView(DoctorRequiredMixin, ListView):
     model = TheatreOperationRecord
     template_name = 'ehr/theatre/theatre_record_list.html'
     context_object_name = 'surgical_records'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         theatre_id = self.kwargs.get('theatre_id')
@@ -3839,7 +3881,7 @@ class PhysioRequestListView(ListView):
 class PhysioReportView(ListView):
     model = PhysioRequest
     template_name = 'ehr/physio/physio_report.html'
-    paginate_by = 10
+    paginate_by = 20
     context_object_name = 'patient'
 
     def get_queryset(self):
@@ -3859,7 +3901,7 @@ class PhysioPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/physio_pay_list.html'
     context_object_name = 'physio_pays'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -3899,7 +3941,7 @@ class CreditPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/credit_pay_list.html'
     context_object_name = 'credit_pays'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -3939,7 +3981,7 @@ class CashPayListView(ListView):
     model = Paypoint
     template_name = 'ehr/revenue/cash_pay_list.html'
     context_object_name = 'cash_pays'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -4130,7 +4172,7 @@ class AllRadiologyTestListView(LoginRequiredMixin, ListView):
     model = RadiologyTests
     template_name = 'ehr/radiology/incoming_radiology_req.html'
     context_object_name = 'tests'
-    paginate_by = 10  # Adjust as needed
+    paginate_by = 20  # Adjust as needed
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-updated')
     # rest of your code remains the same

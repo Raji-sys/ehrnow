@@ -160,7 +160,7 @@
     <i class="fa-solid fa-triangle-exclamation"></i>
     <p class="title">🚫 Access Restricted</p>
     <p class="desc">
-      No active visit record found. All medical functions, documentation, and patient interactions are disabled until an active visit is registered.
+      No active visit session found. <br> patient interactions are disabled until payment is made for new registration or follow up.
     </p>
   </div>
 {% endif %}
@@ -184,7 +184,7 @@
 
     <form method="POST"
           action="{% url 'close_visit' file_no=patient.file_no visit_pk=active_visit_for_actions.pk %}"
-          onsubmit="return confirm('Are you sure you want to manually close this visit? This will end the current consultation for Visit ID {{ active_visit_for_actions.id }}. and you have to initialize another visit work on this patient'); ">
+          onsubmit="return confirm('Are you sure you want to manually close this visit session? {{ active_visit_for_actions.id }}. you have to initialize another visit session to work on this patient'); ">
       {% csrf_token %}
       <button type="submit" class="close-button">
         <i class="fa-solid fa-door-closed" style="margin-right: 5px;"></i> Close Visit
@@ -466,7 +466,7 @@
      </div>
     <!-- break -->
       <!-- break -->
-<div class="bg-white rounded-lg shadow-lg p-6"> 
+<div> 
   <!-- Header Section -->
   <div class="flex flex-col items-center text-center mb-3 pb-2 ">
   
@@ -483,7 +483,7 @@
 
       </button>
 <p class="bg-black text-white text-xs p-2 rounded">
-  Clinical notes can only be added when the patient has an active visit. Please ensure an active visit is registered before proceeding.
+  Clinical notes can only be added when the patient has an active visit session. 
 </p>
 
     </div>
@@ -519,13 +519,13 @@
                 <details class="group">
                   <summary class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-6 rounded-lg cursor-pointer transition-all duration-200 inline-flex items-center gap-2 font-medium text-xs">
                     <i class="fa-solid fa-file-medical group-open:rotate-90 transition-transform duration-200"></i>
-                    View - {{ c.updated }} Clinical Note
+                    Open Clinical Note: <span class="bg-white text-blue-700 p-1 rounded"> {{ c.updated }} </span>
                     <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-200 ml-auto"></i>
                   </summary>
                   
                   <div class="mt-2 bg-gray-50 rounded-lg p-2 border border-gray-200 max-h-50 overflow-y-auto">
                     <!-- Note Header -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-2 bg-white rounded-lg border border-gray-200">
+                    <div class="text-center grid grid-cols-2 md:grid-cols-4 gap-2 p-1 bg-white rounded-lg border border-gray-200">
                       <div>
                         <label class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Diagnosis</label>
                         <p class="text-xs text-gray-900 font-medium mt-1">
@@ -595,7 +595,7 @@
     {% else %}
       <!-- Empty State -->
       <div class="text-center py-12">
-        <p class="text-gray-500 mb-6 text-sm">No clinical notes have been created for this patient yet.</p>
+        <p class="text-gray-500 mb-6 text-sm">No clinical created for this patient yet.</p>
         {% if has_active_visit %}
           <a href="{% url 'clinical_note' patient.file_no %}" 
              class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 inline-flex items-center gap-2 font-medium text-sm">
@@ -605,7 +605,7 @@
         {% else %}
           <p class="text-xs text-amber-600 bg-amber-50 px-4 py-2 rounded-lg inline-block">
             <i class="fa-solid fa-info-circle mr-1"></i>
-            Register a visit to create clinical notes
+            open a visit session to create clinical notes
           </p>
         {% endif %}
       </div>
@@ -617,10 +617,25 @@
            <!-- break -->
       <!-- break -->
       <div> 
-        <div>
-        <a href="{%url 'new_appointment' patient.file_no%}" class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-calendar-week fa-2xl"></i></a>
-      </div>     
 
+<div class="flex flex-col items-center text-center mb-3 pb-2 ">
+  
+  {% if has_active_visit %}
+    <a href="{% url 'new_appointment' patient.file_no %}" 
+class="text-xs text-green-600 hover:text-green-700"><i class="fa-solid fa-calendar-week fa-2xl"></i></a>
+  {% else %}
+    <div class="relative group">
+      <button disabled 
+              class="text-xs text-green-600 hover:text-green-700">
+            <i class="fa-solid fa-calendar-week fa-2xl"></i>
+      </button>
+<p class="bg-black text-white text-xs p-2 rounded">
+  Appointments can only be added when the patient has an active visit session. 
+</p>
+
+    </div>
+  {% endif %}
+</div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
@@ -658,12 +673,27 @@
            <!-- break -->
       <!-- break -->
       <div> 
-        <div>
-          <a href="{% url 'results:lab_test' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
+     
+<div class="flex flex-col items-center text-center mb-3 pb-2 ">
+  
+  {% if has_active_visit %}
+    <a href="{% url 'results:lab_test' patient.file_no %}" 
+class="text-xs text-green-600 hover:text-green-700">
             <i class="fa-solid fa-plus fa-2xl"></i> SEND PATHOLOGY INVESTIGATION
         </a>
-      </div>     
+  {% else %}
+    <div class="relative group">
+      <button disabled 
+              class="text-xs text-green-600 hover:text-green-700">
+            <i class="fa-solid fa-plus fa-2xl"></i>
+      </button>
+<p class="bg-black text-white text-xs p-2 rounded">
+  Investigations can only be added when the patient has an active visit session. 
+</p>
 
+    </div>
+  {% endif %}
+</div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
             <thead class="bg-cyan-50">
@@ -2188,8 +2218,11 @@
     <!-- break -->
       <!-- break -->
       <div> 
-        <div class="flex gap-2 justify-center">    
-        <a href="{% url 'pharm:add_prescription' patient.file_no  %}" class="text-xs text-green-600 hover:text-green-700 bg-green-100 p-3 rounded-xl"> 
+      
+      <div class="flex justify-center gap-4 items-center text-center mb-3 pb-2 ">
+  
+  {% if has_active_visit %}
+<a href="{% url 'pharm:add_prescription' patient.file_no  %}" class="text-xs text-green-600 hover:text-green-700 bg-green-100 p-3 rounded-xl"> 
           <i class="fa-solid fa-prescription fa-2xl"></i>
           out-patient <br>  
         </a>
@@ -2197,7 +2230,20 @@
           <i class="fa-solid fa-file-prescription fa-2xl"></i>
           in-patient <br>
         </a>
-      </div>     
+  {% else %}
+    <div class="relative group">
+      <button disabled 
+              class="text-xs text-green-600 hover:text-green-700">
+          <i class="fa-solid fa-file-prescription fa-2xl"></i>
+      </button>
+<p class="bg-black text-white text-xs p-2 rounded">
+  Prescriptions can only be added when the patient has an active visit session. 
+</p>
+
+    </div>
+  {% endif %}
+</div>
+
         <div class="overflow-x-auto max-h-[50vh] p-2">
 <table class="min-w-full divide-y divide-cyan-200 mb-4">
     <thead class="bg-cyan-50">

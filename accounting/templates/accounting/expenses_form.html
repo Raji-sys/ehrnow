@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}EXPENSE FORM{% endblock %}
+{% block content %}
+
+<div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-rose-700 to-rose-900 flex justify-center items-center py-2">
+            <div class="flex items-center">
+              <a href="{% url 'erp:expenses_list' %}" ><i class="fa-solid fa-arrow-left"></i></a>
+                <h1 class="text-sm text-white uppercase m-0">{% if object %}Update{% else %}Create{% endif %} Expense form</h1>
+                
+            </div>
+        </div>
+        {% if form.non_field_errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="">Error!</strong>
+            <span class="block sm:inline">{{ form.non_field_errors.0 }}</span>
+        </div>
+        {% endif %}
+
+        <form action="" method="POST" enctype="multipart/form-data" class="px-6 py-8 bg-rose-50 text-xs">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 gap-3">
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="block text-xs font-medium text-gray-700 uppercase mb-1 text-center">
+                        {{ field.label }}
+                    </label>
+                    <div class="flex justify-center">
+                        {{ field }}
+                    </div>
+                    {% if field.errors %}
+                    <p class="mt-2 text-sm text-red-600 text-center">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="mt-8 flex justify-center gap-2">
+              <!-- <div>
+                <a href="{% url 'erp:expenses_list' %}" class="text-xs inline-flex items-center px-6 py-3 border border-transparent font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 uppercase transition duration-150 ease-in-out">Cancel</a>
+              </div> -->
+  
+                <button type="submit" class="text-xs inline-flex items-center px-6 py-3 border border-transparent font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 uppercase transition duration-150 ease-in-out">
+                    save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group input[type="date"],
+  .form-group select {
+      @apply mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full max-w-md shadow-sm sm:text-sm border-gray-300 rounded-md;
+  }
+</style>
+{% endblock %}

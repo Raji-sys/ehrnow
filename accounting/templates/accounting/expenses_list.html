@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}EXPENSES {% endblock %}
+{% block content %}
+<div class="container mx-auto p-4">
+    <div class="flex justify-center p-4 gap-4 text-xl">
+        <div>
+            <a href="{% url 'erp:accounting_index' %}" ><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
+        <div>
+            <h1 class="text-lg text-zinc-800 text-center uppercase">EXPENSES</h1>
+        </div>
+    </div>
+      
+    <div class="flex flex-wrap justify-center items-center mb-1 space-x-2 gap-2">
+        <!-- Search Form -->
+        <form method="get" class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
+            <div class="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 w-full sm:w-auto">
+                <div class="flex items-center w-full sm:w-auto">
+                    <label for="q" class="sr-only">Search</label>
+                    <input type="text" name="q" id="q" 
+                           value="{{ query|default_if_none:'' }}" 
+                           placeholder="search..."
+                           class="focus:ring-amber-500 focus:border-amber-500 block shadow-sm text-xs border-gray-300 rounded-md w-full sm:w-60">
+                </div>
+                
+                <div class="flex items-center w-full sm:w-auto">
+                    <label for="start_date" class="sr-only">Start Date</label>
+                    <input type="date" name="start_date" id="start_date"
+                           value="{{ start_date|default_if_none:'' }}"
+                           class="focus:ring-amber-500 focus:border-amber-500 block shadow-sm text-xs border-gray-300 rounded-md w-full sm:w-auto">
+                </div>
+                
+                <div class="flex items-center w-full sm:w-auto">
+                    <label for="end_date" class="sr-only">End Date</label>
+                    <input type="date" name="end_date" id="end_date"
+                           value="{{ end_date|default_if_none:'' }}"
+                           class="focus:ring-amber-500 focus:border-amber-500 block shadow-sm text-xs border-gray-300 rounded-md w-full sm:w-auto">
+                </div>
+            </div>
+                  <!-- Add supplier Button -->
+            <div>
+              <a href="{% url 'erp:expense_create' %}" class="uppercase px-4 py-2 bg-rose-600 text-white text-xs rounded-md shadow-sm hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">
+                  <i class="fa-solid fa-plus"></i> Add expense
+              </a>
+          </div>
+
+            <div class="flex space-x-2">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                    <i class="fas fa-search"></i>
+                </button>
+                <div class="flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-500">
+                    <i class="fas fa-file-invoice-dollar mr-2"></i>
+                    TOTAL ENTRIES: {{ total_entry }}
+                </div>
+                {% if request.GET.urlencode %}
+                <a href="?" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                    <i class="fas fa-rotate"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    <div class="rounded-xl shadow-lg bg-white uppercase">
+        <div class="overflow-x-auto rounded-lg">
+            <table class="min-w-full border border-rose-200 shadow-md rounded-lg overflow-hidden">
+                <thead class="bg-rose-600 text-white text-xs uppercase tracking-wider">
+                    <tr class="text-left">
+                        <th class="p-3">#</th>
+                        <th class="px-4 py-2 text-left">Payment To</th>
+                        <th class="px-4 py-2 text-left">Type of Expense</th>
+                        <th class="px-4 py-2 text-left">PAYMENT METHOD</th>
+                        <th class="px-4 py-2 text-left">AMOUNT</th>
+                        <th class="px-4 py-2 text-left">NOTES</th>
+                        <th class="px-4 py-2 text-left">DATE</th>
+                        <th class="px-4 py-2 text-left">EDIT</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-rose-100">
+                    {% for e in expenses %}
+                    <tr class="hover:bg-rose-50 transition-all duration-300 text-xs text-left">
+                        <td class="p-3 whitespace-nowrap text-gray-700">{{ forloop.counter }}</td>
+                        <td class="px-4 py-2 text-left">{{ e.vendor|default_if_none:"N/A" }}</td>
+                        <td class="px-4 py-2 text-left">{{ e.category|default_if_none:"N/A" }}</td>
+                        <td class="px-4 py-2 text-left">{{ e.notes|default_if_none:"N/A"}}</td>
+                        <td class="px-4 py-2 text-left">{{ e.account_used.name|default_if_none:"N/A"}} </td>
+                        <td class="px-4 py-2 text-left">{{ e.amount|default_if_none:"N/A"}}</td>
+                        <td class="px-4 py-2 text-left">{{ e.updated|default_if_none:"N/A"}}</td>
+                        <td class="px-4 py-2 text-left">
+                            <span class="space-x-4">
+                                <a href="{%url 'erp:expense_update' e.id %}" class="text-blue-500 hover:text-blue-700">
+                                  <i class="fa fa-solid fa-edit fa-xl"></i>
+                                  </a>
+                              </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="p-3 text-center text-gray-500">No entries found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+                        
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#q").autocomplete({
+            source: "{% url 'erp:expense_autocomplete' %}",
+            minLength: 1,
+            select: function(event, ui) {
+            // Set the input value to the selected item's label
+            $(this).val(ui.item.label);
+            // Add a hidden input with the selected expense ID
+            if (!$("#selected_expense_id").length) {
+                $("<input>").attr({
+                    type: "hidden",
+                    id: "selected_expense_id",
+                    name: "expense_id",
+                    value: ui.item.id
+                }).appendTo($(this).closest('form'));
+            } else {
+                $("#selected_expense_id").val(ui.item.id);
+            }
+            // Submit the form to filter the table
+            $(this).closest('form').submit();
+            return false;
+        },
+            focus: function(event, ui) {
+                // Prevent automatically filling the input on focus
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function(ul, item) {
+            // Custom rendering for dropdown items
+            return $("<li>")
+                .append("<div class='py-1'>" + item.label + "</div>")
+                .appendTo(ul);
+        };
+    });
+    </script>
+    
+    <style>
+        .ui-autocomplete {
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 9999 !important;
+            font-size: 0.75rem;
+        }
+        .ui-menu-item {
+            padding: 4px 8px;
+        }
+        .ui-state-active {
+            background-color: #0e7490 !important;
+            border-color: #0e7490 !important;
+        }
+    </style>
+{% endblock %}
