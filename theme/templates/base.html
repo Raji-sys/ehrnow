@@ -126,7 +126,7 @@
         .page-title {
             text-align: center;
             font-weight: 500;
-            font-size: 0.75rem;
+            font-size: 0.55rem;
             color: #15803d;
             background-color: white;
             padding: 0.5rem;
@@ -138,7 +138,7 @@
                 margin-right: 5rem;
             }
             .page-title {
-                font-size: 0.875rem;
+                font-size: 0.570rem;
             }
         }
     </style>
@@ -174,9 +174,9 @@
         <div class="page-title ">
             {% if request.path_info != "/get-started/" and request.path_info != "/" %}
             <nav class="flex justify-around overflow-x-auto whitespace-nowrap rounded-lg mb-4 bg-sky-50 shadow-sm shadow-black ring-1 ring-sky-100">
-                <a href="{% url 'patient_list' %}"
+                <a href="{% url 'medical_record' %}"
                 class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                <i class="fa-solid fa-user-injured fa-xs mr-2"></i>Patients
+                <i class="fa-solid fa-user-injured fa-xs mr-2"></i>HIM
             </a>
             <a href="{% url 'visit_stat_card' %}"
                class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200">

@@ -2,19 +2,9 @@
 {% load static %}
 
 {% block title %}Transaction History{% endblock %}
-
+{%block page_title%}<div class="flex justify-center"><a href="{%url 'erp:company_account_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>TRANSACTION HISTORY</div>{%endblock%}
 {% block content %}
-<div class="container mx-auto px-4 py-4">
-    <div class="flex justify-center p-2 gap-4 text-xl">
-        <div>
-            <a href="{% url 'erp:company_account_list' %}" ><i class="fa-solid fa-arrow-left"></i></a>
-        </div>
-        <div>
-            <h1 class="text-sm text-zinc-800 text-center uppercase">TRANSACTION HISTORY</h1>
-        </div>
-    </div>
-
-    
+  <div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden p-2 mx-2 md:mx-20 mt-4">    
 <!-- Filter Panel -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-2">
     <form method="get" class="space-y-4">

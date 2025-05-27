@@ -1,15 +1,11 @@
 {% extends "base.html" %}
 {% block title %}COMPANY ACCOUNT FORM{% endblock %}
 {% block content %}
-
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-        <div class="bg-gradient-to-r from-emerald-700 to-emerald-900 flex justify-center items-center py-2">
-            <div class="flex items-center">
-              <a href="{% url 'erp:company_account_list' %}" ><i class="fa-solid fa-arrow-left mr-2"></i></a>
-                <h1 class="text-sm text-white uppercase m-0">{% if object %}Update{% else %}Create{% endif %} COMPANY ACCOUNT form</h1>
+<div class="max-w-4xl mx-auto px-4 py-4">
+    <div class="bg-green-700 shadow-lg rounded-lg overflow-hidden">
+            <div class="flex justify-center items-center">
+                <h1 class="text-xs text-white uppercase mt-2">{% if object %}Update{% else %}Create{% endif %} COMPANY ACCOUNT</h1>
                 
-            </div>
         </div>
         {% if form.non_field_errors %}
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
