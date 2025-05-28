@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         # List of groups to create
         group_names = [
-            'doctor', 'nurse', 'revenue', 'record','pharmacist', 'radiologist', 'physiotherapist', 'auditor', 
+            'doctor', 'nurse', 'revenue', 'record','pharmacist', 'radiologist', 'physiotherapist', 'auditor','STORE','ACCOUNTING', 
         ]
 
         # Create groups
