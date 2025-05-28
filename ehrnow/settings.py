@@ -135,7 +135,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL="/login/"
 LOGOUT_REDIRECT_URL = '/logout/'
 
-    import os
+import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # -----------------------------------------------------------------------------
