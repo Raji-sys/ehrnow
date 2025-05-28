@@ -3,9 +3,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-admin.site.site_header = "ROOT SITE"
-admin.site.index_title = "EMR NOW"
-admin.site.site_title = "ROOT SITE"
+admin.site.site_header = "CONTROL PANEL"
+admin.site.index_title = "AudaxEMR"
+admin.site.site_title = "CONTROL PANEL"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,7 +14,6 @@ urlpatterns = [
     path('lab/', include('results.urls',namespace='results')),
     path('account/', include('accounting.urls',namespace='erp')),
     path('',include('ehr.urls')),
-    path('site/',include('page.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
