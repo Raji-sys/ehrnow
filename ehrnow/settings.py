@@ -9,9 +9,10 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'True'
+DEBUG = True
+
 CSRF_TRUSTED_ORIGINS = ['https://*.railway.app']
 ALLOWED_HOSTS = ['*']
-DJANGO_DEBUG = True
 
 
 # Application definition
