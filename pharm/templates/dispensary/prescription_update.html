@@ -1,165 +1,236 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}PRESCRIPTION COSTING{% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase">DRUG PRESCRIPTION COSTING</div>{%endblock%}
 {% block content %}
 <div class="flex justify-center mx-2 p-4 mb-4">
-  <div class="justify-center items-center uppercase text-xs shadow-sm shadow-green-500 mx-auto rounded-2xl bg-green-50 mt-2 p-6">
+  <div class="justify-center items-center uppercase text-xs shadow-sm shadow-green-500 mx-auto rounded-2xl bg-green-50 mt-2 p-6 w-full max-w-4xl">
     <form method="post" class="flex flex-col space-y-4">
       {% csrf_token %}
       
       <div id="selected-drugs-container" class="flex flex-col space-y-2">
-        {% for drug in object.prescription_drugs.all %}
-          <div class="p-2 drug-row" data-drug-id="{{ drug.drug.id }}" data-price="{{ drug.drug.selling_price|default:0 }}">
-            <select name="drug_{{ forloop.counter0 }}" class="drug-select text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
-              {% for drug_option in drugs %}
-                <option value="{{ drug_option.id }}" data-price="{{ drug_option.selling_price|default:0 }}" {% if drug_option.id == drug.drug.id %}selected{% endif %}>{{ drug_option.name }}</option>
-              {% endfor %}
-            </select>
-            <input type="number" name="quantity_{{ forloop.counter0 }}" value="{{ drug.quantity }}" class="quantity-input text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
-            <input type="text" name="dose_{{ forloop.counter0 }}" value="{{ drug.dosage }}" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
-            <button type="button" class="remove-drug bg-red-500 text-white p-2 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-red-600 hover:bg-white hover:text-red-600 hover:border-2 hover:border-red-600 text-xs"><i class="fa fa-solid fa-xmark-circle fa-lg"></i></button>
+        {% for drug_item in object.prescription_drugs.all %}
+          <div class="p-2 drug-row flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 items-stretch md:items-center" 
+               data-row-sync-id="{{ forloop.counter0 }}">
+            
+            <div class="relative flex-grow drug-autocomplete-container">
+                <input type="text" 
+                       class="drug-search-input w-full text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200" 
+                       value="{{ drug_item.drug.name }}{% if drug_item.drug.strength %} - {{ drug_item.drug.strength }}{% endif %}" 
+                       placeholder="Search and select a drug"
+                       autocomplete="off">
+                <input type="hidden" 
+                       name="drug_{{ forloop.counter0 }}" 
+                       class="selected-drug-id-hidden" 
+                       value="{{ drug_item.drug.id }}">
+                <input type="hidden" 
+                       class="selected-drug-price-hidden" 
+                       value="{{ drug_item.drug.selling_price|default_if_none:0 }}">
+                <div class="drug-suggestions absolute z-20 w-full bg-white border border-gray-300 rounded mt-1 max-h-40 overflow-y-auto hidden text-left normal-case">
+                    </div>
+            </div>
+
+            <input type="number" 
+                   name="quantity_{{ forloop.counter0 }}" 
+                   value="{{ drug_item.quantity }}" 
+                   class="quantity-input text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200 md:w-24" 
+                   min="1">
+            <input type="text" 
+                   name="dose_{{ forloop.counter0 }}" 
+                   value="{{ drug_item.dosage }}" 
+                   class="dose-input text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200 flex-grow" 
+                   placeholder="Dosage">
+            <button type="button" class="remove-drug bg-red-500 text-white p-2 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-red-600 hover:bg-white hover:text-red-600 hover:border-2 hover:border-red-600 text-xs">
+                <i class="fa fa-trash"></i> </button>
           </div>
         {% endfor %}
       </div>
 
-      <button type="submit" class="text-xs bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600">cost</button>
+      <button type="submit" class="text-xs bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600 self-center">Update Cost</button>
     </form>
 
-    <table class="w-full text-left m-2">
-      <tr class="uppercase text-xs text-green-500">
-        <th>Drug</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Total</th>
-      </tr>
-      <tbody id="drug-table-body">
+    <hr class="my-6 border-green-300">
+
+    <h3 class="text-sm font-semibold text-green-700 mb-2 text-center normal-case">Cost Summary</h3>
+    <table class="w-full text-left m-2 text-xs md:text-xs">
+      <thead>
+        <tr class="uppercase text-xs text-green-500 border-b border-green-300">
+          <th class="py-2">Drug</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="drug-table-body" class="normal-case">
         {% for pd in prescription_drugs %}
-          <tr class="drug-table-row" data-drug-id="{{ pd.drug.id }}">
-            <td class="drug-name">{{ pd.drug.name }}</td>
+          <tr class="drug-table-row border-b border-gray-200" data-row-sync-id="{{ forloop.counter0 }}">
+            <td class="drug-name py-2">{{ pd.drug.name }}{% if pd.drug.strength %} - {{ pd.drug.strength }}{% endif %}</td>
             <td class="drug-quantity">{{ pd.quantity }}</td>
-            <td class="drug-price">{{ pd.drug.selling_price|default_if_none:'N/A' }}</td>
-            <td class="drug-total">{{ pd.total_price }}</td>
+            <td class="drug-price">{{ pd.drug.selling_price|stringformat:".2f"|default_if_none:'N/A' }}</td>
+            <td class="drug-total">{{ pd.total_price|stringformat:".2f"|default_if_none:"0.00" }}</td>
           </tr>
         {% endfor %}
       </tbody>
-      <tr class="uppercase text-xs text-green-500">
-        <td colspan="3">Total:</td>
-        <td id="grand-total">{{ total_price }}</td>
-      </tr>
+      <tfoot>
+        <tr class="uppercase text-sm text-green-600 font-bold border-t-2 border-green-300">
+          <td colspan="3" class="text-right py-2 pr-2">Grand Total:</td>
+          <td id="grand-total" class="text-base">{{ total_price|stringformat:".2f"|default_if_none:"0.00" }}</td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 </div>
 
 <script>
 $(document).ready(function() {
-    // Function to calculate and update total price
-    function updateTotal() {
+    let allAvailableDrugs = [];
+    try {
+        // Ensure your view provides 'all_drugs_json' in the context
+        // It should be a JSON string representing an array of drug objects
+        // Each drug object should have 'id', 'name', 'strength', and 'selling_price'
+        allAvailableDrugs = JSON.parse('{{ all_drugs_json|escapejs|default:"[]" }}');
+    } catch (e) {
+        console.error("Error parsing all_drugs_json:", e);
+        alert("Could not load drug list for autocomplete. Please contact support.");
+    }
+
+    // Function to calculate and update grand total
+    function updateGrandTotal() {
         let grandTotal = 0;
-        
         $('#selected-drugs-container .drug-row').each(function() {
             const $row = $(this);
-            const $select = $row.find('.drug-select');
-            const $quantityInput = $row.find('.quantity-input');
-            
-            const selectedOption = $select.find('option:selected');
-            const price = parseFloat(selectedOption.data('price')) || 0;
-            const quantity = parseInt($quantityInput.val()) || 0;
-            const total = price * quantity;
-            
-            if (price > 0) {
-                grandTotal += total;
+            const price = parseFloat($row.find('.selected-drug-price-hidden').val()) || 0;
+            const quantity = parseInt($row.find('.quantity-input').val()) || 0;
+            if (!isNaN(price) && !isNaN(quantity)) {
+                grandTotal += price * quantity;
             }
         });
-        
-        $('#grand-total').text(grandTotal.toLocaleString());
+        $('#grand-total').text(grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
     
-    // Function to update table row
-    function updateTableRow($drugRow) {
-        const drugId = $drugRow.find('.drug-select').val();
-        const $selectedOption = $drugRow.find('.drug-select option:selected');
-        const drugName = $selectedOption.text();
-        const price = parseFloat($selectedOption.data('price')) || 0;
-        const quantity = parseInt($drugRow.find('.quantity-input').val()) || 0;
-        const total = price * quantity;
-        
-        // Find corresponding table row
-        const $tableRow = $(`.drug-table-row[data-drug-id="${$drugRow.data('drug-id')}"]`);
+    // Function to update a single row in the summary table
+    function updateSummaryTableRow($formRow) {
+        const rowSyncId = $formRow.data('row-sync-id');
+        const $tableRow = $(`.drug-table-row[data-row-sync-id="${rowSyncId}"]`);
+
         if ($tableRow.length) {
+            const drugName = $formRow.find('.drug-search-input').val(); // This is the display text
+            const price = parseFloat($formRow.find('.selected-drug-price-hidden').val()) || 0;
+            const quantity = parseInt($formRow.find('.quantity-input').val()) || 0;
+            const total = (!isNaN(price) && !isNaN(quantity)) ? price * quantity : 0;
+
             $tableRow.find('.drug-name').text(drugName);
-            $tableRow.find('.drug-quantity').text(quantity);
-            $tableRow.find('.drug-price').text(price > 0 ? price : 'N/A');
-            $tableRow.find('.drug-total').text(total);
-            $tableRow.data('drug-id', drugId);
+            $tableRow.find('.drug-quantity').text(quantity || 0);
+            $tableRow.find('.drug-price').text(price > 0 ? price.toFixed(2) : 'N/A');
+            $tableRow.find('.drug-total').text(total.toFixed(2));
         }
     }
-    
-    // Update total when drug selection changes
-    $(document).on('change', '.drug-select', function() {
-        const $drugRow = $(this).closest('.drug-row');
-        updateTableRow($drugRow);
-        updateTotal();
+
+    // Event listener for drug search input
+    $(document).on('input', '.drug-search-input', function() {
+        const $inputField = $(this);
+        const query = $inputField.val().toLowerCase();
+        const $suggestionsContainer = $inputField.siblings('.drug-suggestions');
+        
+        $suggestionsContainer.empty().addClass('hidden');
+        // Clear related hidden fields until a selection is made
+        // $inputField.siblings('.selected-drug-id-hidden').val('');
+        // $inputField.siblings('.selected-drug-price-hidden').val('0');
+
+
+        if (query.length < 1) { // Start searching with 1 character, or adjust as needed
+            return;
+        }
+
+        const filteredDrugs = allAvailableDrugs.filter(function(drug) {
+            const nameMatch = drug.name.toLowerCase().includes(query);
+            const strengthMatch = drug.strength && drug.strength.toLowerCase().includes(query);
+            return nameMatch || strengthMatch;
+        });
+
+        if (filteredDrugs.length > 0) {
+            filteredDrugs.forEach(function(drug) {
+                let displayText = drug.name;
+                if (drug.strength) {
+                    displayText += ` - ${drug.strength}`;
+                }
+                // Add selling price to suggestion text for clarity
+                displayText += ` (Price: ${parseFloat(drug.selling_price || 0).toFixed(2)})`;
+                
+                $suggestionsContainer.append(
+                    `<div class="p-2 hover:bg-gray-200 cursor-pointer drug-suggestion-item" 
+                          data-id="${drug.id}" 
+                          data-name="${drug.name}"
+                          data-strength="${drug.strength || ''}"
+                          data-price="${parseFloat(drug.selling_price || 0).toFixed(2)}"
+                          data-display-text="${drug.name}${drug.strength ? ' - ' + drug.strength : ''}">
+                        ${displayText}
+                    </div>`
+                );
+            });
+            $suggestionsContainer.removeClass('hidden');
+        }
+    });
+
+    // Handle click on a suggestion
+    $(document).on('click', '.drug-suggestion-item', function() {
+        const $suggestion = $(this);
+        const $container = $suggestion.closest('.drug-autocomplete-container');
+        const $formRow = $container.closest('.drug-row');
+
+        const drugId = $suggestion.data('id');
+        const drugPrice = parseFloat($suggestion.data('price'));
+        const drugDisplayText = $suggestion.data('display-text'); // Name + Strength
+
+        $container.find('.drug-search-input').val(drugDisplayText);
+        $container.find('.selected-drug-id-hidden').val(drugId);
+        $container.find('.selected-drug-price-hidden').val(drugPrice);
+        
+        $suggestion.parent().empty().addClass('hidden');
+
+        updateSummaryTableRow($formRow);
+        updateGrandTotal();
+    });
+
+    // Hide suggestions when clicking outside
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('.drug-autocomplete-container').length) {
+            $('.drug-suggestions').addClass('hidden');
+        }
     });
     
-    // Update total when quantity changes
+    // Update total and table row when quantity changes
     $(document).on('input change', '.quantity-input', function() {
-        const $drugRow = $(this).closest('.drug-row');
-        updateTableRow($drugRow);
-        updateTotal();
+        const $formRow = $(this).closest('.drug-row');
+        updateSummaryTableRow($formRow);
+        updateGrandTotal();
+    });
+     // Update total and table row when dose changes (optional if dose affects cost/display)
+    $(document).on('input change', '.dose-input', function() {
+        const $formRow = $(this).closest('.drug-row');
+        updateSummaryTableRow($formRow); // Dose might be part of display name or other logic
+        // updateGrandTotal(); // Only if dose directly impacts cost calculations
     });
     
-    // Update total when drug is removed
+    // Handle drug removal
     $(document).on('click', '.remove-drug', function() {
-        const $drugRow = $(this).closest('.drug-row');
-        const drugId = $drugRow.data('drug-id');
+        const $formRow = $(this).closest('.drug-row');
+        const rowSyncId = $formRow.data('row-sync-id');
         
         // Remove from form
-        $drugRow.remove();
+        $formRow.remove();
         
-        // Remove from table
-        $(`.drug-table-row[data-drug-id="${drugId}"]`).remove();
+        // Remove from summary table
+        $(`.drug-table-row[data-row-sync-id="${rowSyncId}"]`).remove();
         
-        // Update total
-        updateTotal();
+        updateGrandTotal();
     });
 
-    $('#category-selector').change(function() {
-        var categoryId = $(this).val();
-        $.ajax({
-            url: "{% url 'pharm:get_drugs_by_category' 0 %}".replace('0', categoryId),
-            success: function(data) {
-                var $drugSelector = $('#drug-selector');
-                $drugSelector.empty();
-                $drugSelector.append('<option value="">Select a drug</option>');
-                data.drugs.forEach(function(drug) {
-                    $drugSelector.append(
-                        `<option value="${drug.id}">${drug.name}</option>`
-                    );
-                });
-            }
-        });
-    });
-
-    $('#add-drug-btn').click(function() {
-        var categoryName = $('#category-selector option:selected').text();
-        var drugName = $('#drug-selector option:selected').text();
-        var categoryId = $('#category-selector').val();
-        var drugId = $('#drug-selector').val();
-        var quantity = $('#quantity-input').val();
-        var dose = $('#dose-input').val();
-
-        var drugHtml = `
-            <div>
-                <input type="hidden" name="selected_drugs" value="${drugId}" data-category="${categoryId}">
-                <input type="hidden" name="selected_quantities" value="${quantity}">
-                <input type="hidden" name="selected_doses" value="${dose}">
-                ${categoryName}: ${drugName} (Quantity: ${quantity}) - Dose: ${dose}
-                <button type="button" class="remove-drug">Remove</button>
-            </div>
-        `;
-
-        $('#selected-drugs-container').append(drugHtml);
-    });
+    // Initial calculation on page load (optional, if totals are not pre-rendered correctly)
+    // updateGrandTotal(); 
+    // $('.drug-row').each(function() { // Ensure summary table reflects initial state if dynamic parts are complex
+    //    updateSummaryTableRow($(this));
+    // });
 });
 </script>
 {% endblock %}

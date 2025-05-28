@@ -339,10 +339,27 @@ class RecordUpdateView(LoginRequiredMixin, UpdateView):
         messages.error(self.request, "There was an error updating the record. Please check the form.")
         return super().form_invalid(form)
     
-
-def get_drugs_by_category(request, category_id):
-    drugs = Drug.objects.filter(category_id=category_id)
-    drug_list = [{'id': drug.id, 'name': drug.name} for drug in drugs]
+##OLD CODE
+# def get_drugs_by_category(request, category_id):
+#     drugs = Drug.objects.filter(category_id=category_id)
+#     drug_list = [{'id': drug.id, 'name': drug.name} for drug in drugs]
+#     return JsonResponse({'drugs': drug_list})
+##NEW CODE
+def get_drugs(request):
+    """
+    Returns a JSON response with drugs for autocomplete.
+    """
+    drugs = Drug.objects.all()
+    drug_list = [
+        {
+            'id': drug.id,
+            'name': drug.name,
+            'trade_name': drug.trade_name,
+            'supplier': drug.supplier,
+            'strength': drug.strength,
+        }
+        for drug in drugs
+    ]
     return JsonResponse({'drugs': drug_list})
 
 @group_required('STORE')
@@ -1839,6 +1856,7 @@ class PrescriptionListView(ListView):
         context['query'] = self.request.GET.get('q', '')       
         return context
 
+##NEW ALGO
 from django.db import IntegrityError
 class PrescriptionCreateView(LoginRequiredMixin, CreateView):
     model = Prescription
@@ -1899,160 +1917,402 @@ class PrescriptionCreateView(LoginRequiredMixin, CreateView):
         return self.object.patient.get_absolute_url()
 
 
+# class PrescriptionUpdateView(UpdateView):
+#     model = Prescription
+#     form_class = PrescriptionForm
+#     template_name = 'dispensary/prescription_update.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['drugs'] = Drug.objects.all()
+        
+#         # Calculate total price for each prescription drug
+#         prescription_drugs = self.object.prescription_drugs.all()
+#         prescription_drugs_with_total_price = []
+#         drugs_without_price = []
+        
+#         for pd in prescription_drugs:
+#             selling_price = getattr(pd.drug, 'selling_price', None)
+#             if selling_price is None or selling_price == 0:
+#                 pd.total_price = 0
+#                 drugs_without_price.append(pd.drug.name)
+#             else:
+#                 pd.total_price = selling_price * pd.quantity
+#             prescription_drugs_with_total_price.append(pd)
+        
+#         context['prescription_drugs'] = prescription_drugs_with_total_price
+#         context['drugs_without_price'] = drugs_without_price
+
+#         # Calculate total price for all prescription drugs
+#         total_price = 0
+#         for pd in prescription_drugs:
+#             selling_price = getattr(pd.drug, 'selling_price', None)
+#             if selling_price is not None and selling_price > 0:
+#                 total_price += selling_price * pd.quantity
+        
+#         context['total_price'] = total_price
+#         return context
+
+#     def form_valid(self, form):
+#         prescription = form.save(commit=False)
+#         prescription.prescribed_by = self.request.user
+#         prescription.save()
+
+#         # Get all existing prescription drugs
+#         existing_drugs = list(prescription.prescription_drugs.all())
+        
+#         # Debug: Print all POST data
+#         print("POST data:", dict(self.request.POST))
+        
+#         # Collect drug data from form - check all possible indices
+#         drugs_to_keep = []
+        
+#         # Find all drug fields in POST data
+#         for key in self.request.POST.keys():
+#             if key.startswith('drug_'):
+#                 try:
+#                     index = key.split('_')[1]
+#                     drug_id = self.request.POST.get(f'drug_{index}')
+#                     quantity = self.request.POST.get(f'quantity_{index}')
+#                     dose = self.request.POST.get(f'dose_{index}')
+                    
+#                     print(f"Index {index}: drug_id={drug_id}, quantity={quantity}, dose={dose}")
+                    
+#                     if drug_id and quantity:  # Only process if both exist
+#                         drugs_to_keep.append({
+#                             'drug_id': int(drug_id),
+#                             'quantity': int(quantity),
+#                             'dosage': dose or ''
+#                         })
+#                 except (ValueError, IndexError):
+#                     continue
+        
+#         print("Drugs to keep:", drugs_to_keep)
+
+#         # Delete all existing prescription drugs
+#         prescription.prescription_drugs.all().delete()
+        
+#         # Calculate total price and track drugs without pricing while creating
+#         total_price = 0
+#         drugs_without_price = []
+        
+#         # Create new prescription drugs from the form data and calculate price
+#         for drug_data in drugs_to_keep:
+#             # Get the drug to check its selling price
+#             try:
+#                 drug = Drug.objects.get(id=drug_data['drug_id'])
+#                 selling_price = getattr(drug, 'selling_price', None)
+                
+#                 if selling_price is None or selling_price == 0:
+#                     drugs_without_price.append(drug.name)
+#                 else:
+#                     total_price += selling_price * drug_data['quantity']
+                
+#                 # Create the prescription drug
+#                 PrescriptionDrug.objects.create(
+#                     prescription=prescription,
+#                     drug_id=drug_data['drug_id'],
+#                     quantity=drug_data['quantity'],
+#                     dosage=drug_data['dosage']
+#                 )
+#             except Drug.DoesNotExist:
+#                 continue  # Skip if drug doesn't exist
+
+#         # Create paypoint only if there's a total price
+#         if total_price > 0:
+#             paypoint = Paypoint.objects.create(
+#                 user=self.request.user,
+#                 patient=prescription.patient,
+#                 service='drug payment',
+#                 unit='pharmacy',
+#                 price=total_price,
+#                 status=False
+#             )
+#             # Update prescription payment
+#             prescription.payment = paypoint
+#             prescription.save()
+            
+#             # Success message with pricing info
+#             if drugs_without_price:
+#                 messages.warning(
+#                     self.request, 
+#                     f'Prescription costed successfully. Note: The following drugs have no selling price set: {", ".join(drugs_without_price)}. Proceed to revenue and make payment for available items.'
+#                 )
+#             else:
+#                 messages.success(
+#                     self.request, 
+#                     'Prescription costed successfully, proceed to revenue and make payment'
+#                 )
+#         else:
+#             # No paypoint created if no items have prices
+#             if drugs_without_price:
+#                 messages.error(
+#                     self.request, 
+#                     f'Prescription created but no payment required. All drugs have no selling price set: {", ".join(drugs_without_price)}. Please update drug prices in inventory.'
+#                 )
+#             else:
+#                 messages.info(
+#                     self.request, 
+#                     'Prescription created but no payment required as total price is zero.'
+#                 )
+        
+#         return super().form_valid(form)
+
+#     def get_success_url(self):
+#         # Assuming you want to redirect to the list view for the current unit/store
+#         return reverse('pharm:prescription_list', kwargs={'store_pk': self.object.unit.pk})
+from django.views.generic import UpdateView
+from django.urls import reverse
+from django.contrib import messages
+from django.core.serializers.json import DjangoJSONEncoder # For serializing Decimal and other types
+import json
+
+
 class PrescriptionUpdateView(UpdateView):
     model = Prescription
     form_class = PrescriptionForm
-    template_name = 'dispensary/prescription_update.html'
+    template_name = 'dispensary/prescription_update.html' # This is the template we updated
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['drugs'] = Drug.objects.all()
         
-        # Calculate total price for each prescription drug
-        prescription_drugs = self.object.prescription_drugs.all()
+        # Prepare all_drugs_json for autocomplete
+        all_drugs_queryset = Drug.objects.all() # Or any other filtering you need for available drugs
+        drugs_data_for_js = []
+        for drug in all_drugs_queryset:
+            drugs_data_for_js.append({
+                'id': drug.id,
+                'name': drug.name,
+                'strength': drug.strength if hasattr(drug, 'strength') else None, # Assuming strength might not always exist
+                'selling_price': float(drug.selling_price) if drug.selling_price is not None else 0.0
+            })
+        context['all_drugs_json'] = json.dumps(drugs_data_for_js, cls=DjangoJSONEncoder)
+
+        # Keep the existing logic for 'drugs' if any other part of the template still uses it,
+        # though the primary drug selection now uses all_drugs_json.
+        # For clarity, if 'drugs' is only for all_drugs_json, you might not need to pass it separately.
+        context['drugs'] = all_drugs_queryset 
+
+
+        # Calculate total price for each prescription drug (existing logic)
+        prescription_drugs_on_form = self.object.prescription_drugs.all() # Use a different variable name
         prescription_drugs_with_total_price = []
-        drugs_without_price = []
+        drugs_without_price_on_load = [] # Renamed to avoid conflict in messages later
         
-        for pd in prescription_drugs:
+        for pd in prescription_drugs_on_form:
             selling_price = getattr(pd.drug, 'selling_price', None)
             if selling_price is None or selling_price == 0:
-                pd.total_price = 0
-                drugs_without_price.append(pd.drug.name)
+                pd.total_price = 0 # Annotate the object for the template
+                drugs_without_price_on_load.append(pd.drug.name)
             else:
-                pd.total_price = selling_price * pd.quantity
+                pd.total_price = selling_price * pd.quantity # Annotate for the template
             prescription_drugs_with_total_price.append(pd)
         
-        context['prescription_drugs'] = prescription_drugs_with_total_price
-        context['drugs_without_price'] = drugs_without_price
+        context['prescription_drugs'] = prescription_drugs_with_total_price # Used by the table in the template
+        # context['drugs_without_price_on_load'] = drugs_without_price_on_load # If you need to show this on page load
 
-        # Calculate total price for all prescription drugs
-        total_price = 0
-        for pd in prescription_drugs:
+        # Calculate initial grand total price for all prescription drugs (existing logic)
+        initial_grand_total_price = 0
+        for pd in prescription_drugs_on_form: # Iterate over the same consistent list
             selling_price = getattr(pd.drug, 'selling_price', None)
             if selling_price is not None and selling_price > 0:
-                total_price += selling_price * pd.quantity
+                initial_grand_total_price += selling_price * pd.quantity
         
-        context['total_price'] = total_price
+        context['total_price'] = initial_grand_total_price # Used by the table grand total in the template
         return context
 
     def form_valid(self, form):
         prescription = form.save(commit=False)
-        prescription.prescribed_by = self.request.user
+        if not prescription.prescribed_by:
+             prescription.prescribed_by = self.request.user
         prescription.save()
 
-        # Get all existing prescription drugs
-        existing_drugs = list(prescription.prescription_drugs.all())
+        drugs_to_keep_from_form = []
         
-        # Debug: Print all POST data
-        print("POST data:", dict(self.request.POST))
-        
-        # Collect drug data from form - check all possible indices
-        drugs_to_keep = []
-        
-        # Find all drug fields in POST data
+        # --- START MODIFIED SECTION FOR COLLECTING DRUG DATA ---
+        indices_found = set()
         for key in self.request.POST.keys():
-            if key.startswith('drug_'):
-                try:
-                    index = key.split('_')[1]
-                    drug_id = self.request.POST.get(f'drug_{index}')
-                    quantity = self.request.POST.get(f'quantity_{index}')
-                    dose = self.request.POST.get(f'dose_{index}')
-                    
-                    print(f"Index {index}: drug_id={drug_id}, quantity={quantity}, dose={dose}")
-                    
-                    if drug_id and quantity:  # Only process if both exist
-                        drugs_to_keep.append({
-                            'drug_id': int(drug_id),
-                            'quantity': int(quantity),
-                            'dosage': dose or ''
-                        })
-                except (ValueError, IndexError):
-                    continue
+            if key.startswith('drug_') and not key.startswith('drug_search_input'): # Avoid main search input if named similarly
+                parts = key.split('_')
+                if len(parts) == 2: # Expecting drug_IDX
+                    try:
+                        indices_found.add(int(parts[1]))
+                    except ValueError:
+                        # Key might be 'drug_somethingelse', not 'drug_INDEX'
+                        continue
         
-        print("Drugs to keep:", drugs_to_keep)
+        # print(f"Indices found in POST: {sorted(list(indices_found))}") # For debugging
 
-        # Delete all existing prescription drugs
+        for index in sorted(list(indices_found)): # Process indices in order for consistency
+            drug_id_str = self.request.POST.get(f'drug_{index}')
+            quantity_str = self.request.POST.get(f'quantity_{index}')
+            dose_str = self.request.POST.get(f'dose_{index}')
+
+            # print(f"Processing index {index}: drug_id={drug_id_str}, quantity={quantity_str}") # For debugging
+
+            if drug_id_str and quantity_str:  # Ensure essential data is present
+                try:
+                    # Validate quantity is a positive integer
+                    quantity_val = int(quantity_str)
+                    if quantity_val <= 0:
+                        messages.error(self.request, f"Invalid quantity ({quantity_val}) submitted for one of the drug rows (index {index}). Quantity must be positive.")
+                        continue # Skip this drug entry
+
+                    drugs_to_keep_from_form.append({
+                        'drug_id': int(drug_id_str),
+                        'quantity': quantity_val,
+                        'dosage': dose_str or ''
+                    })
+                except ValueError:
+                    messages.error(self.request, f"Invalid data submitted for one of the drug rows (index {index}). Please check drug ID and quantity format.")
+                    continue # Skip this entry due to conversion error
+            # else:
+                # Optional: Log or message if a drug_X was found but corresponding quantity_X was missing
+                # print(f"Warning: Missing drug_id or quantity for index {index}")
+        # --- END MODIFIED SECTION ---
+        
+        # print(f"Drugs to keep from form: {drugs_to_keep_from_form}") # For debugging
+
         prescription.prescription_drugs.all().delete()
         
-        # Calculate total price and track drugs without pricing while creating
-        total_price = 0
-        drugs_without_price = []
+        final_total_price = 0
+        drugs_without_pricing_info = []
         
-        # Create new prescription drugs from the form data and calculate price
-        for drug_data in drugs_to_keep:
-            # Get the drug to check its selling price
+        for drug_data in drugs_to_keep_from_form:
             try:
-                drug = Drug.objects.get(id=drug_data['drug_id'])
-                selling_price = getattr(drug, 'selling_price', None)
+                drug_instance = Drug.objects.get(id=drug_data['drug_id'])
+                selling_price = getattr(drug_instance, 'selling_price', None)
                 
                 if selling_price is None or selling_price == 0:
-                    drugs_without_price.append(drug.name)
+                    drugs_without_pricing_info.append(drug_instance.name)
                 else:
-                    total_price += selling_price * drug_data['quantity']
-                
-                # Create the prescription drug
+                    # Ensure selling_price is a number before multiplication
+                    if isinstance(selling_price, (int, float)):
+                        final_total_price += selling_price * drug_data['quantity']
+                    else:
+                        # Handle case where selling_price might be non-numeric (e.g. Decimal, needs conversion)
+                        # This depends on your Drug model's selling_price field type
+                        try:
+                            final_total_price += float(selling_price) * drug_data['quantity']
+                        except (ValueError, TypeError):
+                            drugs_without_pricing_info.append(f"{drug_instance.name} (invalid price format)")
+
+
                 PrescriptionDrug.objects.create(
                     prescription=prescription,
-                    drug_id=drug_data['drug_id'],
+                    drug=drug_instance,
                     quantity=drug_data['quantity'],
                     dosage=drug_data['dosage']
                 )
             except Drug.DoesNotExist:
-                continue  # Skip if drug doesn't exist
+                messages.warning(self.request, f"A drug with ID {drug_data['drug_id']} was not found and was skipped.")
+                continue
 
-        # Create paypoint only if there's a total price
-        if total_price > 0:
+        # ... (rest of your Paypoint creation and messaging logic) ...
+        # (This part should now behave correctly based on the accurately populated drugs_to_keep_from_form)
+
+        if hasattr(prescription, 'payment') and prescription.payment:
+            prescription.payment.delete() 
+            prescription.payment = None   
+
+        if final_total_price > 0:
             paypoint = Paypoint.objects.create(
-                user=self.request.user,
+                user=self.request.user, 
                 patient=prescription.patient,
-                service='drug payment',
-                unit='pharmacy',
-                price=total_price,
-                status=False
+                service='drug payment', 
+                unit='pharmacy', 
+                price=final_total_price,
+                status=False 
             )
-            # Update prescription payment
             prescription.payment = paypoint
-            prescription.save()
+            prescription.save() 
             
-            # Success message with pricing info
-            if drugs_without_price:
+            if drugs_without_pricing_info:
                 messages.warning(
                     self.request, 
-                    f'Prescription costed successfully. Note: The following drugs have no selling price set: {", ".join(drugs_without_price)}. Proceed to revenue and make payment for available items.'
+                    f'Prescription costed successfully for  {final_total_price:,.2f}. Note: The following drugs have no/invalid selling price: {", ".join(drugs_without_pricing_info)}. Please proceed to make payment.'
                 )
             else:
                 messages.success(
                     self.request, 
-                    'Prescription costed successfully, proceed to revenue and make payment'
+                    f'Prescription costed successfully for  {final_total_price:,.2f}. Please proceed to make payment.'
                 )
         else:
-            # No paypoint created if no items have prices
-            if drugs_without_price:
+            if drugs_without_pricing_info:
                 messages.error(
                     self.request, 
-                    f'Prescription created but no payment required. All drugs have no selling price set: {", ".join(drugs_without_price)}. Please update drug prices in inventory.'
+                    f'Prescription updated. No payment is required as all item(s) have no/invalid selling price or zero quantity: {", ".join(drugs_without_pricing_info)}. Please update drug prices/formats in inventory if needed.'
                 )
             else:
                 messages.info(
                     self.request, 
-                    'Prescription created but no payment required as total price is zero.'
+                    'Prescription updated. No payment is required as the total price is zero or no priced items were included.'
                 )
         
-        return super().form_valid(form)
+        return_url = self.get_success_url()
+        return redirect(return_url)
+
 
     def get_success_url(self):
-        # Assuming you want to redirect to the list view for the current unit/store
-        return reverse('pharm:prescription_list', kwargs={'store_pk': self.object.unit.pk})
-    
-class InPatientPrescriptionCreateView(LoginRequiredMixin, CreateView):
-    model = Prescription
-    form_class = PrescriptionForm
-    template_name = 'dispensary/prescription_form.html'
+        # Assuming you want to redirect to a detail view or list view.
+        # If self.object.unit is how you get the store_pk:
+        if hasattr(self.object, 'unit') and self.object.unit:
+            return reverse('pharm:prescription_list', kwargs={'store_pk': self.object.unit.pk})
+        # Fallback if unit is not available or you have a different structure
+        return reverse('pharm:some_default_prescription_list_or_detail') # Adjust to a valid fallback URL name
+        
+# class InPatientPrescriptionCreateView(LoginRequiredMixin, CreateView):
+#     model = Prescription
+#     form_class = PrescriptionForm
+#     template_name = 'dispensary/prescription_form.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        self.patient = get_object_or_404(PatientData, file_no=kwargs['file_no'])
-        return super().dispatch(request, *args, **kwargs)
+#     def dispatch(self, request, *args, **kwargs):
+#         self.patient = get_object_or_404(PatientData, file_no=kwargs['file_no'])
+#         return super().dispatch(request, *args, **kwargs)
 
+#     def set_unit(self, prescription):
+#         in_patient_unit = Unit.objects.filter(name__icontains='In-Patient').first()
+#         if in_patient_unit:
+#             prescription.unit = in_patient_unit
+#         else:
+#             messages.error(self.request, "No In-Patient unit found.")
+#         return prescription
+
+#     @transaction.atomic
+#     def form_valid(self, form):
+#         prescription = form.save(commit=False)
+#         prescription.prescribed_by = self.request.user
+#         prescription.patient = self.patient
+#         prescription = self.set_unit(prescription)
+#         prescription.save()
+
+#         selected_drugs = self.request.POST.getlist('selected_drugs')
+#         selected_doses = self.request.POST.getlist('selected_doses')
+
+#         unique_drugs = set()
+
+#         for i, drug_id in enumerate(selected_drugs):
+#             try:
+#                 if drug_id in unique_drugs:
+#                     messages.warning(self.request, f'Drug {drug_id} was already added and skipped.')
+#                     continue
+
+#                 PrescriptionDrug.objects.create(
+#                     prescription=prescription,
+#                     drug_id=drug_id,
+#                     dosage=selected_doses[i]
+#                 )
+#                 unique_drugs.add(drug_id)
+
+#             except IntegrityError:
+#                 messages.warning(self.request, f'Drug {drug_id} could not be added due to a duplicate.')
+#                 continue
+
+#         messages.success(self.request, 'Prescription added successfully')
+#         return super().form_valid(form)        
+#     def get_success_url(self):
+#         return self.object.patient.get_absolute_url()
+class InPatientPrescriptionCreateView(PrescriptionCreateView):
     def set_unit(self, prescription):
         in_patient_unit = Unit.objects.filter(name__icontains='In-Patient').first()
         if in_patient_unit:
@@ -2060,38 +2320,3 @@ class InPatientPrescriptionCreateView(LoginRequiredMixin, CreateView):
         else:
             messages.error(self.request, "No In-Patient unit found.")
         return prescription
-
-    @transaction.atomic
-    def form_valid(self, form):
-        prescription = form.save(commit=False)
-        prescription.prescribed_by = self.request.user
-        prescription.patient = self.patient
-        prescription = self.set_unit(prescription)
-        prescription.save()
-
-        selected_drugs = self.request.POST.getlist('selected_drugs')
-        selected_doses = self.request.POST.getlist('selected_doses')
-
-        unique_drugs = set()
-
-        for i, drug_id in enumerate(selected_drugs):
-            try:
-                if drug_id in unique_drugs:
-                    messages.warning(self.request, f'Drug {drug_id} was already added and skipped.')
-                    continue
-
-                PrescriptionDrug.objects.create(
-                    prescription=prescription,
-                    drug_id=drug_id,
-                    dosage=selected_doses[i]
-                )
-                unique_drugs.add(drug_id)
-
-            except IntegrityError:
-                messages.warning(self.request, f'Drug {drug_id} could not be added due to a duplicate.')
-                continue
-
-        messages.success(self.request, 'Prescription added successfully')
-        return super().form_valid(form)        
-    def get_success_url(self):
-        return self.object.patient.get_absolute_url()

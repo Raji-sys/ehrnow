@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}DRUG PRESCRIPTION{% endblock %}
+{% load static %} {% block title %}DRUG PRESCRIPTION{% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase">DRUG PRESCRIPTION FORM</div>{%endblock%}
 {% block content %}
 {% if messages %}
@@ -7,7 +7,7 @@
     {% for message in messages %}
     <div class="">
       <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
-        <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
+        <a href="#" class="uk-alert-close font-bold text-rose-900" uk-close></a>
         <p class="text-green-700  uppercase">{{ message }}</p>
       </div>
     </div>
@@ -19,66 +19,142 @@
         <form method="post" class="flex flex-col space-y-4">
             {% csrf_token %}
             
-            <div class="flex md:flex-row flex-col space-y-2 gap-2 p-8 md:p-4">
-                {{ form.categories }}
-                <select id="drug-selector" name="drug" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
-                    <option value="">Select a drug</option>
-                </select>
-                <input type="text" id="dose-input" name="dose" placeholder="Dose" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+            <div class="flex md:flex-row flex-col space-y-2 md:space-y-0 gap-2 p-8 md:p-4 items-start md:items-center">
+                <div class="relative flex-grow">
+                    <input type="text" id="drug-search-input" placeholder="Search for drugs" class="w-full text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
+                    <div id="drug-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded mt-1 max-h-60 overflow-y-auto hidden">
+                        </div>
+                    <input type="hidden" id="selected-drug-id-hidden"> <input type="hidden" id="selected-drug-name-hidden"> </div>
+
+                <input type="text" id="dose-input" name="dose" placeholder="Enter drug dosage" class="text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
                 <button type="button" id="add-drug-btn" class="bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600">Add Drug</button>
             </div>
 
-            <div id="selected-drugs-container" class="flex flex-col space-y-2 p-6"></div>
+            <div id="selected-drugs-container" class="flex flex-col space-y-2 p-6">
+                </div>
 
-            <button type="submit" class="bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600">prescribe</button>
+            <button type="submit" class="bg-green-500 text-white py-2 px-6 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-green-600 hover:bg-white hover:text-green-600 hover:border-2 hover:border-green-600">Prescribe</button>
         </form>
     </div>
 </div>
 
 <script>
 $(document).ready(function() {
-    $('#category-selector').change(function() {
-        var categoryId = $(this).val();
-        $.ajax({
-            url: "{% url 'pharm:get_drugs_by_category' 0 %}".replace('0', categoryId),
-            success: function(data) {
-                var $drugSelector = $('#drug-selector');
-                $drugSelector.empty();
-                $drugSelector.append('<option value="">Select a drug</option>');
-                data.drugs.forEach(function(drug) {
-                    $drugSelector.append(
-                        `<option value="${drug.id}">${drug.name}</option>`
-                    );
-                });
-            }
+    let allDrugs = []; // To store the fetched list of drugs
+
+    // Fetch all drugs once when the page loads
+    $.ajax({
+        url: "{% url 'pharm:get_drugs' %}", // Ensure 'pharm' is your app_name
+        success: function(data) {
+            allDrugs = data.drugs;
+        },
+        error: function() {
+            console.error("Failed to fetch drugs.");
+            // Optionally, display a message to the user
+        }
+    });
+
+    $('#drug-search-input').on('input', function() {
+        var query = $(this).val().toLowerCase();
+        var $suggestionsContainer = $('#drug-suggestions');
+        $suggestionsContainer.empty().addClass('hidden');
+
+        if (query.length < 2) { // Start searching after 2 characters
+            return;
+        }
+
+        var filteredDrugs = allDrugs.filter(function(drug) {
+            return drug.name.toLowerCase().includes(query) || 
+                   (drug.trade_name && drug.trade_name.toLowerCase().includes(query));
         });
+
+        if (filteredDrugs.length > 0) {
+            filteredDrugs.forEach(function(drug) {
+                let displayText = drug.name;
+                if (drug.trade_name) {
+                    displayText += ` (${drug.trade_name})`;
+                }
+                if (drug.strength) {
+                    displayText += ` - ${drug.strength}`;
+                }
+                // Supplier info can be added if needed: + ` (Supplier: ${drug.supplier})`
+                
+                $suggestionsContainer.append(
+                    `<div class="p-2 hover:bg-gray-200 cursor-pointer suggestion-item" 
+                          data-id="${drug.id}" 
+                          data-name="${drug.name}"
+                          data-trade-name="${drug.trade_name || ''}"
+                          data-strength="${drug.strength || ''}"
+                          data-display-text="${displayText}">
+                        ${displayText}
+                    </div>`
+                );
+            });
+            $suggestionsContainer.removeClass('hidden');
+        }
+    });
+
+    // Handle click on a suggestion
+    $(document).on('click', '.suggestion-item', function() {
+        var drugId = $(this).data('id');
+        var drugDisplayText = $(this).data('display-text');
+        
+        $('#drug-search-input').val(drugDisplayText); // Set input field to full selected drug text
+        $('#selected-drug-id-hidden').val(drugId);
+        $('#selected-drug-name-hidden').val(drugDisplayText); // Store the display text for adding to list
+
+        $('#drug-suggestions').empty().addClass('hidden');
+    });
+
+    // Hide suggestions when clicking outside
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('#drug-search-input, #drug-suggestions').length) {
+            $('#drug-suggestions').addClass('hidden');
+        }
     });
 
     $('#add-drug-btn').click(function() {
-    var categoryName = $('#category-selector option:selected').text();
-    var drugName = $('#drug-selector option:selected').text();
-    var categoryId = $('#category-selector').val();
-    var drugId = $('#drug-selector').val();
-    var dose = $('#dose-input').val();
+        var drugId = $('#selected-drug-id-hidden').val();
+        var drugDisplayName = $('#selected-drug-name-hidden').val(); // Use the stored full display name
+        var dose = $('#dose-input').val().trim();
 
-    var drugHtml = `
-        <div>
-            <input type="hidden" name="selected_drugs" value="${drugId}" data-category="${categoryId}">
-            <input type="hidden" name="selected_doses" value="${dose}">
-            ${categoryName}: ${drugName} - Dose: ${dose}
-            <button type="button" class="remove-drug bg-red-500 text-white p-2 rounded shadow-lg hover:shadow-xl focus:opacity-10 uppercase focus:border-red-600 hover:bg-white hover:text-red-600 hover:border-2 hover:border-red-600 text-xs">X</button>
-        </div>
-    `;
+        if (!drugId) {
+            alert('Please search and select a drug from the suggestions.');
+            $('#drug-search-input').focus();
+            return;
+        }
+        if (!drugDisplayName) { // Should not happen if drugId is set from suggestion
+            alert('Error: Drug name not captured. Please re-select the drug.');
+            return;
+        }
+        if (!dose) {
+            alert('Please enter the dose.');
+            $('#dose-input').focus();
+            return;
+        }
 
-    $('#selected-drugs-container').append(drugHtml);
-});
+        var drugHtml = `
+            <div class="selected-drug-entry p-2 border-b border-gray-200">
+                <input type="hidden" name="selected_drugs" value="${drugId}">
+                <input type="hidden" name="selected_doses" value="${dose}">
+                ${drugDisplayName} - Dose: ${dose}
+                <button type="button" class="remove-drug ml-2 bg-red-500 text-white py-1 px-2 text-xs rounded shadow hover:bg-red-600">X</button>
+            </div>
+        `;
 
-$(document).on('click', '.remove-drug', function() {
-    $(this).parent().find('input[name="selected_drugs"]').remove();
-    $(this).parent().find('input[name="selected_doses"]').remove();
-    $(this).parent().remove();
-});
+        $('#selected-drugs-container').append(drugHtml);
 
+        // Clear inputs for next entry
+        $('#drug-search-input').val('');
+        $('#selected-drug-id-hidden').val('');
+        $('#selected-drug-name-hidden').val('');
+        $('#dose-input').val('');
+        $('#drug-search-input').focus(); // Focus back on drug search
+    });
+
+    $(document).on('click', '.remove-drug', function() {
+        $(this).closest('.selected-drug-entry').remove();
+    });
 });
 </script>
 {% endblock %}
