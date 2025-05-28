@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 import dj_database_url
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
@@ -136,22 +136,23 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL="/login/"
 LOGOUT_REDIRECT_URL = '/logout/'
 
-import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# import os
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # -----------------------------------------------------------------------------
 # RAILWAY / PaaS CONFIGURATION
 # Uncomment this entire block when you’re deploying on Railway (or similar PaaS)
 # -----------------------------------------------------------------------------
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-# let Django + WhiteNoise serve your static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-#
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 
 # -----------------------------------------------------------------------------
