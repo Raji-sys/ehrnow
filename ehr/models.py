@@ -330,6 +330,7 @@ class MedicalRecord(models.Model):
         verbose_name_plural = 'medical record'
 
 class VisitRecord(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     record=models.ForeignKey(MedicalRecord, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="visits")
     clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True,blank=True)    
     team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
@@ -370,6 +371,7 @@ class VisitRecord(models.Model):
 
 
 class Appointment(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
     clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
@@ -408,7 +410,7 @@ class ClinicalNote(models.Model):
     note=QuillField(null=True, blank=True)
     diagnosis=models.CharField(max_length=200,null=True,blank=True)
     needs_review = models.BooleanField(default=False)    
-    appointment=models.CharField(max_length=200,null=True,blank=True)
+    # appointment=models.CharField(max_length=200,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):

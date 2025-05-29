@@ -99,7 +99,7 @@
                     {{forloop.counter}}
                 </td>
                 <td class="p-3 whitespace-nowrap">
-                  {{request.user}}
+                  {{p.user|default_if_none:'N/A'}}
                 </td>
               <td class="p-3 whitespace-nowrap">
                 <a href="{{p.patient.get_absolute_url}}" class="text-blue-500 hover:text-blue-700">

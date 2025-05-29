@@ -1009,6 +1009,7 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
         self.object = form.save(commit=False) # self.object is now the new VisitRecord instance
         
         self.object.patient = patient
+        self.object.user = self.request.user
         # form.instance.user = self.request.user # Does your VisitRecord model have a 'user' ForeignKey? If not, this line will cause an error. Please verify.
         # self.object.clinic is likely already set by the form if 'clinic' is a field in VisitForm
         # If 'clinic' is not in the form but needs to be set from form.cleaned_data['clinic'], then:
