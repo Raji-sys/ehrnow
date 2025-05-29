@@ -6563,6 +6563,10 @@ select {
     justify-content: center;
   }
 
+  .md\:justify-around {
+    justify-content: space-around;
+  }
+
   .md\:justify-items-end {
     justify-items: end;
   }
@@ -6636,6 +6640,11 @@ select {
   .md\:py-2 {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+  }
+
+  .md\:px-0 {
+    padding-left: 0px;
+    padding-right: 0px;
   }
 
   .md\:pb-24 {
