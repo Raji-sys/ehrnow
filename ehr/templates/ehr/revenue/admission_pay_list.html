@@ -80,7 +80,8 @@
               {% for p in admission_pays %}
               <tr class="hover:bg-gray-50 text-left uppercase">
                 <td class="p-3 whitespace-nowrap text-xs text-gray-700">{{forloop.counter}}</td>
-                <td class="p-3 whitespace-nowrap text-xs text-gray-700">{{request.user}}</td>
+                <td class="p-3 whitespace-nowrap text-xs text-gray-700">                  {{p.user|default_if_none:'N/A'}}
+</td>
                 <td class="p-3 whitespace-nowrap text-xs text-gray-700">
                   <a href="{{p.patient.get_absolute_url}}" class="text-sky-600 hover:text-sky-900">{{ p.patient }}</a>
                 </td>

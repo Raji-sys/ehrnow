@@ -52,7 +52,7 @@
                             <td class="px-4 py-2">{{ test.labtest.patient.file_no }}</td>
                             <td class="px-4 py-2">{{ test.lab }}</td>
                             <td class="px-4 py-2">{{ test.item.name }}</td>
-                            <td class="px-4 py-2">&#x20A6;{{ test.item.price }}</td>
+                            <td class="px-4 py-2">&#x20A6;{{ test.item.price|default_if_none:'0' }}</td>
                             <td class="px-4 py-3">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                     {% if test.payment.status %}

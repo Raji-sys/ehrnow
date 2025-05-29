@@ -861,4 +861,4 @@ class LabTesting(models.Model):
     
     @property
     def total_item_price(self):
-        return self.item.price if self.item else 0
+        return self.item.price or 0

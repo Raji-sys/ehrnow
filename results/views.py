@@ -1925,10 +1925,16 @@ class LabTestingCreateView(DoctorRequiredMixin, FormView):
         instances = formset.save(commit=False)
         
         for instance in instances:
-            if instance.total_item_price:  # Only process non-empty forms
+            if instance.item:  # Only skip rows where no test item was selected
                 instance.labtest = labtest
-                total_amount += instance.total_item_price
+                total_amount += instance.total_item_price or 0
                 instance.save()
+
+        # for instance in instances:
+        #     if instance.total_item_price:  # Only process non-empty forms
+        #         instance.labtest = labtest
+        #         total_amount += instance.total_item_price
+        #         instance.save()
         
         labtest.total_amount = total_amount
         labtest.save()
