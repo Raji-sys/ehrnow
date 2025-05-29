@@ -142,8 +142,16 @@
             }
         }
     </style>
+
 </head>
 <body>
+    <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const nav = document.querySelector('nav.overflow-x-auto');
+    if (nav) nav.scrollLeft = 0;
+  });
+</script>
+
     <div class="content-wrapper">
         {% if request.user.is_authenticated %}
         <header class="header">
