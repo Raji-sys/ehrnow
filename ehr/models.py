@@ -68,10 +68,20 @@ class Room(models.Model):
     def __str__(self):
         return f"{self.name}" if self.name else ""
 
+# @receiver(post_save, sender=Clinic)
+# def create_clinic_related_objects(sender, instance, created, **kwargs):
+#     if created:
+#         NursingDesk.objects.create(clinic=instance)
+#         for i in range(1, 5):
+#             Room.objects.create(clinic=instance, name=f"Room {i}")
+
 @receiver(post_save, sender=Clinic)
 def create_clinic_related_objects(sender, instance, created, **kwargs):
     if created:
+        from pharm.models import Unit  # Import here instead
+        
         NursingDesk.objects.create(clinic=instance)
+        Unit.objects.create(clinic=instance, name=instance.name)
         for i in range(1, 5):
             Room.objects.create(clinic=instance, name=f"Room {i}")
 

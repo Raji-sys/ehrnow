@@ -11,6 +11,7 @@ from ehr.models import PatientData, Paypoint
 from django.core.validators import MinValueValidator
 
 class Unit(models.Model):
+    clinic = models.OneToOneField('ehr.Clinic', on_delete=models.CASCADE, related_name='pharm_unit', null=True, blank=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     update = models.DateField(auto_now_add=True, null=True)
 

@@ -1304,7 +1304,7 @@ class VisitListView(DoctorNurseRecordRequiredMixin, ListView):
         self.clinic = get_object_or_404(Clinic, pk=self.kwargs['clinic_id'])
         queryset = VisitRecord.objects.filter(
             clinic=self.clinic,
-            updated__gte=timezone.now() - timedelta(days=7),
+            updated__gte=timezone.now() - timedelta(days=365),
             **self.filter_params
         ).order_by('-updated')
         query = self.request.GET.get('q')
@@ -4287,8 +4287,8 @@ class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
             visit.save(update_fields=['review', 'seen']) # Be specific about fields to update
             messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} created. Patient awaiting review.')
         else:
-            visit.close_visit() # This method handles setting consultation=False, seen=True, review=False and saving.
-            messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} created. Patient consultation completed and visit closed.')
+            # visit.close_visit() # This method handles setting consultation=False, seen=True, review=False and saving.
+            messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} created. Patient consultation completed.')
         
         # The super().form_valid(form) typically handles saving the object and redirection.
         # Since we saved `self.object` and handled messages, we might just need to redirect.
@@ -4344,8 +4344,8 @@ class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
                 visit.save(update_fields=['review', 'seen'])
                 messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient awaiting review.')
             else:
-                visit.close_visit()
-                messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient consultation completed and visit closed.')
+                # visit.close_visit()
+                messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient consultation completed.')
         else:
             # No active visit found to update status for, but the note itself is updated.
             messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated successfully. (No active visit to modify status for).')

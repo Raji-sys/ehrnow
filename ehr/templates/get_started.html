@@ -4,30 +4,29 @@
 {% block title %}DASHBOARD{% endblock %}
 
 {% block page_title %}
-<div class="flex justify-center gap-10 my-2">
-    <a href="{% url 'patient_list' %}" class="text-xs font-medium text-emerald-600 hover:text-emerald-800 transition duration-300">
-        <i class="fa-solid fa-user-injured fa-lg mr-2"></i>PATIENTS
+<div class="nav-menu">
+    <a href="{% url 'patient_list' %}" class="nav-menu-item">
+        <i class="fa-solid fa-user-injured"></i>PATIENTS
     </a>
-    <a href="{% url 'staff' %}" class="text-xs font-medium text-blue-600 hover:text-blue-700 transition duration-300">
-        <i class="fa-solid fa-user-group fa-lg mr-2"></i>STAFF
+    <a href="{% url 'staff' %}" class="nav-menu-item">
+        <i class="fa-solid fa-user-group"></i>STAFF
     </a>
-    <a href="{% url 'hospital_services' %}" class="text-xs font-medium text-orange-600 hover:text-orange-700 transition duration-300">
-        <i class="fa-solid fa-list-check fa-lg mr-2"></i>SERVICES
+    <a href="{% url 'hospital_services' %}" class="nav-menu-item">
+        <i class="fa-solid fa-list-check"></i>SERVICES
     </a>
-    <a href="{% url 'erp:accounting_index' %}" class="text-xs font-medium text-gray-700 hover:text-gray-800 transition duration-300">
-        <i class="fa-solid fa-list-numeric fa-lg mr-2"></i>ACCOUNTING
+    <a href="{% url 'erp:accounting_index' %}" class="nav-menu-item">
+        <i class="fa-solid fa-list-numeric"></i>ACCOUNTING
     </a>
 
 </div>
 {% endblock %}
 
 {% block content %}
-<div class="mx-4 mt-5 md:mx-20">
+<div class="mx-4 md:mx-20">
     <div class="bg-gradient-to-r from-sky-600  to-emerald-600 h-4 rounded-t-xl"></div>
-
     <div class="grid grid-cols-2 md:grid-cols-3 gap-6 uppercase text-center rounded-b-xl p-2 bg-white shadow">
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'medical_record' %}" class="text-xs font-medium  text-sky-800">
+        <div class="transform transition duration-300 hover:scale-90 ">
+            <a href="{%url 'medical_record' %}" class="text-xs font-medium  text-sky-800 ">
                 <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center
                     border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600  to-emerald-500 hover:text-white">
                     <i class="fa-solid fa-book fa-2x "></i><p class="text-xs uppercase 

@@ -6,7 +6,6 @@
 {% tailwind_css %} 
 <title>	
 	{%block title%}{%endblock%}
-
 </title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="apple-touch-icon" sizes="180x180" href="{%static 'favicon/apple-touch-icon.png' %}">
@@ -14,6 +13,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="{%static 'favicon/favicon-16x16.png' %}">
 <link rel="manifest" href="{%static 'favicon/site.webmanifest' %}">
 <link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
+
 <!-- UIkit CSS -->
 <link rel="stylesheet" href="{% static 'uikit/css/uikit.min.css' %}" type="text/css">
 
@@ -40,117 +40,376 @@
 <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
 
 {% include 'django_quill/media.html' %}
-</head>
-<body class="h-screen">
-  <style>
 
-/* For WebKit browsers (Chrome, Safari) */
+<style>
+/* Enhanced Scrollbar Styling */
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #4a90e2;
-    border-radius: 5px;
+    background: linear-gradient(135deg, #0ea5e9, #10b981);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #0284c7, #059669);
+    background-clip: content-box;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
 }
 
 /* For Firefox */
 * {
-    scrollbar-width: auto;
-    scrollbar-color: #4a90e2 #f1f1f1;
+    scrollbar-width: thin;
+    scrollbar-color: #0ea5e9 rgba(255, 255, 255, 0.1);
 }
 
-        body, html {
-            height: 100%;
-            margin: 0;
-            font-family: 'Lato', sans-serif;
-            background-image: url('{% static "images/4.jpg" %}');
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-attachment: fixed;
-        }
-        .content-wrapper {
-            min-height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1px;
-        }
-        a {
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: none;
-        }
-        .header {
-            background-image: linear-gradient(to right, #046ea3,  #027953);
-            padding: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .nav-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-item {
-            margin: 0.25rem;
-        }
-        .icon-button {
-            border: 2px solid white;
-            border-radius: 0.75rem;
-            padding: 0.5rem;
-            background-color: #166534;
-            color: white;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .text-button {
-            color: white;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-        }
-        .logout-button {
-            border: 2px solid white;
-            border-radius: 0.5rem;
-            background-color: #be123c;
-        }
-        .page-title {
-            text-align: center;
-            font-weight: 500;
-            font-size: 0.55rem;
-            color: #15803d;
-            background-color: white;
-            padding: 0.5rem;
-            border-radius: 0 0 0.25rem 0.25rem;
-        }
-        @media (min-width: 768px) {
-            .header, .page-title {
-                margin-left: 5rem;
-                margin-right: 5rem;
-            }
-            .page-title {
-                font-size: 0.570rem;
-            }
-        }
-    </style>
+/* Global Styles */
+/* body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+    background-image: url('{% static "images/4.jpg" %}');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    overflow-x: hidden;
+} */
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+    
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.5), rgba(255, 255, 255, 0.7), rgba(83, 166, 138, 0.5)), 
+                linear-gradient(to bottom right, #e0f2fe, #ffffff, #d1fae5);
+    background-size: 300% 300%;
+    animation: softFlow 15s ease infinite;
+    background-attachment: fixed;
+    overflow-x: hidden;
+}
+
+/* ✨ Subtle animated gradient movement */
+@keyframes softFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.content-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.1rem;
+    
+}
+a {
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/* Enhanced Header */
+.header {
+    background: linear-gradient(135deg, rgba(4, 110, 163, 0.95), rgba(2, 121, 83, 0.95));
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #06b6d4, #10b981, #06b6d4);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { background-position: 200% 0; }
+    50% { background-position: -200% 0; }
+}
+
+.nav-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.nav-item {
+    margin: 0.15rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon-button {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 1rem;
+    padding: 0.75rem;
+    background: rgba(22, 101, 52, 0.8);
+    backdrop-filter: blur(10px);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(22, 101, 52, 0.9);
+}
+
+.text-button {
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.text-button:hover {
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.logout-button {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.75rem;
+    background: rgba(190, 18, 60, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.logout-button:hover {
+    background: rgba(190, 18, 60, 0.9);
+    transform: translateY(-2px);
+}
+
+/* Enhanced Page Title Section */
+.page-title-section {
+    margin: 0.1rem;
+    padding: 0.1rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.page-title-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: slide 3s ease-in-out infinite;
+}
+
+@keyframes slide {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Enhanced Navigation Menu */
+.nav-menu {
+    display: flex;
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 0.25rem;
+    padding: 0.1rem;
+    background: rgba(240, 249, 255, 0.8);
+    backdrop-filter: blur(15px);
+    border-radius: 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.nav-menu::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-menu-item {
+    display: flex;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #075985;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    position: relative;
+    border: 1px solid transparent;
+    min-width: fit-content;
+}
+
+.nav-menu-item:hover {
+    color: white;
+    background: linear-gradient(135deg, #10b981, #059669);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-menu-item i {
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-menu-item:hover i {
+    transform: scale(1.1);
+}
+
+/* Page Title Text */
+.page-title-text {
+    text-align: center;
+    font-size: 0.575rem;
+    color: rgba(18, 129, 122, 0.9);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .header {
+        margin-left: 2rem;
+        margin-right: 2rem;
+        border-radius: 0 0 1.5rem 1.5rem;
+    }
+    
+    .page-title-section {
+        margin-left: 1rem;
+        margin-right: 1rem;
+        color:#0284c7;
+    }
+    
+    .nav-menu {
+        justify-content: center;
+    }
+    
+    .page-title-text {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .header {
+        margin-left: 4rem;
+        margin-right: 4rem;
+    }
+    
+    .page-title-section {
+        margin-left: 5rem;
+        margin-right: 5rem;
+    }
+}
+
+/* Floating Animation Elements */
+.floating-element {
+    position: fixed;
+    border-radius: 200%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.floating-1 {
+    top: 15%;
+    left: 10%;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-2 {
+    top: 30%;
+    right: 15%;
+    width: 15px;
+    height: 15px;
+    background: rgba(16, 185, 129, 0.2);
+    animation: float 4s ease-in-out infinite reverse;
+}
+
+.floating-3 {
+    bottom: 25%;
+    left: 20%;
+    width: 25px;
+    height: 25px;
+    background: rgba(14, 165, 233, 0.15);
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-20px) rotate(90deg); }
+    50% { transform: translateY(-10px) rotate(180deg); }
+    75% { transform: translateY(-30px) rotate(270deg); }
+}
+
+
+/* Additional Enhancements */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>
 </head>
+
 <body>
+    <!-- Floating Background Elements -->
+    <div class="floating-element floating-1"></div>
+    <div class="floating-element floating-2"></div>
+    <div class="floating-element floating-3"></div>
+
     <div class="content-wrapper">
         {% if request.user.is_authenticated %}
+        
+        <!-- Enhanced Header -->
         <header class="header">
             <nav class="nav-container">
                 <div class="nav-item">
-                    <a href="{% url 'get_started' %}" class="icon-button">
-                        <i class="fa-solid fa-home-user md:fa-2x"></i>
+                    <a href="{% url 'get_started' %}" class="icon-button group">
+                        <i class="fa-solid fa-home-user md:fa-lg group-hover:scale-110 transition-transform"></i>
                     </a>
                     {% if request.user.is_superuser %}
                     <a href="{% url 'admin:index' %}" class="text-button">
@@ -158,85 +417,78 @@
                     </a>
                     {% endif %}
                 </div>
+                
                 <div class="nav-item">
                     <span class="text-button">
-                        <span class="mr-2">logged-in as:</span>{{request.user}}
+                        <span class="mr-2">logged-in as:</span>
+                        <span class="font-semibold text-white">{{request.user}}</span>
                     </span>
-                    <form method="POST" action="{% url 'logout' %}" class="inline">
+                    <form method="POST" action="{% url 'logout' %}" class="inline ml-3">
                         {% csrf_token %}
-                        <button type="submit" class="icon-button logout-button">
-                            <i class="fa-solid fa-x"></i>
+                        <button type="submit" class="icon-button logout-button group">
+                            <i class="fa-solid fa-sign-out-alt group-hover:scale-110 transition-transform"></i>
                         </button>
                     </form>
                 </div>
             </nav>
         </header>
-        <div class="page-title ">
+
+        <!-- Enhanced Page Title Section -->
+        <div class="page-title-section">
             {% if request.path_info != "/get-started/" and request.path_info != "/" %}
-                <nav class="flex justify-start md:justify-around overflow-x-auto whitespace-nowrap rounded-lg mb-4 bg-sky-50 shadow-sm shadow-black ring-1 ring-sky-100 px-2 md:px-0">
-                <a href="{% url 'medical_record' %}"
-                class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                <i class="fa-solid fa-user-injured fa-xs mr-2"></i>HIM
-            </a>
-            <a href="{% url 'visit_stat_card' %}"
-               class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200">
-              <i class="fa-solid fa-bar-chart fa-xs mr-2"></i>Stats
-            </a>
-                <a href="{% url 'revenue' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-naira-sign fa-xs mr-2"></i>Revenue
+            <nav class="nav-menu">
+                <a href="{% url 'medical_record' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-user-injured"></i>HIM
                 </a>
-                <a href="{% url 'nursing_desks_list' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-stethoscope fa-xs mr-2"></i>Nursing
+                <a href="{% url 'visit_stat_card' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-chart-bar"></i>Stats
                 </a>
-                <a href="{% url 'clinic_list' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-clinic-medical fa-xs mr-2"></i>Clinics
+                <a href="{% url 'revenue' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-naira-sign"></i>Revenue
                 </a>
-                <a href="{% url 'pharm:index' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-prescription fa-xs mr-2"></i>Pharmacy
+                <a href="{% url 'nursing_desks_list' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-stethoscope"></i>Nursing
                 </a>
-                <a href="{% url 'results:dashboard' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-microscope fa-xs mr-2"></i>Pathology
+                <a href="{% url 'clinic_list' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-clinic-medical"></i>Clinics
                 </a>
-                <a href="{% url 'radiology' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-x-ray fa-xs mr-2"></i>Radiology
+                <a href="{% url 'pharm:index' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-prescription"></i>Pharmacy
                 </a>
-                <a href="{% url 'ward_list' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-bed-pulse fa-xs mr-2"></i>Wards
+                <a href="{% url 'results:dashboard' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-microscope"></i>Pathology
                 </a>
-                <a href="{% url 'theatre' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-head-side-mask fa-xs mr-2"></i>Theatre
+                <a href="{% url 'radiology' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-x-ray"></i>Radiology
                 </a>
-                <a href="{% url 'physio' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-crutch fa-xs mr-2"></i>Physio
+                <a href="{% url 'ward_list' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-bed-pulse"></i>Wards
                 </a>
-                <a href="{% url 'erp:accounting_index' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-list-numeric fa-xs mr-2"></i>Accounting
+                <a href="{% url 'theatre' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-head-side-mask"></i>Theatre
                 </a>
-                <a href="{% url 'inventory:store_inventory' %}"
-                   class="flex items-center justify-center px-4 py-2 text-xs  text-sky-700 hover:text-white hover:bg-green-600 transition-all duration-200 border-r last:border-r-0 border-green-100">
-                  <i class="fa-solid fa-warehouse fa-xs mr-2"></i>Inventory
+                <a href="{% url 'physio' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-crutch"></i>Physio
                 </a>
-              </nav>
-            {%endif%}
-            <div class="text-xs">
+                <a href="{% url 'erp:accounting_index' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-list-numeric"></i>Accounting
+                </a>
+                <a href="{% url 'inventory:store_inventory' %}" class="nav-menu-item">
+                    <i class="fa-solid fa-warehouse"></i>Inventory
+                </a>
+            </nav>
+            {% endif %}
+            
+            <div class="page-title-text">
                 {% block page_title %}{% endblock %}
             </div>
-            
         </div>
+        
         {% endif %}
-        <main class="main-content mb-10">
+
+        <!-- Enhanced Main Content -->
+        <main class="main-content mb-2">
             {% block content %}
-            
             {% endblock %}
         </main>
     </div>
