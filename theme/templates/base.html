@@ -7,19 +7,39 @@
 <title>	
 	{%block title%}{%endblock%}
 </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="apple-touch-icon" sizes="180x180" href="{%static 'favicon/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{%static 'favicon/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{%static 'favicon/favicon-16x16.png' %}">
-    <link rel="manifest" href="{%static 'favicon/site.webmanifest' %}">
-    <link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
-    <link rel="stylesheet" href="{% static 'uikit/css/uikit.min.css' %}" type="text/css">
-    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/darcula.min.css' %}">
-    <link href="{% static 'css/quill.snow.css' %}" rel="stylesheet">
-    {% include 'django_quill/media.css' %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" sizes="180x180" href="{%static 'favicon/apple-touch-icon.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{%static 'favicon/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{%static 'favicon/favicon-16x16.png' %}">
+<link rel="manifest" href="{%static 'favicon/site.webmanifest' %}">
+<link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
+
+<!-- UIkit CSS -->
+<link rel="stylesheet" href="{% static 'uikit/css/uikit.min.css' %}" type="text/css">
+
+<!-- UIkit JS -->
+<script src="{% static 'uikit/js/uikit.min.js' %}"></script>
+<script src="{% static 'uikit/js/uikit-icons.js' %}"></script>
+
+<link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+
+<script src="{% static 'js/_hyperscript.js' %}"></script>
+<script src="{% static 'js/htmx.min.js'%}"></script>
+
+<link rel="stylesheet" href="{% static 'css/darcula.min.css' %}">
+<script src="{% static 'js/highlight.min.js' %}"></script>
+
+<link href="{% static 'css/quill.snow.css' %}" rel="stylesheet">
+<script src="{% static 'js/quill.min.js' %}"></script>
+
+<script src="{% static 'js/quill.imageCompressor.min.js' %}"></script>
+<script src="{% static 'js/quill-resize-module.min.js' %}"></script>
+<script src="{%static 'js/jquery-3.6.0.min.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+
+{% include 'django_quill/media.html' %}
 
 <style>
 /* Enhanced Scrollbar Styling */
@@ -48,15 +68,15 @@
 /* For Firefox */
 * {
     scrollbar-width: thin;
-    scrollbar-color: #cce2ed rgba(214, 203, 203, 0.1);
+    scrollbar-color: #0ea5e9 rgba(255, 255, 255, 0.1);
 }
 
 /* Global Styles */
 body, html {
     height: 100%;
     margin: 0;
-    font-family: 'Lato', sans-serif;
-    /* font-family: 'Segoe UI', Roboto, sans-serif; */
+    /* font-family: 'Lato', sans-serif; */
+    font-family: 'Segoe UI', Roboto, sans-serif;
     background-image: url('{% static "images/1.jpg" %}');
     background-repeat: no-repeat;
     background-size: cover;
@@ -548,16 +568,5 @@ a:hover {
             {% endblock %}
         </main>
     </div>
-    <script src="{% static 'uikit/js/uikit.min.js' %}"></script>
-<script src="{% static 'uikit/js/uikit-icons.js' %}"></script>
-<script src="{% static 'js/_hyperscript.js' %}"></script>
-<script src="{% static 'js/htmx.min.js'%}"></script>
-<script src="{% static 'js/highlight.min.js' %}"></script>
-<script src="{% static 'js/quill.min.js' %}"></script>
-<script src="{% static 'js/quill.imageCompressor.min.js' %}"></script>
-<script src="{% static 'js/quill-resize-module.min.js' %}"></script>
-<script src="{%static 'js/jquery-3.6.0.min.js'%}"></script>
-<script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
-{% include 'django_quill/media.js' %}
 </body>
 </html>
