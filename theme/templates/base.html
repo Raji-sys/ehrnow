@@ -8,10 +8,10 @@
 	{%block title%}{%endblock%}
 </title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="apple-touch-icon" sizes="180x180" href="{%static 'favicon/apple-touch-icon.png' %}">
+<!-- <link rel="apple-touch-icon" sizes="180x180" href="{%static 'favicon/apple-touch-icon.png' %}">
 <link rel="icon" type="image/png" sizes="32x32" href="{%static 'favicon/favicon-32x32.png' %}">
 <link rel="icon" type="image/png" sizes="16x16" href="{%static 'favicon/favicon-16x16.png' %}">
-<link rel="manifest" href="{%static 'favicon/site.webmanifest' %}">
+<link rel="manifest" href="{%static 'favicon/site.webmanifest' %}"> -->
 <link rel="stylesheet" href="{% static 'fonts/fontstyle.css' %}" type='text/css'>
 
 <!-- UIkit CSS -->
@@ -76,7 +76,7 @@ body, html {
     height: 100%;
     margin: 0;
     /* font-family: 'Lato', sans-serif; */
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     background-image: url('{% static "images/1.png" %}');
     background-repeat: no-repeat;
     background-size: cover;
@@ -84,18 +84,6 @@ body, html {
     overflow-x: hidden;
 }
 
-/* body, html {
-    height: 100%;
-    margin: 0;
-    font-family: 'Lato', sans-serif;
-    
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.5), rgba(255, 255, 255, 0.7), rgba(83, 166, 138, 0.5)), 
-                linear-gradient(to bottom right, #e0f2fe, #ffffff, #d1fae5);
-    background-size: 300% 300%;
-    animation: softFlow 15s ease infinite;
-    background-attachment: fixed;
-    overflow-x: hidden;
-} */
 
 /* ✨ Subtle animated gradient movement */
 @keyframes softFlow {
