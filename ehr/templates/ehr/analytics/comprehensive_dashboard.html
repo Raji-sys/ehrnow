@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Analytics{% endblock %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'analytics' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Comprehensive Analytics</div>
+{%endblock%}
+
 {% block content %}
 <style>
 * {
@@ -273,9 +276,6 @@
 </style>
 
 <div class="mx-auto px-2 sm:px-4 lg:px-6">
-    <div class="text-center mb-6">
-        <p class="text-sm text-white">Comprehensive analytics and insights</p>
-    </div>
 
     <div class="tab-nav bg-white w-fit rounded-xl mx-auto shadow-lg">
         <button class="tab-link active" onclick="openTab(event, 'kpiTab')" id="defaultOpen">

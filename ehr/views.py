@@ -4804,3 +4804,82 @@ class DoctorDetailAnalyticsView(TemplateView):
             context['error'] = 'Doctor not found'
 
         return context
+
+
+from django.db.models import Count, Q
+from datetime import date
+from django.shortcuts import render
+from .models import PatientData, Ward, Theatre, TheatreBooking, OperationNotes # Assuming your models are in .models
+# Don't forget to import reverse if you use it directly in the view, though for template urls, it's not needed here
+# from django.urls import reverse
+
+def hospital_dashboard_optimized(request):
+    """
+    Optimized version using database aggregation for better performance
+    """
+    today = date.today()
+
+    # Overall Statistics
+    total_patients = PatientData.objects.count()
+    total_wards = Ward.objects.count()
+    total_theatres = Theatre.objects.count()
+    operations_today = TheatreBooking.objects.filter(date=today).count()
+
+    # Ward Statistics with aggregation and sorting
+    ward_stats = Ward.objects.annotate(
+        total_admitted=Count('admission'),
+        currently_admitted=Count('admission', filter=Q(admission__status='ADMIT')),
+        received_patients=Count('admission', filter=Q(admission__status='RECEIVED')),
+        discharged_patients=Count('admission', filter=Q(admission__status='DISCHARGE'))
+    ).values(
+        'id', 'name', 'total_admitted', 'currently_admitted',
+        'received_patients', 'discharged_patients'
+    ).order_by('name')
+
+    # Theatre Statistics with aggregation
+    theatre_stats = Theatre.objects.annotate(
+        bookings_today=Count('theatrebooking', filter=Q(theatrebooking__date=today)),
+        operations_completed=Count('operationnotes', filter=Q(operationnotes__operated=True)),
+        total_operations=Count('operationnotes')
+    ).values(
+        'id','name', 'bookings_today', 'operations_completed', 'total_operations'
+    ).order_by('name')
+
+    # Calculate pending operations for each theatre
+    for theatre in theatre_stats:
+        theatre_obj = Theatre.objects.get(name=theatre['name'])
+
+        # Get unique patients with bookings
+        booked_patients = set(TheatreBooking.objects.filter(
+            theatre=theatre_obj
+        ).values_list('patient', flat=True))
+
+        # Get unique patients with completed operations
+        completed_patients = set(OperationNotes.objects.filter(
+            theatre=theatre_obj,
+            operated=True
+        ).values_list('patient', flat=True))
+
+        theatre['operations_pending'] = len(booked_patients - completed_patients)
+
+    # Calculate summary totals
+    total_bookings_today = sum(t['bookings_today'] for t in theatre_stats)
+    total_operations_completed = sum(t['operations_completed'] for t in theatre_stats)
+    total_operations_pending = sum(t['operations_pending'] for t in theatre_stats)
+    total_theatre_operations = sum(t['total_operations'] for t in theatre_stats)
+
+    context = {
+        'today': today,
+        'total_patients': total_patients,
+        'total_wards': total_wards,
+        'total_theatres': total_theatres,
+        'operations_today': operations_today,
+        'ward_stats': ward_stats, # Now sorted by name
+        'theatre_stats': theatre_stats,
+        'total_bookings_today': total_bookings_today,
+        'total_operations_completed': total_operations_completed,
+        'total_operations_pending': total_operations_pending,
+        'total_theatre_operations': total_theatre_operations,
+    }
+
+    return render(request, 'ehr/analytics/hospital_dashboard.html', context)

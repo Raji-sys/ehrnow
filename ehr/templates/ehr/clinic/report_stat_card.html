@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {%block title%}Clinic Visit Stats{%endblock%}
-{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'get_started' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Statistics Dashboard
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'analytics' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Statistics Dashboard
    
 </div>
 
@@ -45,7 +45,7 @@
                                     <i class="fa-solid fa-user-check text-green-500 fa-lg"></i>
                                 </div>
                                 <div class="ml-5">
-                                    <p class="text-xs font-medium text-gray-500">Total Patients Seen</p>
+                                    <p class="text-xs font-medium text-gray-500">Total Consultations Recorded</p>
                                     <p class="text-sm font-bold text-gray-700">{{ total_patients_seen }}</p>
                                 </div>
                             </div>

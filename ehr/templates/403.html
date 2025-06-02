@@ -1,18 +1,43 @@
 {% extends "base.html" %}
-{% block title %}ACCESS DENIED{% endblock %}
 {% load static %}
+{% block title %}ACCESS DENIED{% endblock %}
+
 {% block content %}
-  <div class="flex justify-center rounded-2xl mx-2 md:mx-auto">
-    <div class="mt-10 shadow-2xl mx-auto bg-white p-10 rounded-xl text-center">
-        <i class="fa-solid fa-lock fa-10x text-rose-800"></i>
-    <p class=" text-rose-800 font-bold text-2xl uppercase text-center">
-      ACCESS DENIED! 
+<div class="flex justify-center items-center mt-20 bg-gradient-to-br from-rose-100 via-white to-blue-100 dark:from-gray-900 dark:to-gray-800 px-4">
+  <div class="bg-white dark:bg-gray-900 border-4 border-rose-600 shadow-2xl rounded-3xl p-10 max-w-md w-full text-center animate-fadeIn border-opacity-50 hover:border-opacity-100 transition duration-300 ease-in-out">
+
+    <i class="fa-solid fa-lock fa-10x text-rose-800 dark:text-rose-400 text-7xl md:text-9xl animate-spin mb-6 lock"></i>
+
+    <h1 class="text-3xl md:text-4xl font-bold text-rose-800 dark:text-rose-300 uppercase mb-2">
+      ACCESS DENIED!
+    </h1>
+
+    <p class="text-lg md:text-xl font-semibold text-green-700 dark:text-green-400">
+      {{ request.user }}
     </p>
-    <p class="text-green-700 text-2xl uppercase">
-    {{request.user}},</p>
-    <p class="text-md font-semibold mt-6 border-t-2 border-zinc-700 text-blue-500">
-        YOU DO NOT HAVE PERMISSION TO ACCESS THIS PAGE!
+
+    <p class="mt-4 text-blue-600 dark:text-blue-300 border-t pt-4 text-sm md:text-base">
+      You do not have permission to view this page.
     </p>
+
+    <a href="{% url 'index' %}" class="mt-6 inline-block bg-rose-600 text-white px-5 py-2 rounded-xl shadow-lg hover:bg-rose-800 focus:outline-none focus:ring-4 focus:ring-rose-300 transition duration-300 ease-in-out text-sm uppercase tracking-wider">
+      <i class="fa-solid fa-arrow-left mr-2"></i> Go Back Home
+    </a>
   </div>
-  </div>
+</div>
+
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out;
+}
+.lock{
+
+  animation: ping 2s infinite ease-in-out;
+}
+
+</style>
 {% endblock %}

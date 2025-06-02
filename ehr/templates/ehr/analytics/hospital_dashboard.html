@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block title %}Hospital Ward & Theatre Dashboard{% endblock %}
+{% load static %}
+{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'analytics' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>Ward & Theatre
+</div>
+{%endblock%}
+{% block content %}
+<div class="mx-2 md:mx-20">
+  <div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden">
+
+    <div class="bg-gradient-to-r from-green-600 to-green-700 text-white mb-2 rounded-lg mx-6 overflow-hidden">
+
+            <div class="bg-white bg-opacity-10 backdrop-blur-md p-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                    <div class="bg-green-500 bg-opacity-15 backdrop-blur-sm rounded-xl p-5 text-center transition-all hover:bg-opacity-25 hover:-translate-y-1">
+                        <span class="text-white text-lg font-bold block mb-2">{{ total_patients }}</span>
+                        <span class="text-white text-opacity-90 text-xs">Total Patients</span>
+                    </div>
+                    <div class="bg-blue-500 bg-opacity-15 backdrop-blur-sm rounded-xl p-5 text-center transition-all hover:bg-opacity-25 hover:-translate-y-1">
+                        <span class="text-white text-lg font-bold block mb-2">{{ total_wards }}</span>
+                        <span class="text-white text-opacity-90 text-xs">Active Wards</span>
+                    </div>
+                    <div class="bg-gray-500 bg-opacity-15 backdrop-blur-sm rounded-xl p-5 text-center transition-all hover:bg-opacity-25 hover:-translate-y-1">
+                        <span class="text-white text-lg font-bold block mb-2">{{ total_theatres }}</span>
+                        <span class="text-white text-opacity-90 text-xs">Operating Theatres</span>
+                    </div>
+                    <div class="bg-orange-500 bg-opacity-15 backdrop-blur-sm rounded-xl p-5 text-center transition-all hover:bg-opacity-25 hover:-translate-y-1">
+                        <span class="text-white text-lg font-bold block mb-2">{{ operations_today }}</span>
+                        <span class="text-white text-opacity-90 text-xs">Operations Today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-center border-b border-gray-200 mb-4 mx-6">
+            <button id="ward-tab" class="py-2 px-4 text-sm font-medium focus:outline-none transition-colors duration-200 border-b-2 border-blue-600 text-blue-600">
+                <i class="fas fa-procedures mr-2"></i> Ward Statistics
+            </button>
+            <button id="theatre-tab" class="py-2 px-4 text-sm font-medium focus:outline-none transition-colors duration-200 text-gray-500 hover:text-blue-600">
+                <i class="fas fa-hospital-alt mr-2"></i> Theatre Operations
+            </button>
+        </div>
+
+        <div class="p-2">
+            <div id="ward-content" class="tab-content">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1">
+                    <div class="bg-blue-600 text-white py-2 px-6 relative overflow-hidden">
+                        <h2 class="text-sm font-semibold mb-2 relative z-10 text-white text-center">
+                            Ward Details
+                        </h2>
+                    </div>
+                    <div class="p-3">
+                        {% if ward_stats %}
+                            <div class="space-y-5">
+                                {% for ward in ward_stats %}
+                                <div class="bg-gray-100 rounded-xl p-5 border-l-4 border-blue-600 transition-all hover:translate-x-1 hover:shadow-md relative overflow-hidden group">
+                                        <div class="text-xl font-semibold text-gray-800 mb-4">
+                                            <a href="{% url 'ward_details' ward.id %}" class="hover:text-blue-600 transition-colors text-xs">
+                                                {{ ward.name }}
+                                            </a>
+                                        </div>
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                                <span class="text-blue-600 text-lg font-bold block mb-1">{{ ward.total_admitted }}</span>
+                                                <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Total Admitted</span>
+                                            </div>
+                                            <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                                <span class="text-blue-600 text-lg font-bold block mb-1">{{ ward.currently_admitted }}</span>
+                                                <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Currently Admitted</span>
+                                            </div>
+                                            <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                                <span class="text-blue-600 text-lg font-bold block mb-1">{{ ward.received_patients }}</span>
+                                                <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Received</span>
+                                            </div>
+                                            <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                                <span class="text-blue-600 text-lg font-bold block mb-1">{{ ward.discharged_patients }}</span>
+                                                <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Discharged</span>
+                                            </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center text-gray-500 italic py-5">
+                                <p>No ward data available at the moment.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="theatre-content" class="tab-content hidden mt-8"> {# Added mt-8 for spacing when visible #}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1">
+                    <div class="bg-red-500 text-white py-2 px-6 relative overflow-hidden  text-center">
+                        <h2 class="text-sm font-semibold mb-2 relative z-10 text-white">
+                            Theatre Details
+                        </h2>
+                    </div>
+                    <div class="p-3">
+                        {% if theatre_stats %}
+                            <div class="space-y-5">
+                                {% for theatre in theatre_stats %}
+                                <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border-l-4 border-red-500 transition-all hover:translate-x-1 hover:shadow-md relative overflow-hidden group">
+                                        <div class="text-xl font-semibold text-gray-800 mb-4">
+                                            <a href="{% url 'theatre_details' theatre.id %}" class="hover:text-red-600 transition-colors text-xs">
+                                                {{ theatre.name }}
+                                            </a>
+                                        </div>
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                                <span class="text-red-500 text-lg font-bold block mb-1">{{ theatre.bookings_today }}</span>
+                                                <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Bookings Today</span>
+                                            </div>
+                                            <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                                <span class="text-red-500 text-lg font-bold block mb-1">{{ theatre.operations_completed }}</span>
+                                                <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Completed</span>
+                                            </div>
+                                            <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                                <span class="text-red-500 text-lg font-bold block mb-1">{{ theatre.operations_pending }}</span>
+                                                <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Pending</span>
+                                            </div>
+                                            <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                                <span class="text-red-500 text-lg font-bold block mb-1">{{ theatre.total_operations }}</span>
+                                                <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Total Operations</span>
+                                            </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border-l-4 border-gray-400 transition-all hover:translate-x-1 hover:shadow-md">
+                                    <div class="text-sm font-semibold text-gray-800 mb-4">Theatre Summary</div>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                            <span class="text-gray-700 text-lg font-bold block mb-1">{{ total_bookings_today }}</span>
+                                            <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Total Bookings Today</span>
+                                        </div>
+                                        <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                            <span class="text-gray-700 text-lg font-bold block mb-1">{{ total_operations_completed }}</span>
+                                            <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Completed</span>
+                                        </div>
+                                        <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                            <span class="text-gray-700 text-lg font-bold block mb-1">{{ total_operations_pending }}</span>
+                                            <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Pending</span>
+                                        </div>
+                                        <div class="bg-white rounded-lg shadow-sm p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                                            <span class="text-gray-700 text-lg font-bold block mb-1">{{ total_theatre_operations }}</span>
+                                            <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">All Time Total</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center text-gray-500 italic py-5">
+                                <p>No theatre data available at the moment.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes shine {
+        0% { transform: translateX(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) rotate(40deg); } /* Adjusted rotation slightly for better flow */
+    }
+    .animate-shine {
+        animation: shine 3s infinite;
+    }
+    /* Active tab styling */
+    .tab-active {
+        border-color: #3B82F6; /* blue-600 */
+        color: #3B82F6; /* blue-600 */
+    }
+    .tab-inactive {
+        border-color: transparent;
+        color: #6B7280; /* gray-500 */
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab functionality
+        const wardTab = document.getElementById('ward-tab');
+        const theatreTab = document.getElementById('theatre-tab');
+        const wardContent = document.getElementById('ward-content');
+        const theatreContent = document.getElementById('theatre-content');
+
+        function showTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            // Deactivate all tabs
+            document.querySelectorAll('button[id$="-tab"]').forEach(tab => {
+                tab.classList.remove('tab-active');
+                tab.classList.add('tab-inactive', 'hover:text-blue-600');
+                tab.style.borderColor = 'transparent'; // Ensure border is transparent
+            });
+
+            // Show the selected tab content
+            document.getElementById(tabId + '-content').classList.remove('hidden');
+
+            // Activate the selected tab button
+            const selectedTab = document.getElementById(tabId + '-tab');
+            selectedTab.classList.remove('tab-inactive', 'hover:text-blue-600');
+            selectedTab.classList.add('tab-active');
+            selectedTab.style.borderColor = '#3B82F6'; // Apply active border color
+        }
+
+        // Set initial active tab
+        showTab('ward');
+
+        wardTab.addEventListener('click', () => showTab('ward'));
+        theatreTab.addEventListener('click', () => showTab('theatre'));
+
+        // Add loading animation to numbers on page load
+        const numbers = document.querySelectorAll('.text-lg.font-bold, .text-xl.font-bold');
+        numbers.forEach(number => {
+            const targetValue = parseInt(number.textContent) || 0;
+            let currentValue = 0;
+            // Adjust increment for potentially smaller values to still animate smoothly
+            const increment = targetValue > 0 ? targetValue / 30 : 0; // Use a slightly higher divisor for more steps
+
+            if (targetValue > 0) {
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= targetValue) {
+                        currentValue = targetValue;
+                        clearInterval(timer);
+                    }
+                    number.textContent = Math.floor(currentValue);
+                }, 40); // Slightly faster interval
+            }
+        });
+    });
+</script>
+
+{% endblock %}
