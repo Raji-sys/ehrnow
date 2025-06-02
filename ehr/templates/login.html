@@ -226,14 +226,6 @@ document.querySelectorAll('input').forEach(input => {
   {% endfor %}
 {% endif %}
 
-// Add some interactive animations on load
-window.addEventListener('load', function() {
-  const card = document.querySelector('.bg-white\\/80');
-  card.classList.add('animate-pulse');
-  setTimeout(() => {
-    card.classList.remove('animate-pulse');
-  }, 1000);
-});
 </script>
 
 <style>
