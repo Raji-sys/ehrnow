@@ -3,115 +3,45 @@
 {% block title %}HOME{% endblock %}
 
 {% block content %}
+<div class="relative h-screen w-full overflow-hidden">
+  <!-- Background overlay -->
+  <div class="absolute inset-0 bg-cover bg-center opacity-20 animate-pulse duration-[6000ms] ease-in-out z-10"></div>
+
+  <!-- Landing content -->
+  <div class="absolute z-20 h-[80%] w-full flex flex-col items-center justify-center text-center p-4">
+    <h1 class="text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-50 to-emerald-50 text-transparent bg-clip-text drop-shadow animate-fade-in">
+      AudaxEMR
+    </h1>
+    <p class="mt-4 text-sm md:text-lg text-blue-50 animate-fade-in animation-delay-1000">
+      <i class="fas fa-user-md mr-2"></i>Your reliable partner for Electronic Medical Records
+    </p>
+    <a href="{% url 'get_started' %}" class="mt-8 px-8 py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-semibold uppercase text-sm rounded-xl shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 animate-bounce inline-block">
+      <i class="fas fa-rocket mr-2"></i>Get Started
+    </a>
+  </div>
+</div>
+
 <style>
-
-  .landing-wrapper {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .background-overlay {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    opacity: 0.2;
-    animation: pulse 6s ease-in-out infinite;
-    z-index: 1;
-  }
-
-  .landing-content {
-    position: absolute;
-    z-index: 2;
-    height: 80%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 1rem;
-  }
-
-  .title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    background: linear-gradient(to right, #eef7fb, #dcf9f0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    animation: fadeIn 1s ease forwards;
-  }
-
-  @media (min-width: 768px) {
-    .title {
-      font-size: 3.5rem;
-    }
-  }
-
-  .subtitle {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #e4e9ee;
-    animation: fadeIn 2s ease forwards;
-  }
-
-  @media (min-width: 768px) {
-    .subtitle {
-      font-size: 1.1rem;
-    }
-  }
-
-  .cta-button {
-    margin-top: 2rem;
-    padding: 0.8rem 2rem;
-    background: linear-gradient(to right, #10b981, #0284c7);
-    color: white;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    border-radius: 0.75rem;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    animation: bounce 2s infinite;
-    text-decoration: none;
-    display: inline-block;
-  }
-
-  .cta-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  }
-
-  /* Animations */
-  @keyframes pulse {
-    0% { opacity: 0.2; }
-    50% { opacity: 0.3; }
-    100% { opacity: 0.2; }
-  }
-
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
+  
+  .animate-fade-in {
+    animation: fadeIn 1s ease forwards;
+  }
+  
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+  
   @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
   }
+  
+  .animate-bounce {
+    animation: bounce 2s infinite;
+  }
 </style>
-
-<div class="landing-wrapper">
-  <div class="background-overlay"></div>
-
-  <div class="landing-content">
-    <h1 class="title">AudaxEMR</h1>
-    <p class="subtitle">Your reliable partner for Electronic Medical Records</p>
-    <a href="{% url 'get_started' %}" class="cta-button">Get Started</a>
-  </div>
-</div>
 {% endblock %}
