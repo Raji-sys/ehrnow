@@ -449,7 +449,7 @@
 {% endif %}
 
 {% if has_active_visit and active_visit_for_actions %}
-  <div class="visit-box">
+  <div class="visit-box flex justify-between">
     <div class="visit-tag">🔴 Active Visit Session</div>
 
     <div class="visit-info-section">
@@ -524,7 +524,7 @@
 
       <div class="rounded-t-xl flex items-center gap-2 justify-between md:flex-row flex-col p-2 bg-gradient-to-r from-emerald-700 to-sky-700">
         <div>
-          <h1 class="text-sm font-semibold text-gray-200 sm:mb-0 sm:mr-4 uppercase p-2">{{patient.full_name}} </h1>
+          <h1 class="text-sm font-semibold text-gray-200 sm:mb-0 sm:mr-4 uppercase p-2">{{patient.full_name}} - {{patient.file_no}}</h1>
         </div>
         
         <div class="flex items-center uppercase">
@@ -582,8 +582,6 @@
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
               <thead class="bg-cyan-50">
               <tr class=" text-xs">
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">FILE NUMBER</th>
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NAME</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">AGE</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">GENDER</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">PHONE</th>
@@ -591,17 +589,16 @@
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">MARITAL STATUS</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">RELIGION</th>
                 <!-- <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">TRIBE</th> -->
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">State</th>
+                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">LGA</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">ADDRESS</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NEXT OF KIN</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">RELATIONSHIP WITH NEXT OF KIN</th>
                 <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NEXT OF KIN PHONE</th>
-                <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">NEXT OF KIN ADDRESS</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-cyan-200">
               <tr class="bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300 text-xs">
-                <td class=" p-3">{{ patient.file_no|default_if_none:''|upper}}</td>
-                <td class=" p-3">{{ patient.full_name|default_if_none:''|upper}}</td>
                 <td class=" p-3">{{ patient.age|default_if_none:''|upper }}</td>
                 <td class=" p-3">{{ patient.gender|default_if_none:''|upper }}</td>
                 <td class=" p-3">{{ patient.phone|default_if_none:''|upper }}</td>
@@ -609,11 +606,12 @@
                 <td class=" p-3">{{ patient.marital_status|default_if_none:''|upper }}</td>
                 <td class=" p-3">{{ patient.religion|default_if_none:''|upper }}</td>
                 <!-- <td class=" p-3">{{ patient.tribe|default_if_none:''|upper }}</td> -->
-                <td class=" p-3">{{ patient.address|default_if_none:''|upper }}</td>
-                <td class=" p-3">{{ patient.nok_name|default_if_none:''|upper }}</td>
+                <td class=" p-3">{{patient.state|default_if_none:'N/A'}}</td>
+                <td class=" p-3">{{patient.lga|default_if_none:'N/A'}}</td>
+                <td class=" p-3">{{ patient.address|default_if_none:''|upper }} </td>
+                <td class=" p-3">{{ patient.nok_name|default_if_none:''|upper }}  </td>
                 <td class=" p-3">{{ patient.nok_rel|default_if_none:''|upper }}</td>
                 <td class=" p-3">{{ patient.nok_phone|default_if_none:''|upper }}</td>
-                <td class=" p-3">{{ patient.nok_addr|default_if_none:''|upper }}</td>
                 
               </tr>
             </tbody>

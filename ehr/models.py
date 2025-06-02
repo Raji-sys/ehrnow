@@ -157,16 +157,16 @@ class PatientData(models.Model):
     sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
     gender = models.CharField(choices=sex, max_length=10, null=True)
     age=models.PositiveIntegerField(null=True)
-    dob = models.DateField('date of birth', null=True)
+    dob = models.DateField('date of birth', null=True, blank=True)
     m_status = (('MARRIED', 'MARRIED'), ('SINGLE', 'SINGLE'), ('DIVORCED', 'DIVORCED'),('DIVORCEE', 'DIVORCEE'), ('WIDOW', 'WIDOW'), ('WIDOWER', 'WIDOWER'))
-    marital_status = models.CharField(choices=m_status, max_length=100, null=True)
+    marital_status = models.CharField(choices=m_status, max_length=100, null=True, blank=True)
     ns = (('NIGERIAN', 'NIGERIAN'), ('NON-CITIZEN', 'NON-CITIZEN'))
-    nationality = models.CharField(choices=ns, max_length=200, null=True)
+    nationality = models.CharField(choices=ns, max_length=200, null=True,blank=True)
     geo_political_zone = (('NORTH-EAST', 'NORTH-EAST'), ('NORTH-WEST', 'NORTH-WEST'), ('NORTH-CENTRAL', 'NORTH-CENTRAL'),('SOUTH-EAST', 'SOUTH-EAST'), ('SOUTH-WEST', 'SOUTH-WEST'), ('SOUTH-SOUTH', 'SOUTH-SOUTH'))
-    zone = models.CharField( choices=geo_political_zone, max_length=300, null=True)
-    state = models.CharField(max_length=300, null=True)
-    lga = models.CharField(max_length=300, null=True)
-    address = models.CharField(max_length=300, null=True)
+    zone = models.CharField( choices=geo_political_zone, max_length=300, null=True, blank=True)
+    state = models.CharField(max_length=300, null=True, blank=True)
+    lga = models.CharField(max_length=300, null=True, blank=True)
+    address = models.CharField(max_length=300, null=True, blank=True)
     faith = (('ISLAM', 'ISLAM'), ('CHRISTIANITY', 'CHRISTIANITY'),('TRADITIONAL', 'TRADITIONAL'),('OTHER','OTHER'))
     religion = models.CharField(choices=faith, max_length=100, null=True,blank=True)
     tribes = (('HAUSA', 'Hausa'),
@@ -186,7 +186,7 @@ class PatientData(models.Model):
         ('EBIRA', 'Ebira'),
         ('JUKUN', 'Jukun'),
         ('BINI', 'Bini'),
-        ('GWARi', 'Gwari'),
+        ('GWARI', 'Gwari'),
         ('KURAMA', 'Kurama'),
         ('ANGAS', 'Angas'),
         ('BACHAMA', 'Bachama'),
@@ -212,12 +212,12 @@ class PatientData(models.Model):
     tribe = models.CharField(choices=tribes, max_length=100, null=True, blank=True)
     occupation = models.CharField(max_length=300, null=True, blank=True)
     role_in_occupation = models.CharField(max_length=300, null=True, blank=True)
-    nok_name = models.CharField('name', max_length=300, null=True)
-    nok_phone = models.CharField('phone', max_length=22, null=True, unique=True)
+    nok_name = models.CharField('name', max_length=300, null=True, blank=True)
+    nok_phone = models.CharField('phone', max_length=22, null=True, unique=True, blank=True)
     rel = (('SPOUSE','SPOUSE'),('FATHER', 'FATHER'), ('MOTHER', 'MOTHER'),('SON', 'SON'),('DAUGHTER','DAUGHTER'),('BROTHER','BROTHER'),('SISTER','SISTER'),
            ('UNCLE','UNCLE'),('AUNT','AUNT'),('NEPHEW','NEPHEW'),('NIECE','NIECE'),('GRANDFATHER','GRANDFATHER'),('GRANDMOTHER','GRANDMOTHTER'),
            ('GRANDSON','GRANDSON'),('GRANDDAUGHTER','GRANDAUGHTER'),('COUSIN','COUSIN'),('FRIEND','FRIEND'),('OTHER','OTHER'))
-    nok_rel = models.CharField('relationship',choices=rel, max_length=300, null=True)
+    nok_rel = models.CharField('relationship',choices=rel, max_length=300, null=True, blank=True)
     nok_addr_options = (('SAME', 'SAME'), ('DIFFERENT ADDRESS', 'DIFFERENT ADDRESS'))
     nok_addr = models.CharField('address',choices=nok_addr_options, max_length=300, null=True, blank=True)
     nok_addr_if = models.CharField('address if different', max_length=300, null=True, blank=True)

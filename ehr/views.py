@@ -430,12 +430,9 @@ class UpdatePatientView(UpdateView):
     
     def form_valid(self, form):
         form.instance.user = self.request.user
-        if form.is_valid():
-            form.save()
-            messages.success(self.request, 'Patient Information Updated Successfully')
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
+        messages.success(self.request, 'Patient Information Updated Successfully')
+        return super().form_valid(form)
+
 
     def form_invalid(self, form):
         messages.error(self.request, 'Error updating patient information')

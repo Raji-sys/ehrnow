@@ -67,40 +67,108 @@ class ProfileForm(forms.ModelForm):
 #             # field.required=True
 #             field.widget.attrs.update(
 #                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+# class PatientForm(forms.ModelForm):
+#     class Meta:
+#         model = PatientData
+#         exclude = ['file_no', 'age', 'user', 'updated']
+#         widgets = {
+#             'zone': forms.Select(attrs={'id': 'id_zone'}),
+#             'state': forms.Select(attrs={'id': 'id_state'}),
+#             'lga': forms.Select(attrs={'id': 'id_lga'}),
+#             'dob': forms.DateInput(attrs={'type': 'date'})
+#         }
+
+#     def __init__(self, *args, **kwargs):
+#         super(PatientForm, self).__init__(*args, **kwargs)
+        
+#         # Add base styling to all fields
+#         for field_name, field in self.fields.items():
+#             # Get the model field
+#             model_field = self.Meta.model._meta.get_field(field_name)
+            
+#             # Set required status based on model field
+#             field.required = not model_field.blank
+
+#             # Add your styling
+#             field.widget.attrs.update({
+#                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+#             })
+
+#             # Add empty choice only for choice fields that are optional
+#             if isinstance(field.widget, forms.Select) and not field.required:
+#                 if hasattr(field, 'choices'):
+#                     choices = list(field.choices)
+#                     if choices and choices[0][0] != '':  # Only add if not already present
+#                         choices.insert(0, ('', '---Select---'))
+#                         field.choices = choices
+# In forms.py
+# In forms.py
+from django import forms
+from .models import PatientData
+from .data import ZONE_STATE_LGA_DATA
+
 class PatientForm(forms.ModelForm):
+    state = forms.ChoiceField(choices=[('', '---Select State---')], required=False)
+    lga = forms.ChoiceField(choices=[('', '---Select LGA---')], required=False)
+
     class Meta:
         model = PatientData
         exclude = ['file_no', 'age', 'user', 'updated']
         widgets = {
             'zone': forms.Select(attrs={'id': 'id_zone'}),
-            'state': forms.Select(attrs={'id': 'id_state'}),
-            'lga': forms.Select(attrs={'id': 'id_lga'}),
             'dob': forms.DateInput(attrs={'type': 'date'})
         }
 
     def __init__(self, *args, **kwargs):
         super(PatientForm, self).__init__(*args, **kwargs)
-        
+
+        instance = kwargs.get('instance')
+
         # Add base styling to all fields
         for field_name, field in self.fields.items():
-            # Get the model field
-            model_field = self.Meta.model._meta.get_field(field_name)
-            
-            # Set required status based on model field
-            field.required = not model_field.blank
-
-            # Add your styling
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
+            model_field = self.Meta.model._meta.get_field(field_name)
+            field.required = not model_field.blank
 
-            # Add empty choice only for choice fields that are optional
+        current_zone = None
+        if self.is_bound: # If form submitted, prioritize POST data
+            current_zone = self.data.get('zone')
+        elif instance and instance.zone: # Otherwise, use instance data for initial load
+            current_zone = instance.zone
+
+        if current_zone and current_zone in ZONE_STATE_LGA_DATA:
+            # Populate state choices
+            states_for_zone = ZONE_STATE_LGA_DATA[current_zone]
+            self.fields['state'].choices = [('', '---Select State---')] + [(s, s) for s in sorted(states_for_zone.keys())]
+
+
+            current_state = None
+            if self.is_bound: # If form submitted, prioritize POST data
+                current_state = self.data.get('state')
+            elif instance and instance.state: # Otherwise, use instance data for initial load
+                current_state = instance.state
+
+
+            if current_state and current_state in states_for_zone:
+                # Populate LGA choices
+                lgas_for_state = states_for_zone[current_state]
+                self.fields['lga'].choices = [('', '---Select LGA---')] + [(l, l) for l in sorted(lgas_for_state)]
+
+
+        # Set initial values for the ChoiceFields so they are pre-selected on GET requests
+        if instance:
+            self.fields['state'].initial = instance.state
+            self.fields['lga'].initial = instance.lga
+
+        # --- Your existing logic for adding '---Select---' to non-required Select fields ---
+        for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.Select) and not field.required:
-                if hasattr(field, 'choices'):
-                    choices = list(field.choices)
-                    if choices and choices[0][0] != '':  # Only add if not already present
-                        choices.insert(0, ('', '---Select---'))
-                        field.choices = choices
+                if hasattr(field, 'choices') and field.choices:
+                    current_choices = list(field.choices)
+                    if current_choices and current_choices[0][0] != '':
+                        field.choices = [('', '---Select---')] + current_choices
 
 
 class VisitForm(forms.ModelForm):
