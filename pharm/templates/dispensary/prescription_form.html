@@ -14,11 +14,15 @@
     {% endfor %}
   </section>
 {%endif%}
+
+
+
+
 <div class="flex justify-center mx-2 p-4 mb-4">
-    <div class="justify-center items-center uppercase text-xs shadow-sm shadow-green-500 mx-auto rounded-2xl bg-green-50 mt-2 p-6">
-        <form method="post" class="flex flex-col space-y-4">
+    <div class="justify-center items-center uppercase text-xs shadow-sm shadow-green-500 mx-auto rounded-2xl bg-green-50 mt-2 p-10">
+        <form method="post" id="prescription-form" class="flex flex-col space-y-4">
             {% csrf_token %}
-            
+            <h2 class="text-lg font-semibold text-gray-800 mb-4 text-center">Prescribe Drugs</h2>
             <div class="flex md:flex-row flex-col space-y-2 md:space-y-0 gap-2 p-8 md:p-4 items-start md:items-center">
                 <div class="relative flex-grow">
                     <input type="text" id="drug-search-input" placeholder="Search for drugs" class="w-full text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200">
@@ -38,6 +42,32 @@
     </div>
 </div>
 
+<!-- Confirmation Modal -->
+<div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-20 max-w-md mx-4 mt-10">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Confirm Prescription</h3>
+        <div id="prescription-summary" class="mb-4 text-sm text-gray-600">
+            <!-- Summary will be populated by JavaScript -->
+        </div>
+        <div class="flex justify-end space-x-3">
+            <button id="cancel-submit" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancel</button>
+            <button id="confirm-submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Confirm Prescription</button>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div id="error-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-red-600 mb-4">Validation Error</h3>
+        <div id="error-message" class="mb-4 text-sm text-gray-600">
+            <!-- Error message will be populated by JavaScript -->
+        </div>
+        <div class="flex justify-end">
+            <button id="close-error" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">OK</button>
+        </div>
+    </div>
+</div>
 <script>
 $(document).ready(function() {
     let allDrugs = []; // To store the fetched list of drugs
@@ -113,34 +143,95 @@ $(document).ready(function() {
         }
     });
 
-    $('#add-drug-btn').click(function() {
+    // Validation function for adding drugs
+    function validateDrugEntry() {
         var drugId = $('#selected-drug-id-hidden').val();
-        var drugDisplayName = $('#selected-drug-name-hidden').val(); // Use the stored full display name
+        var drugDisplayName = $('#selected-drug-name-hidden').val();
         var dose = $('#dose-input').val().trim();
+        var searchInputValue = $('#drug-search-input').val().trim();
+        var errors = [];
 
-        if (!drugId) {
-            alert('Please search and select a drug from the suggestions.');
-            $('#drug-search-input').focus();
-            return;
+        // Check if drug is selected OR if search input has value (for remembered entries)
+        if (!drugId && !searchInputValue) {
+            errors.push('Please search and select a drug from the suggestions.');
         }
-        if (!drugDisplayName) { // Should not happen if drugId is set from suggestion
-            alert('Error: Drug name not captured. Please re-select the drug.');
-            return;
+        
+        // If no drugDisplayName but we have search input, use search input as drug name
+        if (!drugDisplayName && searchInputValue) {
+            drugDisplayName = searchInputValue;
+            $('#selected-drug-name-hidden').val(searchInputValue);
         }
+        
+        if (!drugDisplayName && !searchInputValue) {
+            errors.push('Please enter a drug name.');
+        }
+        
         if (!dose) {
-            alert('Please enter the dose.');
-            $('#dose-input').focus();
+            errors.push('Please enter the dose.');
+        }
+
+        // Check for duplicate drugs (compare by name if no ID)
+        var isDuplicate = false;
+        $('#selected-drugs-container .selected-drug-entry').each(function() {
+            var existingDrugName = $(this).find('.drug-display-name').text().toLowerCase();
+            var currentDrugName = (drugDisplayName || searchInputValue || '').toLowerCase();
+            if (existingDrugName === currentDrugName) {
+                isDuplicate = true;
+                return false; // Break the loop
+            }
+        });
+        
+        if (isDuplicate) {
+            errors.push('This drug has already been added to the prescription.');
+        }
+
+        return errors;
+    }
+
+    // Show error modal
+    function showError(errorMessages) {
+        $('#error-message').html(errorMessages.map(msg => `<p class="mb-2">• ${msg}</p>`).join(''));
+        $('#error-modal').removeClass('hidden');
+    }
+
+    $('#add-drug-btn').click(function() {
+        var errors = validateDrugEntry();
+        
+        if (errors.length > 0) {
+            showError(errors);
             return;
         }
 
-        var drugHtml = `
-            <div class="selected-drug-entry p-2 border-b border-gray-200">
-                <input type="hidden" name="selected_drugs" value="${drugId}">
-                <input type="hidden" name="selected_doses" value="${dose}">
-                ${drugDisplayName} - Dose: ${dose}
-                <button type="button" class="remove-drug ml-2 bg-red-500 text-white py-1 px-2 text-xs rounded shadow hover:bg-red-600">X</button>
-            </div>
-        `;
+        var drugId = $('#selected-drug-id-hidden').val();
+        var drugDisplayName = $('#selected-drug-name-hidden').val();
+        var dose = $('#dose-input').val().trim();
+        var searchInputValue = $('#drug-search-input').val().trim();
+
+        // Use search input value if no formal selection was made (handles remembered entries)
+        var finalDrugName = drugDisplayName || searchInputValue;
+        
+        var drugHtml = '';
+        if (drugId) {
+            // Selected drug from suggestions
+            drugHtml = `
+                <div class="selected-drug-entry p-2 border-b border-gray-200">
+                    <input type="hidden" name="selected_drugs" value="${drugId}">
+                    <input type="hidden" name="selected_doses" value="${dose}">
+                    <span class="drug-display-name">${finalDrugName}</span> - Dose: <span class="drug-dose">${dose}</span>
+                    <button type="button" class="remove-drug ml-2 bg-red-500 text-white py-1 px-2 text-xs rounded shadow hover:bg-red-600">X</button>
+                </div>
+            `;
+        } else {
+            // Manual drug entry - store name in a different field
+            drugHtml = `
+                <div class="selected-drug-entry p-2 border-b border-gray-200">
+                    <input type="hidden" name="manual_drug_names" value="${finalDrugName}">
+                    <input type="hidden" name="manual_drug_doses" value="${dose}">
+                    <span class="drug-display-name">${finalDrugName}</span> - Dose: <span class="drug-dose">${dose}</span> <em>(Manual Entry)</em>
+                    <button type="button" class="remove-drug ml-2 bg-red-500 text-white py-1 px-2 text-xs rounded shadow hover:bg-red-600">X</button>
+                </div>
+            `;
+        }
 
         $('#selected-drugs-container').append(drugHtml);
 
@@ -154,6 +245,75 @@ $(document).ready(function() {
 
     $(document).on('click', '.remove-drug', function() {
         $(this).closest('.selected-drug-entry').remove();
+    });
+
+    // Form submission validation and confirmation
+    $('#prescription-form').on('submit', function(e) {
+        e.preventDefault(); // Always prevent default submission initially
+        
+        var selectedDrugs = $('input[name="selected_drugs"]');
+        var errors = [];
+
+        // Check if any drugs have been added
+        if (selectedDrugs.length === 0) {
+            errors.push('Please add at least one drug to the prescription.');
+        }
+
+        // Additional validation can be added here (e.g., check for form fields)
+
+        if (errors.length > 0) {
+            showError(errors);
+            return false;
+        }
+
+        // Generate prescription summary for confirmation
+        var summary = '<h4 class="font-semibold mb-2">Prescription Summary:</h4><ul class="list-disc list-inside">';
+        $('.selected-drug-entry').each(function() {
+            var drugName = $(this).find('.drug-display-name').text();
+            var dose = $(this).find('.drug-dose').text();
+            summary += `<li>${drugName} - ${dose}</li>`;
+        });
+        summary += '</ul>';
+        summary += `<p class="mt-3 text-sm"><strong>Total drugs:</strong> ${selectedDrugs.length}</p>`;
+
+        $('#prescription-summary').html(summary);
+        $('#drug-suggestions').addClass('hidden').empty(); // Hide and clear suggestions
+        $('#drug-search-input').blur(); // Remove focus from search input
+        $('#confirmation-modal').removeClass('hidden');
+    });
+
+    // Modal event handlers
+    $('#cancel-submit').click(function() {
+        $('#confirmation-modal').addClass('hidden');
+    });
+
+    $('#confirm-submit').click(function() {
+        $('#confirmation-modal').addClass('hidden');
+        // Actually submit the form
+        $('#prescription-form')[0].submit();
+    });
+
+    $('#close-error').click(function() {
+        $('#error-modal').addClass('hidden');
+        
+        // Focus on the first problematic field
+        if ($('#selected-drugs-container .selected-drug-entry').length === 0) {
+            $('#drug-search-input').focus();
+        }
+    });
+
+    // Close modals when clicking outside
+    $('#confirmation-modal, #error-modal').click(function(e) {
+        if (e.target === this) {
+            $(this).addClass('hidden');
+        }
+    });
+
+    // Escape key to close modals
+    $(document).keydown(function(e) {
+        if (e.key === 'Escape') {
+            $('#confirmation-modal, #error-modal').addClass('hidden');
+        }
     });
 });
 </script>

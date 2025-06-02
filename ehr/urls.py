@@ -95,7 +95,7 @@ urlpatterns = [
     path('patient/<str:file_no>/visit/<int:visit_pk>/close/', CloseVisitView.as_view(), name='close_visit'),
 
     path('clinic/report/', VisitReportView.as_view(), name='visit_report'),
-    path('clinic/visit/stat-card/', VisitStatCardView.as_view(), name='visit_stat_card'),
+    path('clinic/visit/stat-card/', VisitStatCardView.as_view(), name='visit_stat'),
     path('clinic/report/pdf', views.visit_pdf, name='visit_pdf'),
 
     #admission
@@ -173,4 +173,9 @@ urlpatterns = [
     path('physio-test/create/<str:file_no>/', PhysioTestCreateView.as_view(), name='physio_request'),
     path('physio-result/create/<str:file_no>/<int:pk>/', PhysioRequestUpdateView.as_view(), name='physio_result'),
     path('physio-report/', PhysioReportView.as_view(), name='physio_report'),
+
+    path('analytics/comprehensive/', ComprehensiveAnalyticsView.as_view(), name='comprehensive_analytics'),
+    path('analytics/', AnalyticsView.as_view(), name='analytics'),
+    path('analytics/doctor/<int:doctor_id>/', DoctorDetailAnalyticsView.as_view(), name='doctor_detail_analytics'),
+
 ]

@@ -22,121 +22,168 @@
 {% endblock %}
 
 {% block content %}
-<div class="mx-4 md:mx-20">
-    <div class="bg-gradient-to-r from-sky-600  to-emerald-600 h-4 rounded-t-xl"></div>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-6 uppercase text-center rounded-b-xl p-2 bg-white shadow">
-        <div class="transform transition duration-300 hover:scale-90 ">
-            <a href="{%url 'medical_record' %}" class="text-xs font-medium  text-sky-800 ">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600  to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-book fa-2x "></i><p class="text-xs uppercase 
-                        text-gray-900 group-hover:text-white">
-                    HIM</p></div>
-            </a>
-        </div>
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'revenue' %}" class="text-xs font-medium text-green-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-naira-sign fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    REVENUE</p></div>
-            </a>
-        </div>
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'nursing_desks_list' %}" class="text-xs  font-medium text-blue-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-stethoscope fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    NURSING</p></div>
-            </a>
-        </div>
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'clinic_list' %}" class="text-xs  font-medium text-orange-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-clinic-medical fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    CLINIC</p></div>
-            </a>
-        </div>
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'pharm:index' %}" class="text-xs  font-medium text-indigo-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-prescription fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    PHARMACY</p></div>
-            </a>
-        </div>
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'results:dashboard' %}" class="text-xs  font-medium text-fuchsia-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-microscope fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    PATHOLOGY</p></div>
-            </a>
-        </div>
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'radiology' %}" class="text-xs  font-medium text-amber-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-x-ray fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    RADIOLOGY</p></div>
-            </a>
-        </div>
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'ward_list' %}" class="text-xs  font-medium text-purple-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-bed-pulse fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    WARD</p></div>
-            </a>
-        </div>
+<div class="mx-auto px-2 sm:px-4 lg:px-6">
 
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'theatre' %}" class="text-xs  font-medium text-pink-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-head-side-mask fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    THEATRE</p></div>
-            </a>
-        </div>
-
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'physio' %}" class="text-xs  font-medium text-gray-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-crutch fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    PHYSIO</p></div>
-            </a>
-        </div>
-
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'inventory:store_inventory' %}" class="text-xs  font-medium text-rose-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-warehouse fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    INVENTORY</p></div>
-            </a>
-        </div>
-        <div class="transform transition duration-300 hover:scale-90">
-            <a href="{%url 'visit_stat_card' %}" class="text-xs  font-medium text-emerald-600">
-                <div class="bg-sky-50 rounded shadow shadow-gray hover:shadow-xl p-4 text-center 
-                    border-4 border-white group  hover:border-white hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
-                    <i class="fa-solid fa-bar-chart fa-2x "></i><p class="text-xs  uppercase 
-                        text-gray-700 group-hover:text-white">
-                    STATS</p></div>
-            </a> 
-        </div>
-
+<div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 
+            gap-10 uppercase text-center rounded-b-xl 
+            glass-effect backdrop-blur-md shadow">
+                    
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'medical_record' %}" class="text-xs font-medium text-sky-800">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-book text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-900 group-hover:text-white">
+                    HIM</p>
+            </div>
+        </a>
     </div>
+    
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'revenue' %}" class="text-xs font-medium text-green-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-naira-sign text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    REVENUE</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'nursing_desks_list' %}" class="text-xs font-medium text-blue-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-stethoscope text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    NURSING</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'clinic_list' %}" class="text-xs font-medium text-orange-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-clinic-medical text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    CLINIC</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'pharm:index' %}" class="text-xs font-medium text-indigo-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-prescription text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    PHARMACY</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'results:dashboard' %}" class="text-xs font-medium text-fuchsia-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-microscope text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    PATHOLOGY</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'radiology' %}" class="text-xs font-medium text-amber-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-x-ray text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    RADIOLOGY</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'ward_list' %}" class="text-xs font-medium text-purple-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-bed-pulse text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    WARD</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'theatre' %}" class="text-xs font-medium text-pink-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-head-side-mask text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    THEATRE</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'physio' %}" class="text-xs font-medium text-gray-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-crutch text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    PHYSIO</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'inventory:store_inventory' %}" class="text-xs font-medium text-rose-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-warehouse text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    INVENTORY</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="transform transition duration-300 hover:scale-95 sm:hover:scale-90">
+        <a href="{%url 'analytics' %}" class="text-xs font-medium text-emerald-600">
+            <div class="bg-sky-100 rounded-xl shadow shadow-gray hover:shadow-xl 
+                        p-2 sm:p-3 md:p-4 text-center 
+                        border-4 border-white group hover:border-white 
+                        hover:bg-gradient-to-r from-sky-600 to-emerald-500 hover:text-white">
+                <i class="fa-solid fa-bar-chart text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2"></i>
+                <p class="text-[10px] sm:text-xs uppercase text-gray-700 group-hover:text-white">
+                    STATS</p>
+            </div>
+        </a> 
+    </div>
+
+</div>
 </div>
 {% endblock %}

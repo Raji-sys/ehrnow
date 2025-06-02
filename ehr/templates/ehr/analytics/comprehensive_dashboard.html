@@ -1,0 +1,815 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.tab-link {
+    padding: 8px 14px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.75rem; /* Tailwind text-sm */
+    font-weight: 500;
+    color: #1b1f26;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.tab-link.active {
+    color: rgb(20, 111, 118);
+    font-weight: 600;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.section {
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.section-title {
+    color: #2d3748;
+    font-size: 0.875rem; /* Tailwind text-sm */
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.section-icon {
+    color: #667eea;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.stat-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.75rem; /* Tailwind text-xs */
+    opacity: 0.9;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+.chart-title {
+    font-size: 0.875rem; /* Tailwind text-sm */
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.doctor-card {
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.doctor-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateX(4px);
+}
+
+.doctor-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.doctor-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+}
+
+.doctor-stat {
+    text-align: center;
+    padding: 8px;
+    background: #f7fafc;
+    border-radius: 6px;
+}
+
+.doctor-stat-number {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.doctor-stat-label {
+    font-size: 0.6rem;
+    color: #4a5568;
+    margin-top: 2px;
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.kpi-card {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    padding: 16px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.kpi-value {
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    opacity: 0.9;
+}
+
+.top-list {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.top-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.top-item:last-child {
+    border-bottom: none;
+}
+
+.top-item-name {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.top-item-count {
+    background: #667eea;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 8px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .doctor-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tab-link {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+    }
+
+    .chart-container {
+        height: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .tab-nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tab-link {
+        margin-bottom: 4px;
+        border-bottom-width: 2px;
+    }
+
+    .tab-link.active {
+        border-left: 3px solid #667eea;
+        border-bottom-color: transparent;
+    }
+}
+
+
+</style>
+
+<div class="mx-auto px-2 sm:px-4 lg:px-6">
+    <div class="text-center mb-6">
+        <p class="text-sm text-white">Comprehensive analytics and insights</p>
+    </div>
+
+    <div class="tab-nav bg-white w-fit rounded-xl mx-auto shadow-lg">
+        <button class="tab-link active" onclick="openTab(event, 'kpiTab')" id="defaultOpen">
+            <i class="fas fa-tachometer-alt"></i> KPIs
+        </button>
+        <button class="tab-link" onclick="openTab(event, 'doctorTab')">
+            <i class="fas fa-user-md"></i> Doctor Performance
+        </button>
+        <button class="tab-link" onclick="openTab(event, 'diagnosisTab')">
+            <i class="fas fa-stethoscope"></i> Diagnosis Analytics
+        </button>
+        <button class="tab-link" onclick="openTab(event, 'demographicsTab')">
+            <i class="fas fa-users"></i> Patient Demographics
+        </button>
+        <button class="tab-link" onclick="openTab(event, 'geoTab')">
+            <i class="fas fa-map-marked-alt"></i> Geographic
+        </button>
+        <button class="tab-link" onclick="openTab(event, 'workflowTab')">
+            <i class="fas fa-clipboard-check"></i> Clinical Workflow
+        </button>
+    </div>
+
+    <div id="kpiTab" class="tab-content">
+        <div class="section">
+            <h2 class="section-title">
+                Key Performance Indicators
+            </h2>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ kpi_metrics.diagnosis_completion_rate }}%</div>
+                    <div class="kpi-label">Diagnosis Completion Rate</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ kpi_metrics.contact_completion_rate }}%</div>
+                    <div class="kpi-label">Contact Info Completion</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ kpi_metrics.nok_completion_rate }}%</div>
+                    <div class="kpi-label">NOK Info Completion</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">{{ kpi_metrics.avg_notes_per_patient }}</div>
+                    <div class="kpi-label">Avg Notes per Patient</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="doctorTab" class="tab-content">
+        <div class="section">
+            <h2 class="section-title">
+                Doctor Performance Analytics
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_doctors }}</div>
+                    <div class="stat-label">Active Doctors</div>
+                </div>
+            </div>
+
+            {% for doctor in doctor_stats|slice:":10" %}
+            <div class="doctor-card">
+                <div class="doctor-name">
+                    <i class="fas fa-user-md"></i>
+                    <a href="{% url 'doctor_detail_analytics' doctor.doctor.id %}" style="color: #2d3748; text-decoration: underline;">
+                       Dr. {{ doctor.doctor.get_full_name|default:doctor.doctor.username }}
+                    </a>
+                    <span style="font-size: 0.9rem; color: #4a5568;">(Score: {{ doctor.productivity_score }})</span>
+                </div>
+                <div class="doctor-stats">
+                    <div class="doctor-stat">
+                        <div class="doctor-stat-number">{{ doctor.notes.total }}</div>
+                        <div class="doctor-stat-label">Total Notes</div>
+                    </div>
+                    <div class="doctor-stat">
+                        <div class="doctor-stat-number">{{ doctor.notes.this_month }}</div>
+                        <div class="doctor-stat-label">This Month</div>
+                    </div>
+                    <div class="doctor-stat">
+                        <div class="doctor-stat-number">{{ doctor.unique_patients.total }}</div>
+                        <div class="doctor-stat-label">Unique Patients</div>
+                    </div>
+                    <div class="doctor-stat">
+                        <div class="doctor-stat-number">{{ doctor.diagnoses.total }}</div>
+                        <div class="doctor-stat-label">Diagnoses Made</div>
+                    </div>
+                    <div class="doctor-stat">
+                        <div class="doctor-stat-number">{{ doctor.pending_review }}</div>
+                        <div class="doctor-stat-label">Pending Review</div>
+                    </div>
+                </div>
+                {% if doctor.diagnoses.top_diagnoses %}
+                <div style="margin-top: 15px;">
+                    <strong>Top Diagnoses:</strong>
+                    {% for diagnosis in doctor.diagnoses.top_diagnoses|slice:":3" %}
+                        <span style="background: #e2e8f0; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; margin-right: 5px;">
+                            {{ diagnosis.diagnosis }} ({{ diagnosis.count }})
+                        </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="diagnosisTab" class="tab-content">
+        <div class="section">
+            <h2 class="section-title">
+                Diagnosis Analytics
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_diagnoses }}</div>
+                    <div class="stat-label">Total Diagnoses Made</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ diagnosis_by_gender.male }}</div>
+                    <div class="stat-label">Male Patients Diagnosed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ diagnosis_by_gender.female }}</div>
+                    <div class="stat-label">Female Patients Diagnosed</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                <div class="chart-container">
+                    <h3 class="chart-title">Most Common Diagnoses</h3>
+                    <canvas id="diagnosisChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Diagnosis by Age Groups</h3>
+                    <canvas id="ageGroupChart"></canvas>
+                </div>
+            </div>
+
+            <div class="top-list" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: #2d3748;">Top 10 Diagnoses</h3>
+                {% for diagnosis in common_diagnoses|slice:":10" %}
+                <div class="top-item">
+                    <span class="top-item-name">{{ diagnosis.diagnosis }}</span>
+                    <span class="top-item-count">{{ diagnosis.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div id="demographicsTab" class="tab-content">
+        <div class="section">
+            <h2 class="section-title">
+                Patient Demographics
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                <div class="chart-container">
+                    <h3 class="chart-title">Age Distribution</h3>
+                    <canvas id="ageDistributionChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Gender Distribution</h3>
+                    <canvas id="genderChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Marital Status</h3>
+                    <canvas id="maritalChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Religion Distribution</h3>
+                    <canvas id="religionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="top-list" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: #2d3748;">Top Occupations</h3>
+                {% for occupation in occupation_stats|slice:":10" %}
+                <div class="top-item">
+                    <span class="top-item-name">{{ occupation.occupation|title }}</span>
+                    <span class="top-item-count">{{ occupation.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div id="geoTab" class="tab-content">
+        <div class="section">
+            <h2 class="section-title">
+                Geographic Distribution
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                <div class="chart-container">
+                    <h3 class="chart-title">Geopolitical Zones</h3>
+                    <canvas id="zoneChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Top States</h3>
+                    <canvas id="stateChart"></canvas>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                <div class="top-list">
+                    <h3 style="margin-bottom: 15px; color: #2d3748;">Top States</h3>
+                    {% for state in state_distribution|slice:":10" %}
+                    <div class="top-item">
+                        <span class="top-item-name">{{ state.state|title }}</span>
+                        <span class="top-item-count">{{ state.count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="top-list">
+                    <h3 style="margin-bottom: 15px; color: #2d3748;">Top LGAs</h3>
+                    {% for lga in lga_distribution|slice:":10" %}
+                    <div class="top-item">
+                        <span class="top-item-name">{{ lga.lga|title }}</span>
+                        <span class="top-item-count">{{ lga.count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="workflowTab" class="tab-content">
+        <div class="section">
+            <h2 class="section-title">
+                Clinical Workflow Analytics
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ review_stats.total_pending }}</div>
+                    <div class="stat-label">Notes Pending Review</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ documentation_rate }}%</div>
+                    <div class="stat-label">Documentation Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ avg_notes_per_patient }}</div>
+                    <div class="stat-label">Avg Notes per Patient</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                <div class="chart-container">
+                    <h3 class="chart-title">Notes by Day of Week</h3>
+                    <canvas id="weekdayChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Notes by Hour of Day</h3>
+                    <canvas id="hourChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+<script>
+    // Tab switching function
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tab-link");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    // Get the element with id="defaultOpen" and click on it to open the first tab by default
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById("defaultOpen").click();
+    });
+
+
+    const chartColors = [
+        '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe',
+        '#43e97b', '#38f9d7', '#ffecd2', '#fcb69f', '#a8edea', '#fed6e3'
+    ];
+
+    const defaultOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    usePointStyle: true,
+                    padding: 15
+                }
+            }
+        }
+    };
+
+    // Diagnosis Chart
+    const diagnosisCtx = document.getElementById('diagnosisChart').getContext('2d');
+    window.diagnosisChartInstance = new Chart(diagnosisCtx, { // Storing instance
+        type: 'doughnut',
+        data: {
+            labels: [{% for diagnosis in common_diagnoses|slice:":8" %}'{{ diagnosis.diagnosis|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for diagnosis in common_diagnoses|slice:":8" %}{{ diagnosis.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: chartColors.slice(0, 8)
+            }]
+        },
+        options: {
+            ...defaultOptions,
+            plugins: {
+                ...defaultOptions.plugins,
+                legend: {
+                    display: false // Doughnut charts often look better without legend if labels are clear or data is in tooltips
+                }
+            }
+        }
+    });
+
+    // Diagnosis by Age Groups Chart
+    const ageGroupCtx = document.getElementById('ageGroupChart').getContext('2d');
+    window.ageGroupChartInstance = new Chart(ageGroupCtx, { // Storing instance
+        type: 'bar',
+        data: {
+            labels: ['0-18', '19-35', '36-50', '51-65', '65+'],
+            datasets: [{
+                label: 'Diagnoses by Age Group',
+                data: [
+                    {{ diagnosis_age_groups.age_0_18|default:0 }},
+                    {{ diagnosis_age_groups.age_19_35|default:0 }},
+                    {{ diagnosis_age_groups.age_36_50|default:0 }},
+                    {{ diagnosis_age_groups.age_51_65|default:0 }},
+                    {{ diagnosis_age_groups.age_65_plus|default:0 }}
+                ],
+                backgroundColor: chartColors[0],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            ...defaultOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 } // Ensure whole numbers for counts
+                }
+            }
+        }
+    });
+
+    // Age Distribution Chart
+    const ageDistCtx = document.getElementById('ageDistributionChart').getContext('2d');
+    window.ageDistributionChartInstance = new Chart(ageDistCtx, { // Storing instance
+        type: 'pie',
+        data: {
+            labels: ['0-18', '19-35', '36-50', '51-65', '65+'],
+            datasets: [{
+                data: [
+                    {{ age_distribution.age_0_18|default:0 }},
+                    {{ age_distribution.age_19_35|default:0 }},
+                    {{ age_distribution.age_36_50|default:0 }},
+                    {{ age_distribution.age_51_65|default:0 }},
+                    {{ age_distribution.age_65_plus|default:0 }}
+                ],
+                backgroundColor: chartColors.slice(0, 5)
+            }]
+        },
+        options: defaultOptions
+    });
+
+    // Gender Chart
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
+    window.genderChartInstance = new Chart(genderCtx, { // Storing instance
+        type: 'doughnut',
+        data: {
+            labels: [{% for gender in gender_distribution %}'{{ gender.gender|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for gender in gender_distribution %}{{ gender.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: chartColors.slice(0, 2) // Assuming 2 genders primarily
+            }]
+        },
+        options: defaultOptions
+    });
+
+    // Marital Status Chart
+    const maritalCtx = document.getElementById('maritalChart').getContext('2d');
+    window.maritalChartInstance = new Chart(maritalCtx, { // Storing instance
+        type: 'bar',
+        data: {
+            labels: [{% for status in marital_status|slice:":6" %}'{{ status.marital_status|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Count',
+                data: [{% for status in marital_status|slice:":6" %}{{ status.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: chartColors[2],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            ...defaultOptions,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+
+    // Religion Chart
+    const religionCtx = document.getElementById('religionChart').getContext('2d');
+    window.religionChartInstance = new Chart(religionCtx, { // Storing instance
+        type: 'pie',
+        data: {
+            labels: [{% for religion in religion_distribution %}'{{ religion.religion|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for religion in religion_distribution %}{{ religion.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: chartColors.slice(3, 7)
+            }]
+        },
+        options: defaultOptions
+    });
+
+    // Zone Chart
+    const zoneCtx = document.getElementById('zoneChart').getContext('2d');
+    window.zoneChartInstance = new Chart(zoneCtx, { // Storing instance
+        type: 'doughnut',
+        data: {
+            labels: [{% for zone in zone_distribution %}'{{ zone.zone|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for zone in zone_distribution %}{{ zone.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: chartColors.slice(0, 6) // Assuming up to 6 zones
+            }]
+        },
+        options: defaultOptions
+    });
+
+    // State Chart
+    const stateCtx = document.getElementById('stateChart').getContext('2d');
+    window.stateChartInstance = new Chart(stateCtx, { // Storing instance
+        type: 'bar',
+        data: {
+            labels: [{% for state in state_distribution|slice:":8" %}'{{ state.state|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Patient Count',
+                data: [{% for state in state_distribution|slice:":8" %}{{ state.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: chartColors[4],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            ...defaultOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+
+    // Weekday Chart
+    const weekdayCtx = document.getElementById('weekdayChart').getContext('2d');
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    // Assuming notes_by_weekday is an array of 7 objects, one for each day, ordered Sunday to Saturday
+    // If not, this data mapping will need adjustment.
+    let weekdayData = new Array(7).fill(0);
+    {% for day_stat in notes_by_weekday %}
+        // Assuming day_stat.weekday is 0 for Sunday, 1 for Monday, etc. or day_stat.day_name
+        // This part needs to correctly map your backend data to the 'weekdays' array order
+        // For example, if your backend sends { weekday: 0, count: X } for Sunday
+        weekdayData[{{ day_stat.weekday_numeric|default:forloop.counter0 }}] = {{ day_stat.count }}; // Adjust index based on your data
+    {% endfor %}
+
+    window.weekdayChartInstance = new Chart(weekdayCtx, { // Storing instance
+        type: 'line',
+        data: {
+            labels: weekdays,
+            datasets: [{
+                label: 'Notes Created',
+                data: weekdayData,
+                borderColor: chartColors[5],
+                backgroundColor: chartColors[5] + '20', // Light fill
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            ...defaultOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+
+    // Hour Chart
+    const hourCtx = document.getElementById('hourChart').getContext('2d');
+    // Assuming notes_by_hour is an array of 24 objects, one for each hour, ordered 0 to 23
+    let hourData = new Array(24).fill(0);
+     {% for hour_stat in notes_by_hour %}
+        // Assuming hour_stat.hour is 0-23
+        hourData[{{ hour_stat.hour|default:forloop.counter0 }}] = {{ hour_stat.count }}; // Adjust index based on your data
+    {% endfor %}
+
+    window.hourChartInstance = new Chart(hourCtx, { // Storing instance
+        type: 'bar',
+        data: {
+            labels: Array.from({length: 24}, (_, i) => i + ':00'),
+            datasets: [{
+                label: 'Notes Created',
+                data: hourData,
+                backgroundColor: chartColors[6],
+                borderRadius: 4
+            }]
+        },
+        options: {
+            ...defaultOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+
+    // Set chart container heights - Chart.js maintainAspectRatio:false usually handles this well
+    // but if fixed height is needed:
+    // document.querySelectorAll('.chart-container canvas').forEach(canvas => {
+    //      canvas.style.height = '300px'; // Or whatever height you prefer
+    // });
+
+</script>
+{% endblock %}

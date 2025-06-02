@@ -142,8 +142,6 @@ class Profile(models.Model):
 
         
 class PatientData(models.Model):
-    # types = (('REGULAR', 'REGULAR'), ('NHIS', 'NHIS'),('RETAINER','RETAINER'))
-    # patient_type = models.CharField(choices=types, max_length=100, null=True, blank=True)
     types_of_id = (('NIN', 'NIN'), ('Voters Card', 'Voters Card'),('Drivers Liscence','Drivers Liscence'),('International Passport','International Passport'))
     means_of_id = models.CharField('Means of Identification',choices=types_of_id, max_length=200, null=True, blank=True)
     id_number = models.CharField(max_length=200, null=True, blank=True)
@@ -420,7 +418,6 @@ class ClinicalNote(models.Model):
     note=QuillField(null=True, blank=True)
     diagnosis=models.CharField(max_length=200,null=True,blank=True)
     needs_review = models.BooleanField(default=False)    
-    # appointment=models.CharField(max_length=200,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):

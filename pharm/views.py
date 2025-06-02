@@ -1605,50 +1605,51 @@ def return_report(request, unit_id):
     return render(request, 'store/return_drugs_report.html', context)
 
 from ehr.models import VisitRecord
-@login_required(login_url='login')
-def create_prescription(request, file_no ):
-    patient = get_object_or_404(PatientData, file_no=file_no)
-    prescription_instances = Prescription.objects.filter(patient=patient, is_dispensed=False)
-    PrescriptionFormSet = modelformset_factory(
-        Prescription, 
-        form=PrescriptionForm, 
-        extra=5, 
-        exclude=['quantity', 'payment', 'is_dispensed']
-    )
-    if request.method == 'POST':
-        formset = PrescriptionFormSet(request.POST)
-        if formset.is_valid():
-            instances = formset.save(commit=False)
-            for instance in instances:
-                if instance.drug:  # Only save if a drug is selected
-                    # Retrieve the latest VisitRecord for the patient
-                    visit_record = VisitRecord.objects.filter(patient=patient).order_by('-created').first()
-                    if visit_record and visit_record.clinic:
-                        clinic = visit_record.clinic
-                        unit_name = clinic.name  # Assume unit follows the clinic naming convention
-                        unit = Unit.objects.filter(name__icontains=unit_name).first()
-                        if unit:
-                            instance.unit = unit
-                        else:
-                            messages.error(request, f"No matching unit found for clinic {clinic.name}.")
-                    else:
-                        messages.error(request, "No visit record or associated clinic found for this patient.")
 
-                    instance.patient = patient
-                    instance.prescribed_by = request.user
-                    instance.is_dispensed = False
-                    instance.save()
-            messages.success(request, 'Drugs prescribed. Patient should visit the pharmacy for costing.')
-            return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
-    else:
-        formset = PrescriptionFormSet(queryset=Prescription.objects.none())
+# @login_required(login_url='login')
+# def create_prescription(request, file_no ):
+#     patient = get_object_or_404(PatientData, file_no=file_no)
+#     prescription_instances = Prescription.objects.filter(patient=patient, is_dispensed=False)
+#     PrescriptionFormSet = modelformset_factory(
+#         Prescription, 
+#         form=PrescriptionForm, 
+#         extra=5, 
+#         exclude=['quantity', 'payment', 'is_dispensed']
+#     )
+#     if request.method == 'POST':
+#         formset = PrescriptionFormSet(request.POST)
+#         if formset.is_valid():
+#             instances = formset.save(commit=False)
+#             for instance in instances:
+#                 if instance.drug:  # Only save if a drug is selected
+#                     # Retrieve the latest VisitRecord for the patient
+#                     visit_record = VisitRecord.objects.filter(patient=patient).order_by('-created').first()
+#                     if visit_record and visit_record.clinic:
+#                         clinic = visit_record.clinic
+#                         unit_name = clinic.name  # Assume unit follows the clinic naming convention
+#                         unit = Unit.objects.filter(name__icontains=unit_name).first()
+#                         if unit:
+#                             instance.unit = unit
+#                         else:
+#                             messages.error(request, f"No matching unit found for clinic {clinic.name}.")
+#                     else:
+#                         messages.error(request, "No visit record or associated clinic found for this patient.")
 
-    context = {
-        'formset': formset,
-        'patient': patient,
-        'prescription_instances': prescription_instances,
-    }
-    return render(request, 'dispensary/prescription.html', context)
+#                     instance.patient = patient
+#                     instance.prescribed_by = request.user
+#                     instance.is_dispensed = False
+#                     instance.save()
+#             messages.success(request, 'Drugs prescribed. Patient should visit the pharmacy for costing.')
+#             return redirect(reverse_lazy('patient_details', kwargs={'file_no': file_no}))
+#     else:
+#         formset = PrescriptionFormSet(queryset=Prescription.objects.none())
+
+#     context = {
+#         'formset': formset,
+#         'patient': patient,
+#         'prescription_instances': prescription_instances,
+#     }
+#     return render(request, 'dispensary/prescription.html', context)
 
 
 # class PrescriptionListView(PharmacyRequiredMixin, LoginRequiredMixin, ListView):
@@ -1881,6 +1882,40 @@ class PrescriptionCreateView(LoginRequiredMixin, CreateView):
             messages.error(self.request, "No visit record or associated clinic found for this patient.")
         return prescription
 
+    # @transaction.atomic
+    # def form_valid(self, form):
+    #     prescription = form.save(commit=False)
+    #     prescription.prescribed_by = self.request.user
+    #     prescription.patient = self.patient
+    #     prescription = self.set_unit(prescription)
+    #     prescription.save()
+
+    #     selected_drugs = self.request.POST.getlist('selected_drugs')
+    #     selected_doses = self.request.POST.getlist('selected_doses')
+    #     manual_drug_names = self.request.POST.getlist('manual_drug_names')
+    #     manual_drug_doses = self.request.POST.getlist('manual_drug_doses')
+        
+    #     unique_drugs = set()
+
+    #     for i, drug_id in enumerate(selected_drugs):
+    #         try:
+    #             if drug_id in unique_drugs:
+    #                 messages.warning(self.request, f'Drug {drug_id} was already added and skipped.')
+    #                 continue
+
+    #             PrescriptionDrug.objects.create(
+    #                 prescription=prescription,
+    #                 drug_id=drug_id,
+    #                 dosage=selected_doses[i]
+    #             )
+    #             unique_drugs.add(drug_id)
+
+    #         except IntegrityError:
+    #             messages.warning(self.request, f'Drug {drug_id} could not be added due to a duplicate.')
+    #             continue
+
+    #     messages.success(self.request, 'Prescription added successfully')
+    #     return super().form_valid(form)        
     @transaction.atomic
     def form_valid(self, form):
         prescription = form.save(commit=False)
@@ -1888,31 +1923,70 @@ class PrescriptionCreateView(LoginRequiredMixin, CreateView):
         prescription.patient = self.patient
         prescription = self.set_unit(prescription)
         prescription.save()
-
+        
         selected_drugs = self.request.POST.getlist('selected_drugs')
         selected_doses = self.request.POST.getlist('selected_doses')
-
+        manual_drug_names = self.request.POST.getlist('manual_drug_names')
+        manual_drug_doses = self.request.POST.getlist('manual_drug_doses')
+        
         unique_drugs = set()
-
+        
+        # Process selected drugs (from database)
         for i, drug_id in enumerate(selected_drugs):
             try:
                 if drug_id in unique_drugs:
                     messages.warning(self.request, f'Drug {drug_id} was already added and skipped.')
                     continue
-
                 PrescriptionDrug.objects.create(
                     prescription=prescription,
                     drug_id=drug_id,
                     dosage=selected_doses[i]
                 )
                 unique_drugs.add(drug_id)
-
             except IntegrityError:
                 messages.warning(self.request, f'Drug {drug_id} could not be added due to a duplicate.')
                 continue
-
+        
+        # Process manual drug entries
+        for i, drug_name in enumerate(manual_drug_names):
+            try:
+                if drug_name.lower() in [name.lower() for name in unique_drugs if isinstance(name, str)]:
+                    messages.warning(self.request, f'Drug "{drug_name}" was already added and skipped.')
+                    continue
+                
+                # Try to find existing drug by name first
+                existing_drug = Drug.objects.filter(
+                    Q(name__iexact=drug_name) | Q(trade_name__iexact=drug_name)
+                ).first()
+                
+                if existing_drug:
+                    # Use existing drug if found
+                    PrescriptionDrug.objects.create(
+                        prescription=prescription,
+                        drug=existing_drug,
+                        dosage=manual_drug_doses[i]
+                    )
+                    unique_drugs.add(str(existing_drug.id))
+                else:
+                    # Create new drug entry for manual entries
+                    new_drug = Drug.objects.create(
+                        name=drug_name,
+                        # You might want to set default values for other required fields
+                        # strength='', supplier='Manual Entry', etc.
+                    )
+                    PrescriptionDrug.objects.create(
+                        prescription=prescription,
+                        drug=new_drug,
+                        dosage=manual_drug_doses[i]
+                    )
+                    unique_drugs.add(drug_name.lower())
+                    
+            except (IntegrityError, IndexError) as e:
+                messages.warning(self.request, f'Manual drug "{drug_name}" could not be added: {str(e)}')
+                continue
+        
         messages.success(self.request, 'Prescription added successfully')
-        return super().form_valid(form)        
+        return super().form_valid(form)
     def get_success_url(self):
         return self.object.patient.get_absolute_url()
 

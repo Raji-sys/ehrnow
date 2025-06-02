@@ -4362,3 +4362,448 @@ class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
         # Optionally, pass the relevant visit if needed in the template
         # context['visit_associated_with_note'] = VisitRecord.objects.filter(patient=clinical_note.patient, consultation=True).order_by('-id').first()
         return context
+
+from django.shortcuts import render
+from django.views.generic import TemplateView
+from django.utils import timezone
+from django.db.models import Count, Q, Avg
+from django.db.models.functions import TruncMonth, TruncWeek, TruncDay
+from datetime import timedelta, datetime
+from collections import defaultdict, Counter
+import json
+from django.db.models.functions import ExtractWeekDay, ExtractHour, TruncMonth
+from django.db.models import Count, Avg, Q # Q is already used, Count, Avg are good to have grouped
+from django.utils import timezone # already used
+from datetime import timedelta # already used
+from django.contrib.auth.models import User
+from .models import PatientData, ClinicalNote, VisitRecord, Clinic, Team
+
+class AnalyticsView(TemplateView):
+    template_name = 'analytics.html'
+
+class ComprehensiveAnalyticsView(TemplateView):
+    template_name = 'ehr/analytics/comprehensive_dashboard.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get current date and time periods
+        now = timezone.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        year_start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        six_months_ago = now - timedelta(days=180)
+        
+        # ============ DOCTOR ANALYTICS ============
+        context.update(self._get_doctor_analytics(today_start, week_start, month_start, year_start))
+        
+        # ============ DIAGNOSIS ANALYTICS ============
+        context.update(self._get_diagnosis_analytics(six_months_ago))
+        
+        # ============ PATIENT DEMOGRAPHICS ============ 
+        context.update(self._get_patient_demographics())
+        
+        # ============ GEOGRAPHIC ANALYTICS ============
+        context.update(self._get_geographic_analytics())
+        
+        # ============ CLINICAL WORKFLOW ============
+        context.update(self._get_clinical_workflow_analytics(month_start))
+        
+        # ============ TRENDS AND PATTERNS ============
+        context.update(self._get_trends_analytics(six_months_ago))
+        
+        # ============ KEY PERFORMANCE INDICATORS ============
+        context.update(self._get_kpi_metrics())
+        
+        return context
+    
+    def _get_doctor_analytics(self, today_start, week_start, month_start, year_start):
+        """Analytics focused on individual doctor performance"""
+        doctors = User.objects.filter(
+            Q(clinicalnote__isnull=False) | Q(visitrecord__isnull=False)
+        ).distinct()
+        
+        doctor_stats = []
+        for doctor in doctors:
+            # Clinical notes by doctor
+            notes_all = ClinicalNote.objects.filter(user=doctor)
+            notes_today = notes_all.filter(updated__gte=today_start)
+            notes_week = notes_all.filter(updated__gte=week_start)
+            notes_month = notes_all.filter(updated__gte=month_start)
+            notes_year = notes_all.filter(updated__gte=year_start)
+            
+            # Visits handled by doctor
+            visits_all = VisitRecord.objects.filter(seen_by=doctor, seen=True) if hasattr(VisitRecord, 'seen_by') else VisitRecord.objects.none()
+            visits_today = visits_all.filter(updated__gte=today_start)
+            visits_week = visits_all.filter(updated__gte=week_start)
+            visits_month = visits_all.filter(updated__gte=month_start)
+            visits_year = visits_all.filter(updated__gte=year_start)
+            
+            # Unique patients seen
+            unique_patients_all = notes_all.values('patient').distinct().count()
+            unique_patients_month = notes_month.values('patient').distinct().count()
+            
+            # Diagnoses made
+            diagnoses_all = notes_all.exclude(diagnosis__isnull=True).exclude(diagnosis__exact='')
+            top_diagnoses = diagnoses_all.values('diagnosis').annotate(
+                count=Count('diagnosis')
+            ).order_by('-count')[:5]
+            
+            # Notes needing review
+            pending_review = notes_all.filter(needs_review=True).count()
+            
+            doctor_stats.append({
+                'doctor': doctor,
+                'notes': {
+                    'total': notes_all.count(),
+                    'today': notes_today.count(),
+                    'this_week': notes_week.count(),
+                    'this_month': notes_month.count(),
+                    'this_year': notes_year.count(),
+                },
+                'visits': {
+                    'total': visits_all.count(),
+                    'today': visits_today.count(),
+                    'this_week': visits_week.count(),
+                    'this_month': visits_month.count(),
+                    'this_year': visits_year.count(),
+                },
+                'unique_patients': {
+                    'total': unique_patients_all,
+                    'this_month': unique_patients_month,
+                },
+                'diagnoses': {
+                    'total': diagnoses_all.count(),
+                    'top_diagnoses': list(top_diagnoses),
+                },
+                'pending_review': pending_review,
+                'productivity_score': self._calculate_doctor_productivity_score(
+                    notes_month.count(), unique_patients_month, pending_review
+                )
+            })
+        
+        # Sort by productivity score
+        doctor_stats.sort(key=lambda x: x['productivity_score'], reverse=True)
+        
+        return {
+            'doctor_stats': doctor_stats,
+            'total_doctors': len(doctor_stats)
+        }
+    
+    def _calculate_doctor_productivity_score(self, notes_count, unique_patients, pending_review):
+        """Calculate a simple productivity score for doctors"""
+        score = (notes_count * 2) + (unique_patients * 3) - (pending_review * 1)
+        return max(0, score)  # Ensure non-negative
+    
+    def _get_diagnosis_analytics(self, six_months_ago):
+        """Analytics for diagnoses and clinical patterns"""
+        all_notes = ClinicalNote.objects.exclude(diagnosis__isnull=True).exclude(diagnosis__exact='')
+        recent_notes = all_notes.filter(updated__gte=six_months_ago)
+        
+        # Most common diagnoses
+        common_diagnoses = all_notes.values('diagnosis').annotate(
+            count=Count('diagnosis')
+        ).order_by('-count')[:20]
+        
+        # Diagnosis trends over time (monthly)
+        diagnosis_trends = recent_notes.annotate(
+            month=TruncMonth('updated')
+        ).values('month').annotate(
+            count=Count('id')
+        ).order_by('month')
+        
+        # Diagnosis by age groups
+        age_groups = {
+            '0-18': all_notes.filter(patient__age__lt=18).count(),
+            '19-35': all_notes.filter(patient__age__gte=19, patient__age__lte=35).count(),
+            '36-50': all_notes.filter(patient__age__gte=36, patient__age__lte=50).count(),
+            '51-65': all_notes.filter(patient__age__gte=51, patient__age__lte=65).count(),
+            '65+': all_notes.filter(patient__age__gt=65).count(),
+        }
+        
+        # Diagnosis by gender
+        diagnosis_by_gender = {
+            'male': all_notes.filter(patient__gender='MALE').count(),
+            'female': all_notes.filter(patient__gender='FEMALE').count(),
+        }
+        
+        # Seasonal patterns (by month)
+        seasonal_patterns = all_notes.annotate(
+            month=TruncMonth('updated')
+        ).values('month').annotate(
+            count=Count('id')
+        ).order_by('month')
+        
+        return {
+            'common_diagnoses': list(common_diagnoses),
+            'diagnosis_trends': list(diagnosis_trends),
+            'diagnosis_age_groups': age_groups,
+            'diagnosis_by_gender': diagnosis_by_gender,
+            'seasonal_patterns': list(seasonal_patterns),
+            'total_diagnoses': all_notes.count()
+        }
+    
+    def _get_patient_demographics(self):
+        """Patient demographic analytics"""
+        all_patients = PatientData.objects.all()
+        
+        # Age distribution
+        age_distribution = {
+    'age_0_18': all_patients.filter(age__lt=18).count(),
+    'age_19_35': all_patients.filter(age__gte=19, age__lte=35).count(),
+    'age_36_50': all_patients.filter(age__gte=36, age__lte=50).count(),
+    'age_51_65': all_patients.filter(age__gte=51, age__lte=65).count(),
+    'age_65_plus': all_patients.filter(age__gt=65).count(),
+}
+        # Gender distribution
+        gender_distribution = all_patients.values('gender').annotate(
+            count=Count('gender')
+        ).order_by('-count')
+        
+        # Marital status
+        marital_status = all_patients.values('marital_status').annotate(
+            count=Count('marital_status')
+        ).order_by('-count')
+        
+        # Religion distribution
+        religion_distribution = all_patients.values('religion').annotate(
+            count=Count('religion')
+        ).order_by('-count')
+        
+        # Occupation categories (top 15)
+        occupation_stats = all_patients.exclude(
+            occupation__isnull=True
+        ).exclude(
+            occupation__exact=''
+        ).values('occupation').annotate(
+            count=Count('occupation')
+        ).order_by('-count')[:15]
+        
+        # Nationality breakdown
+        nationality_stats = all_patients.values('nationality').annotate(
+            count=Count('nationality')
+        ).order_by('-count')
+        
+        return {
+            'age_distribution': age_distribution,
+            'gender_distribution': list(gender_distribution),
+            'marital_status': list(marital_status),
+            'religion_distribution': list(religion_distribution),
+            'occupation_stats': list(occupation_stats),
+            'nationality_stats': list(nationality_stats),
+        }
+    
+    def _get_geographic_analytics(self):
+        """Geographic distribution analytics"""
+        all_patients = PatientData.objects.all()
+        
+        # Geopolitical zone distribution
+        zone_distribution = all_patients.values('zone').annotate(
+            count=Count('zone')
+        ).order_by('-count')
+        
+        # State distribution (top 20)
+        state_distribution = all_patients.values('state').annotate(
+            count=Count('state')
+        ).order_by('-count')[:20]
+        
+        # LGA distribution (top 20)
+        lga_distribution = all_patients.values('lga').annotate(
+            count=Count('lga')
+        ).order_by('-count')[:20]
+        
+        # Tribal distribution (top 15)
+        tribal_distribution = all_patients.exclude(
+            tribe__isnull=True
+        ).exclude(
+            tribe__exact=''
+        ).values('tribe').annotate(
+            count=Count('tribe')
+        ).order_by('-count')[:15]
+        
+        return {
+            'zone_distribution': list(zone_distribution),
+            'state_distribution': list(state_distribution),
+            'lga_distribution': list(lga_distribution),
+            'tribal_distribution': list(tribal_distribution),
+        }
+    
+    def _get_clinical_workflow_analytics(self, month_start):
+        """Clinical workflow and efficiency analytics"""
+        all_notes = ClinicalNote.objects.all()
+        recent_notes = all_notes.filter(updated__gte=month_start)
+
+        # Notes requiring review
+        review_stats = {
+            'total_pending': all_notes.filter(needs_review=True).count(),
+            'pending_this_month': recent_notes.filter(needs_review=True).count(),
+            'completed_reviews': all_notes.filter(needs_review=False).count(),
+        }
+
+        # Notes creation patterns by day of week
+        notes_by_weekday = recent_notes.annotate(
+            weekday=ExtractWeekDay('updated')  # Django handles DB-specifics
+        ).values('weekday').annotate(
+            count=Count('id')
+        ).order_by('weekday')
+
+        # Notes creation patterns by hour
+        notes_by_hour = recent_notes.annotate(
+            hour=ExtractHour('updated')  # Django handles DB-specifics
+        ).values('hour').annotate(
+            count=Count('id')
+        ).order_by('hour')
+
+        # Average notes per patient
+        avg_notes_per_patient = all_notes.values('patient').annotate(
+            note_count=Count('id')
+        ).aggregate(
+            avg_notes=Avg('note_count')
+        )['avg_notes'] or 0
+
+        # Documentation completeness
+        total_patients = PatientData.objects.count()
+        # Ensure your PatientData model has a related_name like 'clinical_notes' for this reverse lookup
+        # If not, this query might need adjustment, e.g. PatientData.objects.filter(clinicalnote__isnull=False)
+        patients_with_notes = PatientData.objects.filter(
+            clinical_notes__isnull=False # Assuming 'clinical_notes' is the related_name from ClinicalNote.patient
+        ).distinct().count()
+
+        documentation_rate = (patients_with_notes / total_patients * 100) if total_patients > 0 else 0
+
+        return {
+            'review_stats': review_stats,
+            'notes_by_weekday': list(notes_by_weekday),
+            'notes_by_hour': list(notes_by_hour),
+            'avg_notes_per_patient': round(avg_notes_per_patient, 2),
+            'documentation_rate': round(documentation_rate, 2),
+        }
+    
+    def _get_trends_analytics(self, six_months_ago):
+        """Trend analysis for growth and patterns"""
+        # Patient registration trends
+        patient_trends_qs = PatientData.objects.filter(
+            # Ensure 'created' field exists and is a DateTimeField or DateField
+            updated__gte=six_months_ago # Optional: if you want to limit trends to a period
+        )
+        if hasattr(PatientData, 'created'):
+            patient_trends = patient_trends_qs.annotate(
+                month=TruncMonth('created') # Django handles DB-specifics
+            ).values('month').annotate(
+                count=Count('id')
+            ).order_by('month')
+            patient_trends = list(patient_trends)
+        else:
+            patient_trends = []
+
+        # Clinical notes trends
+        notes_trends = ClinicalNote.objects.filter(
+            updated__gte=six_months_ago
+        ).annotate(
+            month=TruncMonth('updated')
+        ).values('month').annotate(
+            count=Count('id')
+        ).order_by('month')
+
+        # Growth calculations
+        current_month_patients = 0
+        if hasattr(PatientData, 'created'):
+            current_month_patients = PatientData.objects.filter(
+                created__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            ).count()
+
+        return {
+            'patient_trends': patient_trends,
+            'notes_trends': list(notes_trends),
+            'current_month_patients': current_month_patients,
+        }
+    
+    def _get_kpi_metrics(self):
+        """Key Performance Indicators"""
+        total_patients = PatientData.objects.count()
+        total_notes = ClinicalNote.objects.count()
+        notes_with_diagnosis = ClinicalNote.objects.exclude(
+            diagnosis__isnull=True
+        ).exclude(diagnosis__exact='').count()
+        
+        # Calculate various KPIs
+        diagnosis_completion_rate = (notes_with_diagnosis / total_notes * 100) if total_notes > 0 else 0
+        
+        # Patient contact completeness
+        complete_contacts = PatientData.objects.exclude(phone__isnull=True).exclude(phone__exact='').count()
+        contact_completion_rate = (complete_contacts / total_patients * 100) if total_patients > 0 else 0
+        
+        # NOK information completeness
+        complete_nok = PatientData.objects.exclude(nok_name__isnull=True).exclude(nok_name__exact='').count()
+        nok_completion_rate = (complete_nok / total_patients * 100) if total_patients > 0 else 0
+        
+        return {
+            'kpi_metrics': {
+                'diagnosis_completion_rate': round(diagnosis_completion_rate, 1),
+                'contact_completion_rate': round(contact_completion_rate, 1),
+                'nok_completion_rate': round(nok_completion_rate, 1),
+                'avg_notes_per_patient': round(total_notes / total_patients, 2) if total_patients > 0 else 0,
+            }
+        }
+
+
+# Additional view for doctor-specific detailed analytics
+class DoctorDetailAnalyticsView(TemplateView):
+    template_name = 'ehr/analytics/doctor_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        doctor_id = kwargs.get('doctor_id')
+
+        try:
+            doctor = User.objects.get(id=doctor_id)
+            context['doctor'] = doctor
+
+            # Detailed analytics for specific doctor
+            notes = ClinicalNote.objects.filter(user=doctor)
+
+            # Monthly performance over last 12 months
+            twelve_months_ago = timezone.now() - timedelta(days=365)
+            monthly_performance = notes.filter(
+                updated__gte=twelve_months_ago
+            ).annotate(
+                month=TruncMonth('updated')
+            ).values('month').annotate(
+                notes_count=Count('id'),
+                unique_patients=Count('patient', distinct=True),
+                diagnoses_made=Count('diagnosis', filter=Q(diagnosis__isnull=False))
+            ).order_by('month')
+
+            context['monthly_performance'] = list(monthly_performance)
+
+            # Top diagnoses by this doctor
+            top_diagnoses = notes.exclude(
+                diagnosis__isnull=True
+            ).exclude(
+                diagnosis__exact=''
+            ).values('diagnosis').annotate(
+                count=Count('diagnosis')
+            ).order_by('-count')[:10]
+
+            context['top_diagnoses'] = list(top_diagnoses)
+
+            # Patient demographics for this doctor
+            doctor_patients = PatientData.objects.filter(clinical_notes__user=doctor).distinct()
+
+            context['doctor_patient_demographics'] = {
+                'total_patients': doctor_patients.count(),
+                'gender_breakdown': doctor_patients.values('gender').annotate(count=Count('gender')),
+                'age_groups': {
+                    # CHANGE THESE KEYS:
+                    'age_0_18': doctor_patients.filter(age__lt=18).count(),
+                    'age_19_35': doctor_patients.filter(age__gte=19, age__lte=35).count(),
+                    'age_36_50': doctor_patients.filter(age__gte=36, age__lte=50).count(),
+                    'age_51_plus': doctor_patients.filter(age__gt=50).count(),
+                }
+            }
+
+        except User.DoesNotExist:
+            context['error'] = 'Doctor not found'
+
+        return context

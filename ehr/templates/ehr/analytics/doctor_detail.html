@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Doctors Analytics{% endblock %}
+
+{% block content %}
+<div class="mx-auto px-2 sm:px-4 lg:px-6">
+    {% if error %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg" role="alert">
+        <strong class="font-bold">Error!</strong>
+        <span class="block sm:inline">{{ error }}</span>
+      </div>
+    {% else %}
+      <!-- Header -->
+      <div class="bg-white shadow-xl rounded-2xl p-6 sm:p-8 mb-8">
+        <h1 class="text-sm font-extrabold text-gray-900 mb-2 flex items-center gap-2">
+          <i class="fas fa-user-md text-indigo-600"></i>
+          Dr. {{ doctor.get_full_name|default:doctor.username }}
+        </h1>
+        <p class="text-xs text-gray-600">Performance insights and patient interaction overview.</p>
+      </div>
+
+      <!-- Monthly Performance Chart -->
+      <section class="mb-10">
+        <div class="bg-white shadow-lg rounded-xl p-6">
+          <h2 class="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fas fa-calendar-alt text-indigo-500"></i> Monthly Performance (Last 12 Months)
+          </h2>
+          <canvas id="monthlyPerformanceChart" height="100"></canvas>
+        </div>
+      </section>
+
+      <!-- Top Diagnoses -->
+      <section class="mb-10">
+        <div class="bg-white shadow-lg rounded-xl p-6">
+          <h2 class="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fas fa-stethoscope text-indigo-500"></i> Top Diagnoses
+          </h2>
+          <ul class="space-y-3">
+            {% for diagnosis in top_diagnoses %}
+              <li class="flex justify-between items-center text-xs text-gray-700">
+                <div class="flex items-center gap-3">
+                  <span class="inline-block w-2 h-2 bg-indigo-500 rounded-full"></span>
+                  <span class=" text-gray-900">{{ diagnosis.diagnosis }}</span>
+                </div>
+                <span class="text-indigo-600 font-bold">{{ diagnosis.count }} times</span>
+              </li>
+            {% empty %}
+              <li class="text-center py-4 text-gray-500">No diagnoses recorded for this doctor.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+
+      <!-- Demographics -->
+      <section>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Gender -->
+          <div class="bg-white shadow-lg rounded-xl p-6">
+            <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <i class="fas fa-venus-mars text-green-500"></i> Gender Breakdown
+            </h3>
+            <p class="text-gray-600 mb-4 text-xs">Total Patients Seen: 
+              <span class="text-indigo-600 font-bold">{{ doctor_patient_demographics.total_patients }}</span>
+            </p>
+            <canvas id="genderChart" height="180"></canvas>
+          </div>
+
+          <!-- Age Groups -->
+          <div class="bg-white shadow-lg rounded-xl p-6">
+            <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <i class="fas fa-birthday-cake text-blue-500"></i> Age Group Distribution
+            </h3>
+            <ul class="space-y-2">
+              <li class="flex justify-between text-xs text-gray-700">
+                <span>0–18</span><span class="text-blue-600 font-bold">{{ doctor_patient_demographics.age_groups.age_0_18 }}</span>
+              </li>
+              <li class="flex justify-between text-xs text-gray-700">
+                <span>19–35</span><span class="text-blue-600 font-bold">{{ doctor_patient_demographics.age_groups.age_19_35 }}</span>
+              </li>
+              <li class="flex justify-between text-xs text-gray-700">
+                <span>36–50</span><span class="text-blue-600 font-bold">{{ doctor_patient_demographics.age_groups.age_36_50 }}</span>
+              </li>
+              <li class="flex justify-between text-xs text-gray-700">
+                <span>51+</span><span class="text-blue-600 font-bold">{{ doctor_patient_demographics.age_groups.age_51_plus }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+  </div>
+
+<!-- Chart Initialization -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Monthly Performance Chart
+    const monthlyCtx = document.getElementById('monthlyPerformanceChart').getContext('2d');
+    const monthlyChart = new Chart(monthlyCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for entry in monthly_performance %}'{{ entry.month|date:"M Y" }}',{% endfor %}],
+            datasets: [
+                {
+                    label: 'Notes Created',
+                    data: [{% for entry in monthly_performance %}{{ entry.notes_count }},{% endfor %}],
+                    backgroundColor: 'rgba(99, 102, 241, 0.6)', // indigo
+                    borderRadius: 5
+                },
+                {
+                    label: 'Unique Patients',
+                    data: [{% for entry in monthly_performance %}{{ entry.unique_patients }},{% endfor %}],
+                    backgroundColor: 'rgba(16, 185, 129, 0.6)', // green
+                    borderRadius: 5
+                },
+                {
+                    label: 'Diagnoses Made',
+                    data: [{% for entry in monthly_performance %}{{ entry.diagnoses_made }},{% endfor %}],
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)', // blue
+                    borderRadius: 5
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: false }
+            }
+        }
+    });
+
+    // Gender Breakdown Pie Chart
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
+    const genderChart = new Chart(genderCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for g in doctor_patient_demographics.gender_breakdown %}'{{ g.gender|capfirst }}',{% endfor %}],
+            datasets: [{
+                data: [{% for g in doctor_patient_demographics.gender_breakdown %}{{ g.count }},{% endfor %}],
+                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'right' },
+                title: { display: false }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -23,37 +23,322 @@
     <div class="md:mx-20  mx-2 text-xs text-center">
         <!-- Warning Banner -->
 <style>
-  .info-box {
+    .visit-box {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border: 2px solid #28a745;
+      border-radius: 12px;
+      padding: 5px;
+      margin: 5px 0;
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .visit-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #28a745, #20c997, #17a2b8);
+      animation: pulse-glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-glow {
+      from { opacity: 0.7; }
+      to { opacity: 1; }
+    }
+
+    .visit-tag {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: inline-block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+      animation: gentle-bounce 3s ease-in-out infinite;
+    }
+
+    @keyframes gentle-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    .visit-info-section {
+      margin: 5px 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 8px;
+      border-left: 4px solid #28a745;
+    }
+
+    .visit-info {
+      font-size: 10px;
+      line-height: 1.6;
+      color: #2c3e50;
+    }
+
+    .status-pill {
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .status-waiting-nurse { background: #ffeaa7; color: #d63031; }
+    .status-waiting-doctor { background: #fab1a0; color: #e17055; }
+    .status-review { background: #74b9ff; color: #0984e3; }
+    .status-ended { background: #fd79a8; color: #e84393; }
+    .status-ok { background: #00b894; color: white; }
+
+    .close-button {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .close-button:hover {
+      background: linear-gradient(135deg, #c82333, #bd2130);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    }
+
+    .custom-modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: white;
+      margin: 5% auto;
+      padding: 0;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s ease;
+      overflow: hidden;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-header::before {
+      content: '⚠️';
+      font-size: 40px;
+      display: block;
+      margin-bottom: 10px;
+      animation: warning-pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes warning-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .modal-body {
+      padding: 30px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .warning-text {
+      font-size: 18px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .visit-details {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #dc3545;
+      text-align: left;
+    }
+
+    .visit-details strong {
+      color: #dc3545;
+    }
+
+    .consequences {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .consequences h4 {
+      color: #d63031;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .consequences ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #6c757d;
+    }
+
+    .consequences li {
+      margin-bottom: 5px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      padding: 0 30px 30px;
+    }
+
+    .btn-cancel {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+
+    .btn-cancel:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+
+    .btn-confirm {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+
+    .btn-confirm:hover:not(:disabled) {
+      background: linear-gradient(135deg, #c82333, #bd2130);
+      transform: translateY(-1px);
+    }
+
+    .countdown {
+      font-size: 14px;
+      color: #dc3545;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+.info-box {
     background: linear-gradient(to right, #fff8e1, #fff3cd);
     border-left: 6px solid #f0ad4e;
-    padding: 10px;
+    padding: 12px 16px;
     border-radius: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 3px;
     animation: fadeIn 0.6s ease;
   }
 
   .info-box i {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     color: #f0ad4e;
     animation: ping 2s infinite ease-in-out;
+    flex-shrink: 0;
   }
 
-  .info-box p.title {
+  .info-box .title {
     color: #c9302c;
     font-weight: bold;
     font-size: 0.95rem;
-    margin-top: 8px;
     text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
-  .info-box p.desc {
+  .info-box .desc {
     font-size: 0.85rem;
     color: #a94442;
-    margin-top: 4px;
+    flex: 1;
   }
 
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes ping {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+
+  /* Responsive: Stack on smaller screens */
+  @media (max-width: 768px) {
+    .info-box {
+      flex-direction: column;
+      text-align: center;
+      gap: 8px;
+    }
+    
+    .info-box .title,
+    .info-box .desc {
+      white-space: normal;
+    }
+  }
 .visit-box {
   display: flex;
   align-items: center;
@@ -61,7 +346,7 @@
   background: linear-gradient(to bottom right, #e8f4fd, #ffffff);
   border: 1px solid #b3d7f5;
   border-radius: 16px;
-  padding: 12px 20px;
+  padding: 6px 10px;
   box-shadow: 0 6px 12px rgba(0,0,0,0.08);
   margin-top: 12px;
   margin-bottom: 6px;
@@ -158,16 +443,14 @@
 {% if not has_active_visit %}
   <div class="info-box">
     <i class="fa-solid fa-triangle-exclamation"></i>
-    <p class="title">🚫 Access Restricted</p>
-    <p class="desc">
-      No active visit session found. <br> patient interactions are disabled until payment is made for new registration or follow up.
-    </p>
+    <span class="title">🚫 Access Restricted</span>
+    <span class="desc">No active visit session found. Patient interactions are disabled until payment is made for new registration or follow up.</span>
   </div>
 {% endif %}
 
 {% if has_active_visit and active_visit_for_actions %}
   <div class="visit-box">
-    <div class="visit-tag">Active Visit</div>
+    <div class="visit-tag">🔴 Active Visit Session</div>
 
     <div class="visit-info-section">
       <div class="visit-info"><strong>Visit ID:</strong> {{ active_visit_for_actions.id }}&nbsp;&nbsp;<strong>Started:</strong> {{ active_visit_for_actions.updated }}&nbsp;&nbsp;<strong>Status:</strong>
@@ -182,17 +465,62 @@
       </div>
     </div>
 
-    <form method="POST"
-          action="{% url 'close_visit' file_no=patient.file_no visit_pk=active_visit_for_actions.pk %}"
-          onsubmit="return confirm('Are you sure you want to manually close this visit session? {{ active_visit_for_actions.id }}. you have to initialize another visit session to work on this patient'); ">
+    <!-- Enhanced Close Button -->
+    <button type="button" class="close-button" onclick="showVisitCloseModal('{{ active_visit_for_actions.id }}', '{{ patient.file_no }}', '{{ active_visit_for_actions.get_status_display }}', '{{ patient.first_name }} {{ patient.last_name }}')">
+      <i class="fa-solid fa-door-closed" style="margin-right: 5px;"></i> Close Visit Session
+    </button>
+
+    <!-- Hidden form for actual submission -->
+    <form id="closeVisitForm" method="POST" action="{% url 'close_visit' file_no=patient.file_no visit_pk=active_visit_for_actions.pk %}" style="display: none;">
       {% csrf_token %}
-      <button type="submit" class="close-button">
-        <i class="fa-solid fa-door-closed" style="margin-right: 5px;"></i> Close Visit
-      </button>
     </form>
   </div>
-{% endif %}
 
+  <!-- Enhanced Custom Modal -->
+  <div id="visitCloseModal" class="custom-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Critical Action Required</h2>
+        <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">You are about to close an active patient visit</p>
+      </div>
+      <div class="modal-body">
+        <div class="warning-text">
+          🚨 <strong>WARNING:</strong> This action will permanently close the current visit session!
+        </div>
+        
+        <div class="visit-details" id="visitDetails">
+          <!-- Will be populated by JavaScript -->
+        </div>
+
+        <div class="consequences">
+          <h4>⚠️ What happens when you close this visit:</h4>
+          <ul>
+            <li>No further updates can be made to this visit</li>
+            <li>Patient will need a <strong>new visit session</strong> for future consultations</li>
+            <li>This action <strong>CANNOT be undone</strong></li>
+          </ul>
+        </div>
+
+        <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <strong>💡 Alternative:</strong> Consider updating the visit status instead of closing if the consultation is ongoing.
+        </div>
+
+        <div class="countdown" id="visitCountdown">
+          Please wait <span id="visitTimer">5</span> seconds before proceeding...
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn-cancel" onclick="closeVisitModal()">
+          <i class="fa-solid fa-arrow-left"></i> Keep Visit Open
+        </button>
+        <button class="btn-confirm" id="visitConfirmBtn" onclick="confirmVisitClose()" disabled style="opacity: 0.5; cursor: not-allowed;">
+          <i class="fa-solid fa-door-closed"></i> Yes, Close Visit
+        </button>
+      </div>
+    </div>
+  </div>
+
+{% endif %}
 
       <div class="rounded-t-xl flex items-center gap-2 justify-between md:flex-row flex-col p-2 bg-gradient-to-r from-emerald-700 to-sky-700">
         <div>
@@ -3196,6 +3524,109 @@ class="text-xs text-green-600 hover:text-green-700">
       cursor: pointer;
   }
 </style>
+  <script>
+    let visitCountdownTimer;
+    let visitTimeLeft = 5;
+
+    function showVisitCloseModal(visitId, fileNo, status, patientName) {
+      // Populate visit details
+      document.getElementById('visitDetails').innerHTML = `
+        <strong>Visit ID:</strong> ${visitId}<br>
+        <strong>Patient:</strong> ${patientName} (File: ${fileNo})<br>
+        <strong>Current Status:</strong> ${status}<br>
+        <strong>Action:</strong> <span style="color: #dc3545; font-weight: bold;">PERMANENT CLOSURE</span>
+      `;
+      
+      document.getElementById('visitCloseModal').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+      startVisitCountdown();
+    }
+
+    function closeVisitModal() {
+      document.getElementById('visitCloseModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+      resetVisitCountdown();
+    }
+
+    function startVisitCountdown() {
+      visitTimeLeft = 5;
+      const timerElement = document.getElementById('visitTimer');
+      const confirmBtn = document.getElementById('visitConfirmBtn');
+      const countdownDiv = document.getElementById('visitCountdown');
+      
+      confirmBtn.disabled = true;
+      confirmBtn.style.opacity = '0.5';
+      confirmBtn.style.cursor = 'not-allowed';
+      
+      visitCountdownTimer = setInterval(() => {
+        visitTimeLeft--;
+        timerElement.textContent = visitTimeLeft;
+        
+        if (visitTimeLeft <= 0) {
+          clearInterval(visitCountdownTimer);
+          confirmBtn.disabled = false;
+          confirmBtn.style.opacity = '1';
+          confirmBtn.style.cursor = 'pointer';
+          countdownDiv.innerHTML = '✅ <strong style="color: #28a745;">You may now proceed if you are certain</strong>';
+        }
+      }, 1000);
+    }
+
+    function resetVisitCountdown() {
+      if (visitCountdownTimer) {
+        clearInterval(visitCountdownTimer);
+      }
+      visitTimeLeft = 5;
+      const timerElement = document.getElementById('visitTimer');
+      if (timerElement) {
+        timerElement.textContent = '5';
+      }
+      const countdownDiv = document.getElementById('visitCountdown');
+      if (countdownDiv) {
+        countdownDiv.innerHTML = 'Please wait <span id="visitTimer">5</span> seconds before proceeding...';
+      }
+    }
+
+    function confirmVisitClose() {
+      // Submit the hidden form
+      document.getElementById('closeVisitForm').submit();
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+      const modal = document.getElementById('visitCloseModal');
+      if (event.target === modal) {
+        closeVisitModal();
+      }
+    }
+
+    // Prevent closing with Escape key to ensure user reads the warning
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        const modal = document.getElementById('visitCloseModal');
+        if (modal && modal.style.display === 'block') {
+          // Briefly shake the modal to indicate it can't be closed this way
+          const modalContent = modal.querySelector('.modal-content');
+          if (modalContent) {
+            modalContent.style.animation = 'none';
+            setTimeout(() => {
+              modalContent.style.animation = 'slideIn 0.3s ease';
+            }, 10);
+          }
+        }
+      }
+    });
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ensure modal is hidden on page load
+      const modal = document.getElementById('visitCloseModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    });
+  </script>
 <script>
   function openModal(imageUrl, imageTitle) {
       var modal = document.getElementById("imageModal");

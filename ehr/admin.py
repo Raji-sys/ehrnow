@@ -174,7 +174,8 @@ class ImplantAdmin(admin.ModelAdmin):
 @admin.register(VisitRecord)
 class VisitRecordAdmin(admin.ModelAdmin):
     list_display = ('patient','clinic','team','seen','vitals','review','consultation','updated','created')
-    search_fields = ('clinic','team','updated')
+    search_fields = ('seen','vitals','review','consultation','updated','created')
+    ordering = ('-updated',)
     list_filter = ('clinic','team','updated')
 
 
