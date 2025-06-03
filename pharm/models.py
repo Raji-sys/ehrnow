@@ -307,25 +307,23 @@ class UnitIssueRecord(models.Model):
     issued_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     updated_at = models.DateField(auto_now=True)
     
-    def __str__(self):
-        return f"Issue of {self.quantity} {self.drug.name} from {self.unit.name}"
     
-    # def save(self, *args, **kwargs):
-    #     unit_store = UnitStore.objects.get(unit=self.unit, drug=self.drug)
+    def save(self, *args, **kwargs):
+        unit_store = UnitStore.objects.get(unit=self.unit, drug=self.drug)
         
-    #     if self.quantity > unit_store.quantity:
-    #         raise ValidationError(_("Not enough drugs in the unit store."), code='invalid_quantity')
+        if self.quantity > unit_store.quantity:
+            raise ValidationError(_("Not enough drugs in the unit store."), code='invalid_quantity')
         
-    #     # Deduct from the issuing unit's store
-    #     unit_store.quantity -= self.quantity
-    #     unit_store.save()
+        # Deduct from the issuing unit's store
+        unit_store.quantity -= self.quantity
+        unit_store.save()
 
-    #     # Add to the receiving unit's store if applicable
-    #     if self.issued_to:
-    #         receiving_store, created = UnitStore.objects.get_or_create(unit=self.issued_to, drug=self.drug)
-    #         receiving_store.quantity += self.quantity
-    #         receiving_store.save()
-    #     super().save(*args, **kwargs)
+        # Add to the receiving unit's store if applicable
+        if self.issued_to:
+            receiving_store, created = UnitStore.objects.get_or_create(unit=self.issued_to, drug=self.drug)
+            receiving_store.quantity += self.quantity
+            receiving_store.save()
+        super().save(*args, **kwargs)
 
 
 class Prescription(models.Model):

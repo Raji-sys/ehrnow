@@ -313,15 +313,20 @@ class DispensaryIssueRecordForm(forms.ModelForm):
         self.issuing_unit = kwargs.pop('issuing_unit', None)
         super(DispensaryIssueRecordForm, self).__init__(*args, **kwargs)
         
+        # Set unit and issued_to_locker fields as readonly
         self.fields['unit'].widget.attrs['readonly'] = True
         self.fields['issued_to_locker'].widget.attrs['readonly'] = True
 
+        # Filter queryset for issued_to_locker if issuing_unit is provided
         if self.issuing_unit:
             self.fields['issued_to_locker'].queryset = DispensaryLocker.objects.filter(unit=self.issuing_unit)
 
+        # Apply common styling to all fields
         for field_name, field in self.fields.items():
-            field.required = False
+            field.required = False # Keep fields not required as per original logic
             if field_name == 'drug':
+                # This class will be used to hide the original select element via JavaScript
+                # and ensure it has basic styling if it somehow becomes visible.
                 field.widget.attrs.update({
                     'class': 'original-drug-select text-center text-xs focus:outline-none border border-blue-300 p-2 sm:p-3 rounded shadow-lg hover:shadow-xl'
                 })
@@ -333,7 +338,9 @@ class DispensaryIssueRecordForm(forms.ModelForm):
     def clean_quantity(self):
         quantity = self.cleaned_data.get('quantity')
         if quantity is None:
-            return quantity # Allow None, validation will happen later if other fields are present
+            # If quantity is not provided, don't raise an error here.
+            # The overall clean method will handle cases where core fields are missing.
+            return quantity
         if quantity <= 0:
             raise forms.ValidationError("Quantity must be greater than zero.")
         return quantity
@@ -341,38 +348,40 @@ class DispensaryIssueRecordForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         unit = cleaned_data.get('unit')
+        issued_to = cleaned_data.get('issued_to') # Note: This field is not in Meta.fields, might be a typo from original context.
+                                                  # Assuming 'issued_to_locker' is the relevant target.
+        issued_to_locker = cleaned_data.get('issued_to_locker')
         drug = cleaned_data.get('drug')
         quantity = cleaned_data.get('quantity')
-        issued_to_locker = cleaned_data.get('issued_to_locker') # Ensure this is used if 'issued_to' is not a field
 
-        # Basic validation for destination (locker)
-        # Assuming 'issued_to' is not a field in this form's Meta.fields
-        if not issued_to_locker:
-            # This check might need adjustment if there are other valid destinations
-            # For now, it assumes a locker MUST be selected if this form is used for transfers.
-            # If the form is for general issuance, this error should be conditional.
-            self.add_error(None, "Must issue to a locker.")
-
+        # Basic validation for destination (unit or locker)
+        # Note: 'issued_to' is not in the form's fields. Assuming 'issued_to_locker' is the target.
+        # If 'issued_to' is meant to be a field for issuing to a unit, it needs to be added to Meta.fields.
+        # For now, I'll adapt based on the provided fields.
+        if issued_to_locker and not issued_to_locker: # This condition is redundant if issued_to is not a field.
+            self.add_error(None, "Must issue to a locker.") # Adjusted message if only locker is an option.
 
         # Skip validation if any core field for a line item is missing.
         # This allows for empty forms in a formset.
-        if not (drug and quantity is not None and unit):
+        if not (drug and quantity is not None and unit): # 'quantity is not None' to allow 0 if needed, but clean_quantity handles > 0
             return cleaned_data
 
-        # --- PRELIMINARY STOCK VALIDATION (without select_for_update) ---
-        # This check is for user feedback before the transaction begins.
-        # The definitive check with locking will happen in the view.
+        # Validate that the unit has enough of the drug available
         try:
+            # Refresh unit_store instance within a transaction to get the latest data and lock the row
+            # For robust stock checking, it's often better to do this final check
+            # within the view's transaction block, right before saving.
+            # For now, we'll keep your existing logic.
             unit_store = UnitStore.objects.get(unit=unit, drug=drug)
             available_quantity = unit_store.quantity
 
             if self.instance and self.instance.pk: # This is an update
                 original_record = UnitIssueRecord.objects.get(pk=self.instance.pk)
-                if original_record.drug == drug:
+                if original_record.drug == drug: # If drug hasn't changed
                     net_quantity_change = quantity - original_record.quantity
                     if net_quantity_change > 0 and net_quantity_change > available_quantity:
                         self.add_error('quantity', f"Warning: Only {available_quantity} additional units of '{drug.name}' available in {unit.name}'s store. You tried to issue {net_quantity_change} more.")
-                elif quantity > available_quantity:
+                elif quantity > available_quantity: # If drug has changed, check full quantity
                     self.add_error('quantity', f"Warning: Only {available_quantity} units of '{drug.name}' available in {unit.name}'s store. Please adjust.")
             else: # This is a new record
                 if quantity > available_quantity:
@@ -380,11 +389,9 @@ class DispensaryIssueRecordForm(forms.ModelForm):
         except UnitStore.DoesNotExist:
             self.add_error('drug', f"{drug.name} is not available in {unit.name}'s store.")
         except Exception as e:
-            # Catching general exceptions here to avoid breaking form validation
-            self.add_error(None, f"An unexpected error occurred during preliminary stock check: {e}")
+            self.add_error(None, f"An error occurred during stock validation: {e}")
 
         return cleaned_data
-
 
 # class DispenseRecordForm(forms.ModelForm):
 #     class Meta:

@@ -947,6 +947,7 @@ class TransferUpdateView(LoginRequiredMixin,UnitGroupRequiredMixin,UpdateView):
         messages.error(self.request, "There was an error updating the record. Please check the form.")
         return super().form_invalid(form)
 
+
 @unit_group_required
 def dispensaryissuerecord(request, unit_id):
     unit = get_object_or_404(Unit, id=unit_id)
@@ -965,8 +966,7 @@ def dispensaryissuerecord(request, unit_id):
         UnitIssueRecord,
         form=DispensaryIssueRecordForm,
         formset=CustomUnitIssueFormSet,
-        extra=5,
-        can_delete=False # Consider if you want to allow deleting forms in the formset
+        extra=5
     )
 
     if request.method == 'POST':
@@ -974,76 +974,37 @@ def dispensaryissuerecord(request, unit_id):
         if formset.is_valid():
             try:
                 with transaction.atomic():
-                    # Save forms with commit=False to get instances without saving to DB yet
                     instances = formset.save(commit=False)
-                    
                     for instance in instances:
-                        # Only process forms that have data (e.g., drug and quantity)
-                        # This avoids trying to save empty forms from 'extra'
-                        if instance.drug and instance.quantity is not None and instance.quantity > 0:
-                            instance.issued_by = request.user
-                            instance.unit = unit # Ensure the issuing unit is set
-
-                            # --- FINAL STOCK VALIDATION AND DEDUCTION (WITH LOCKING) ---
-                            try:
-                                # Get the UnitStore object with a lock for the current transaction
-                                unit_store = UnitStore.objects.select_for_update().get(
-                                    unit=instance.unit, drug=instance.drug
-                                )
-                            except UnitStore.DoesNotExist:
-                                raise ValidationError(f"{instance.drug.name} is not available in {instance.unit.name}'s store.")
-
-                            # Check if there's enough stock
-                            if instance.quantity > unit_store.quantity:
-                                raise ValidationError(f"Not enough {instance.drug.name} in {instance.unit.name}'s store. Available: {unit_store.quantity}. Tried to issue: {instance.quantity}.")
-
-                            # Deduct from the issuing unit's store
-                            unit_store.quantity -= instance.quantity
-                            unit_store.save() # Save the updated UnitStore quantity
-
-                            # Save the UnitIssueRecord instance
-                            instance.save() 
-
-                            # Update locker inventory if issued to locker
-                            if instance.issued_to_locker:
-                                locker_inventory, created = LockerInventory.objects.select_for_update().get_or_create(
-                                    locker=instance.issued_to_locker,
-                                    drug=instance.drug,
-                                    defaults={'quantity': 0}
-                                )
-                                locker_inventory.quantity += instance.quantity
-                                locker_inventory.save()
-
+                        instance.issued_by = request.user
+                        instance.unit = unit
+                        instance.save()
+                        # Update locker inventory if issued to locker
+                        if instance.issued_to_locker:
+                            locker_inventory, created = LockerInventory.objects.get_or_create(
+                                locker=instance.issued_to_locker,
+                                drug=instance.drug,
+                                defaults={'quantity': 0}
+                            )
+                            locker_inventory.quantity += instance.quantity
+                            locker_inventory.save()
                     messages.success(request, 'Dispensary Locker Restocked Successfully')
-                    # Use the correct URL name for redirect
-                    return redirect('pharm:unit_bulk_locker', unit_id=unit_id) # Use unit_id as keyword arg
-
-            except ValidationError as e:
-                # Catch specific ValidationErrors raised within the transaction
-                messages.error(request, f"Stock error: {e.message}")
+                    return redirect('pharm:unit_bulk_locker', pk=unit_id)
             except Exception as e:
-                # Catch any other unexpected errors during the transaction
-                messages.error(request, f"An unexpected error occurred during transfer: {str(e)}")
+                messages.error(request, f"An error occurred: {str(e)}")
         else:
-            # If formset is not valid, iterate through errors and add messages
             for form in formset:
-                if form.errors:
-                    for field, errors in form.errors.items():
-                        for error in errors:
-                            if field == '__all__': # Non-field errors
-                                messages.error(request, f"Error: {error}")
-                            else:
-                                messages.error(request, f"{form.prefix.replace('form-', '').capitalize()} - {field.capitalize()}: {error}")
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, f"{field.capitalize()}: {error}")
     else:
         formset = UnitIssueFormSet(
-            queryset=UnitIssueRecord.objects.none(), # Start with no existing records
+            queryset=UnitIssueRecord.objects.none(),
             issuing_unit=unit,
-            # Pre-populate initial data for 'extra' forms
-            initial=[{'unit': unit, 'issued_to_locker': unit_locker}] * UnitIssueFormSet.extra
+            initial=[{'unit': unit, 'issued_to_locker': unit_locker}] * 5
         )
 
     return render(request, 'store/create_dispensary_record.html', {'formset': formset, 'unit': unit})
-
 
 
 @login_required
