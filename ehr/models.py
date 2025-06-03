@@ -889,7 +889,7 @@ class PhysioTest(models.Model):
         ("other", "Other Tests"),
     ]
     category = models.CharField(null=True, choices=CATEGORY_CHOICES, max_length=300)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=1000)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     updated = models.DateTimeField(auto_now=True)
 

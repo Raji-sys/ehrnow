@@ -38,6 +38,7 @@ urlpatterns = [
     path('medical_record/visit/<str:file_no>/', VisitCreateView.as_view(), name='visit_record'),
 
     path('record/patient-list/', PatientListView.as_view(), name='patient_list'),
+    path('record/patient-wallet-list/', PatientWalletListView.as_view(), name='patient_wallet_list'),
     path('record/patient/update-patient/<int:pk>/', UpdatePatientView.as_view(), name='update_patient'),
     path('record/patient/<str:file_no>/', PatientFolderView.as_view(), name='patient_details'),
 

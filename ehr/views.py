@@ -466,6 +466,42 @@ class PatientListView(ListView):
         context = super().get_context_data(**kwargs)
         search_count = self.get_queryset().count()
         total_patient=PatientData.objects.count()
+        context['is_revenue'] = self.request.user.groups.filter(name='revenue').exists()
+        context['search_count'] = search_count
+        context['total_patient'] = total_patient
+        context['query'] = self.request.GET.get('q', '')
+
+        return context
+
+
+class PatientWalletListView(ListView):
+    model=PatientData
+    template_name='ehr/revenue/patient_wallet_list.html'
+    context_object_name='patients'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = super().get_queryset().order_by('-file_no')
+        # Add search functionality
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(other_name__icontains=query) |
+                Q(file_no__icontains=query)|
+                Q(phone__icontains=query)|
+                Q(title__icontains=query)|
+                Q(gender__iexact=query)
+    
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        search_count = self.get_queryset().count()
+        total_patient=PatientData.objects.count()
+        context['is_revenue'] = self.request.user.groups.filter(name='revenue').exists()
         context['search_count'] = search_count
         context['total_patient'] = total_patient
         context['query'] = self.request.GET.get('q', '')
@@ -3615,7 +3651,7 @@ class PrivateBillPDFView(DetailView):
         return HttpResponse("Error generating PDF", status=400) 
 
 
-class FundWalletView(CreateView):
+class FundWalletView(RevenueRequiredMixin,CreateView):
     model = WalletTransaction
     form_class = FundWalletForm
     template_name = 'ehr/revenue/fund_wallet.html'
@@ -3626,7 +3662,8 @@ class FundWalletView(CreateView):
         return context
     
     def get_success_url(self):
-        return reverse_lazy('patient_details', kwargs={'file_no': self.object.wallet.patient.file_no})
+        # return reverse_lazy('patient_details', kwargs={'file_no': self.object.wallet.patient.file_no})
+        return reverse_lazy('patient_wallet_list')
 
     def form_valid(self, form):
         patient = PatientData.objects.get(pk=self.kwargs['patient_pk'])
@@ -3654,7 +3691,7 @@ class AllTransactionsListView(LoginRequiredMixin, ListView):
         return context
     
 
-class TheatreOperationRecordCreateView(CreateView):
+class TheatreOperationRecordCreateView(DoctorNurseRecordRequiredMixin,CreateView):
     model = TheatreOperationRecord
     form_class = TheatreOperationRecordForm
     template_name = 'ehr/theatre/theatre_record.html'
@@ -3705,7 +3742,7 @@ class TheatreOperationRecordCreateView(CreateView):
         return self.object.patient.get_absolute_url()
 
 
-class TheatreOperationRecordDetailView(DetailView):
+class TheatreOperationRecordDetailView(DoctorNurseRecordRequiredMixin,DetailView):
     model = TheatreOperationRecord
     template_name = 'ehr/theatre/theatre_record_details.html'
 
@@ -4512,11 +4549,11 @@ class ComprehensiveAnalyticsView(TemplateView):
         
         # Diagnosis by age groups
         age_groups = {
-            '0-18': all_notes.filter(patient__age__lt=18).count(),
-            '19-35': all_notes.filter(patient__age__gte=19, patient__age__lte=35).count(),
-            '36-50': all_notes.filter(patient__age__gte=36, patient__age__lte=50).count(),
-            '51-65': all_notes.filter(patient__age__gte=51, patient__age__lte=65).count(),
-            '65+': all_notes.filter(patient__age__gt=65).count(),
+            'age_0_18': all_notes.filter(patient__age__lt=18).count(),
+            'age_19_35': all_notes.filter(patient__age__gte=19, patient__age__lte=35).count(),
+            'age_36_50': all_notes.filter(patient__age__gte=36, patient__age__lte=50).count(),
+            'age_51_65': all_notes.filter(patient__age__gte=51, patient__age__lte=65).count(),
+            'age_65_plus': all_notes.filter(patient__age__gt=65).count(),
         }
         
         # Diagnosis by gender

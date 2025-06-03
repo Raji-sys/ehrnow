@@ -1,9 +1,44 @@
 {% extends "base.html" %}
+{% load static %} {# Load static if you use it #}
+
 {% block title %}{{ unit }} | BULK TRANSFER{% endblock %}
+
 {% if unit %}
-{%block page_title%}<div class="flex justify-center uppercase"><a href="{%url 'pharm:unit_bulk_locker' unit.id  %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ unit }} BULK LOCKER TO DISPENSARY TRANSFER FORM</div>{%endblock%}
+{%block page_title%}
+<div class="flex justify-center uppercase">
+    <a href="{%url 'pharm:unit_bulk_locker' unit.id  %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ unit }} BULK LOCKER TO DISPENSARY TRANSFER FORM
+</div>
+{%endblock%}
 {% endif %}
+
 {% block content %}
+<style>
+  /* Styles for the autocomplete suggestions container */
+  .autocomplete-suggestions {
+    border: 1px solid #cbd5e0; /* Tailwind gray-300 */
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    z-index: 1000; /* Ensure it's above other elements */
+    border-radius: 0.375rem; /* Tailwind rounded-md */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind shadow-lg */
+  }
+  /* Style for individual suggestion items */
+  .autocomplete-suggestions div {
+    padding: 0.5rem 0.75rem; /* Tailwind p-2 px-3 */
+    cursor: pointer;
+    font-size: 0.75rem; /* Tailwind text-xs */
+  }
+  /* Hover effect for suggestion items */
+  .autocomplete-suggestions div:hover {
+    background-color: #f0f9ff; /* Tailwind sky-100 or similar */
+  }
+  /* Style for the currently selected suggestion item (via keyboard navigation) */
+  .autocomplete-suggestions div.selected {
+    background-color: #bae6fd; /* Tailwind sky-200 or similar */
+  }
+</style>
+
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         {% if messages %}
@@ -23,12 +58,34 @@
                     {{ form.non_field_errors }}
                 </div>
                 {% endif %}
-                <div class="grid grid-cols-1 gap-10 md:grid-cols-5 border-t p-2">
+                <div class="grid grid-cols-2 gap-10 md:grid-cols-4 border-t p-2">
                     {% for field in form.visible_fields %}
                     <div class="space-y-1">
                         <label class="block text-xs font-medium text-gray-700">{{ field.label }}</label>
                         <div class="mt-1">
-                            {{ field }}
+                            {# Check if the current field is the 'drug' field #}
+                            {% if field.name == 'drug' %}
+                                <!-- Autocomplete input for drug search -->
+                                <input type="text" 
+                                       id="drug_autocomplete_{{ forloop.parentloop.counter0 }}"
+                                       class="drug-autocomplete-input text-center text-xs focus:outline-none border border-blue-300 p-2 sm:p-3 rounded shadow-lg hover:shadow-xl w-full"
+                                       placeholder="Type to search drug..."
+                                       data-form-index="{{ forloop.parentloop.counter0 }}"
+                                       autocomplete="off">
+                                <!-- Original Django Drug Field (hidden, stores the actual drug ID) -->
+                                <div style="display:none;">
+                                    {{ field }}
+                                </div>
+                                <!-- Suggestions Container for autocomplete results -->
+                                <div id="drug_suggestions_{{ forloop.parentloop.counter0 }}" 
+                                     class="autocomplete-suggestions absolute left-0 right-0 mt-1 w-fit mx-auto bg-white border border-gray-300 rounded shadow-lg p-2 z-10 text-center text-xs" 
+                                     style="display:none;">
+                                    <!-- Suggestions will be populated here by JavaScript -->
+                                </div>
+                            {% else %}
+                                {# Render other fields normally #}
+                                {{ field }}
+                            {% endif %}
                         </div>
                         {% if field.errors %}
                         <p class="text-red-600 text-xs mt-1">{{ field.errors }}</p>
@@ -46,35 +103,151 @@
         </form>
     </div>
 </div>
+
 <script>
-    function initializePage() {
-      function load_drugs(index) {
-        const categoryId = document.getElementsByName(`form-${index}-category`)[0].value;
-        const url = `/pharm/get_drugs_by_category/${categoryId}/`;
-    
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            const drugSelect = document.getElementsByName(`form-${index}-drug`)[0];
-            drugSelect.innerHTML = '';  // Clear existing options
-    
-            data.drugs.forEach(drug => {
-              const option = document.createElement('option');
-              option.value = drug.id;
-              option.text = drug.name;
-              drugSelect.add(option);
-            });
-          })
-          .catch(error => console.error('Error:', error));
-      }
-    
-      {% for form in formset %}
-      document.getElementsByName('{{ form.category.html_name }}')[0].addEventListener('change', function() {
-        load_drugs('{{ forloop.counter0 }}');
-      });
-      {% endfor %}
+document.addEventListener('DOMContentLoaded', function() {
+  // URL to fetch drugs for autocomplete. Ensure this URL is correctly configured in your Django urls.py
+  // For example: path('get_dispense_drugs/', views.get_dispense_drugs, name='get_dispense_drugs'),
+  const drugsUrl = "{% url 'pharm:get_dispense_drugs' %}"; 
+
+  // Select all drug autocomplete input fields on the page
+  document.querySelectorAll('.drug-autocomplete-input').forEach(input => {
+    const formIndex = input.dataset.formIndex; // Get the form index from data attribute
+    const suggestionsContainer = document.getElementById(`drug_suggestions_${formIndex}`);
+    // Get the actual hidden Django select field for this form row
+    const actualDrugSelect = document.querySelector(`[name="form-${formIndex}-drug"]`);
+
+    // Basic error check if the hidden select field is not found
+    if (!actualDrugSelect) {
+        console.error(`Error: Could not find actual drug select for form index ${formIndex}. Autocomplete will not function for this row.`);
+        return; // Skip initialization for this input if the hidden select is missing
     }
     
-    window.addEventListener('load', initializePage);
-    </script>
+    // Hide the original Django select element to prevent it from being displayed
+    actualDrugSelect.style.display = 'none';
+
+    // If the hidden select already has a value (e.g., on form re-render after validation error),
+    // populate the autocomplete input with the selected drug's display name.
+    if (actualDrugSelect.value) {
+        const selectedOption = actualDrugSelect.options[actualDrugSelect.selectedIndex];
+        // Check if a valid option is selected and it's not the default empty choice
+        if (selectedOption && selectedOption.text !== "---------") { 
+            input.value = selectedOption.text;
+        }
+    }
+
+    let fetchTimeout; // Timer for debouncing API requests
+    let activeSuggestionIndex = -1; // Keeps track of the currently highlighted suggestion
+
+    // Event listener for user input in the autocomplete field
+    input.addEventListener('input', function(e) {
+      const query = e.target.value;
+      suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+      suggestionsContainer.style.display = 'none'; // Hide suggestions container
+      activeSuggestionIndex = -1; // Reset active suggestion index
+
+      // Only perform search if query has at least 2 characters
+      if (query.length < 2) { 
+        actualDrugSelect.value = ''; // Clear the hidden select's value if query is too short
+        return;
+      }
+
+      // Clear any existing debounce timer
+      clearTimeout(fetchTimeout);
+      // Set a new timer to fetch drugs after a short delay (300ms)
+      fetchTimeout = setTimeout(() => {
+        // Construct the URL for fetching drugs, encoding the query parameter
+        fetch(`${drugsUrl}?q=${encodeURIComponent(query)}`)
+          .then(response => {
+            if (!response.ok) {
+                // Handle HTTP errors
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Check if data contains drugs and if there are any results
+            if (data.drugs && data.drugs.length > 0) {
+              data.drugs.forEach((drug, index) => {
+                const item = document.createElement('div');
+                // Customize how the drug information is displayed in the suggestion list
+                item.textContent = `${drug.name} (${drug.strength || 'N/A'}) - Trade: ${drug.trade_name || 'N/A'} (Pack: ${drug.pack_size || 'N/A'})`;
+                item.dataset.id = drug.id; // Store drug ID
+                item.dataset.name = drug.name; // Store drug name (for hidden select option text)
+                item.dataset.fullDisplay = item.textContent; // Store full display text for the input field
+
+                // Event listener for when a suggestion item is clicked
+                item.addEventListener('click', function() {
+                  input.value = this.dataset.fullDisplay; // Set the autocomplete input's value
+                  
+                  // Ensure the corresponding option exists in the hidden select, or create it
+                  let option = actualDrugSelect.querySelector(`option[value="${this.dataset.id}"]`);
+                  if (!option) {
+                      // If option doesn't exist, create a new one and append it
+                      option = new Option(this.dataset.name, this.dataset.id, false, true); 
+                      actualDrugSelect.appendChild(option);
+                  }
+                  actualDrugSelect.value = this.dataset.id; // Set the hidden select's value to the selected drug's ID
+                  
+                  suggestionsContainer.innerHTML = ''; // Clear suggestions
+                  suggestionsContainer.style.display = 'none'; // Hide suggestions container
+                });
+                suggestionsContainer.appendChild(item); // Add suggestion item to the container
+              });
+              suggestionsContainer.style.display = 'block'; // Show the suggestions container
+            } else {
+              suggestionsContainer.style.display = 'none'; // Hide if no drugs found
+            }
+          })
+          .catch(error => console.error('Error fetching drugs:', error));
+      }, 300); // Debounce time in milliseconds
+    });
+
+    // Event listener for keyboard navigation (ArrowUp, ArrowDown, Enter, Escape)
+    input.addEventListener('keydown', function(e) {
+        const items = suggestionsContainer.querySelectorAll('div');
+        if (items.length === 0) return; // No suggestions to navigate
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault(); // Prevent cursor movement in input field
+            // Remove 'selected' class from current active item
+            items[activeSuggestionIndex]?.classList.remove('selected');
+            // Move to the next item, wrapping around if at the end
+            activeSuggestionIndex = (activeSuggestionIndex + 1) % items.length;
+            // Add 'selected' class to the new active item
+            items[activeSuggestionIndex].classList.add('selected');
+            // Scroll the selected item into view if it's outside the visible area
+            items[activeSuggestionIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault(); // Prevent cursor movement in input field
+            items[activeSuggestionIndex]?.classList.remove('selected');
+            // Move to the previous item, wrapping around if at the beginning
+            activeSuggestionIndex = (activeSuggestionIndex - 1 + items.length) % items.length;
+            items[activeSuggestionIndex].classList.add('selected');
+            items[activeSuggestionIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission
+            if (activeSuggestionIndex > -1 && items[activeSuggestionIndex]) {
+                // Simulate a click on the selected suggestion item
+                items[activeSuggestionIndex].click();
+            }
+        } else if (e.key === 'Escape') {
+            // Clear and hide suggestions on Escape key press
+            suggestionsContainer.innerHTML = '';
+            suggestionsContainer.style.display = 'none';
+            activeSuggestionIndex = -1;
+        }
+    });
+
+    // Event listener to hide suggestions when clicking outside the input or suggestions container
+    document.addEventListener('click', function(e) {
+      if (!input.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+        suggestionsContainer.innerHTML = '';
+        suggestionsContainer.style.display = 'none';
+        activeSuggestionIndex = -1;
+      }
+    });
+  });
+});
+</script>
 {% endblock %}

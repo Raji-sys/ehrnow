@@ -596,7 +596,7 @@
         }
     });
 
-    // Diagnosis by Age Groups Chart
+// Diagnosis by Age Groups Chart
     const ageGroupCtx = document.getElementById('ageGroupChart').getContext('2d');
     window.ageGroupChartInstance = new Chart(ageGroupCtx, { // Storing instance
         type: 'bar',
@@ -605,6 +605,7 @@
             datasets: [{
                 label: 'Diagnoses by Age Group',
                 data: [
+                    // Accessing dictionary values using the new, valid Python identifier keys
                     {{ diagnosis_age_groups.age_0_18|default:0 }},
                     {{ diagnosis_age_groups.age_19_35|default:0 }},
                     {{ diagnosis_age_groups.age_36_50|default:0 }},
@@ -737,18 +738,40 @@
         }
     });
 
-    // Weekday Chart
+ // Weekday Chart
     const weekdayCtx = document.getElementById('weekdayChart').getContext('2d');
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     // Assuming notes_by_weekday is an array of 7 objects, one for each day, ordered Sunday to Saturday
     // If not, this data mapping will need adjustment.
     let weekdayData = new Array(7).fill(0);
     {% for day_stat in notes_by_weekday %}
-        // Assuming day_stat.weekday is 0 for Sunday, 1 for Monday, etc. or day_stat.day_name
-        // This part needs to correctly map your backend data to the 'weekdays' array order
-        // For example, if your backend sends { weekday: 0, count: X } for Sunday
-        weekdayData[{{ day_stat.weekday_numeric|default:forloop.counter0 }}] = {{ day_stat.count }}; // Adjust index based on your data
+        // Assuming day_stat.weekday is 0 for Sunday, 1 for Monday, etc.
+        // Corrected: Using 'weekday' key instead of 'weekday_numeric'
+        weekdayData[{{ day_stat.weekday|default:forloop.counter0 }}] = {{ day_stat.count }}; // Adjust index based on your data
     {% endfor %}
+    window.weekdayChartInstance = new Chart(weekdayCtx, { // Storing instance
+        type: 'line', // Or 'bar', depending on your preference
+        data: {
+            labels: weekdays,
+            datasets: [{
+                label: 'Diagnoses by Day of Week',
+                data: weekdayData,
+                backgroundColor: chartColors[1],
+                borderColor: chartColors[1],
+                fill: false,
+                tension: 0.1
+            }]
+        },
+        options: {
+            ...defaultOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
 
     window.weekdayChartInstance = new Chart(weekdayCtx, { // Storing instance
         type: 'line',

@@ -247,7 +247,7 @@ class FollowUpVitalSignsForm(forms.ModelForm):
 class AppointmentForm(forms.ModelForm):
     class Meta:
         model = Appointment
-        exclude=['patient','created','updated']
+        exclude=['user','patient','created','updated']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
             'time': forms.TimeInput(attrs={'type': 'time','format': '%I:%M %p' })

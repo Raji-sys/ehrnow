@@ -2,7 +2,7 @@
 {% block title %}{{ dispensary.unit.name }} | DISPENSARY FORM{% endblock %}
 {%block page_title%}<div class="flex justify-center uppercase"><a href="{% url 'pharm:prescription_list' dispensary.unit.id %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>{{ dispensary.unit.name }} dispense form</div>{%endblock%}
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4 w-fit">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         {% if prescription %}
         <div class="bg-gradient-to-r from-sky-600  to-emerald-600 text-white p-2 rounded-lg shadow-md border border-gray-200 m-2">
@@ -40,12 +40,25 @@
                     {{ form.non_field_errors }}
                 </div>
                 {% endif %}
-                <div class="grid grid-cols-1 gap-2 md:grid-cols-3 border-t p-2">
+                <div class="grid gap-2 grid-cols-2 border-t p-2">
                     {% for field in form.visible_fields %}
                     <div class="space-y-1"> 
                         <label class="block text-xs font-medium text-emerald-700">{{ field.label }}</label>
-                        <div class="mt-1">
-                            {{ field }}
+                        <div class="mt-1 relative">
+                            {% if field.name == 'drug' %}
+                                <!-- Drug autocomplete input -->
+                                <input type="text" 
+                                       id="drug-search-{{ forloop.parentloop.counter0 }}"
+                                       class="drug-search-input text-center text-xs md:text-xs focus:outline-none border border-blue-300 p-2 sm:p-3 rounded shadow-lg hover:shadow-xl"
+                                       placeholder="Search for drug..."
+                                       autocomplete="off">
+                                <div id="drug-dropdown-{{ forloop.parentloop.counter0 }}" 
+                                     class="drug-dropdown absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto hidden">
+                                </div>
+                                <div class="hidden">{{ field }}</div>
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
                         </div>
                         {% if field.errors %}
                         <p class="text-red-600 text-xs mt-1">
@@ -68,35 +81,227 @@
         </form>
     </div>
 </div>
+
+<style>
+.drug-dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.75rem;
+    text-transform: none;
+}
+
+.drug-dropdown-item:hover,
+.drug-dropdown-item.highlighted {
+    background-color: #f0fdf4;
+    color: #059669;
+}
+
+.drug-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.drug-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.drug-name {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.drug-details {
+    color: #6b7280;
+    font-size: 0.625rem;
+}
+</style>
+
 <script>
-    function initializePage() {
-      function load_drugs(index) {
-        const categoryId = document.getElementsByName(`form-${index}-category`)[0].value;
-        const url = `/pharm/get_drugs_by_category/${categoryId}/`;
-    
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            const drugSelect = document.getElementsByName(`form-${index}-drug`)[0];
-            drugSelect.innerHTML = '';  // Clear existing options
-    
-            data.drugs.forEach(drug => {
-              const option = document.createElement('option');
-              option.value = drug.id;
-              option.text = drug.name;
-              drugSelect.add(option);
-            });
-          })
-          .catch(error => console.error('Error:', error));
-      }
-    
-      {% for form in formset %}
-      document.getElementsByName('{{ form.category.html_name }}')[0].addEventListener('change', function() {
-        load_drugs('{{ forloop.counter0 }}');
-      });
-      {% endfor %}
+class DrugAutocomplete {
+    constructor() {
+        this.drugs = [];
+        this.currentFocus = -1;
+        this.dispensaryId = {{ dispensary.id }};
+        this.loadDrugs();
+        this.initializeInputs();
     }
-    
-    window.addEventListener('load', initializePage);
-    </script>
+
+    async loadDrugs() {
+        try {
+            const url = `/pharm/get_dispense_drugs/?dispensary_id=${this.dispensaryId}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            this.drugs = data.drugs;
+        } catch (error) {
+            console.error('Error loading drugs:', error);
+        }
+    }
+
+    initializeInputs() {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.setupAllInputs();
+            });
+        } else {
+            this.setupAllInputs();
+        }
+    }
+
+    setupAllInputs() {
+        const searchInputs = document.querySelectorAll('.drug-search-input');
+        searchInputs.forEach((input, index) => {
+            this.setupAutocomplete(input, index);
+        });
+    }
+
+    setupAutocomplete(input, index) {
+        const dropdown = document.getElementById(`drug-dropdown-${index}`);
+        const hiddenSelect = document.querySelector(`select[name="form-${index}-drug"]`);
+        
+        if (!dropdown || !hiddenSelect) {
+            console.error(`Could not find dropdown or select for index ${index}`);
+            return;
+        }
+        
+        let debounceTimer;
+
+        // Input event handler
+        input.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const query = e.target.value.trim().toLowerCase();
+                this.filterDrugs(query, dropdown, hiddenSelect, input);
+            }, 300);
+        });
+
+        // Focus event handler
+        input.addEventListener('focus', (e) => {
+            if (e.target.value.trim()) {
+                const query = e.target.value.trim().toLowerCase();
+                this.filterDrugs(query, dropdown, hiddenSelect, input);
+            }
+        });
+
+        // Blur event handler (with delay to allow clicking on dropdown)
+        input.addEventListener('blur', (e) => {
+            setTimeout(() => {
+                if (!dropdown.matches(':hover')) {
+                    dropdown.classList.add('hidden');
+                    this.currentFocus = -1;
+                }
+            }, 150);
+        });
+
+        // Keyboard navigation
+        input.addEventListener('keydown', (e) => {
+            const items = dropdown.querySelectorAll('.drug-dropdown-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.currentFocus++;
+                if (this.currentFocus >= items.length) this.currentFocus = 0;
+                this.highlightItem(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.currentFocus--;
+                if (this.currentFocus < 0) this.currentFocus = items.length - 1;
+                this.highlightItem(items);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (this.currentFocus > -1 && items[this.currentFocus]) {
+                    items[this.currentFocus].click();
+                }
+            } else if (e.key === 'Escape') {
+                dropdown.classList.add('hidden');
+                this.currentFocus = -1;
+            }
+        });
+    }
+
+    filterDrugs(query, dropdown, hiddenSelect, input) {
+        if (!query || query.length < 2) {
+            dropdown.classList.add('hidden');
+            return;
+        }
+
+        const filteredDrugs = this.drugs.filter(drug => 
+            drug.name?.toLowerCase().includes(query) ||
+            drug.trade_name?.toLowerCase().includes(query) ||
+            drug.supplier?.toLowerCase().includes(query) ||
+            drug.strength?.toLowerCase().includes(query)
+        );
+
+        this.renderDropdown(filteredDrugs, dropdown, hiddenSelect, input);
+    }
+
+    renderDropdown(drugs, dropdown, hiddenSelect, input) {
+        if (drugs.length === 0) {
+            dropdown.innerHTML = '<div class="drug-dropdown-item text-gray-500">No drugs found</div>';
+        } else {
+            dropdown.innerHTML = drugs.slice(0, 10).map(drug => `
+                <div class="drug-dropdown-item" data-drug-id="${drug.id}" data-drug-name="${drug.name}">
+                    <div class="drug-info">
+                        <div class="drug-name">${drug.name || 'N/A'}</div>
+                        <div class="drug-details">
+                            ${drug.trade_name ? `Trade: ${drug.trade_name}` : ''} 
+                            ${drug.strength ? `| Strength: ${drug.strength}` : ''} 
+                            ${drug.supplier ? `| Supplier: ${drug.supplier}` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers to dropdown items
+            dropdown.querySelectorAll('.drug-dropdown-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const drugId = item.getAttribute('data-drug-id');
+                    const drugName = item.getAttribute('data-drug-name');
+                    
+                    if (drugId && drugName) {
+                        // Update hidden select - add option if it doesn't exist
+                        let option = hiddenSelect.querySelector(`option[value="${drugId}"]`);
+                        if (!option) {
+                            option = document.createElement('option');
+                            option.value = drugId;
+                            option.textContent = drugName;
+                            hiddenSelect.appendChild(option);
+                        }
+                        
+                        // Select the option
+                        hiddenSelect.value = drugId;
+                        
+                        // Update input display
+                        input.value = drugName;
+                        
+                        // Hide dropdown
+                        dropdown.classList.add('hidden');
+                        this.currentFocus = -1;
+                    }
+                });
+            });
+        }
+
+        dropdown.classList.remove('hidden');
+        this.currentFocus = -1;
+    }
+
+    highlightItem(items) {
+        // Remove previous highlighting
+        items.forEach(item => item.classList.remove('highlighted'));
+        
+        // Add highlighting to current item
+        if (items[this.currentFocus]) {
+            items[this.currentFocus].classList.add('highlighted');
+        }
+    }
+}
+
+// Initialize autocomplete when page loads
+window.addEventListener('load', () => {
+    new DrugAutocomplete();
+});
+</script>
 {% endblock %}

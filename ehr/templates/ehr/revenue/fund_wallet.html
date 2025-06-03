@@ -5,18 +5,18 @@
 
 {% block page_title %}
 <div class="flex justify-center items-center space-x-2">
-    <i class="fas fa-wallet text-emerald-600"></i>
-    <span class=" text-emerald-700 uppercase">Fund Wallet</span>
+    <i class="fas fa-wallet "></i>
+    <span class="  uppercase">Fund Wallet</span>
 </div>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto mt-10">
+<div class="max-w-3xl mx-auto mt-10">
     <div class="bg-white shadow-lg rounded-lg overflow-hidden uppercase">
         <div class="bg-gradient-to-r from-emerald-600 to-sky-600 p-2">
             <div class="flex justify-around items-center">
-                <span class="text-white text-sm font-semibold">Wallet Balance</span>
-                <span class="text-white text-xl font-bold">₦{{ patient.wallet.balance|floatformat:2 }}</span>
+                <span class="text-white text-sm font-semibold">{{patient.full_name}} - {{patient.file_no}}</span>
+                <span class="text-white text-lg font-bold"><span class="text-xs">Wallet Balance</span>: ₦{{ patient.wallet.balance|floatformat:2 }}</span>
             </div>
         </div>
         
@@ -38,7 +38,7 @@
             <form method="post" enctype="multipart/form-data" class="text-center">
                 {% csrf_token %}
                 <div class="mb-6 ">
-                    <label for="{{ form.amount.id_for_label }}" class="text-center text-sm font-medium text-gray-800 mb-2 m-4">Amount to Add</label>
+                    <label for="{{ form.amount.id_for_label }}" class="text-center text-xs font-medium text-gray-800 mb-2 m-4">Amount to Add</label>
                     <div class="mt-1 relative rounded-md  text-emerald-700">
                         ₦<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             
@@ -53,9 +53,12 @@
                         <i class="fas fa-plus-circle mr-2"></i>
                         Add Funds
                     </button>
-                    <a href="{% url 'patient_details' patient.file_no %}" class="uppercase inline-flex items-center px-4 py-2 border border-rose-500 text-xs font-medium rounded-md text-white bg-rose-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                    <button onclick="window.history.back()" class="uppercase inline-flex items-center px-4 py-2 border border-rose-500 text-xs font-medium rounded-md text-white bg-rose-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
                         cancel
-                    </a>
+                    </button>
+                    <!-- <a href="{% url 'patient_details' patient.file_no %}" class="uppercase inline-flex items-center px-4 py-2 border border-rose-500 text-xs font-medium rounded-md text-white bg-rose-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                        cancel
+                    </a> -->
                 </div>
             </form>
         </div>

@@ -339,12 +339,54 @@ class RecordUpdateView(LoginRequiredMixin, UpdateView):
         messages.error(self.request, "There was an error updating the record. Please check the form.")
         return super().form_invalid(form)
     
-##OLD CODE
-# def get_drugs_by_category(request, category_id):
-#     drugs = Drug.objects.filter(category_id=category_id)
-#     drug_list = [{'id': drug.id, 'name': drug.name} for drug in drugs]
-#     return JsonResponse({'drugs': drug_list})
-##NEW CODE
+def get_dispense_drugs(request):
+    """
+    Returns a JSON response with drugs for autocomplete.
+    Supports optional dispensary_id parameter to filter by inventory.
+    """
+    query = request.GET.get('q', '').strip()
+    dispensary_id = request.GET.get('dispensary_id')
+    
+    # Base queryset
+    drugs = Drug.objects.all()
+    
+    # Filter by dispensary inventory if provided
+    if dispensary_id:
+        try:
+            dispensary = DispensaryLocker.objects.get(id=dispensary_id)
+            drugs = drugs.filter(
+                lockerinventory__locker=dispensary,
+                lockerinventory__quantity__gt=0
+            ).distinct()
+        except DispensaryLocker.DoesNotExist:
+            pass
+    
+    # Apply search filter if query provided
+    if query:
+        drugs = drugs.filter(
+            Q(name__icontains=query) |
+            Q(trade_name__icontains=query) |
+            Q(supplier__icontains=query) |
+            Q(strength__icontains=query)
+        )
+    
+    # Limit results for performance
+    drugs = drugs[:50]
+    
+    drug_list = [
+        {
+            'id': drug.id,
+            'name': drug.name or '',
+            'trade_name': drug.trade_name or '',
+            'supplier': drug.supplier or '',
+            'strength': drug.strength or '',
+            'dosage_form': drug.dosage_form or '',
+            'pack_size': drug.pack_size or '',
+        }
+        for drug in drugs
+    ]
+    return JsonResponse({'drugs': drug_list})
+
 def get_drugs(request):
     """
     Returns a JSON response with drugs for autocomplete.
@@ -1121,12 +1163,97 @@ def transfer_pdf(request):
     return response
     
 
+@login_required
+def dispenserecord(request, dispensary_id, patient_id, prescription_id):
+    dispensary = get_object_or_404(DispensaryLocker, id=dispensary_id)
+    patient = get_object_or_404(PatientData, id=patient_id)
+    prescription = get_object_or_404(Prescription, id=prescription_id)
+    
+    # Create formset without category dependency
+    DispensaryFormSet = modelformset_factory(
+        DispenseRecord, 
+        form=DispenseRecordForm, 
+        extra=5
+    )
+    
+    # Get the prescription for the patient
+    try:
+        prescription = Prescription.objects.filter(patient=patient).latest('prescribed_date')
+    except Prescription.DoesNotExist:
+        prescription = None
+    
+    if prescription:
+        # Get the prescription drugs
+        prescription_drugs = prescription.prescription_drugs.all()
+    else:
+        prescription_drugs = None
+
+    if request.method == 'POST':
+        formset = DispensaryFormSet(
+            request.POST, 
+            queryset=DispenseRecord.objects.none(), 
+            form_kwargs={'dispensary': dispensary, 'patient': patient}
+        )
+        if formset.is_valid():
+            try:
+                with transaction.atomic():
+                    instances = formset.save(commit=False)
+                    for instance in instances:
+                        # Skip empty forms
+                        if not instance.drug:
+                            continue
+                            
+                        instance.dispensary = dispensary
+                        instance.patient = patient
+                        instance.dispensed_by = request.user
+                        instance.save()
+
+                    # Mark the prescription as dispensed if we dispensed something
+                    if any(instance.drug for instance in instances):
+                        prescription.is_dispensed = True
+                        prescription.save()
+
+                    messages.success(request, 'Drugs dispensed successfully')
+                    next_url = request.GET.get('next')
+                    if next_url:
+                        return redirect(next_url)
+                    return redirect('pharm:unit_dispensary', pk=dispensary.unit.id)
+            except Exception as e:
+                messages.error(request, f"An error occurred: {str(e)}")
+    else:
+        formset = DispensaryFormSet(
+            queryset=DispenseRecord.objects.none(), 
+            form_kwargs={'dispensary': dispensary, 'patient': patient}
+        )
+    
+    context = {
+        'formset': formset,
+        'dispensary': dispensary,
+        'patient': patient,
+        'prescription': prescription,
+        'prescription_drugs': prescription_drugs
+    }
+    return render(request, 'store/dispense_form.html', context)
+
 # @login_required
-# def dispenserecord(request, dispensary_id, patient_id):
+# def dispenserecord(request, dispensary_id, patient_id,prescription_id):
 #     dispensary = get_object_or_404(DispensaryLocker, id=dispensary_id)
 #     patient = get_object_or_404(PatientData, id=patient_id)
+#     prescription = get_object_or_404(Prescription, id=prescription_id)
 #     DispensaryFormSet = modelformset_factory(DispenseRecord, form=DispenseRecordForm, extra=5)
     
+#     # Get the prescription for the patient
+#     try:
+#         prescription = Prescription.objects.filter(patient=patient).latest('prescribed_date')
+#     except Prescription.DoesNotExist:
+#         prescription = None
+    
+#     if prescription:
+#         # Get the prescription drugs
+#         prescription_drugs = prescription.prescription_drugs.all()
+#     else:
+#         prescription_drugs = None
+
 #     if request.method == 'POST':
 #         formset = DispensaryFormSet(request.POST, queryset=DispenseRecord.objects.none(), 
 #                                   form_kwargs={'dispensary': dispensary, 'patient': patient})
@@ -1139,6 +1266,10 @@ def transfer_pdf(request):
 #                         instance.patient = patient
 #                         instance.dispensed_by = request.user
 #                         instance.save()
+
+#                     # Mark the prescription as dispensed
+#                     prescription.is_dispensed = True
+#                     prescription.save()
 
 #                     messages.success(request, 'Drugs dispensed successfully')
 #                     next_url = request.GET.get('next')
@@ -1154,64 +1285,11 @@ def transfer_pdf(request):
 #     context = {
 #         'formset': formset,
 #         'dispensary': dispensary,
-#         'patient': patient
+#         'patient': patient,
+#         'prescription': prescription,
+#         'prescription_drugs':prescription_drugs
 #     }
-#     return render(request, 'store/dispense_form.html', {'formset': formset, 'dispensary': dispensary})
-@login_required
-def dispenserecord(request, dispensary_id, patient_id,prescription_id):
-    dispensary = get_object_or_404(DispensaryLocker, id=dispensary_id)
-    patient = get_object_or_404(PatientData, id=patient_id)
-    prescription = get_object_or_404(Prescription, id=prescription_id)
-    DispensaryFormSet = modelformset_factory(DispenseRecord, form=DispenseRecordForm, extra=5)
-    
-    # Get the prescription for the patient
-    try:
-        prescription = Prescription.objects.filter(patient=patient).latest('prescribed_date')
-    except Prescription.DoesNotExist:
-        prescription = None
-    
-    if prescription:
-        # Get the prescription drugs
-        prescription_drugs = prescription.prescription_drugs.all()
-    else:
-        prescription_drugs = None
-
-    if request.method == 'POST':
-        formset = DispensaryFormSet(request.POST, queryset=DispenseRecord.objects.none(), 
-                                  form_kwargs={'dispensary': dispensary, 'patient': patient})
-        if formset.is_valid():
-            try:
-                with transaction.atomic():
-                    instances = formset.save(commit=False)
-                    for instance in instances:
-                        instance.dispensary = dispensary
-                        instance.patient = patient
-                        instance.dispensed_by = request.user
-                        instance.save()
-
-                    # Mark the prescription as dispensed
-                    prescription.is_dispensed = True
-                    prescription.save()
-
-                    messages.success(request, 'Drugs dispensed successfully')
-                    next_url = request.GET.get('next')
-                    if next_url:
-                        return redirect(next_url)
-                    return redirect('pharm:unit_dispensary', pk=dispensary.unit.id)
-            except Exception as e:
-                messages.error(request, f"An error occurred: {str(e)}")
-    else:
-        formset = DispensaryFormSet(queryset=DispenseRecord.objects.none(), 
-                                  form_kwargs={'dispensary': dispensary, 'patient': patient})
-    
-    context = {
-        'formset': formset,
-        'dispensary': dispensary,
-        'patient': patient,
-        'prescription': prescription,
-        'prescription_drugs':prescription_drugs
-    }
-    return render(request, 'store/dispense_form.html', context)
+#     return render(request, 'store/dispense_form.html', context)
 
 
 class DispenseRecordView(LoginRequiredMixin, UnitGroupRequiredMixin, ListView):
