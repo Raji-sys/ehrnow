@@ -52,13 +52,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for billing in private_billing_items %}
-                    <tr class="{% cycle 'bg-white' 'bg-gray-50' %} text-xs text-center uppercase">
-                        <td class="px-4 py-2">{{ forloop.counter }}</td>
-                        <td class="px-4 py-2"> {%if billing.item.name == 'YES' %} <i class="fa fa-solid fa-check text-green-500 fa-xl"></i>{%else%} {{ billing.item.name }} {%endif%}</td>
-                        <td class="px-4 py-2">&#x20A6;{{ billing.price }}</td>
-                    </tr>
-                    {% endfor %}
+{% for billing in private_billing_items %}
+<tr class="{% cycle 'bg-white' 'bg-gray-50' %} text-xs text-center uppercase">
+    <td class="px-4 py-2">{{ forloop.counter }}</td>
+    <td class="px-4 py-2">
+        {% with item_name=billing.get_item_name %}
+            {% if item_name == 'YES' %}
+                <i class="fa fa-solid fa-check text-green-500 fa-xl"></i>
+            {% else %}
+                {{ item_name }}
+            {% endif %}
+        {% endwith %}
+    </td>
+    <td class="px-4 py-2">&#x20A6;{{ billing.price }}</td>
+</tr>
+{% endfor %}
                 </tbody>
             </table>
         </div>

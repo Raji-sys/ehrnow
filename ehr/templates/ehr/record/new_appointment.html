@@ -5,24 +5,16 @@
 {%block content %}
 <div class="">
     <div class="mt-4 mx-auto w-fit rounded-xl bg-white">
-        <section class="text-center border-cyan-700 p-4 m-2">
-            {% for message in messages %}
-            <div class="mt-2 ">
-                <div class="uk-alert-success rounded-2xl text-sm w-fit mx-auto" uk-alert>
-                    <a href class="uk-alert-close font-bold" uk-close></a>
-                    <p class="text-green-700 font-semibold uppercase p-4">{{ message }}</p>
-                </div>
-            </div>
-          {% endfor %}
-        </section>
         {% if form.errors %}
         <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
             <a href class="uk-alert-close font-bold" uk-close></a>
             <p>{{form.errors}}</p>
         </div>
             {% endif %}
-  <form method="post" enctype="multipart/form-data" class="text-xs">
+  <form id="appointment-form" method="post" enctype="multipart/form-data" class="text-xs">
     {% csrf_token %}
+    <input type="hidden" name="confirm_override" id="confirm-override-input" value="">
+
     <div class="mb-2 uppercase text-cyan-900 mx-auto px-10">
         <div class="grid grid-cols-1 p-2 gap-4">
       {% for field in form %}
@@ -44,5 +36,43 @@
     </form>
     </div>
     </div>
+
+<div id="conflict-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <h2 class="uk-modal-title text-red-600">Appointment Conflict!</h2>
+        <p id="conflict-message" class="text-lg"></p>
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+            <button class="uk-button uk-button-danger" type="button" id="proceed-anyway-btn">Proceed Anyway</button>
+        </p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const conflictModal = UIkit.modal('#conflict-modal');
+        const proceedAnywayBtn = document.getElementById('proceed-anyway-btn');
+        const confirmOverrideInput = document.getElementById('confirm-override-input');
+        const appointmentForm = document.getElementById('appointment-form');
+
+        {% for message in messages %}
+            {% if message.tags == 'warning' %}
+                var conflictMessage = "{{ message|escapejs }}";
+                document.getElementById('conflict-message').innerText = conflictMessage;
+                
+                // Show the modal if a warning message is present
+                conflictModal.show();
+
+                // Add event listener to the "Proceed Anyway" button
+                proceedAnywayBtn.onclick = function() {
+                    confirmOverrideInput.value = 'true'; // Set the hidden input value
+                    conflictModal.hide(); // Hide the modal
+                    appointmentForm.submit(); // Resubmit the form
+                };
+            {% endif %}
+        {% endfor %}
+    });
+</script>
 
 {%endblock%}

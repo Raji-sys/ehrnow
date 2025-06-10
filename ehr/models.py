@@ -326,7 +326,7 @@ class Paypoint(models.Model):
         ]
 
 class MedicalRecord(models.Model):
-    services=(('new registration','new registration'),('follow up','follow up'),('card replacement','card replacement'))
+    services=(('new registration','new registration'),('follow up','follow up'),('review','review'),('card replacement','card replacement'))
     name = models.CharField(choices=services,max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
@@ -339,8 +339,8 @@ class MedicalRecord(models.Model):
 
 class VisitRecord(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    record=models.ForeignKey(MedicalRecord, max_length=100, null=True, blank=True, on_delete=models.CASCADE, related_name="visits")
-    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True,blank=True)    
+    record = models.ForeignKey(MedicalRecord, max_length=100, null=True, blank=False, on_delete=models.CASCADE, related_name="visits")
+    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True,blank=False)    
     team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
     patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name="visit_record")
     payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="record_payment")
@@ -354,17 +354,18 @@ class VisitRecord(models.Model):
     created = models.DateField(auto_now=True)
 
     def get_status_display(self):
-        if not self.vitals:
+        if self.review and not self.seen:
+            return "review (direct to doctor)"
+        elif not self.vitals and not self.review:
             return "Waiting for nurse"
-        elif not self.seen and not self.review:
+        elif self.vitals and not self.seen and not self.review:
             return "Waiting for doctor"
         elif self.seen and not self.review:
             return "Seen"
-        elif self.review:
-            return "Waiting for review"
+        elif self.seen and self.review:
+            return "Review"
         else:
             return "Completed"
-
     def close_visit(self):
         self.consultation = False
         self.seen = True
@@ -644,15 +645,32 @@ class PrivateTheatreItem(models.Model):
 
     
 class PrivateBilling(models.Model):
-    private_bill = models.ForeignKey(PrivateBill, on_delete=models.CASCADE, related_name='private_items',null=True)
-    item = models.ForeignKey(PrivateTheatreItem, on_delete=models.CASCADE,null=True,blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    payment=models.ForeignKey(Paypoint,null=True, on_delete=models.CASCADE,related_name="private_bill_payment")
+    private_bill = models.ForeignKey(PrivateBill, on_delete=models.CASCADE, related_name='private_items', null=True)
+    item = models.ForeignKey(PrivateTheatreItem, on_delete=models.CASCADE, null=True, blank=True)
+    custom_item_name = models.CharField(max_length=200, null=True, blank=True, help_text="Enter custom item name if not in dropdown")
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    payment = models.ForeignKey(Paypoint, null=True, on_delete=models.CASCADE, related_name="private_bill_payment")
     updated = models.DateTimeField(auto_now=True)
 
+    def get_item_name(self):
+        """Return the item name - either from the ForeignKey or custom field"""
+        if self.custom_item_name:
+            return self.custom_item_name
+        elif self.item:
+            return self.item.name
+        return "Unknown Item"
+
     def __str__(self):
-        return f"{self.item.name}"
-    
+        return f"{self.get_item_name()}"
+
+    class Meta:
+        # Ensure either item or custom_item_name is provided, but not both
+        constraints = [
+            models.CheckConstraint(
+                check=~(models.Q(item__isnull=False) & models.Q(custom_item_name__isnull=False)),
+                name='only_one_item_type'
+            )
+        ]
 
 class Wallet(models.Model):
     patient = models.OneToOneField('PatientData', on_delete=models.CASCADE, related_name='wallet')

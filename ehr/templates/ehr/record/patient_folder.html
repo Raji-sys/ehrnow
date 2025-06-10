@@ -128,45 +128,57 @@
     }
 
     /* Modal Styles - remain mostly the same as they are already quite responsive */
-    .custom-modal {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
-      animation: fadeIn 0.3s ease;
-      display: flex; /* Use flexbox to center content */
-      align-items: center;
-      justify-content: center;
-      overflow-y: auto; /* Allow scrolling for modal content */
-    }
+/* Modal Styles - Fixed to prevent flash on page load */
+  .custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    /* Remove animation from base class */
+    /* animation: fadeIn 0.3s ease; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+  }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+  /* Add animation only when modal is visible */
+  .custom-modal.show {
+    animation: fadeIn 0.3s ease;
+  }
 
-    .modal-content {
-      background: white;
-      margin: 20px; /* Reduced margin for smaller screens */
-      padding: 0;
-      border-radius: 15px;
-      width: 95%; /* Increased width for smaller screens */
-      max-width: 500px; /* Still constrain max width */
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      animation: slideIn 0.3s ease;
-      overflow: hidden;
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-    @keyframes slideIn {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
+  .modal-content {
+    background: white;
+    margin: 20px;
+    padding: 0;
+    border-radius: 15px;
+    width: 95%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    /* Remove animation from base class */
+    /* animation: slideIn 0.3s ease; */
+    overflow: hidden;
+  }
 
+  /* Add animation only when modal is visible */
+  .custom-modal.show .modal-content {
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
     .modal-header {
       background: linear-gradient(135deg, #dc3545, #c82333);
       color: white;
@@ -906,7 +918,7 @@
     {% else %}
       <!-- Empty State -->
       <div class="text-center py-12">
-        <p class="text-gray-500 mb-6 text-sm">No clinical created for this patient yet.</p>
+        <p class="text-gray-500 mb-6 text-sm">No clinical noted created for this patient yet.</p>
         {% if has_active_visit %}
           <a href="{% url 'clinical_note' patient.file_no %}" 
              class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 inline-flex items-center gap-2 font-medium text-sm">
@@ -3513,107 +3525,117 @@ class="text-xs text-green-600 hover:text-green-700">
   }
 </style>
   <script>
-    let visitCountdownTimer;
-    let visitTimeLeft = 5;
+let visitCountdownTimer;
+let visitTimeLeft = 5;
 
-    function showVisitCloseModal(visitId, fileNo, status, patientName) {
-      // Populate visit details
-      document.getElementById('visitDetails').innerHTML = `
-        <strong>Visit ID:</strong> ${visitId}<br>
-        <strong>Patient:</strong> ${patientName} (File: ${fileNo})<br>
-        <strong>Current Status:</strong> ${status}<br>
-        <strong>Action:</strong> <span style="color: #dc3545; font-weight: bold;">PERMANENT CLOSURE</span>
-      `;
-      
-      document.getElementById('visitCloseModal').style.display = 'block';
-      document.body.style.overflow = 'hidden';
-      startVisitCountdown();
+function showVisitCloseModal(visitId, fileNo, status, patientName) {
+  // Populate visit details
+  document.getElementById('visitDetails').innerHTML = `
+    <strong>Visit ID:</strong> ${visitId}<br>
+    <strong>Patient:</strong> ${patientName} (File: ${fileNo})<br>
+    <strong>Current Status:</strong> ${status}<br>
+    <strong>Action:</strong> <span style="color: #dc3545; font-weight: bold;">PERMANENT CLOSURE</span>
+  `;
+  
+  const modal = document.getElementById('visitCloseModal');
+  modal.style.display = 'flex'; // Use flex to center content
+  modal.classList.add('show'); // Add animation class
+  document.body.style.overflow = 'hidden';
+  startVisitCountdown();
+}
+
+function closeVisitModal() {
+  const modal = document.getElementById('visitCloseModal');
+  modal.classList.remove('show'); // Remove animation class
+  
+  // Wait for animation to complete before hiding
+  setTimeout(() => {
+    modal.style.display = 'none';
+  }, 300); // Match the animation duration
+  
+  document.body.style.overflow = 'auto';
+  resetVisitCountdown();
+}
+
+function startVisitCountdown() {
+  visitTimeLeft = 5;
+  const timerElement = document.getElementById('visitTimer');
+  const confirmBtn = document.getElementById('visitConfirmBtn');
+  const countdownDiv = document.getElementById('visitCountdown');
+  
+  confirmBtn.disabled = true;
+  confirmBtn.style.opacity = '0.5';
+  confirmBtn.style.cursor = 'not-allowed';
+  
+  visitCountdownTimer = setInterval(() => {
+    visitTimeLeft--;
+    timerElement.textContent = visitTimeLeft;
+    
+    if (visitTimeLeft <= 0) {
+      clearInterval(visitCountdownTimer);
+      confirmBtn.disabled = false;
+      confirmBtn.style.opacity = '1';
+      confirmBtn.style.cursor = 'pointer';
+      countdownDiv.innerHTML = '✅ <strong style="color: #28a745;">You may now proceed if you are certain</strong>';
     }
+  }, 1000);
+}
 
-    function closeVisitModal() {
-      document.getElementById('visitCloseModal').style.display = 'none';
-      document.body.style.overflow = 'auto';
-      resetVisitCountdown();
-    }
+function resetVisitCountdown() {
+  if (visitCountdownTimer) {
+    clearInterval(visitCountdownTimer);
+  }
+  visitTimeLeft = 5;
+  const timerElement = document.getElementById('visitTimer');
+  if (timerElement) {
+    timerElement.textContent = '5';
+  }
+  const countdownDiv = document.getElementById('visitCountdown');
+  if (countdownDiv) {
+    countdownDiv.innerHTML = 'Please wait <span id="visitTimer">5</span> seconds before proceeding...';
+  }
+}
 
-    function startVisitCountdown() {
-      visitTimeLeft = 5;
-      const timerElement = document.getElementById('visitTimer');
-      const confirmBtn = document.getElementById('visitConfirmBtn');
-      const countdownDiv = document.getElementById('visitCountdown');
-      
-      confirmBtn.disabled = true;
-      confirmBtn.style.opacity = '0.5';
-      confirmBtn.style.cursor = 'not-allowed';
-      
-      visitCountdownTimer = setInterval(() => {
-        visitTimeLeft--;
-        timerElement.textContent = visitTimeLeft;
-        
-        if (visitTimeLeft <= 0) {
-          clearInterval(visitCountdownTimer);
-          confirmBtn.disabled = false;
-          confirmBtn.style.opacity = '1';
-          confirmBtn.style.cursor = 'pointer';
-          countdownDiv.innerHTML = '✅ <strong style="color: #28a745;">You may now proceed if you are certain</strong>';
-        }
-      }, 1000);
-    }
+function confirmVisitClose() {
+  // Submit the hidden form
+  document.getElementById('closeVisitForm').submit();
+}
 
-    function resetVisitCountdown() {
-      if (visitCountdownTimer) {
-        clearInterval(visitCountdownTimer);
-      }
-      visitTimeLeft = 5;
-      const timerElement = document.getElementById('visitTimer');
-      if (timerElement) {
-        timerElement.textContent = '5';
-      }
-      const countdownDiv = document.getElementById('visitCountdown');
-      if (countdownDiv) {
-        countdownDiv.innerHTML = 'Please wait <span id="visitTimer">5</span> seconds before proceeding...';
-      }
-    }
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+  const modal = document.getElementById('visitCloseModal');
+  if (event.target === modal) {
+    closeVisitModal();
+  }
+}
 
-    function confirmVisitClose() {
-      // Submit the hidden form
-      document.getElementById('closeVisitForm').submit();
-    }
-
-    // Close modal when clicking outside of it
-    window.onclick = function(event) {
-      const modal = document.getElementById('visitCloseModal');
-      if (event.target === modal) {
-        closeVisitModal();
+// Prevent closing with Escape key
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    const modal = document.getElementById('visitCloseModal');
+    if (modal && modal.classList.contains('show')) {
+      // Briefly shake the modal to indicate it can't be closed this way
+      const modalContent = modal.querySelector('.modal-content');
+      if (modalContent) {
+        modalContent.style.animation = 'none';
+        setTimeout(() => {
+          modalContent.style.animation = 'slideIn 0.3s ease';
+        }, 10);
       }
     }
+  }
+});
 
-    // Prevent closing with Escape key to ensure user reads the warning
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        const modal = document.getElementById('visitCloseModal');
-        if (modal && modal.style.display === 'block') {
-          // Briefly shake the modal to indicate it can't be closed this way
-          const modalContent = modal.querySelector('.modal-content');
-          if (modalContent) {
-            modalContent.style.animation = 'none';
-            setTimeout(() => {
-              modalContent.style.animation = 'slideIn 0.3s ease';
-            }, 10);
-          }
-        }
-      }
-    });
-
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      // Ensure modal is hidden on page load
-      const modal = document.getElementById('visitCloseModal');
-      if (modal) {
-        modal.style.display = 'none';
-      }
-    });
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Ensure modal is properly hidden on page load
+  const modal = document.getElementById('visitCloseModal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('show'); // Ensure no animation class
+  }
+});
   </script>
 <script>
   function openModal(imageUrl, imageTitle) {

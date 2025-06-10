@@ -1,67 +1,102 @@
-
 {% extends 'base.html' %}
 {% block title %}Surgery Bill{% endblock %}
 {% block page_title %}
-<div class="flex justify-center">SURGERY BILL</div>
+<div class="flex justify-center"><a href="#"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>SURGERY BILL</div>
 {% endblock %}
 {% block content %}
-<section class="max-w-xl mx-auto text-center border-cyan-700 p-1 m-1">
+<!-- Messages Section -->
+<section class="max-w-xl mx-auto text-center p-2 mb-3">
     {% for message in messages %}
-    <div class="">
-        {% if message.tags == 'warning' %}
-        <div class="bg-yellow-100 rounded-2xl text-xs p-2" uk-alert>
-            <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
-            <p class="text-yellow-700 uppercase">{{ message }}</p>
-            <a href="{% url 'book_for_surgery' patient.file_no %}" class="text-xs text-cyan-600 hover:text-green-700"><i class="fa-solid fa-calendar-days fa-2xl"></i></a>
+    <div class="rounded-lg border-l-4 p-3 mb-2 text-xs shadow-sm
+        {% if message.tags == 'warning' %} 
+            bg-amber-50 border-amber-400 text-amber-700
+        {% else %} 
+            bg-teal-50 border-teal-400 text-teal-700
+        {% endif %}">
+        <div class="flex justify-between items-center">
+            <p class="font-medium uppercase">{{ message }}</p>
+            {% if message.tags == 'warning' %}
+            <a href="{% url 'book_for_surgery' patient.file_no %}" 
+               class="text-teal-600 hover:text-teal-800 ml-2">
+                <i class="fa-solid fa-calendar-days fa-sm"></i>
+            </a>
+            {% endif %}
+            <button type="button" class="text-gray-500 hover:text-gray-700" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        {% else %}
-        <div class="bg-green-100 rounded-2xl text-xs p-2" uk-alert>
-            <a href class="uk-alert-close font-bold text-rose-900" uk-close></a>
-            <p class="text-green-700 uppercase">{{ message }}</p>
-        </div>
-        {% endif %}
     </div>
     {% endfor %}
-  </section>
-<form method="post" class="bg-white shadow-xl rounded px-4 pt-3 pb-4 text-xs mx-auto w-fit mt-1">
+</section>
+
+<!-- Main Form -->
+<form method="post" class="max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-teal-100 p-4">
     {% csrf_token %}
     {{ form.management_form }}
-    <div class="max-h-[70vh] overflow-y-auto p-2"> <!-- Added this container -->
-        <div class="grid md:grid-cols-1 p-1 gap-1 text-center">
+    
+    <!-- Scrollable Items Container -->
+    <div class="max-h-[65vh] overflow-y-auto p-2 mb-4">
+        <div class="grid md:grid-cols-1 gap-3">
             {% for form in formset %}
-            <div class="p-2 border rounded shadow-md w-fit">
-                <div class="flex justify-center">
-                    <p class="text-left text-xs text-green-700">#{{ forloop.counter }}
-                        {{ form.category }}
-                        {{ form.item }}
-                        {{ form.quantity }}
-                    </p>
+            <div class="p-3 border border-teal-100 rounded-lg bg-teal-50 hover:bg-teal-100 transition-colors">
+                <div class="space-y-2">
+                    <p class="text-xs font-medium text-teal-700">Item #{{ forloop.counter }}</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.category.errors }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {{ form.item }}
+                            {% if form.item.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.item.errors }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {{ form.quantity }}
+                            {% if form.quantity.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.quantity.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
                     {% if form.non_field_errors %}
+                    <div class="text-red-500 text-xs italic">
                         {% for error in form.non_field_errors %}
-                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                        <p>{{ error }}</p>
                         {% endfor %}
+                    </div>
                     {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
-    <div class="flex items-center justify-center mt-4"> <!-- Added margin-top -->
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-            Save
+    
+    <!-- Submit Button -->
+    <div class="flex justify-center mt-4">
+        <button class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2 px-6 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1" 
+                type="submit">
+            Save Bill
         </button>
     </div>
 </form>
+
 <script>
 function initializePage() {
     function load_items(index) {
         const categoryId = document.getElementsByName(`form-${index}-category`)[0].value;
         const url = `/get_category/${categoryId}/`;
+        
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 const itemSelect = document.getElementsByName(`form-${index}-item`)[0];
-                itemSelect.innerHTML = ''; // Clear existing options
+                itemSelect.innerHTML = '<option value="">Select an item</option>';
+                
                 data.items.forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.id;
@@ -72,15 +107,29 @@ function initializePage() {
             .catch(error => console.error('Error:', error));
     }
 
-    // Event listener for category select elements in formset
+    // Event listeners for category selects
     {% for form in formset %}
     document.getElementsByName('{{ form.category.html_name }}')[0].addEventListener('change', function() {
         load_items('{{ forloop.counter0 }}');
     });
     {% endfor %}
+    
+    // Style form elements
+    document.querySelectorAll('select, input').forEach(el => {
+        el.classList.add('text-xs', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1.5', 'w-full', 
+                         'focus:outline-none', 'focus:ring-1', 'focus:ring-teal-400', 'focus:border-teal-400');
+    });
 }
 
-// Call the initializePage function when the page loads
-window.addEventListener('load', initializePage);
+window.addEventListener('DOMContentLoaded', initializePage);
 </script>
+
+<style>
+    select, input {
+        min-height: 32px;
+    }
+    .form-item:hover {
+        transform: translateY(-1px);
+    }
+</style>
 {% endblock %}

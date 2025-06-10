@@ -50,61 +50,6 @@ class ProfileForm(forms.ModelForm):
             field.widget.attrs.update(
                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
 
-# class PatientForm(forms.ModelForm):
-#     class Meta:
-#         model = PatientData
-#         exclude = ['file_no','age','user','updated']
-#         widgets = {
-#             'zone': forms.Select(attrs={'id': 'id_zone'}),
-#             'state': forms.Select(attrs={'id': 'id_state'}),
-#             'lga': forms.Select(attrs={'id': 'id_lga'}),
-#             'dob': forms.DateInput(attrs={'type': 'date'})
-#         }
-    
-#     def __init__(self, *args, **kwargs):
-#         super(PatientForm, self).__init__(*args, **kwargs)
-#         for field in self.fields.values():
-#             # field.required=True
-#             field.widget.attrs.update(
-#                 {'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
-# class PatientForm(forms.ModelForm):
-#     class Meta:
-#         model = PatientData
-#         exclude = ['file_no', 'age', 'user', 'updated']
-#         widgets = {
-#             'zone': forms.Select(attrs={'id': 'id_zone'}),
-#             'state': forms.Select(attrs={'id': 'id_state'}),
-#             'lga': forms.Select(attrs={'id': 'id_lga'}),
-#             'dob': forms.DateInput(attrs={'type': 'date'})
-#         }
-
-#     def __init__(self, *args, **kwargs):
-#         super(PatientForm, self).__init__(*args, **kwargs)
-        
-#         # Add base styling to all fields
-#         for field_name, field in self.fields.items():
-#             # Get the model field
-#             model_field = self.Meta.model._meta.get_field(field_name)
-            
-#             # Set required status based on model field
-#             field.required = not model_field.blank
-
-#             # Add your styling
-#             field.widget.attrs.update({
-#                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-2 rounded shadow-lg focus:shadow-xl focus:border-green-200'
-#             })
-
-#             # Add empty choice only for choice fields that are optional
-#             if isinstance(field.widget, forms.Select) and not field.required:
-#                 if hasattr(field, 'choices'):
-#                     choices = list(field.choices)
-#                     if choices and choices[0][0] != '':  # Only add if not already present
-#                         choices.insert(0, ('', '---Select---'))
-#                         field.choices = choices
-# In forms.py
-# In forms.py
-from django import forms
-from .models import PatientData
 from .data import ZONE_STATE_LGA_DATA
 
 class PatientForm(forms.ModelForm):
@@ -174,17 +119,24 @@ class PatientForm(forms.ModelForm):
 class VisitForm(forms.ModelForm):
     class Meta:
         model = VisitRecord
-        fields = ['record', 'clinic','team']
+        fields = ['record', 'clinic', 'team']
     
     def __init__(self, *args, file_no=None, **kwargs):
         super(VisitForm, self).__init__(*args, **kwargs)
         self.file_no = file_no
-        # Filter records to only show 'new registration' and 'follow up'
-        self.fields['record'].queryset = MedicalRecord.objects.filter(name__in=['new registration', 'follow up'])
-        for field in self.fields.values():
-            field.required=True
-            field.widget.attrs.update(
-                {'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+        self.fields['record'].queryset = MedicalRecord.objects.filter(
+            name__in=['new registration', 'follow up', 'review']
+        )
+        
+        # Set all fields required by default
+        for name, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+            if name == 'team':
+                field.required = False  # Make team optional
+            else:
+                field.required = True
 
     def clean(self):
         cleaned_data = super().clean()
@@ -200,7 +152,6 @@ class VisitForm(forms.ModelForm):
                     code='duplicate_visit'
                 )
         return cleaned_data
-    
 
 class VitalSignsForm(forms.ModelForm):
     class Meta:
@@ -589,17 +540,90 @@ class LastMealForm(forms.ModelForm):
             })
 
 
+# class PrivateBillingForm(forms.ModelForm):
+#     class Meta:
+#         model = PrivateBilling
+#         fields = ['item','price']
+
+#     def __init__(self, *args, **kwargs):
+#         super(PrivateBillingForm, self).__init__(*args, **kwargs)
+#         for field in self.fields.values():
+#             field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+
+from django import forms
+from django.core.exceptions import ValidationError
+from .models import PrivateBilling, PrivateTheatreItem
+
 class PrivateBillingForm(forms.ModelForm):
+    # Explicitly define the item field as a ChoiceField
+    item = forms.ChoiceField(
+        widget=forms.Select(attrs={
+            'class': 'text-xs border border-gray-300 rounded px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400',
+            'onchange': 'toggleCustomItem(this)'
+        }),
+        required=False
+    )
+
     class Meta:
         model = PrivateBilling
-        fields = ['item','price']
+        fields = ['item', 'custom_item_name', 'price']
+        widgets = {
+            'custom_item_name': forms.TextInput(attrs={
+                'class': 'text-xs border border-gray-300 rounded px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400 hidden',
+                'placeholder': 'Enter custom item name...'
+            }),
+            'price': forms.NumberInput(attrs={
+                'class': 'text-xs border border-gray-300 rounded px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': '0.00'
+            })
+        }
 
     def __init__(self, *args, **kwargs):
         super(PrivateBillingForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.update({'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'})
+        
+        # Setup the choices for the item field
+        item_choices = [('', '--- Select Item ---')]
+        item_choices.extend([(item.id, item.name) for item in PrivateTheatreItem.objects.all()])
+        item_choices.append(('other', '--- Other (Custom Item) ---'))
+        
+        self.fields['item'].choices = item_choices
+        # No longer need to set required=False here as it's done at field definition
 
+    def clean(self):
+        cleaned_data = super().clean()
+        item_id = cleaned_data.get('item')
+        custom_item_name = cleaned_data.get('custom_item_name')
+        price = cleaned_data.get('price')
 
+        # Skip validation for completely empty forms (formset extra forms)
+        if not item_id and not custom_item_name and not price:
+            return cleaned_data
+        
+        # If 'other' is selected, a custom name is required.
+        if item_id == 'other':
+            if not custom_item_name:
+                self.add_error('custom_item_name', "Please enter a custom item name when 'Other' is selected.")
+            # Set item_id to None so we don't try to save it to the ForeignKey field.
+            cleaned_data['item'] = None
+        # If an item is selected from the list.
+        elif item_id:
+            try:
+                # Convert the item_id back to a model instance.
+                item_instance = PrivateTheatreItem.objects.get(pk=item_id)
+                cleaned_data['item'] = item_instance
+            except PrivateTheatreItem.DoesNotExist:
+                raise ValidationError("Invalid item selected.")
+        # If no item is selected and there's no custom name, but there is a price.
+        elif not custom_item_name and price:
+            self.add_error('item', "Please select an item or enter a custom item name.")
+        
+        # Price is required if an item or custom item is specified.
+        if (item_id or custom_item_name) and not price:
+            self.add_error('price', "Price is required when an item is specified.")
+            
+        return cleaned_data
 
 ConsumableUsageFormSet = inlineformset_factory(
     TheatreOperationRecord,

@@ -1,42 +1,186 @@
-
 {% extends 'base.html' %}
 {% block title %}Surgery Bill{% endblock %}
 {% block page_title %}
-<div class="flex justify-center"><a href="#"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>SURGERY BILL</div>
+<div class="flex justify-center"><a href="#"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>QUICK BILL</div>
 {% endblock %}
 {% block content %}
-<form method="post" class="bg-white shadow-xl rounded px-4 pt-3 pb-4 text-xs mx-auto w-fit mt-1">
-    {% csrf_token %}
+<div class="container mx-auto p-4 bg-white rounded-lg shadow-sm border border-teal-100 max-w-4xl mt-2">
+    <!-- Header Section -->
+    <div class="bg-teal-50 px-4 py-3 rounded-t-lg border-b border-teal-200">
+        <h2 class="text-sm font-bold text-teal-800">
+            Private Surgery Billing - {{ patient.first_name }} {{ patient.last_name }}
+        </h2>
+        <p class="text-xs text-teal-600 mt-1">File No: {{ patient.file_no }} | {{ patient.gender }} | Age: {{ patient.age }}</p>
+    </div>
     
-    {{ form.management_form }}
-    <div class="max-h-[70vh] overflow-y-auto p-2">
-        <div class="grid md:grid-cols-1 p-1 gap-1 text-center">
-            {% for form in formset %}
-            <div class="p-2 border rounded shadow-md w-fit">
-                <div class="flex justify-center p-2">
-                    <p class="text-left text-xs text-green-700">#{{ forloop.counter }}                      
-                        <div class="mx-10">
-                            <label for="item">ITEM</label><br>{{ form.item }}
-                        </div>
-                        <div class="mx-10">
-                            <label for="price">PRICE</label><br>{{ form.price }}
-                        </div>
-                        </p>
-                    {% if form.non_field_errors %}
-                        {% for error in form.non_field_errors %}
-                        <p class="text-red-500 text-xs italic">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
+    <form method="post" class="space-y-3">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        
+        <!-- Billing Table -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-teal-100">
+                <thead>
+                    <tr class="bg-teal-600 text-white">
+                        <th class="px-3 py-2 border-b text-xs font-semibold text-center">Item</th>
+                        <th class="px-3 py-2 border-b text-xs font-semibold text-center">Custom Item</th>
+                        <th class="px-3 py-2 border-b text-xs font-semibold text-center">Price</th>
+                        <th class="px-3 py-2 border-b text-xs font-semibold text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="formset-container" class="divide-y divide-teal-50">
+                    {% for form in formset %}
+                        <tr class="formset-row hover:bg-teal-50 transition-colors">
+                            <td class="px-3 py-2 border-b text-xs">
+                                {{ form.item }}
+                                {% if form.item.errors %}
+                                    <div class="text-red-500 text-xs mt-1">{{ form.item.errors }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="px-3 py-2 border-b text-xs">
+                                {{ form.custom_item_name }}
+                                {% if form.custom_item_name.errors %}
+                                    <div class="text-red-500 text-xs mt-1">{{ form.custom_item_name.errors }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="px-3 py-2 border-b text-xs">
+                                {{ form.price }}
+                                {% if form.price.errors %}
+                                    <div class="text-red-500 text-xs mt-1">{{ form.price.errors }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="px-3 py-2 border-b text-xs text-center">
+                                <button type="button" onclick="clearRow(this)" 
+                                    class="text-red-400 hover:text-red-600 transition-colors">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </div>
-    <div class="flex items-center justify-center mt-4">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-            Save
-        </button>
-    </div>
-</form>
+        
+        {% if formset.non_form_errors %}
+            <div class="text-red-500 text-xs p-2 bg-red-50 rounded">{{ formset.non_form_errors }}</div>
+        {% endif %}
+        
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-4">
+            <button type="button" onclick="addNewRow()" 
+                class="flex items-center gap-1 bg-teal-100 hover:bg-teal-200 text-teal-800 text-xs font-semibold py-2 px-3 rounded border border-teal-200 transition-colors">
+                <i class="fas fa-plus text-xs"></i> Add Row
+            </button>
+            
+            <div class="flex gap-2">
+                <a href="{% url 'patient_details' file_no=patient.file_no %}" 
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold py-2 px-3 rounded border border-gray-200 transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" 
+                    class="flex items-center gap-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2 px-3 rounded transition-colors">
+                    <i class="fas fa-save text-xs"></i> Save Bill
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleCustomItem(selectElement) {
+    const row = selectElement.closest('tr');
+    const customItemInput = row.querySelector('input[name*="custom_item_name"]');
+    
+    console.log('Toggle called, value:', selectElement.value); // Debug log
+    
+    if (selectElement.value === 'other') {
+        customItemInput.classList.remove('hidden');
+        customItemInput.style.display = 'block';
+        customItemInput.required = true;
+        customItemInput.focus(); // Focus on the input when shown
+    } else {
+        customItemInput.classList.add('hidden');
+        customItemInput.style.display = 'none';
+        customItemInput.required = false;
+        customItemInput.value = '';
+    }
+}
+
+function clearRow(button) {
+    const row = button.closest('tr');
+    const inputs = row.querySelectorAll('input, select');
+    
+    inputs.forEach(input => {
+        if (input.type === 'checkbox') {
+            input.checked = false;
+        } else {
+            input.value = '';
+        }
+    });
+    
+    const customItemInput = row.querySelector('input[name*="custom_item_name"]');
+    if (customItemInput) {
+        customItemInput.classList.add('hidden');
+        customItemInput.style.display = 'none';
+        customItemInput.required = false;
+    }
+}
+
+function addNewRow() {
+    const container = document.getElementById('formset-container');
+    const totalForms = document.querySelector('#id_form-TOTAL_FORMS');
+    const formCount = parseInt(totalForms.value);
+    
+    const firstRow = container.querySelector('.formset-row');
+    const newRow = firstRow.cloneNode(true);
+    
+    const inputs = newRow.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        const name = input.getAttribute('name');
+        const id = input.getAttribute('id');
+        
+        if (name) {
+            input.setAttribute('name', name.replace(/-\d+-/, `-${formCount}-`));
+        }
+        if (id) {
+            input.setAttribute('id', id.replace(/-\d+-/, `-${formCount}-`));
+        }
+        
+        if (input.type === 'checkbox') {
+            input.checked = false;
+        } else {
+            input.value = '';
+        }
+    });
+    
+    // Ensure the new row's custom input is hidden and set up properly
+    const customItemInput = newRow.querySelector('input[name*="custom_item_name"]');
+    if (customItemInput) {
+        customItemInput.classList.add('hidden');
+        customItemInput.style.display = 'none';
+        customItemInput.required = false;
+    }
+    
+    // Ensure the select has the onChange handler
+    const selectElement = newRow.querySelector('select[name*="item"]');
+    if (selectElement) {
+        selectElement.setAttribute('onchange', 'toggleCustomItem(this)');
+    }
+    
+    container.appendChild(newRow);
+    totalForms.value = formCount + 1;
+}
+
+// Initialize all existing rows on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const selects = document.querySelectorAll('select[name*="item"]');
+    selects.forEach(select => {
+        // Ensure each select has the onChange handler
+        select.setAttribute('onchange', 'toggleCustomItem(this)');
+        // Initialize the visibility based on current value
+        toggleCustomItem(select);
+    });
+});
+</script>
 
 {% endblock %}

@@ -967,141 +967,159 @@ class PatientFolderView(DetailView):
   
         return context
    
-
 class VisitCreateView(LoginRequiredMixin, CreateView):
     model = VisitRecord
     form_class = VisitForm
     template_name = 'ehr/record/visit.html'
     
-    
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['file_no'] = self.kwargs['file_no']
         return kwargs
-
-    # def form_valid(self, form):
-    #     patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        
-    #     # Check for existing open visit
-    #     existing_open_visit = VisitRecord.objects.filter(
-    #         patient=patient,
-    #         seen=False
-    #     ).exists()
-
-    #     if existing_open_visit:
-    #         form.add_error(None, ValidationError(
-    #             _("This patient already has an open visit. Please close the existing visit by adding clinical notes, before creating a new one visit instance."),
-    #             code='duplicate_visit'
-    #         ))
-    #         return self.form_invalid(form)
-
-    #     form.instance.patient = patient
-    #     form.instance.user = self.request.user
-    #     form.instance.clinic = form.cleaned_data['clinic']
-
-    #     visit = form.save(commit=False)
-    #     payment = Paypoint.objects.create(
-    #         patient=patient,
-    #         status=False,
-    #         service=visit.record,
-    #         unit='medical record',
-    #         price=visit.record.price,
-    #     )
-    #     visit.payment = payment
-    #     visit.vitals = False
-    #     visit.save()
-
-    #     if payment.status:
-    #         nursing_desk = NursingDesk.objects.filter(clinic=patient.clinic).first()
-    #         if nursing_desk:
-    #             messages.success(self.request, f'Payment successful. Patient sent to {nursing_desk} for vital signs.')
-    #         else:
-    #             messages.warning(self.request, f'Payment successful, but no nursing desk available for {patient.clinic}.')
-    #     else:
-    #         messages.warning(self.request, 'Proceed to revenue station and complete the payment.')
-        
-    #     return super().form_valid(form)
+    
     def form_valid(self, form):
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         
         # Check for existing open visit
         existing_open_visit = VisitRecord.objects.filter(
             patient=patient,
-            # consider if 'consultation=True' is a better check for an "active consultation"
-            consultation=True # Or your existing logic: seen=False 
+            consultation=True
         ).exists()
-
+        
         if existing_open_visit:
             form.add_error(None, ValidationError(
                 _("This patient already has an open/active consultation. Please close the existing visit before creating a new one."),
                 code='duplicate_visit'
             ))
             return self.form_invalid(form)
-
-        # It's generally better to let CreateView handle setting self.object
-        self.object = form.save(commit=False) # self.object is now the new VisitRecord instance
         
+        # Create the visit record
+        self.object = form.save(commit=False)
         self.object.patient = patient
         self.object.user = self.request.user
-        # form.instance.user = self.request.user # Does your VisitRecord model have a 'user' ForeignKey? If not, this line will cause an error. Please verify.
-        # self.object.clinic is likely already set by the form if 'clinic' is a field in VisitForm
-        # If 'clinic' is not in the form but needs to be set from form.cleaned_data['clinic'], then:
-        # self.object.clinic = form.cleaned_data['clinic'] # Ensure 'clinic' is in cleaned_data
-
-        # --- THIS IS THE CRUCIAL PART ---
-        self.object.consultation = True  # Ensure new visits are marked as active consultations
-        self.object.vitals = False       # You're already doing this
-
-        # Handle payment creation
-        # Ensure 'self.object.record' is available and correct if 'record' is a ForeignKey on VisitRecord
-        # that should be set from the form or otherwise.
-        if not self.object.record:
-             # Handle case where visit.record is not set, as it's needed for Paypoint.
-             # This might come from the form or need to be set explicitly.
-             # For now, assuming it might be an issue or is handled by the form.
-             pass
-
-
-        # It's better to save the main object (visit) before creating related objects
-        # that might depend on its ID, though Paypoint here uses patient.
-        # However, if visit.record is needed, visit should be populated.
-        # Let's assume 'self.object.record' is correctly populated by the form.
+        self.object.consultation = True
         
-        # Save the visit instance first if Paypoint depends on its (unsaved) state,
-        # but Paypoint here seems to depend on visit.record.price.
-        # It's usually safer to have the main object (visit) saved or at least fully populated
-        # before creating tightly coupled dependencies.
-
-        # For simplicity, let's assume 'record' is a field in your VisitForm and correctly set.
-        # If `self.object.record` isn't set by the form, you'll need to set it.
-
-        payment = Paypoint.objects.create(
-            patient=patient,
-            status=False, # Default payment status
-            service=self.object.record, # Make sure self.object.record is populated
-            unit='medical record',
-            price=self.object.record.price, # Make sure self.object.record.price is accessible
-        )
-        self.object.payment = payment
+        # Check if this is a review visit
+        is_review = (self.object.record and 
+                    self.object.record.name and 
+                    self.object.record.name.lower() == 'review')
         
-        self.object.save() # Now save the fully populated visit instance with its payment link
-
-        # Messaging based on payment status
-        if payment.status: # This will be False initially based on Paypoint.objects.create(status=False,...)
-                            # This block might be intended for after a payment update elsewhere.
-            nursing_desk = NursingDesk.objects.filter(clinic=patient.clinic).first()
-            if nursing_desk:
-                messages.success(self.request, f'Payment successful. Patient sent to {nursing_desk} for vital signs.')
-            else:
-                messages.warning(self.request, f'Payment successful, but no nursing desk available for {patient.clinic}.')
+        if is_review:
+            # BYPASS LOGIC FOR REVIEW VISITS
+            self.object.vitals = True  # Skip nursing/vitals
+            self.object.review = True  # Mark as review
+            self.object.payment = None  # No payment required
+            self.object.save()
+            
+            messages.success(
+                self.request, 
+                f'Review visit registered for {patient}. Patient sent directly to clinic - no payment or vitals required.'
+            )
         else:
-            messages.warning(self.request, 'New visit registered. Proceed to revenue station to complete the payment for the medical record service.')
+            # NORMAL WORKFLOW FOR NEW/FOLLOW-UP VISITS
+            self.object.vitals = False
+            self.object.review = False
+            
+            # Create payment record if medical record exists
+            if self.object.record:
+                payment = Paypoint.objects.create(
+                    patient=patient,
+                    status=False,
+                    service=self.object.record,
+                    unit='medical record',
+                    price=self.object.record.price,
+                )
+                self.object.payment = payment
+            
+            self.object.save()
+            
+            # Handle payment messaging
+            if hasattr(self.object, 'payment') and self.object.payment and self.object.payment.status:
+                nursing_desk = NursingDesk.objects.filter(clinic=patient.clinic).first()
+                if nursing_desk:
+                    messages.success(
+                        self.request, 
+                        f'Payment successful. Patient sent to {nursing_desk} for vital signs.'
+                    )
+                else:
+                    messages.warning(
+                        self.request, 
+                        f'Payment successful, but no nursing desk available for {patient.clinic}.'
+                    )
+            else:
+                messages.warning(
+                    self.request, 
+                    'New visit registered. Proceed to revenue station to complete the payment for the medical record service.'
+                )
         
-        # Instead of calling super().form_valid(form) after manually saving,
-        # you should typically redirect. CreateView's form_valid does this.
         return HttpResponseRedirect(self.get_success_url())
+    
     def get_success_url(self):
         return reverse_lazy('patient_list')
+# class VisitCreateView(LoginRequiredMixin, CreateView):
+#     model = VisitRecord
+#     form_class = VisitForm
+#     template_name = 'ehr/record/visit.html'
+    
+    
+#     def get_form_kwargs(self):
+#         kwargs = super().get_form_kwargs()
+#         kwargs['file_no'] = self.kwargs['file_no']
+#         return kwargs
+
+#     def form_valid(self, form):
+#         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        
+#         # Check for existing open visit
+#         existing_open_visit = VisitRecord.objects.filter(
+#             patient=patient,
+#             # consider if 'consultation=True' is a better check for an "active consultation"
+#             consultation=True # Or your existing logic: seen=False 
+#         ).exists()
+
+#         if existing_open_visit:
+#             form.add_error(None, ValidationError(
+#                 _("This patient already has an open/active consultation. Please close the existing visit before creating a new one."),
+#                 code='duplicate_visit'
+#             ))
+#             return self.form_invalid(form)
+
+#         # It's generally better to let CreateView handle setting self.object
+#         self.object = form.save(commit=False) # self.object is now the new VisitRecord instance
+
+#         self.object.patient = patient
+#         self.object.user = self.request.user
+#         self.object.consultation = True  # Ensure new visits are marked as active consultations
+#         self.object.vitals = False       # You're already doing this
+
+#         if not self.object.record:
+#              pass
+
+#         payment = Paypoint.objects.create(
+#             patient=patient,
+#             status=False, # Default payment status
+#             service=self.object.record, # Make sure self.object.record is populated
+#             unit='medical record',
+#             price=self.object.record.price, # Make sure self.object.record.price is accessible
+#         )
+#         self.object.payment = payment
+        
+#         self.object.save() # Now save the fully populated visit instance with its payment link
+
+#         # Messaging based on payment status
+#         if payment.status: # This will be False initially based on Paypoint.objects.create(status=False,...)
+#                             # This block might be intended for after a payment update elsewhere.
+#             nursing_desk = NursingDesk.objects.filter(clinic=patient.clinic).first()
+#             if nursing_desk:
+#                 messages.success(self.request, f'Payment successful. Patient sent to {nursing_desk} for vital signs.')
+#             else:
+#                 messages.warning(self.request, f'Payment successful, but no nursing desk available for {patient.clinic}.')
+#         else:
+#             messages.warning(self.request, 'New visit registered. Proceed to revenue station to complete the payment for the medical record service.')
+        
+#         return HttpResponseRedirect(self.get_success_url())
+#     def get_success_url(self):
+#         return reverse_lazy('patient_list')
 
 class VisitPayListView(ListView):
     model = Paypoint
@@ -1152,12 +1170,6 @@ class NursingStationDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Fetch patients whose payment is complete and who are assigned to the current nursing desk's clinic
-        # visits = VisitRecord.objects.filter(
-        #     clinic=self.object.clinic,  # Match the clinic with the nursing desk
-        #     payment__status=True,
-        #     vitals=False
-        # ).select_related('patient', 'payment', 'record')
         visits = VisitRecord.objects.filter(
             clinic=self.object.clinic,
             vitals=False  # Just check if they need vitals
@@ -1240,47 +1252,7 @@ class VitalSignCreateView(NurseRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['visit_record'] = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).latest('id')
         return context
-    
-
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
-#     model = Clinic
-#     context_object_name = 'clinic'
-#     template_name = "ehr/clinic/clinic_details.html"
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         rooms = self.object.consultation_rooms.all()
-#         context['rooms'] = rooms        
-#         for room in rooms:
-#             room.waiting_count = VisitRecord.objects.filter(
-#                 clinic=self.object,
-#                 room=room,
-#                 vitals=True,
-#                 seen=False
-#             ).count()
-#         days_filter = 7  # Set this to whatever number you prefer
-#         time_threshold = timezone.now() - timedelta(days=days_filter)
-
-#         context['waiting_count'] = VisitRecord.objects.filter(
-#             clinic=self.object,
-#             vitals=True,
-#             seen=False,
-#             review=False,
-#             updated__gte=time_threshold  # Apply the time filter
-#         ).count()
-#         context['seen_count'] = VisitRecord.objects.filter(
-#             clinic=self.object,
-#             seen=True,
-#             updated__gte=time_threshold  # Apply the time filter
-#         ).count()
-#         context['review_count'] = VisitRecord.objects.filter(
-#             clinic=self.object,
-#             review=True,
-#             updated__gte=time_threshold  # Apply the time filter
-#         ).count()
-#         return context
-    
+        
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
     model = Clinic
@@ -1293,7 +1265,7 @@ class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
         context['rooms'] = rooms
         
         # Standardize time filter with other views
-        days_filter = 7  # This should match the same value used in VisitListView
+        days_filter = 2  # This should match the same value used in VisitListView
         time_threshold = timezone.now() - timedelta(days=days_filter)
         
         for room in rooms:
@@ -1304,14 +1276,18 @@ class ClinicDetailView(DoctorNurseRecordRequiredMixin, DetailView):
                 seen=False,
                 updated__gte=time_threshold  # Apply time filter
             ).count()
-
+            
         context['waiting_count'] = VisitRecord.objects.filter(
-            clinic=self.object,
-            vitals=True,
-            seen=False,
-            review=False,
-            updated__gte=time_threshold  # Apply time filter
-        ).count()
+        clinic=self.object,
+        updated__gte=time_threshold).filter(Q(vitals=True, seen=False, review=False) | Q(review=True, seen=False)).count()
+
+        # context['waiting_count'] = VisitRecord.objects.filter(
+        #     clinic=self.object,
+        #     vitals=True,
+        #     seen=False,
+        #     review=False,
+        #     updated__gte=time_threshold  # Apply time filter
+        # ).count()
         
         context['seen_count'] = VisitRecord.objects.filter(
             clinic=self.object,
@@ -1331,13 +1307,16 @@ class VisitListView(DoctorNurseRecordRequiredMixin, ListView):
     model = VisitRecord
     template_name = 'ehr/clinic/pt_list.html'  # Base template
     context_object_name = 'visits'
-    filter_params = {}
-
+    # filter_params = {}
+# For doctor's waiting list, include review patients
+    filter_params = {
+        'Q(vitals=True, seen=False, review=False) | Q(review=True, seen=False)': True
+    }
     def get_queryset(self):
         self.clinic = get_object_or_404(Clinic, pk=self.kwargs['clinic_id'])
         queryset = VisitRecord.objects.filter(
             clinic=self.clinic,
-            updated__gte=timezone.now() - timedelta(days=365),
+            updated__gte=timezone.now() - timedelta(days=2),
             **self.filter_params
         ).order_by('-updated')
         query = self.request.GET.get('q')
@@ -1393,106 +1372,6 @@ class RoomDetailView(DoctorNurseRequiredMixin, DetailView):
         seen=False 
     ).select_related('patient').order_by('-updated')
         return context
-        
-
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
-#     model = ClinicalNote
-#     form_class = ClinicalNoteForm
-#     template_name = 'ehr/doctor/clinical_note.html'
-    
-#     def dispatch(self, request, *args, **kwargs):
-#         # Check if visit record exists before allowing access
-#         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-#         visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()
-        
-#         if visit is None:
-#             messages.error(
-#                 request, 
-#                 f'Cannot create clinical note for {patient_data.first_name} {patient_data.last_name} ({patient_data.file_no}). No active visit record found. Please ensure the patient has been registered for a visit first.'
-#             )
-#             # Redirect back to patient detail or wherever appropriate
-#             return redirect(patient_data.get_absolute_url())
-        
-#         return super().dispatch(request, *args, **kwargs)
-    
-#     def form_valid(self, form):
-#         form.instance.user = self.request.user
-#         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-#         form.instance.patient = patient_data
-#         self.object = form.save()
-        
-#         # Get the visit record (we know it exists from dispatch check)
-#         visit = VisitRecord.objects.filter(patient__file_no=self.kwargs['file_no']).order_by('-id').first()
-        
-#         if form.instance.needs_review:
-#             # Set proper flags for review
-#             visit.review = True
-#             visit.seen = True  # Mark as seen even if needs review
-#             visit.save()
-#             messages.success(self.request, 'Clinical note created. Patient awaiting review.')
-#         else:
-#             # Close visit - properly set all flags
-#             visit.close_visit()
-#             messages.success(self.request, 'Clinical note created. Patient consultation completed.')
-
-#         return super().form_valid(form)
-    
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
-#         context['patient'] = patient
-                
-#         return context
-
-#     def get_success_url(self):
-#         return self.object.patient.get_absolute_url()
-
-
-# @method_decorator(login_required(login_url='login'), name='dispatch')
-# class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
-#     model = ClinicalNote
-#     template_name = 'ehr/doctor/update_clinical_note.html'
-#     form_class = ClinicalNoteUpdateForm
-    
-#     def form_valid(self, form):
-#         form.instance.user = self.request.user
-        
-#         # Get the clinical note object (pk is passed in URL)
-#         clinical_note = self.get_object()
-#         patient_data = clinical_note.patient
-        
-#         form.instance.patient = patient_data
-#         self.object = form.save()
-        
-#         # Get visit record using the patient's file_no from the clinical note
-#         visit = VisitRecord.objects.filter(patient__file_no=patient_data.file_no).order_by('-id').first()
-        
-#         if visit:  # Check if visit exists
-#             if form.instance.needs_review:
-#                 # Set proper flags for review
-#                 visit.review = True
-#                 visit.seen = True  # Mark as seen even if needs review
-#                 visit.save()
-#                 messages.success(self.request, 'Clinical note updated. Patient awaiting review.')
-#             else:
-#                 # Close visit - properly set all flags
-#                 visit.close_visit()
-#                 messages.success(self.request, 'Clinical note updated. Patient consultation completed.')
-#         else:
-#             messages.success(self.request, 'Clinical note updated successfully.')
-        
-#         return redirect(self.get_success_url())
-    
-#     def get_success_url(self):
-#         return self.object.patient.get_absolute_url()
-    
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         clinical_note = self.get_object()
-#         context['patient'] = clinical_note.patient
-#         return context
-
 
 class AppointmentCreateView(RecordRequiredMixin, CreateView):
     model = Appointment
@@ -1501,14 +1380,38 @@ class AppointmentCreateView(RecordRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
-        self.object = form.save()
-        messages.success(self.request, 'APPOINTMENT ADDED')
-        
-        return super().form_valid(form)
+        patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        form.instance.patient = patient
+
+        # Get the proposed date and time from the form
+        proposed_date = form.cleaned_data.get('date')
+        proposed_time = form.cleaned_data.get('time')
+
+        # Check for existing appointments with the same date and time
+        conflicting_appointments_exist = Appointment.objects.filter(
+            date=proposed_date,
+            time=proposed_time
+        ).exists()
+
+        # Check if the user has confirmed to override the conflict
+        confirm_override = self.request.POST.get('confirm_override')
+
+        if conflicting_appointments_exist and not confirm_override:
+            # If there's a conflict and no override confirmation,
+            # add a warning and return the form. The template will show the modal.
+            messages.warning(self.request, 'APPOINTMENT CONFLICT: An appointment already exists at this exact date and time. Do you want to proceed anyway?')
+            return self.render_to_response(self.get_context_data(form=form)) # Render the form to display the message
+        else:
+            # No conflict, or conflict confirmed to be overridden
+            self.object = form.save()
+            messages.success(self.request, 'APPOINTMENT ADDED SUCCESSFULLY!')
+            return super().form_valid(form)
 
     def get_success_url(self):
-        return self.object.patient.get_absolute_url()
+        if hasattr(self, 'object') and self.object:
+            return self.object.patient.get_absolute_url()
+        return reverse_lazy("appointments")
+
 
 class AppointmentUpdateView(UpdateView):
     model = Appointment
@@ -1516,19 +1419,69 @@ class AppointmentUpdateView(UpdateView):
     form_class = AppointmentForm
     success_url = reverse_lazy("appointments")
 
-    
     def form_valid(self, form):
         form.instance.user = self.request.user
-        messages.success(self.request, 'Appointment Updated Successfully')
-        if form.is_valid():
-            form.save()
-            return super().form_valid(form)
+        
+        # Get the proposed date and time from the form
+        proposed_date = form.cleaned_data.get('date')
+        proposed_time = form.cleaned_data.get('time')
+
+        # Check for existing appointments with the same date and time, excluding the current appointment
+        conflicting_appointments_exist = Appointment.objects.filter(
+            date=proposed_date,
+            time=proposed_time
+        ).exclude(pk=self.object.pk).exists()
+
+        # Check if the user has confirmed to override the conflict
+        confirm_override = self.request.POST.get('confirm_override')
+
+        if conflicting_appointments_exist and not confirm_override:
+            messages.warning(self.request, 'APPOINTMENT CONFLICT: An appointment already exists at this exact date and time. Do you want to proceed anyway?')
+            return self.render_to_response(self.get_context_data(form=form))
         else:
-            return self.form_invalid(form)
+            form.save()
+            messages.success(self.request, 'APPOINTMENT UPDATED SUCCESSFULLY!')
+            return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Error updating appointment information')
-        return self.render_to_response(self.get_context_data(form=form))
+        messages.error(self.request, 'Error updating appointment information.')
+        return self.render_to_response(self.get_context_data(form=form))    
+
+# class AppointmentCreateView(RecordRequiredMixin, CreateView):
+#     model = Appointment
+#     form_class = AppointmentForm
+#     template_name = 'ehr/record/new_appointment.html'
+
+#     def form_valid(self, form):
+#         form.instance.user = self.request.user
+#         form.instance.patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+#         self.object = form.save()
+#         messages.success(self.request, 'APPOINTMENT ADDED')
+        
+#         return super().form_valid(form)
+
+#     def get_success_url(self):
+#         return self.object.patient.get_absolute_url()
+
+# class AppointmentUpdateView(UpdateView):
+#     model = Appointment
+#     template_name = 'ehr/record/update_appt.html'
+#     form_class = AppointmentForm
+#     success_url = reverse_lazy("appointments")
+
+    
+#     def form_valid(self, form):
+#         form.instance.user = self.request.user
+#         messages.success(self.request, 'Appointment Updated Successfully')
+#         if form.is_valid():
+#             form.save()
+#             return super().form_valid(form)
+#         else:
+#             return self.form_invalid(form)
+
+#     def form_invalid(self, form):
+#         messages.error(self.request, 'Error updating appointment information')
+#         return self.render_to_response(self.get_context_data(form=form))
 
     
 class AppointmentListView(ListView):
@@ -3456,7 +3409,7 @@ class PrivateBillingCreateView(DoctorRequiredMixin,LoginRequiredMixin,  FormView
     template_name = 'ehr/revenue/private_billing.html'
     
     def get_form(self):
-        PrivateBillingFormSet = modelformset_factory(PrivateBilling, form=PrivateBillingForm, extra=17)
+        PrivateBillingFormSet = modelformset_factory(PrivateBilling, form=PrivateBillingForm, extra=25)
         if self.request.method == 'POST':
             return PrivateBillingFormSet(self.request.POST)
         else:
@@ -4374,8 +4327,9 @@ class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
         if visit: 
             if form.instance.needs_review:
                 visit.review = True
-                visit.seen = True
-                visit.save(update_fields=['review', 'seen'])
+                visit.seen = False
+                visit.save(update_fields=['review',])
+                # visit.save(update_fields=['review', 'seen'])
                 messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient awaiting review.')
             else:
                 # visit.close_visit()
