@@ -443,6 +443,52 @@
 
 </style>
 
+  <div class="flex flex-wrap justify-center items-center mb-1 space-x-2 gap-2">
+    <!-- Date Range Filter Form -->
+    <form method="get" class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
+</span>
+      <div class="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 w-full sm:w-auto">
+            
+            <div class="flex items-center w-full sm:w-auto">
+                <label for="start_date" class="sr-only">Start Date</label>
+                <input type="date" name="start_date" id="start_date"
+                       value="{{ query|default:'' }}"
+                       class="focus:ring-amber-500 focus:border-amber-500 block shadow-sm text-xs border-gray-300 rounded-md w-full sm:w-auto">
+            </div>
+            
+            <div class="flex items-center w-full sm:w-auto">
+                <label for="end_date" class="sr-only">End Date</label>
+                <input type="date" name="end_date" id="end_date"
+                       value="{{ query|default:'' }}"
+                       class="focus:ring-amber-500 focus:border-amber-500 block shadow-sm text-xs border-gray-300 rounded-md w-full sm:w-auto">
+            </div>
+        </div>
+        
+        <div class="flex space-x-2">
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                <i class="fas fa-search"></i>
+            </button>
+            
+            {%if request.GET.urlencode%}
+            <a href="{% url 'patient_details' patient.file_no %}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                <i class="fas fa-rotate"></i>
+            </a>
+            <!-- PDF Export with Date Range -->
+            <a href="{% url 'patient_details' patient.file_no %}?format=pdf{% if request.GET.start_date %}&start_date={{ request.GET.start_date }}{% endif %}{% if request.GET.end_date %}&end_date={{ request.GET.end_date }}{% endif %}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                <i class="fas fa-file-pdf mr-2"></i> Export PDF
+            </a>
+            {%endif%}
+        </div>
+    </form>
+            <div>
+          <a href="{% url 'patient_details' patient.file_no %}?format=pdf" 
+  class="inline-block px-4 py-2 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">
+  <i class="fa-solid fa-file-pdf mr-2"></i>Export Full Patient Information
+</a>
+        </div>
+</div>
 {% if not has_active_visit %}
   <div class="info-box">
     <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1093,7 +1139,7 @@ class="text-xs text-green-600 hover:text-green-700">
                     <div>
                       <div>
                     <a href="{% url 'results:create_blood_group' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-                        <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+                        <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
                     </a>
       
                       </div>
@@ -1131,7 +1177,7 @@ class="text-xs text-green-600 hover:text-green-700">
                   <div>
                     <div>
                   <a href="{% url 'results:create_genotype' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-                      <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+                      <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
                   </a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1174,7 +1220,7 @@ class="text-xs text-green-600 hover:text-green-700">
                     <div>
                       <div>
                     <a href="{% url 'results:create_fbc' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-                        <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+                        <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
                     </a>
                       </div>
                       <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1234,7 +1280,7 @@ class="text-xs text-green-600 hover:text-green-700">
                     <div>
                       <div>
                     <a href="{% url 'results:create_urea_electrolyte' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-                        <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+                        <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
                     </a>
       
                       </div>
@@ -1273,7 +1319,7 @@ class="text-xs text-green-600 hover:text-green-700">
                   <!-- new test  -->
                   <div>
                     <div>
-                      <a href="{%url 'results:create_liver_function' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_liver_function' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1310,7 +1356,7 @@ class="text-xs text-green-600 hover:text-green-700">
                 
                   <div>
                     <div>
-                      <a href="{%url 'results:create_lipid_profile' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_lipid_profile' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1348,7 +1394,7 @@ class="text-xs text-green-600 hover:text-green-700">
                 <!-- new test  -->
                   <div>
                     <div>
-                      <a href="{%url 'results:create_bone_chemistry' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_bone_chemistry' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1383,7 +1429,7 @@ class="text-xs text-green-600 hover:text-green-700">
                 
                   <div>
                     <div>
-                      <a href="{%url 'results:create_serum_proteins' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_serum_proteins' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1421,7 +1467,7 @@ class="text-xs text-green-600 hover:text-green-700">
                 <!-- new test  -->
                   <div>
                     <div>
-                      <a href="{%url 'results:create_cerebro_spinal_fluid' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_cerebro_spinal_fluid' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1457,7 +1503,7 @@ class="text-xs text-green-600 hover:text-green-700">
                 
                   <div>
                     <div>
-                      <a href="{%url 'results:create_blood_glucose' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_blood_glucose' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1495,7 +1541,7 @@ class="text-xs text-green-600 hover:text-green-700">
                 <!-- new test  -->
                   <div>
                     <div>
-                      <a href="{%url 'results:create_miscellaneous_chempath_tests' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                      <a href="{%url 'results:create_miscellaneous_chempath_tests' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
                     </div>
                     <div class="overflow-x-auto max-h-[50vh] p-2">
                       <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -1559,7 +1605,7 @@ class="text-xs text-green-600 hover:text-green-700">
                     <div>
                       <div>
                     <a href="{% url 'results:create_urine_microscopy' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-                        <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+                        <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
                     </a>
       
                       </div>
@@ -1597,7 +1643,7 @@ class="text-xs text-green-600 hover:text-green-700">
                                   <!-- HVS Section -->
                                   <div>
                                     <a href="{% url 'results:create_hvs' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-                                      <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+                                      <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
                                     </a>
                                   </div>
                                   <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1636,7 +1682,7 @@ class="text-xs text-green-600 hover:text-green-700">
                                 <div>
                                   <div>
                                     <a href="{% url 'results:create_stool' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-                                      <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+                                      <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
                                     </a>
                                   </div>
                                   <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1676,7 +1722,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <div>
         <div>
           <a href="{% url 'results:create_blood_culture' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-            <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+            <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
           </a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1715,7 +1761,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <div>
         <div>
           <a href="{% url 'results:create_occult_blood' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-            <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+            <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
           </a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1754,7 +1800,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <div>
         <div>
           <a href="{% url 'results:create_sputum_mcs' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-            <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+            <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
           </a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1795,7 +1841,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <div>
         <div>
           <a href="{% url 'results:create_gram_stain' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-            <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+            <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
           </a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1834,7 +1880,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <div>
         <div>
           <a href="{% url 'results:create_swab_pus_aspirate_mcs' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-            <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+            <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
           </a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1873,7 +1919,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <div>
         <div>
           <a href="{% url 'results:create_zn_stain' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-            <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+            <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
           </a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1912,7 +1958,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <div>
         <div>
           <a href="{% url 'results:create_semen_analysis' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-            <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+            <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
           </a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1951,7 +1997,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <div>
         <div>
           <a href="{% url 'results:create_urinalysis' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-            <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+            <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
           </a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -1990,7 +2036,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <div>
         <div>
           <a href="{% url 'results:create_pregnancy_test' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700">
-            <i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST
+            <i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE
           </a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
@@ -2051,7 +2097,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <!-- Widal Test Results -->
       <div>
         <div>
-          <a href="{% url 'results:create_widal' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_widal' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2086,7 +2132,7 @@ class="text-xs text-green-600 hover:text-green-700">
                   <!-- new test  -->
                     <div>
                       <div>
-                        <a href="{%url 'results:create_rheumatoid_factor' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+                        <a href="{%url 'results:create_rheumatoid_factor' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
                       </div>
                       <div class="overflow-x-auto max-h-[50vh] p-2">
                         <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2122,7 +2168,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <!-- new test  -->
       <div>
         <div>
-          <a href="{%url 'results:create_hpb' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{%url 'results:create_hpb' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2154,7 +2200,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <!-- new test  -->
       <div>
         <div>
-          <a href="{%url 'results:create_hcv' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{%url 'results:create_hcv' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2188,7 +2234,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <!-- new test  -->
       <div>
         <div>
-          <a href="{% url 'results:create_vdrl' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_vdrl' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2223,7 +2269,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <!-- Mantoux Test Results -->
       <div>
         <div>
-          <a href="{% url 'results:create_mantoux' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_mantoux' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2256,7 +2302,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <!-- ASO Titre Test Results -->
       <div>
         <div>
-          <a href="{% url 'results:create_aso_titre' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_aso_titre' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2289,7 +2335,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <!-- CRP Test Results -->
       <div>
         <div>
-          <a href="{% url 'results:create_crp' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_crp' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">
@@ -2322,7 +2368,7 @@ class="text-xs text-green-600 hover:text-green-700">
       <!-- HIV Screening Test Results -->
       <div>
         <div>
-          <a href="{% url 'results:create_hiv_screening' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> SEND REQUEST</a>
+          <a href="{% url 'results:create_hiv_screening' patient.file_no %}" class="text-xs text-amber-600 hover:text-green-700"><i class="fa-solid fa-plus fa-2xl"></i> CREATE TEMPLATE</a>
         </div>
         <div class="overflow-x-auto max-h-[50vh] p-2">
           <table class="min-w-full divide-y divide-cyan-200 mb-4">

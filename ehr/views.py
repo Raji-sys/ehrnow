@@ -19,6 +19,16 @@ User = get_user_model()
 from django.http import HttpResponse
 from django.conf import settings
 import os
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
+from io import BytesIO
+import os
+try:
+    from xhtml2pdf import pisa
+except ImportError:
+    pisa = None
 # import matplotlib.pyplot as plt
 from io import BytesIO
 from reportlab.pdfgen import canvas
@@ -560,34 +570,6 @@ def patient_report_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-# class VisitReportView(ListView):
-#     model = VisitRecord
-#     filterset_class = VisitFilter
-#     template_name = 'ehr/clinic/report.html'
-#     context_object_name = 'visits'
-#     paginate_by = 20
-
-#     def get_queryset(self):
-#         # Subquery to get the latest ClinicalNote for each patient
-#         latest_note = ClinicalNote.objects.filter(patient=OuterRef('patient')).order_by('-updated').values('diagnosis')[:1]
-
-#         # Annotate the VisitRecord queryset with the latest clinical note's diagnosis
-#         self.filterset = VisitFilter(
-#             self.request.GET, 
-#             queryset=VisitRecord.objects.select_related('patient', 'clinic', 'team')
-#             .annotate(latest_diagnosis=Subquery(latest_note))
-#         )
-#         return self.filterset.qs.order_by('-updated')
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-        
-#         # Add total patient count and filtered count to the context
-#         context['total_patient'] = PatientData.objects.count()
-#         context['filtered_count'] = self.filterset.qs.count()
-#         context['visitFilter'] = self.filterset
-
-#         return context
 class VisitReportView(ListView):
     model = VisitRecord
     filterset_class = VisitFilter
@@ -774,7 +756,6 @@ def visit_pdf(request):
     return HttpResponse('Error generating PDF', status=500)
 
 
-
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientStatsView(TemplateView):
     template_name = 'ehr/record/stats.html'
@@ -832,6 +813,146 @@ class PatientStatsView(TemplateView):
         return context
 
 
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class PatientFolderView(DetailView):
+#     template_name = 'ehr/record/patient_folder.html'
+#     model = PatientData
+ 
+#     def get_object(self, queryset=None):
+#         obj = PatientData.objects.get(file_no=self.kwargs['file_no'])
+#         user = self.request.user
+#         allowed_groups = ['nurse', 'doctor', 'record', 'pathologist', 'pharmacist']
+
+#         if not any(group in user.groups.values_list('name', flat=True) for group in allowed_groups):
+#             raise PermissionDenied()
+#         return obj
+   
+#     def get_context_data(self, **kwargs):
+#         # Get date range from request
+#         context = super().get_context_data(**kwargs)
+#         patient = self.get_object()
+
+#         context['patient'] = patient
+#         context['test_items'] = (patient.test_items.all().prefetch_related('items__payment').order_by('-updated'))
+#         context['radiology_test_items'] = (patient.radiology_test_items.all().prefetch_related('payment').order_by('-updated'))
+        
+#         # If 'created' field is reliably auto_now_add=True, order_by('-created', '-id') is more robust.
+#         all_visits_qs = patient.visit_record.all().order_by('-created','-id')
+#         context['visits'] = all_visits_qs
+
+#         latest_overall_visit = all_visits_qs.first()
+#         context['latest_overall_visit'] = latest_overall_visit # For display purposes
+
+#         has_active_visit_flag = False
+#         active_visit_for_actions = None
+
+#         if latest_overall_visit and latest_overall_visit.consultation:
+#             # The most recent visit is an active consultation
+#             has_active_visit_flag = True
+#             active_visit_for_actions = latest_overall_visit
+        
+#         context['has_active_visit'] = has_active_visit_flag
+#         context['active_visit_for_actions'] = active_visit_for_actions # Use this for the "Close Visit" button
+
+
+#         context['vitals'] = patient.vital_signs.all().order_by('-updated')
+#             # Filter payments with credit method and calculate total credit amount
+#         payments = patient.patient_payments.all().order_by('-updated')
+#         context['payments'] = payments
+
+#         credit_payments = payments.filter(payment_method='CREDIT')
+#         total_credit_amount = credit_payments.aggregate(total=Sum('price'))['total'] or 0
+#         context['total_credit_amount'] = total_credit_amount
+        
+#         context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
+#         context['appointments'] = patient.appointments.all().order_by('-updated')
+#         context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
+#         prescribed_drugs = patient.prescribed_drugs.all().order_by('-updated')
+#         context['prescribed_drugs'] = prescribed_drugs
+
+#         context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
+#         context['physio'] = patient.physio_info.all().order_by('-updated')
+#         context['admission_info'] = patient.admission_info.all().order_by('-updated')
+#         context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
+#         context['ward_medication'] = patient.ward_medication.all().order_by('-updated')
+#         context['ward_clinical_notes'] = patient.ward_clinical_notes.all().order_by('-updated')
+#         context['ward_shift_notes'] = patient.ward_shift_notes.all().order_by('-updated')
+#         context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
+#         context['operation_notes'] = patient.operation_notes.all().order_by('-updated')
+#         context['anaesthesia_checklist'] = patient.anaesthesia_checklist.all().order_by('-updated')
+
+#         context['anaesthesia_checklist'] = (patient.anaesthesia_checklist.all().prefetch_related('concurrent_medical_illnesses','past_surgical_history','drug_history','social_history','last_meals').order_by('-updated'))
+
+#         context['theatre_operation_record'] = patient.theatre_operation_record.all().order_by('-updated')
+#         context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
+#         context['private_bill'] = patient.private_bill.all().order_by('-created')
+#         context['archive'] = patient.patient_archive.all().order_by('-updated')
+
+#         context['blood_group'] = patient.test_info.filter(bg_test__isnull=False).order_by('-created').select_related('bg_test')
+#         context['genotype'] = patient.test_info.filter(gt_test__isnull=False).order_by('-created').select_related('gt_test')
+#         context['fbc'] = patient.test_info.filter(fbc_test__isnull=False).order_by('-created').select_related('fbc_test')
+
+#         context['urea_electrolyte'] = patient.test_info.filter(ue_test__isnull=False).order_by('-created').select_related('ue_test')
+#         context['liver_function'] = patient.test_info.filter(lf_test__isnull=False).order_by('-created').select_related('lf_test')
+#         context['lipid_profile'] = patient.test_info.filter(lp_test__isnull=False).order_by('-created').select_related('lp_test')
+#         context['blood_glucose'] = patient.test_info.filter(bgl_test__isnull=False).order_by('-created').select_related('bgl_test')
+#         context['bone_chemistry'] = patient.test_info.filter(bc_test__isnull=False).order_by('-created').select_related('bc_test')
+#         context['serum_proteins'] = patient.test_info.filter(sp_test__isnull=False).order_by('-created').select_related('sp_test')
+#         context['cerebro_spinal_fluid'] = patient.test_info.filter(csf_test__isnull=False).order_by('-created').select_related('csf_test')
+#         context['miscellaneous_chempath_tests'] = patient.test_info.filter(misc_test__isnull=False).order_by('-created').select_related('misc_test')
+
+#         context['widal'] = patient.test_info.filter(widal_test__isnull=False).order_by('-created').select_related('widal_test')
+#         context['rheumatoid_factor'] = patient.test_info.filter(rheumatoid_factor_test__isnull=False).order_by('-created').select_related('rheumatoid_factor_test')
+#         context['hpb'] = patient.test_info.filter(hpb_test__isnull=False).order_by('-created').select_related('hpb_test')
+#         context['hcv'] = patient.test_info.filter(hcv_test__isnull=False).order_by('-created').select_related('hcv_test')
+#         context['vdrl']= patient.test_info.filter(vdrl_test__isnull=False).order_by('-created').select_related('vdrl_test')
+#         context['mantoux']= patient.test_info.filter(mantoux_test__isnull=False).order_by('-created').select_related('mantoux_test')
+#         context['crp']=patient.test_info.filter(crp_test__isnull=False).order_by('-created').select_related('crp_test')
+#         context['hiv_screening']= patient.test_info.filter(hiv_test__isnull=False).order_by('-created').select_related('hiv_test')
+#         context['aso_titre'] = patient.test_info.filter(aso_titre_test__isnull=False).order_by('-created').select_related('aso_titre_test')
+        
+#         context['urine_microscopy'] = patient.test_info.filter(urine_test__isnull=False).order_by('-created').select_related('urine_test')
+#         context['hvs'] = patient.test_info.filter(hvs_test__isnull=False).order_by('-created').select_related('hvs_test')
+#         context['stool'] = patient.test_info.filter(stool_test__isnull=False).order_by('-created').select_related('stool_test')
+#         context['blood_culture'] = patient.test_info.filter(blood_culture_test__isnull=False).order_by('-created').select_related('blood_culture_test')
+#         context['occult_blood'] = patient.test_info.filter(occult_blood_test__isnull=False).order_by('-created').select_related('occult_blood_test')
+#         context['sputum_mcs'] = patient.test_info.filter(sputum_mcs_test__isnull=False).order_by('-created').select_related('sputum_mcs_test')
+#         context['gram_stain'] = patient.test_info.filter(gram_stain_test__isnull=False).order_by('-created').select_related('gram_stain_test')
+#         context['swab_pus_aspirate_mcs'] = patient.test_info.filter(swab_pus_aspirate_test__isnull=False).order_by('-created').select_related('swab_pus_aspirate_test')
+#         context['zn_stain'] = patient.test_info.filter(zn_stain_test__isnull=False).order_by('-created').select_related('zn_stain_test')
+#         context['semen_analysis'] = patient.test_info.filter(semen_analysis_test__isnull=False).order_by('-created').select_related('semen_analysis_test')
+#         context['urinalysis'] = patient.test_info.filter(urinalysis_test__isnull=False).order_by('-created').select_related('urinalysis_test')
+#         context['pregnancy'] = patient.test_info.filter(pregnancy_test__isnull=False).order_by('-created').select_related('pregnancy_test')
+
+
+
+#         context['general_results']=patient.test_info.filter(general_results__isnull=False).order_by('-created')
+#          # Check if the patient has a wallet
+#         if hasattr(patient, 'wallet'):
+#             # Retrieve wallet transactions
+#             context['wallet'] = patient.wallet.transactions.all().order_by('-created_at')
+#         else:
+#             context['wallet'] = []
+
+#         context['bills'] = Bill.objects.filter(patient=self.object).order_by('-created')
+#         radiology_results = patient.radiology_results.all().order_by('-updated')
+#         context['radiology_results'] = radiology_results
+#         # Calculate total worth only for paid transactions
+#         paid_transactions = patient.patient_payments.filter(status=True)
+#         paid_transactions_count = paid_transactions.count()
+
+#         context['paid_transactions_count'] = paid_transactions_count
+
+#         # Calculate the total amount
+#         total_amount = paid_transactions.aggregate(total_amount=Sum('price'))['total_amount'] or 0
+#         context['total_amount'] = total_amount    
+#         context['prescription_dates'] = prescribed_drugs.dates('prescribed_date', 'day', order='DESC')
+  
+#         return context
+
+from django.utils.dateparse import parse_date
+from django.db.models import Sum
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PatientFolderView(DetailView):
     template_name = 'ehr/record/patient_folder.html'
@@ -847,126 +968,553 @@ class PatientFolderView(DetailView):
         return obj
    
     def get_context_data(self, **kwargs):
+        # Get date range from request
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+        
         context = super().get_context_data(**kwargs)
         patient = self.get_object()
+
         context['patient'] = patient
-        context['test_items'] = (patient.test_items.all().prefetch_related('items__payment').order_by('-updated'))
-        context['radiology_test_items'] = (patient.radiology_test_items.all().prefetch_related('payment').order_by('-updated'))
-    # If 'created' field is reliably auto_now_add=True, order_by('-created', '-id') is more robust.
-        all_visits_qs = patient.visit_record.all().order_by('-created','-id')
+        
+        # Prepare querysets with potential date filtering
+        try:
+            # Convert string dates to date objects if provided
+            start = parse_date(start_date) if start_date else None
+            end = parse_date(end_date) if end_date else None
+
+            # Filter test items
+            test_items = patient.test_items.all().prefetch_related('items__payment').order_by('-updated')
+            if start and end:
+                test_items = test_items.filter(updated__range=[start, end])
+
+            # Filter radiology test items
+            radiology_test_items = patient.radiology_test_items.all().prefetch_related('payment').order_by('-updated')
+            if start and end:
+                radiology_test_items = radiology_test_items.filter(updated__range=[start, end])
+            
+            # Filter visits
+            all_visits_qs = patient.visit_record.all().order_by('-created','-id')
+            if start and end:
+                all_visits_qs = all_visits_qs.filter(created__range=[start, end])
+
+            # Filter vitals
+            vitals = patient.vital_signs.all().order_by('-updated')
+            if start and end:
+                vitals = vitals.filter(updated__range=[start, end])
+
+            # Filter payments
+            payments = patient.patient_payments.all().order_by('-updated')
+            if start and end:
+                payments = payments.filter(updated__range=[start, end])
+
+            # Filter clinical notes
+            clinical_notes = patient.clinical_notes.all().order_by('-updated')
+            if start and end:
+                clinical_notes = clinical_notes.filter(updated__range=[start, end])
+
+            # Filter appointments
+            appointments = patient.appointments.all().order_by('-updated')
+            if start and end:
+                appointments = appointments.filter(updated__range=[start, end])
+
+            # Filter prescribed drugs
+            prescribed_drugs = patient.prescribed_drugs.all().order_by('-updated')
+            if start and end:
+                prescribed_drugs = prescribed_drugs.filter(updated__range=[start, end])
+
+            # Filter radiology results
+            radiology_results = patient.radiology_results.all().order_by('-updated')
+            if start and end:
+                radiology_results = radiology_results.filter(updated__range=[start, end])
+
+            # Filter physio
+            physio = patient.physio_info.all().order_by('-updated')
+            if start and end:
+                physio = physio.filter(updated__range=[start, end])
+
+            # Filter admission info
+            admission_info = patient.admission_info.all().order_by('-updated')
+            if start and end:
+                admission_info = admission_info.filter(updated__range=[start, end])
+
+            # Filter ward related data
+            ward_vital_signs = patient.ward_vital_signs.all().order_by('-updated')
+            if start and end:
+                ward_vital_signs = ward_vital_signs.filter(updated__range=[start, end])
+
+            ward_medication = patient.ward_medication.all().order_by('-updated')
+            if start and end:
+                ward_medication = ward_medication.filter(updated__range=[start, end])
+
+            ward_clinical_notes = patient.ward_clinical_notes.all().order_by('-updated')
+            if start and end:
+                ward_clinical_notes = ward_clinical_notes.filter(updated__range=[start, end])
+
+            ward_shift_notes = patient.ward_shift_notes.all().order_by('-updated')
+            if start and end:
+                ward_shift_notes = ward_shift_notes.filter(updated__range=[start, end])
+
+            # Filter theatre related data
+            theatre_bookings = patient.theatre_bookings.all().order_by('-updated')
+            if start and end:
+                theatre_bookings = theatre_bookings.filter(updated__range=[start, end])
+
+            operation_notes = patient.operation_notes.all().order_by('-updated')
+            if start and end:
+                operation_notes = operation_notes.filter(updated__range=[start, end])
+
+            anaesthesia_checklist = patient.anaesthesia_checklist.all().prefetch_related('concurrent_medical_illnesses','past_surgical_history','drug_history','social_history','last_meals').order_by('-updated')
+            if start and end:
+                anaesthesia_checklist = anaesthesia_checklist.filter(updated__range=[start, end])
+
+            theatre_operation_record = patient.theatre_operation_record.all().order_by('-updated')
+            if start and end:
+                theatre_operation_record = theatre_operation_record.filter(updated__range=[start, end])
+
+            # Filter bills
+            surgery_bill = patient.surgery_bill.all().order_by('-created')
+            if start and end:
+                surgery_bill = surgery_bill.filter(created__range=[start, end])
+
+            private_bill = patient.private_bill.all().order_by('-created')
+            if start and end:
+                private_bill = private_bill.filter(created__range=[start, end])
+
+            # Filter archive
+            archive = patient.patient_archive.all().order_by('-updated')
+            if start and end:
+                archive = archive.filter(updated__range=[start, end])
+
+            # Filter test info data
+            blood_group = patient.test_info.filter(bg_test__isnull=False).order_by('-created').select_related('bg_test')
+            if start and end:
+                blood_group = blood_group.filter(created__range=[start, end])
+
+            genotype = patient.test_info.filter(gt_test__isnull=False).order_by('-created').select_related('gt_test')
+            if start and end:
+                genotype = genotype.filter(created__range=[start, end])
+
+            fbc = patient.test_info.filter(fbc_test__isnull=False).order_by('-created').select_related('fbc_test')
+            if start and end:
+                fbc = fbc.filter(created__range=[start, end])
+
+            urea_electrolyte = patient.test_info.filter(ue_test__isnull=False).order_by('-created').select_related('ue_test')
+            if start and end:
+                urea_electrolyte = urea_electrolyte.filter(created__range=[start, end])
+
+            liver_function = patient.test_info.filter(lf_test__isnull=False).order_by('-created').select_related('lf_test')
+            if start and end:
+                liver_function = liver_function.filter(created__range=[start, end])
+
+            lipid_profile = patient.test_info.filter(lp_test__isnull=False).order_by('-created').select_related('lp_test')
+            if start and end:
+                lipid_profile = lipid_profile.filter(created__range=[start, end])
+
+            blood_glucose = patient.test_info.filter(bgl_test__isnull=False).order_by('-created').select_related('bgl_test')
+            if start and end:
+                blood_glucose = blood_glucose.filter(created__range=[start, end])
+
+            bone_chemistry = patient.test_info.filter(bc_test__isnull=False).order_by('-created').select_related('bc_test')
+            if start and end:
+                bone_chemistry = bone_chemistry.filter(created__range=[start, end])
+
+            serum_proteins = patient.test_info.filter(sp_test__isnull=False).order_by('-created').select_related('sp_test')
+            if start and end:
+                serum_proteins = serum_proteins.filter(created__range=[start, end])
+
+            cerebro_spinal_fluid = patient.test_info.filter(csf_test__isnull=False).order_by('-created').select_related('csf_test')
+            if start and end:
+                cerebro_spinal_fluid = cerebro_spinal_fluid.filter(created__range=[start, end])
+
+            miscellaneous_chempath_tests = patient.test_info.filter(misc_test__isnull=False).order_by('-created').select_related('misc_test')
+            if start and end:
+                miscellaneous_chempath_tests = miscellaneous_chempath_tests.filter(created__range=[start, end])
+
+            widal = patient.test_info.filter(widal_test__isnull=False).order_by('-created').select_related('widal_test')
+            if start and end:
+                widal = widal.filter(created__range=[start, end])
+
+            rheumatoid_factor = patient.test_info.filter(rheumatoid_factor_test__isnull=False).order_by('-created').select_related('rheumatoid_factor_test')
+            if start and end:
+                rheumatoid_factor = rheumatoid_factor.filter(created__range=[start, end])
+
+            hpb = patient.test_info.filter(hpb_test__isnull=False).order_by('-created').select_related('hpb_test')
+            if start and end:
+                hpb = hpb.filter(created__range=[start, end])
+
+            hcv = patient.test_info.filter(hcv_test__isnull=False).order_by('-created').select_related('hcv_test')
+            if start and end:
+                hcv = hcv.filter(created__range=[start, end])
+
+            vdrl = patient.test_info.filter(vdrl_test__isnull=False).order_by('-created').select_related('vdrl_test')
+            if start and end:
+                vdrl = vdrl.filter(created__range=[start, end])
+
+            mantoux = patient.test_info.filter(mantoux_test__isnull=False).order_by('-created').select_related('mantoux_test')
+            if start and end:
+                mantoux = mantoux.filter(created__range=[start, end])
+
+            crp = patient.test_info.filter(crp_test__isnull=False).order_by('-created').select_related('crp_test')
+            if start and end:
+                crp = crp.filter(created__range=[start, end])
+
+            hiv_screening = patient.test_info.filter(hiv_test__isnull=False).order_by('-created').select_related('hiv_test')
+            if start and end:
+                hiv_screening = hiv_screening.filter(created__range=[start, end])
+
+            aso_titre = patient.test_info.filter(aso_titre_test__isnull=False).order_by('-created').select_related('aso_titre_test')
+            if start and end:
+                aso_titre = aso_titre.filter(created__range=[start, end])
+            
+            urine_microscopy = patient.test_info.filter(urine_test__isnull=False).order_by('-created').select_related('urine_test')
+            if start and end:
+                urine_microscopy = urine_microscopy.filter(created__range=[start, end])
+
+            hvs = patient.test_info.filter(hvs_test__isnull=False).order_by('-created').select_related('hvs_test')
+            if start and end:
+                hvs = hvs.filter(created__range=[start, end])
+
+            stool = patient.test_info.filter(stool_test__isnull=False).order_by('-created').select_related('stool_test')
+            if start and end:
+                stool = stool.filter(created__range=[start, end])
+
+            blood_culture = patient.test_info.filter(blood_culture_test__isnull=False).order_by('-created').select_related('blood_culture_test')
+            if start and end:
+                blood_culture = blood_culture.filter(created__range=[start, end])
+
+            occult_blood = patient.test_info.filter(occult_blood_test__isnull=False).order_by('-created').select_related('occult_blood_test')
+            if start and end:
+                occult_blood = occult_blood.filter(created__range=[start, end])
+
+            sputum_mcs = patient.test_info.filter(sputum_mcs_test__isnull=False).order_by('-created').select_related('sputum_mcs_test')
+            if start and end:
+                sputum_mcs = sputum_mcs.filter(created__range=[start, end])
+
+            gram_stain = patient.test_info.filter(gram_stain_test__isnull=False).order_by('-created').select_related('gram_stain_test')
+            if start and end:
+                gram_stain = gram_stain.filter(created__range=[start, end])
+
+            swab_pus_aspirate_mcs = patient.test_info.filter(swab_pus_aspirate_test__isnull=False).order_by('-created').select_related('swab_pus_aspirate_test')
+            if start and end:
+                swab_pus_aspirate_mcs = swab_pus_aspirate_mcs.filter(created__range=[start, end])
+
+            zn_stain = patient.test_info.filter(zn_stain_test__isnull=False).order_by('-created').select_related('zn_stain_test')
+            if start and end:
+                zn_stain = zn_stain.filter(created__range=[start, end])
+
+            semen_analysis = patient.test_info.filter(semen_analysis_test__isnull=False).order_by('-created').select_related('semen_analysis_test')
+            if start and end:
+                semen_analysis = semen_analysis.filter(created__range=[start, end])
+
+            urinalysis = patient.test_info.filter(urinalysis_test__isnull=False).order_by('-created').select_related('urinalysis_test')
+            if start and end:
+                urinalysis = urinalysis.filter(created__range=[start, end])
+
+            pregnancy = patient.test_info.filter(pregnancy_test__isnull=False).order_by('-created').select_related('pregnancy_test')
+            if start and end:
+                pregnancy = pregnancy.filter(created__range=[start, end])
+
+            general_results = patient.test_info.filter(general_results__isnull=False).order_by('-created')
+            if start and end:
+                general_results = general_results.filter(created__range=[start, end])
+
+            # Filter bills
+            bills = Bill.objects.filter(patient=self.object).order_by('-created')
+            if start and end:
+                bills = bills.filter(created__range=[start, end])
+
+            # Filter wallet transactions
+            if hasattr(patient, 'wallet'):
+                wallet = patient.wallet.transactions.all().order_by('-created_at')
+                if start and end:
+                    wallet = wallet.filter(created_at__range=[start, end])
+            else:
+                wallet = []
+
+        except (ValueError, TypeError):
+            # Fallback to unfiltered querysets if date parsing fails
+            test_items = patient.test_items.all().prefetch_related('items__payment').order_by('-updated')
+            radiology_test_items = patient.radiology_test_items.all().prefetch_related('payment').order_by('-updated')
+            all_visits_qs = patient.visit_record.all().order_by('-created','-id')
+            vitals = patient.vital_signs.all().order_by('-updated')
+            payments = patient.patient_payments.all().order_by('-updated')
+            clinical_notes = patient.clinical_notes.all().order_by('-updated')
+            appointments = patient.appointments.all().order_by('-updated')
+            prescribed_drugs = patient.prescribed_drugs.all().order_by('-updated')
+            radiology_results = patient.radiology_results.all().order_by('-updated')
+            physio = patient.physio_info.all().order_by('-updated')
+            admission_info = patient.admission_info.all().order_by('-updated')
+            ward_vital_signs = patient.ward_vital_signs.all().order_by('-updated')
+            ward_medication = patient.ward_medication.all().order_by('-updated')
+            ward_clinical_notes = patient.ward_clinical_notes.all().order_by('-updated')
+            ward_shift_notes = patient.ward_shift_notes.all().order_by('-updated')
+            theatre_bookings = patient.theatre_bookings.all().order_by('-updated')
+            operation_notes = patient.operation_notes.all().order_by('-updated')
+            anaesthesia_checklist = patient.anaesthesia_checklist.all().prefetch_related('concurrent_medical_illnesses','past_surgical_history','drug_history','social_history','last_meals').order_by('-updated')
+            theatre_operation_record = patient.theatre_operation_record.all().order_by('-updated')
+            surgery_bill = patient.surgery_bill.all().order_by('-created')
+            private_bill = patient.private_bill.all().order_by('-created')
+            archive = patient.patient_archive.all().order_by('-updated')
+            blood_group = patient.test_info.filter(bg_test__isnull=False).order_by('-created').select_related('bg_test')
+            genotype = patient.test_info.filter(gt_test__isnull=False).order_by('-created').select_related('gt_test')
+            fbc = patient.test_info.filter(fbc_test__isnull=False).order_by('-created').select_related('fbc_test')
+            urea_electrolyte = patient.test_info.filter(ue_test__isnull=False).order_by('-created').select_related('ue_test')
+            liver_function = patient.test_info.filter(lf_test__isnull=False).order_by('-created').select_related('lf_test')
+            lipid_profile = patient.test_info.filter(lp_test__isnull=False).order_by('-created').select_related('lp_test')
+            blood_glucose = patient.test_info.filter(bgl_test__isnull=False).order_by('-created').select_related('bgl_test')
+            bone_chemistry = patient.test_info.filter(bc_test__isnull=False).order_by('-created').select_related('bc_test')
+            serum_proteins = patient.test_info.filter(sp_test__isnull=False).order_by('-created').select_related('sp_test')
+            cerebro_spinal_fluid = patient.test_info.filter(csf_test__isnull=False).order_by('-created').select_related('csf_test')
+            miscellaneous_chempath_tests = patient.test_info.filter(misc_test__isnull=False).order_by('-created').select_related('misc_test')
+            widal = patient.test_info.filter(widal_test__isnull=False).order_by('-created').select_related('widal_test')
+            rheumatoid_factor = patient.test_info.filter(rheumatoid_factor_test__isnull=False).order_by('-created').select_related('rheumatoid_factor_test')
+            hpb = patient.test_info.filter(hpb_test__isnull=False).order_by('-created').select_related('hpb_test')
+            hcv = patient.test_info.filter(hcv_test__isnull=False).order_by('-created').select_related('hcv_test')
+            vdrl = patient.test_info.filter(vdrl_test__isnull=False).order_by('-created').select_related('vdrl_test')
+            mantoux = patient.test_info.filter(mantoux_test__isnull=False).order_by('-created').select_related('mantoux_test')
+            crp = patient.test_info.filter(crp_test__isnull=False).order_by('-created').select_related('crp_test')
+            hiv_screening = patient.test_info.filter(hiv_test__isnull=False).order_by('-created').select_related('hiv_test')
+            aso_titre = patient.test_info.filter(aso_titre_test__isnull=False).order_by('-created').select_related('aso_titre_test')
+            urine_microscopy = patient.test_info.filter(urine_test__isnull=False).order_by('-created').select_related('urine_test')
+            hvs = patient.test_info.filter(hvs_test__isnull=False).order_by('-created').select_related('hvs_test')
+            stool = patient.test_info.filter(stool_test__isnull=False).order_by('-created').select_related('stool_test')
+            blood_culture = patient.test_info.filter(blood_culture_test__isnull=False).order_by('-created').select_related('blood_culture_test')
+            occult_blood = patient.test_info.filter(occult_blood_test__isnull=False).order_by('-created').select_related('occult_blood_test')
+            sputum_mcs = patient.test_info.filter(sputum_mcs_test__isnull=False).order_by('-created').select_related('sputum_mcs_test')
+            gram_stain = patient.test_info.filter(gram_stain_test__isnull=False).order_by('-created').select_related('gram_stain_test')
+            swab_pus_aspirate_mcs = patient.test_info.filter(swab_pus_aspirate_test__isnull=False).order_by('-created').select_related('swab_pus_aspirate_test')
+            zn_stain = patient.test_info.filter(zn_stain_test__isnull=False).order_by('-created').select_related('zn_stain_test')
+            semen_analysis = patient.test_info.filter(semen_analysis_test__isnull=False).order_by('-created').select_related('semen_analysis_test')
+            urinalysis = patient.test_info.filter(urinalysis_test__isnull=False).order_by('-created').select_related('urinalysis_test')
+            pregnancy = patient.test_info.filter(pregnancy_test__isnull=False).order_by('-created').select_related('pregnancy_test')
+            general_results = patient.test_info.filter(general_results__isnull=False).order_by('-created')
+            bills = Bill.objects.filter(patient=self.object).order_by('-created')
+            
+            if hasattr(patient, 'wallet'):
+                wallet = patient.wallet.transactions.all().order_by('-created_at')
+            else:
+                wallet = []
+
+        # Set all context variables
+        context['test_items'] = test_items
+        context['radiology_test_items'] = radiology_test_items
         context['visits'] = all_visits_qs
 
         latest_overall_visit = all_visits_qs.first()
-        context['latest_overall_visit'] = latest_overall_visit # For display purposes
+        context['latest_overall_visit'] = latest_overall_visit
 
         has_active_visit_flag = False
         active_visit_for_actions = None
 
         if latest_overall_visit and latest_overall_visit.consultation:
-            # The most recent visit is an active consultation
             has_active_visit_flag = True
             active_visit_for_actions = latest_overall_visit
         
         context['has_active_visit'] = has_active_visit_flag
-        context['active_visit_for_actions'] = active_visit_for_actions # Use this for the "Close Visit" button
+        context['active_visit_for_actions'] = active_visit_for_actions
 
-
-        context['vitals'] = patient.vital_signs.all().order_by('-updated')
-        # context['payments'] = patient.patient_payments.all().order_by('-updated')
-            # Filter payments with credit method and calculate total credit amount
-        payments = patient.patient_payments.all().order_by('-updated')
+        context['vitals'] = vitals
         context['payments'] = payments
 
+        # Calculate totals with filtered payments
         credit_payments = payments.filter(payment_method='CREDIT')
         total_credit_amount = credit_payments.aggregate(total=Sum('price'))['total'] or 0
         context['total_credit_amount'] = total_credit_amount
         
-        context['clinical_notes'] = patient.clinical_notes.all().order_by('-updated')
-        context['appointments'] = patient.appointments.all().order_by('-updated')
-        context['prescribed_drugs'] = patient.prescribed_drugs.all().order_by('-updated')
-        prescribed_drugs = patient.prescribed_drugs.all().order_by('-updated')
+        context['clinical_notes'] = clinical_notes
+        context['appointments'] = appointments
         context['prescribed_drugs'] = prescribed_drugs
-
-        context['radiology_results'] = patient.radiology_results.all().order_by('-updated')
-        context['physio'] = patient.physio_info.all().order_by('-updated')
-        context['admission_info'] = patient.admission_info.all().order_by('-updated')
-        context['ward_vital_signs'] = patient.ward_vital_signs.all().order_by('-updated')
-        context['ward_medication'] = patient.ward_medication.all().order_by('-updated')
-        context['ward_clinical_notes'] = patient.ward_clinical_notes.all().order_by('-updated')
-        context['ward_shift_notes'] = patient.ward_shift_notes.all().order_by('-updated')
-        context['theatre_bookings'] = patient.theatre_bookings.all().order_by('-updated')
-        context['operation_notes'] = patient.operation_notes.all().order_by('-updated')
-        context['anaesthesia_checklist'] = patient.anaesthesia_checklist.all().order_by('-updated')
-
-        context['anaesthesia_checklist'] = (patient.anaesthesia_checklist.all().prefetch_related('concurrent_medical_illnesses','past_surgical_history','drug_history','social_history','last_meals').order_by('-updated'))
-
-        context['theatre_operation_record'] = patient.theatre_operation_record.all().order_by('-updated')
-        context['surgery_bill'] = patient.surgery_bill.all().order_by('-created')
-        context['private_bill'] = patient.private_bill.all().order_by('-created')
-        context['archive'] = patient.patient_archive.all().order_by('-updated')
-
-        context['blood_group'] = patient.test_info.filter(bg_test__isnull=False).order_by('-created').select_related('bg_test')
-        context['genotype'] = patient.test_info.filter(gt_test__isnull=False).order_by('-created').select_related('gt_test')
-        context['fbc'] = patient.test_info.filter(fbc_test__isnull=False).order_by('-created').select_related('fbc_test')
-
-        context['urea_electrolyte'] = patient.test_info.filter(ue_test__isnull=False).order_by('-created').select_related('ue_test')
-        context['liver_function'] = patient.test_info.filter(lf_test__isnull=False).order_by('-created').select_related('lf_test')
-        context['lipid_profile'] = patient.test_info.filter(lp_test__isnull=False).order_by('-created').select_related('lp_test')
-        context['blood_glucose'] = patient.test_info.filter(bgl_test__isnull=False).order_by('-created').select_related('bgl_test')
-        context['bone_chemistry'] = patient.test_info.filter(bc_test__isnull=False).order_by('-created').select_related('bc_test')
-        context['serum_proteins'] = patient.test_info.filter(sp_test__isnull=False).order_by('-created').select_related('sp_test')
-        context['cerebro_spinal_fluid'] = patient.test_info.filter(csf_test__isnull=False).order_by('-created').select_related('csf_test')
-        context['miscellaneous_chempath_tests'] = patient.test_info.filter(misc_test__isnull=False).order_by('-created').select_related('misc_test')
-
-        context['widal'] = patient.test_info.filter(widal_test__isnull=False).order_by('-created').select_related('widal_test')
-        context['rheumatoid_factor'] = patient.test_info.filter(rheumatoid_factor_test__isnull=False).order_by('-created').select_related('rheumatoid_factor_test')
-        context['hpb'] = patient.test_info.filter(hpb_test__isnull=False).order_by('-created').select_related('hpb_test')
-        context['hcv'] = patient.test_info.filter(hcv_test__isnull=False).order_by('-created').select_related('hcv_test')
-        context['vdrl']= patient.test_info.filter(vdrl_test__isnull=False).order_by('-created').select_related('vdrl_test')
-        context['mantoux']= patient.test_info.filter(mantoux_test__isnull=False).order_by('-created').select_related('mantoux_test')
-        context['crp']=patient.test_info.filter(crp_test__isnull=False).order_by('-created').select_related('crp_test')
-        context['hiv_screening']= patient.test_info.filter(hiv_test__isnull=False).order_by('-created').select_related('hiv_test')
-        context['aso_titre'] = patient.test_info.filter(aso_titre_test__isnull=False).order_by('-created').select_related('aso_titre_test')
-        
-        context['urine_microscopy'] = patient.test_info.filter(urine_test__isnull=False).order_by('-created').select_related('urine_test')
-        context['hvs'] = patient.test_info.filter(hvs_test__isnull=False).order_by('-created').select_related('hvs_test')
-        context['stool'] = patient.test_info.filter(stool_test__isnull=False).order_by('-created').select_related('stool_test')
-        context['blood_culture'] = patient.test_info.filter(blood_culture_test__isnull=False).order_by('-created').select_related('blood_culture_test')
-        context['occult_blood'] = patient.test_info.filter(occult_blood_test__isnull=False).order_by('-created').select_related('occult_blood_test')
-        context['sputum_mcs'] = patient.test_info.filter(sputum_mcs_test__isnull=False).order_by('-created').select_related('sputum_mcs_test')
-        context['gram_stain'] = patient.test_info.filter(gram_stain_test__isnull=False).order_by('-created').select_related('gram_stain_test')
-        context['swab_pus_aspirate_mcs'] = patient.test_info.filter(swab_pus_aspirate_test__isnull=False).order_by('-created').select_related('swab_pus_aspirate_test')
-        context['zn_stain'] = patient.test_info.filter(zn_stain_test__isnull=False).order_by('-created').select_related('zn_stain_test')
-        context['semen_analysis'] = patient.test_info.filter(semen_analysis_test__isnull=False).order_by('-created').select_related('semen_analysis_test')
-        context['urinalysis'] = patient.test_info.filter(urinalysis_test__isnull=False).order_by('-created').select_related('urinalysis_test')
-        context['pregnancy'] = patient.test_info.filter(pregnancy_test__isnull=False).order_by('-created').select_related('pregnancy_test')
-
-
-
-        context['general_results']=patient.test_info.filter(general_results__isnull=False).order_by('-created')
-         # Check if the patient has a wallet
-        if hasattr(patient, 'wallet'):
-            # Retrieve wallet transactions
-            context['wallet'] = patient.wallet.transactions.all().order_by('-created_at')
-        else:
-            context['wallet'] = []
-
-        context['bills'] = Bill.objects.filter(patient=self.object).order_by('-created')
-        radiology_results = patient.radiology_results.all().order_by('-updated')
         context['radiology_results'] = radiology_results
-        # Calculate total worth only for paid transactions
-        paid_transactions = patient.patient_payments.filter(status=True)
-        paid_transactions_count = paid_transactions.count()
+        context['physio'] = physio
+        context['admission_info'] = admission_info
+        context['ward_vital_signs'] = ward_vital_signs
+        context['ward_medication'] = ward_medication
+        context['ward_clinical_notes'] = ward_clinical_notes
+        context['ward_shift_notes'] = ward_shift_notes
+        context['theatre_bookings'] = theatre_bookings
+        context['operation_notes'] = operation_notes
+        context['anaesthesia_checklist'] = anaesthesia_checklist
+        context['theatre_operation_record'] = theatre_operation_record
+        context['surgery_bill'] = surgery_bill
+        context['private_bill'] = private_bill
+        context['archive'] = archive
+        context['blood_group'] = blood_group
+        context['genotype'] = genotype
+        context['fbc'] = fbc
+        context['urea_electrolyte'] = urea_electrolyte
+        context['liver_function'] = liver_function
+        context['lipid_profile'] = lipid_profile
+        context['blood_glucose'] = blood_glucose
+        context['bone_chemistry'] = bone_chemistry
+        context['serum_proteins'] = serum_proteins
+        context['cerebro_spinal_fluid'] = cerebro_spinal_fluid
+        context['miscellaneous_chempath_tests'] = miscellaneous_chempath_tests
+        context['widal'] = widal
+        context['rheumatoid_factor'] = rheumatoid_factor
+        context['hpb'] = hpb
+        context['hcv'] = hcv
+        context['vdrl'] = vdrl
+        context['mantoux'] = mantoux
+        context['crp'] = crp
+        context['hiv_screening'] = hiv_screening
+        context['aso_titre'] = aso_titre
+        context['urine_microscopy'] = urine_microscopy
+        context['hvs'] = hvs
+        context['stool'] = stool
+        context['blood_culture'] = blood_culture
+        context['occult_blood'] = occult_blood
+        context['sputum_mcs'] = sputum_mcs
+        context['gram_stain'] = gram_stain
+        context['swab_pus_aspirate_mcs'] = swab_pus_aspirate_mcs
+        context['zn_stain'] = zn_stain
+        context['semen_analysis'] = semen_analysis
+        context['urinalysis'] = urinalysis
+        context['pregnancy'] = pregnancy
+        context['general_results'] = general_results
+        context['wallet'] = wallet
+        context['bills'] = bills
 
+        # Calculate total worth only for paid transactions (with date filtering)
+        paid_transactions = payments.filter(status=True)
+        paid_transactions_count = paid_transactions.count()
         context['paid_transactions_count'] = paid_transactions_count
 
         # Calculate the total amount
         total_amount = paid_transactions.aggregate(total_amount=Sum('price'))['total_amount'] or 0
         context['total_amount'] = total_amount    
+        
+        # Get prescription dates with filtering
         context['prescription_dates'] = prescribed_drugs.dates('prescribed_date', 'day', order='DESC')
+        
+        # Add date filter context
+        context['start_date'] = start_date
+        context['end_date'] = end_date
+        context['query'] = self.request.GET.get('q', '')
   
         return context
-   
+
+    def render_to_pdf(self, context):
+        """
+        Generate a PDF from the patient details with improved image handling
+        """
+        if not pisa:
+            print("xhtml2pdf is not installed. Please install it with: pip install xhtml2pdf")
+            return None
+            
+        try:
+            # Attempt to get current site, but provide a fallback
+            try:
+                current_site = get_current_site(self.request)
+                domain = current_site.domain
+            except Exception:
+                domain = self.request.get_host()
+            
+            # Add domain to context for use in template
+            context['site_domain'] = f'http{"s" if self.request.is_secure() else ""}://{domain}'
+            
+            # Render the template with context
+            template_path = 'ehr/record/patient_pdf_template.html'  # Update path for your EHR app
+            html = render_to_string(template_path, context)
+            
+            # Create a BytesIO buffer to receive PDF data
+            buffer = BytesIO()
+            
+            # Configure pisa options
+            pdf_options = {
+                'base_url': f'http{"s" if self.request.is_secure() else ""}://{domain}',
+                'encoding': 'utf-8'
+            }
+            
+            # Create the PDF object using BytesIO as its "file"
+            pdf = pisa.CreatePDF(
+                html, 
+                dest=buffer, 
+                link_callback=self.fetch_resources,
+                **pdf_options
+            )
+            
+            # If error during PDF generation, log the error
+            if pdf.err:
+                print(f"PDF Generation Error: {pdf.err}")
+                return None
+            
+            buffer.seek(0)
+            return buffer
+        
+        except Exception as e:
+            print(f"Error in render_to_pdf: {e}")
+            return None
+
+    def fetch_resources(self, uri, rel):
+        """
+        Callback to properly resolve image paths for PDF generation
+        """
+        try:
+            # Remove query parameters
+            uri = uri.split('?')[0]
+            
+            # Handle static files
+            if uri.startswith('/static/'):
+                static_path = os.path.join(settings.STATIC_ROOT, uri.replace('/static/', ''))
+                if os.path.exists(static_path):
+                    return static_path
+                
+                # Fallback to STATICFILES_DIRS
+                for static_dir in settings.STATICFILES_DIRS:
+                    full_path = os.path.join(static_dir, uri.replace('/static/', ''))
+                    if os.path.exists(full_path):
+                        return full_path
+            
+            # Handle media files
+            if uri.startswith('/media/'):
+                media_path = os.path.join(settings.MEDIA_ROOT, uri.replace('/media/', ''))
+                if os.path.exists(media_path):
+                    return media_path
+            
+            # Fallback: return the original URI
+            return uri
+        
+        except Exception as e:
+            print(f"Error in fetch_resources: {e}")
+            return uri
+
+    def get(self, request, *args, **kwargs):
+        # Fetch the patient object
+        self.object = self.get_object()
+
+        # Check if PDF generation is requested
+        if request.GET.get('format') == 'pdf':
+            # Get the context data (this will include date filtering)
+            context = self.get_context_data()
+            
+            # Generate PDF
+            pdf_buffer = self.render_to_pdf(context)
+            if pdf_buffer:
+                # Create HTTP response with PDF
+                patient = context['patient']
+                filename = f'patient_{patient.file_no}_medical_record'
+                
+                # Add date range to filename if specified
+                if context.get('start_date') and context.get('end_date'):
+                    filename += f'_{context["start_date"]}_{context["end_date"]}'
+                
+                filename += '.pdf'
+                
+                response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+                response['Content-Disposition'] = f'filename={filename}'
+                return response
+            else:
+                # If PDF generation fails, return error response
+                return HttpResponse(
+                    'PDF generation failed. Please check server logs for details.',
+                    status=500
+                )
+
+        # Normal view rendering
+        return super().get(request, *args, **kwargs)
+
+    
 class VisitCreateView(LoginRequiredMixin, CreateView):
     model = VisitRecord
     form_class = VisitForm
@@ -1056,6 +1604,7 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
     
     def get_success_url(self):
         return reverse_lazy('patient_list')
+    
 # class VisitCreateView(LoginRequiredMixin, CreateView):
 #     model = VisitRecord
 #     form_class = VisitForm

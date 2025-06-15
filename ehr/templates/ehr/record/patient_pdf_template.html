@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Medical Record - {{ patient.file_no }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.8cm;
+            padding: 1px;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.4;
+            font-size: 12px;
+        }
+ .header {
+    text-align: center;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #4a6fa5, transparent);
+}
+
+.record-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+}
+
+.date-filter {
+    background-color: #f0f4f8;
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+    font-size: 14px;
+    color: #4a6fa5;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px dashed #e0e6ed;
+}
+
+.info-label {
+    font-weight: 500;
+    color: #6b7c93;
+    min-width: 150px;
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+.info-value {
+    color: #2c3e50;
+    font-weight: 400;
+    font-size: 14px;
+}
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c5aa0;
+            border-bottom: 2px solid #2c5aa0;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .subsection-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #d32f2f;
+            margin: 20px 0 10px 0;
+        }
+        
+        .record-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 11px;
+        }
+        
+        .record-table th,
+        .record-table td {
+            border: 1px solid #dee2e6;
+            padding: 4px;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        .record-table th {
+            background-color: #e9ecef;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .record-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .date-filter {
+            background-color: #fff3cd;
+            padding: 4px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+            padding-top: 20px;
+        }
+    .clinical-notes-section {
+        margin-bottom: 40px;
+    }
+    
+    .clinical-note {
+        background-color: #ffffff;
+        border-left: 4px solid #2c5aa0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+        padding: 20px;
+        border-radius: 0 4px 4px 0;
+    }
+    
+    .note-header {
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .note-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 12px;
+    }
+    
+    .note-author {
+        font-weight: 600;
+        color: #2c5aa0;
+    }
+    
+    .note-date {
+        color: #6c757d;
+    }
+    
+    .diagnosis {
+        font-size: 12px;
+        margin: 0;
+        color: #495057;
+    }
+    
+    .diagnosis-value {
+        font-weight: 500;
+        color: #212529;
+    }
+    
+    .note-content {
+        line-height: 1.6;
+        color: #212529;
+    }
+    
+    .note-content p {
+        margin-bottom: 12px;
+    }
+    
+    .no-notes {
+        color: #6c757d;
+        font-style: italic;
+    }
+    
+    @media print {
+        .clinical-note {
+            page-break-inside: avoid;
+        }
+    }
+
+        .test-result {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #2c5aa0;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        @media print {
+            .page-break {
+                page-break-before: always;
+            }
+        }
+ .patient-details-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.patient-details-table td {
+    padding: 4px;
+    vertical-align: top;
+    border-bottom: 1px solid #ddd;
+}
+
+.patient-details-table strong {
+    color: #333;
+}
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="record-title">Patient Medical Record</div>
+    </div>
+
+    <!-- Date Filter Info -->
+    {% if start_date and end_date %}
+    <div class="date-filter">
+        <strong>Report Period:</strong> {{ start_date }} to {{ end_date }}
+    </div>
+    {% endif %}
+<section class="patient-info-card">
+    <header class="patient-info-header">
+    <h2 class="section-title">Patient Details</h2>
+    </header>
+    
+    <table class="patient-details-table">
+        <tr>
+            <td>
+                <strong>File No:</strong> {{ patient.file_no }}
+            </td>
+            <td>
+                <strong>Phone:</strong> {{ patient.phone }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Full Name:</strong> {{ patient.full_name }}
+            </td>
+            <td>
+                <strong>Address:</strong> {{ patient.address|default:"Not provided" }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Age:</strong> {{ patient.age }}
+            </td>
+            <td>
+                <strong>Next of Kin Info:</strong> {{ patient.nok_name|default:"Not provided" }} - <strong>Phone:</strong> {{ patient.nok_phone|default:"Not provided" }} - <strong>Address:</strong> 
+                {% if patient.nok_addr_if %}
+                    {{ patient.nok_addr_if|default:"" }}
+                {% else %}
+                    {{ patient.nok_addr|default:"Not provided" }}
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Gender:</strong> {{ patient.gender }}
+            </td>
+            <td>
+                <strong>Marital Status:</strong> {{ patient.marital_status }}
+            </td>
+        </tr>
+    </table>
+</section>
+    <!-- Visits Section -->
+    {% if visits %}
+    <div class="section">
+        <h2 class="section-title">Visit Records</h2>
+        <table class="record-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Doctor</th>
+                    <th>Clinic</th>
+                    <th>Team</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for visit in visits %}
+                <tr>
+                    <td>{{ visit.record|default:"N/A" }}</td>
+                    <td>{{ visit.user|default:"N/A" }}</td>
+                    <td>{{ visit.clinic|default:"N/A" }}</td>
+                    <td>{{ visit.team|default:"N/A" }}</td>
+                    <td>{{ visit.updated }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+{% if vitals %}
+<div class="section">
+    <h2 class="section-title">Vital Signs</h2>
+    
+    {% for vital in vitals %}
+        <table class="record-table">
+            <tr class="">
+                <th>Blood Pressure</th>
+                <th>Temperature</th>
+                <th>Heart Rate</th>
+                <th>Respiratory Rate</th>
+                <th>Weight</th>
+                <th>Height</th>
+                <th>Date</th>
+            </tr>
+            <tr class="">
+                <td>{{ vital.blood_pressure|default:"N/A" }}</td>
+                <td>{{ vital.temperature|default:"N/A" }}°C</td>
+                <td>{{ vital.heart_rate|default:"N/A" }} bpm</td>
+                <td>{{ vital.respiratory_rate|default:"N/A" }}</td>
+                <td>{{ vital.weight|default:"N/A" }} kg</td>
+                <td>{{ vital.height|default:"N/A" }} cm</td>
+                <td>{{ vital.updated}}</td>
+            </tr>
+        </table>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if clinical_notes %}
+<section class="clinical-notes-section">
+    <h2 class="section-title">Clinical Notes</h2>
+    
+    {% for note in clinical_notes %}
+    <article class="clinical-note">
+        <header class="note-header">
+            <div class="note-meta">
+                <span class="note-author">Dr. {{ note.user.full_name|default:note.user.username }}</span>
+                <span class="note-date">{{ note.updated }}</span>
+            </div>
+            <h3 class="diagnosis">
+                Diagnosis: <span class="diagnosis-value">{{ note.diagnosis|default:"No diagnosis recorded" }}</span>
+            </h3>
+        </header>
+        
+        <div class="note-content">
+            {% if note.note.html %}
+                {{ note.note.html|safe }}
+            {% else %}
+                <p class="no-notes">No clinical notes recorded for this visit.</p>
+            {% endif %}
+        </div>
+    </article>
+    {% endfor %}
+</section>
+{% endif %}
+
+
+<!-- Prescribed Medications -->
+{% if prescribed_drugs %}
+<div class="section">
+    <h2 class="section-title">Prescribed Medications</h2>
+    <table class="record-table">
+        <thead>
+            <tr>
+                <th>Medication</th>
+                <th>Dosage</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Date Prescribed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prescription in prescribed_drugs %}
+                {% for pd in prescription.prescription_drugs.all %}
+                <tr>
+                    <td>{{ pd.drug.name|default:"N/A" }}</td>
+                    <td>{{ pd.dosage|default:"N/A" }}</td>
+                    <td>{{ pd.quantity|default:"N/A" }}</td>
+                    <td>{{ prescription.unit|default:"N/A" }}</td>
+                    <td>{{ prescription.prescribed_date|default:"N/A" }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+    <!-- Laboratory Tests -->
+    <div class="section">
+        <h2 class="section-title">Laboratory Test Results</h2>
+
+        <!-- Blood Group -->
+        {% if blood_group %}
+        <div class="subsection-title">Blood Group</div>
+        {% for test in blood_group %}
+        <div class="test-result">
+            <strong>Result:</strong> {{ test.bg_test.result|default:"N/A" }} <br>
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Genotype -->
+        {% if genotype %}
+        <div class="subsection-title">Genotype</div>
+        {% for test in genotype %}
+        <div class="test-result">
+            <strong>Result:</strong> {{ test.gt_test.genotype|default:"N/A" }} | 
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- FBC Tests -->
+        {% if fbc %}
+        <div class="subsection-title">Full Blood Count (FBC)</div>
+        <table class="record-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Hemoglobin</th>
+                    <th>WBC</th>
+                    <th>RBC</th>
+                    <th>Platelets</th>
+                    <th>Hematocrit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in fbc %}
+                <tr>
+                    <td>{{ test.created }}</td>
+                    <td>{{ test.fbc_test.hemoglobin|default:"N/A" }}</td>
+                    <td>{{ test.fbc_test.wbc|default:"N/A" }}</td>
+                    <td>{{ test.fbc_test.rbc|default:"N/A" }}</td>
+                    <td>{{ test.fbc_test.platelets|default:"N/A" }}</td>
+                    <td>{{ test.fbc_test.hematocrit|default:"N/A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- Urea & Electrolytes -->
+        {% if urea_electrolyte %}
+        <div class="subsection-title">Urea & Electrolytes</div>
+        <table class="record-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Urea</th>
+                    <th>Creatinine</th>
+                    <th>Sodium</th>
+                    <th>Potassium</th>
+                    <th>Chloride</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in urea_electrolyte %}
+                <tr>
+                    <td>{{ test.created }}</td>
+                    <td>{{ test.ue_test.urea|default:"N/A" }}</td>
+                    <td>{{ test.ue_test.creatinine|default:"N/A" }}</td>
+                    <td>{{ test.ue_test.sodium|default:"N/A" }}</td>
+                    <td>{{ test.ue_test.potassium|default:"N/A" }}</td>
+                    <td>{{ test.ue_test.chloride|default:"N/A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- Liver Function Tests -->
+        {% if liver_function %}
+        <div class="subsection-title">Liver Function Tests</div>
+        <table class="record-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Total Bilirubin</th>
+                    <th>Direct Bilirubin</th>
+                    <th>ALT</th>
+                    <th>AST</th>
+                    <th>ALP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in liver_function %}
+                <tr>
+                    <td>{{ test.created }}</td>
+                    <td>{{ test.lf_test.total_bilirubin|default:"N/A" }}</td>
+                    <td>{{ test.lf_test.direct_bilirubin|default:"N/A" }}</td>
+                    <td>{{ test.lf_test.alt|default:"N/A" }}</td>
+                    <td>{{ test.lf_test.ast|default:"N/A" }}</td>
+                    <td>{{ test.lf_test.alp|default:"N/A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- Blood Glucose -->
+        {% if blood_glucose %}
+        <div class="subsection-title">Blood Glucose</div>
+        {% for test in blood_glucose %}
+        <div class="test-result">
+            <strong>Fasting:</strong> {{ test.bgl_test.fasting|default:"N/A" }} | 
+            <strong>Random:</strong> {{ test.bgl_test.random|default:"N/A" }} | 
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Lipid Profile -->
+        {% if lipid_profile %}
+        <div class="subsection-title">Lipid Profile</div>
+        <table class="record-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Total Cholesterol</th>
+                    <th>HDL</th>
+                    <th>LDL</th>
+                    <th>Triglycerides</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in lipid_profile %}
+                <tr>
+                    <td>{{ test.created }}</td>
+                    <td>{{ test.lp_test.total_cholesterol|default:"N/A" }}</td>
+                    <td>{{ test.lp_test.hdl|default:"N/A" }}</td>
+                    <td>{{ test.lp_test.ldl|default:"N/A" }}</td>
+                    <td>{{ test.lp_test.triglycerides|default:"N/A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- Serology Tests -->
+        {% if hiv_screening %}
+        <div class="subsection-title">HIV Screening</div>
+        {% for test in hiv_screening %}
+        <div class="test-result">
+            <strong>Result:</strong> {{ test.hiv_test.result|default:"N/A" }} | 
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if hpb %}
+        <div class="subsection-title">Hepatitis B</div>
+        {% for test in hpb %}
+        <div class="test-result">
+            <strong>Result:</strong> {{ test.hpb_test.result|default:"N/A" }} | 
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if hcv %}
+        <div class="subsection-title">Hepatitis C</div>
+        {% for test in hcv %}
+        <div class="test-result">
+            <strong>Result:</strong> {{ test.hcv_test.result|default:"N/A" }} | 
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if vdrl %}
+        <div class="subsection-title">VDRL</div>
+        {% for test in vdrl %}
+        <div class="test-result">
+            <strong>Result:</strong> {{ test.vdrl_test.result|default:"N/A" }} | 
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Microbiology Tests -->
+        {% if urine_microscopy %}
+        <div class="subsection-title">Urine Microscopy</div>
+        {% for test in urine_microscopy %}
+        <div class="test-result">
+            <strong>Result:</strong> {{ test.urine_test.result|default:"N/A" }} | 
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if stool %}
+        <div class="subsection-title">Stool Analysis</div>
+        {% for test in stool %}
+        <div class="test-result">
+            <strong>Result:</strong> {{ test.stool_test.result|default:"N/A" }} | 
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if blood_culture %}
+        <div class="subsection-title">Blood Culture</div>
+        {% for test in blood_culture %}
+        <div class="test-result">
+            <strong>Result:</strong> {{ test.blood_culture_test.result|default:"N/A" }} | 
+            <strong>Date:</strong> {{ test.created }}
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+
+    <!-- Radiology Results -->
+    {% if radiology_results %}
+    <div class="section">
+        <h2 class="section-title">Radiology Results</h2>
+        {% for result in radiology_results %}
+        <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #d32f2f;">
+            <div style="font-weight: bold; color: #d32f2f; margin-bottom: 5px;">
+                {{ result.updated }} - {{ result.test_type|default:"Unknown Test" }}
+            </div>
+            <div><strong>Findings:</strong> {{ result.findings|default:"No findings recorded" }}</div>
+            <div><strong>Impression:</strong> {{ result.impression|default:"No impression recorded" }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+<!-- Admission Information -->
+{% if admission_info %}
+<div class="section">
+    <h2 class="section-title">Admission Records</h2>
+    <table class="record-table">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Ward</th>
+                <th>Bed Number</th>
+                <th>Payment Status</th>
+                <th>Admission Date</th>
+                <th>Discharge Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in admission_info %}
+            <tr>
+                <td>
+                    {% if a.status == 'RECEIVED' %}
+                        On Admission ({{ a.days_on_admission }} 
+                        {% if a.days_on_admission == 1 %}day{% else %}days{% endif %})
+                    {% elif a.status == 'DISCHARGE' %}
+                        Discharged
+                    {% else %}
+                        Not Accepted Yet
+                    {% endif %}
+                </td>
+                <td>{{ a.ward|default_if_none:"N/A" }}</td>
+                <td>
+                    {% if a.bed_number %}
+                        {{ a.bed_number }}
+                    {% else %}
+                        Bed Not Assigned Yet
+                    {% endif %}
+                </td>
+                <td>
+                    {% if a.payment.status == False %}
+                        Not Paid
+                    {% else %}
+                        Paid
+                    {% endif %}
+                </td>
+                <td>{{ a.created|default:"N/A" }}</td>
+                <td>
+                    {% if a.status == 'DISCHARGE' %}
+                        {{ a.updated }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+    <!-- Payments -->
+    {% if payments %}
+    <div class="section">
+        <h2 class="section-title">Payment Records</h2>
+        <table class="record-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.updated }}</td>
+                    <td>{{ payment.service|default:"N/A" }}</td>
+                    <td class="amount">{{ payment.price|floatformat:2 }}</td>
+                    <td>{{ payment.payment_method|default:"N/A" }}</td>
+                    <td>{{ payment.status|yesno:"Paid,Pending" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Generated on {% now "d-M-Y" %} | Patient File No: {{ patient.file_no }}</p>
+        <p>Confidential Medical Record - For Authorized Personnel Only</p>
+    </div>
+</body>
+</html>
