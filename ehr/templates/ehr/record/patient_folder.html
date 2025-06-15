@@ -22,426 +22,6 @@
 
     <div class="md:mx-20  mx-2 text-xs text-center">
         <!-- Warning Banner -->
-<style>
-/* Base styles (for larger screens, or default mobile-first) */
-    .visit-box {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border: 2px solid #28a745;
-      border-radius: 12px;
-      padding: 15px; /* Increased padding for larger screens */
-      margin: 10px 0; /* Adjusted margin */
-      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.15);
-      position: relative;
-      overflow: hidden;
-      display: flex; /* Ensure flex behavior */
-      flex-wrap: wrap; /* Allow items to wrap on smaller screens */
-      align-items: center; /* Vertically align items */
-      gap: 15px; /* Space between flex items */
-    }
-
-    .visit-box::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #28a745, #20c997, #17a2b8);
-      animation: pulse-glow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulse-glow {
-      from { opacity: 0.7; }
-      to { opacity: 1; }
-    }
-
-    .visit-tag {
-      background: linear-gradient(135deg, #28a745, #20c997);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: bold;
-      display: inline-block;
-      font-size: 14px; /* Slightly larger for readability */
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
-      animation: gentle-bounce 3s ease-in-out infinite;
-    }
-
-    @keyframes gentle-bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-2px); }
-    }
-
-    .visit-info-section {
-      flex-grow: 1; /* Allow info section to take available space */
-      margin: 0; /* Remove top/bottom margin from base */
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 8px;
-      border-left: 4px solid #28a745;
-    }
-
-    .visit-info {
-      font-size: 12px; /* Slightly larger for readability */
-      line-height: 1.6;
-      color: #2c3e50;
-    }
-
-    .status-pill {
-      padding: 4px 10px; /* Adjusted padding */
-      border-radius: 15px;
-      font-size: 11px; /* Adjusted font size */
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      white-space: nowrap; /* Prevent status text from breaking */
-    }
-
-    .status-waiting-nurse { background: #ffeaa7; color: #d63031; }
-    .status-waiting-doctor { background: #fab1a0; color: #e17055; }
-    .status-review { background: #74b9ff; color: #0984e3; }
-    .status-ended { background: #fd79a8; color: #e84393; }
-    .status-ok { background: #00b894; color: white; }
-
-    .close-button {
-      background: linear-gradient(135deg, #dc3545, #c82333);
-      color: white;
-      border: none;
-      padding: 10px 20px; /* Adjusted padding */
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 13px; /* Adjusted font size */
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-      position: relative;
-      overflow: hidden;
-      white-space: nowrap; /* Prevent button text from breaking */
-    }
-
-    .close-button:hover {
-      background: linear-gradient(135deg, #c82333, #bd2130);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
-    }
-
-    /* Modal Styles - remain mostly the same as they are already quite responsive */
-/* Modal Styles - Fixed to prevent flash on page load */
-  .custom-modal {
-    display: none;
-    position: fixed;
-    z-index: 10000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-    /* Remove animation from base class */
-    /* animation: fadeIn 0.3s ease; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-  }
-
-  /* Add animation only when modal is visible */
-  .custom-modal.show {
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .modal-content {
-    background: white;
-    margin: 20px;
-    padding: 0;
-    border-radius: 15px;
-    width: 95%;
-    max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    /* Remove animation from base class */
-    /* animation: slideIn 0.3s ease; */
-    overflow: hidden;
-  }
-
-  /* Add animation only when modal is visible */
-  .custom-modal.show .modal-content {
-    animation: slideIn 0.3s ease;
-  }
-
-  @keyframes slideIn {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-    .modal-header {
-      background: linear-gradient(135deg, #dc3545, #c82333);
-      color: white;
-      padding: 15px; /* Adjusted padding */
-      text-align: center;
-      position: relative;
-    }
-
-    .modal-header::before {
-      content: '⚠️';
-      font-size: 35px; /* Adjusted size */
-      display: block;
-      margin-bottom: 8px; /* Adjusted margin */
-      animation: warning-pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes warning-pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    .modal-header h2 {
-      margin: 0;
-      font-size: 20px; /* Adjusted font size */
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .modal-header p {
-        font-size: 14px !important; /* Adjusted font size */
-        margin: 5px 0 0 0 !important;
-    }
-
-    .modal-body {
-      padding: 20px; /* Adjusted padding */
-      text-align: center;
-      line-height: 1.5; /* Slightly adjusted line height */
-      font-size: 14px; /* Base font size for modal body */
-    }
-
-    .warning-text {
-      font-size: 16px; /* Adjusted font size */
-      color: #2c3e50;
-      margin-bottom: 15px; /* Adjusted margin */
-      font-weight: 500;
-    }
-
-    .visit-details {
-      background: #f8f9fa;
-      padding: 12px; /* Adjusted padding */
-      border-radius: 8px;
-      margin: 15px 0; /* Adjusted margin */
-      border-left: 4px solid #dc3545;
-      text-align: left;
-      font-size: 13px; /* Adjusted font size */
-    }
-
-    .visit-details strong {
-      color: #dc3545;
-    }
-
-    .consequences {
-      background: #fff3cd;
-      border: 1px solid #ffeaa7;
-      border-radius: 8px;
-      padding: 12px; /* Adjusted padding */
-      margin: 15px 0; /* Adjusted margin */
-      text-align: left;
-      font-size: 13px; /* Adjusted font size */
-    }
-
-    .consequences h4 {
-      color: #d63031;
-      margin-bottom: 8px; /* Adjusted margin */
-      font-size: 15px; /* Adjusted font size */
-    }
-
-    .consequences ul {
-      margin: 0;
-      padding-left: 18px; /* Adjusted padding */
-      color: #6c757d;
-    }
-
-    .consequences li {
-      margin-bottom: 3px; /* Adjusted margin */
-    }
-
-    .modal-buttons {
-      display: flex;
-      flex-direction: column; /* Stack buttons vertically on small screens */
-      gap: 10px; /* Reduced gap */
-      justify-content: center;
-      padding: 0 20px 20px; /* Adjusted padding */
-    }
-
-    .btn-cancel,
-    .btn-confirm {
-      padding: 10px 20px; /* Adjusted padding */
-      font-size: 14px; /* Adjusted font size */
-      flex: none; /* Remove flex-grow from base so they stack correctly */
-      width: 100%; /* Take full width when stacked */
-    }
-
-    .countdown {
-      font-size: 13px; /* Adjusted font size */
-      color: #dc3545;
-      font-weight: bold;
-      margin-top: 8px; /* Adjusted margin */
-    }
-
-    /* Media Query for Larger Screens (apply flex layout) */
-    @media (min-width: 769px) {
-      .visit-box {
-        flex-direction: row; /* Horizontal layout for larger screens */
-        justify-content: space-between; /* Space out items */
-        align-items: center;
-      }
-
-      .visit-info-section {
-        margin-left: 15px; /* Add space between tag and info */
-        margin-right: 15px;
-      }
-
-      .visit-info {
-        font-size: 14px; /* Revert to larger font for desktop */
-      }
-
-      .status-pill {
-        font-size: 12px; /* Revert to original size */
-      }
-
-      .close-button {
-        font-size: 12px; /* Revert to original size */
-      }
-
-      .modal-content {
-        margin: 5% auto; /* Revert modal margin */
-        width: 90%;
-      }
-
-      .modal-header {
-        padding: 20px; /* Revert modal header padding */
-      }
-
-      .modal-header::before {
-        font-size: 40px; /* Revert warning icon size */
-        margin-bottom: 10px;
-      }
-
-      .modal-header h2 {
-        font-size: 24px; /* Revert modal header h2 size */
-      }
-
-      .modal-header p {
-          font-size: 16px !important;
-      }
-
-      .modal-body {
-        padding: 30px; /* Revert modal body padding */
-        font-size: 16px; /* Revert modal body base font size */
-      }
-
-      .warning-text {
-        font-size: 18px; /* Revert warning text size */
-        margin-bottom: 20px;
-      }
-
-      .visit-details {
-        padding: 15px; /* Revert details padding */
-        margin: 20px 0;
-        font-size: 14px; /* Revert details font size */
-      }
-
-      .consequences {
-        padding: 15px; /* Revert consequences padding */
-        margin: 20px 0;
-        font-size: 14px; /* Revert consequences font size */
-      }
-
-      .consequences h4 {
-        font-size: 16px; /* Revert consequences h4 size */
-      }
-
-      .modal-buttons {
-        flex-direction: row; /* Buttons side-by-side on large screens */
-        gap: 15px; /* Revert gap */
-        padding: 0 30px 30px; /* Revert padding */
-      }
-
-      .btn-cancel,
-      .btn-confirm {
-        padding: 12px 30px; /* Revert padding */
-        font-size: 16px; /* Revert font size */
-        flex: 1; /* Allow flex-grow */
-        width: auto; /* Auto width based on flex */
-      }
-
-      .countdown {
-        font-size: 14px; /* Revert countdown font size */
-        margin-top: 10px;
-      }
-    }
-.info-box {
-    background: linear-gradient(to right, #fff8e1, #fff3cd);
-    border-left: 6px solid #f0ad4e;
-    padding: 12px 16px;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    animation: fadeIn 0.6s ease;
-  }
-
-  .info-box i {
-    font-size: 1.5rem;
-    color: #f0ad4e;
-    animation: ping 2s infinite ease-in-out;
-    flex-shrink: 0;
-  }
-
-  .info-box .title {
-    color: #c9302c;
-    font-weight: bold;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .info-box .desc {
-    font-size: 0.85rem;
-    color: #a94442;
-    flex: 1;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes ping {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.8; }
-  }
-
-  /* Responsive: Stack on smaller screens */
-  @media (max-width: 768px) {
-    .info-box {
-      flex-direction: column;
-      text-align: center;
-      gap: 8px;
-    }
-    
-    .info-box .title,
-    .info-box .desc {
-      white-space: normal;
-    }
-  }
-
-</style>
 
   <div class="flex flex-wrap justify-center items-center mb-1 space-x-2 gap-2">
     <!-- Date Range Filter Form -->
@@ -483,9 +63,10 @@
         </div>
     </form>
             <div>
-          <a href="{% url 'patient_details' patient.file_no %}?format=pdf" 
-  class="inline-block px-4 py-2 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">
-  <i class="fa-solid fa-file-pdf mr-2"></i>Export Full Patient Information
+   <a href="{% url 'patient_details' patient.file_no %}?format=pdf" 
+   class="uppercase inline-flex items-center gap-2 px-4 py-2.5 hover:bg-slate-700 bg-slate-100 hover:text-white text-black font-semibold text-xs rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5">
+  <i class="fa-solid fa-file-pdf"></i>
+  Patient Summary
 </a>
         </div>
 </div>
@@ -526,47 +107,43 @@
     </form>
   </div>
 
-  <div id="visitCloseModal" class="custom-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Critical Action Required</h2>
-        <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">You are about to close an active patient visit</p>
+<div id="visitCloseModal" class="custom-modal">
+  <div class="visit-modal-content">
+    <div class="modal-header">
+      <h2>Close Visit</h2>
+      <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Confirm closing this patient visit</p>
+    </div>
+    <div class="modal-body">
+      <div class="warning-text">
+        This will permanently close the current visit session.
       </div>
-      <div class="modal-body">
-        <div class="warning-text">
-          🚨 <strong>WARNING:</strong> This action will permanently close the current visit session!
-        </div>
-        
-        <div class="visit-details" id="visitDetails">
-          </div>
-
-        <div class="consequences">
-          <h4>⚠️ What happens when you close this visit:</h4>
-          <ul>
-            <li>No further updates can be made to this visit</li>
-            <li>Patient will need a <strong>new visit session</strong> for future consultations</li>
-            <li>This action <strong>CANNOT be undone</strong></li>
-          </ul>
-        </div>
-
-        <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 20px 0;">
-          <strong>💡 Alternative:</strong> Consider updating the visit status instead of closing if the consultation is ongoing.
-        </div>
-
-        <div class="countdown" id="visitCountdown">
-          Please wait <span id="visitTimer">5</span> seconds before proceeding...
-        </div>
+      
+      <div class="visit-details" id="visitDetails">
       </div>
-      <div class="modal-buttons">
-        <button class="btn-cancel" onclick="closeVisitModal()">
-          <i class="fa-solid fa-arrow-left"></i> Keep Visit Open
-        </button>
-        <button class="btn-confirm" id="visitConfirmBtn" onclick="confirmVisitClose()" disabled style="opacity: 0.5; cursor: not-allowed;">
-          <i class="fa-solid fa-door-closed"></i> Yes, Close Visit
-        </button>
+
+      <div class="consequences">
+        <h4>What happens next:</h4>
+        <ul>
+          <li>Visit will be marked as closed</li>
+          <li>Patient needs a new visit for future consultations</li>
+          <li>This action cannot be undone</li>
+        </ul>
+      </div>
+
+      <div class="countdown" id="visitCountdown">
+        Please wait <span id="visitTimer">3</span> seconds before proceeding...
       </div>
     </div>
+<div class="flex flex-col sm:flex-row gap-3 p-5">
+ <button class="btn-cancel flex items-center justify-center gap-2 px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white text-xs rounded-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 flex-1" onclick="closeVisitModal()">
+   <i class="fa-solid fa-arrow-left"></i> Keep Open
+ </button>
+ <button class="btn-confirm flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed text-white text-xs rounded-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 disabled:hover:shadow-none disabled:hover:translate-y-0 flex-1" id="visitConfirmBtn" onclick="confirmVisitClose()" disabled>
+   <i class="fa-solid fa-door-closed"></i> Close Visit
+ </button>
+</div>
   </div>
+</div>
 
 {% endif %}
 
@@ -3604,7 +3181,7 @@ function closeVisitModal() {
 }
 
 function startVisitCountdown() {
-  visitTimeLeft = 5;
+  visitTimeLeft = 3;
   const timerElement = document.getElementById('visitTimer');
   const confirmBtn = document.getElementById('visitConfirmBtn');
   const countdownDiv = document.getElementById('visitCountdown');
@@ -3707,5 +3284,400 @@ document.addEventListener('DOMContentLoaded', function() {
       }
   }
 </script>
+<style>
+  /* Base styles (mobile-first approach) */
+.visit-box {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px solid #28a745;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 10px 0;
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.15);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+}
 
+.visit-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #28a745, #20c997, #17a2b8);
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+.visit-tag {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  display: inline-block;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+  animation: gentle-bounce 3s ease-in-out infinite;
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.status-waiting-nurse { background: #ffeaa7; color: #d63031; }
+.status-waiting-doctor { background: #fab1a0; color: #e17055; }
+.status-review { background: #74b9ff; color: #0984e3; }
+.status-ended { background: #fd79a8; color: #e84393; }
+.status-ok { background: #00b894; color: white; }
+
+.close-button {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.close-button:hover {
+  background: linear-gradient(135deg, #c82333, #bd2130);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Info Box Styles */
+.info-box {
+  background: linear-gradient(to right, #fff8e1, #fff3cd);
+  border-left: 6px solid #f0ad4e;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  animation: fadeIn 0.6s ease;
+}
+
+.info-box i {
+  font-size: 1.5rem;
+  color: #f0ad4e;
+  animation: ping 2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+.info-box .title {
+  color: #c9302c;
+  font-weight: bold;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.info-box .desc {
+  font-size: 0.85rem;
+  color: #a94442;
+  flex: 1;
+}
+
+/* Modal Styles */
+.custom-modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.custom-modal.show {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+.visit-modal-content {
+  background: white;
+  margin: 20px;
+  padding: 0;
+  border-radius: 15px;
+  width: 95%;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.custom-modal.show .visit-modal-content {
+  animation: slideIn 0.3s ease;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  padding: 15px;
+  text-align: center;
+  position: relative;
+}
+
+.modal-header::before {
+  content: '⚠️';
+  font-size: 35px;
+  display: block;
+  margin-bottom: 8px;
+  animation: warning-pulse 1.5s ease-in-out infinite;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.modal-header p {
+  font-size: 14px !important;
+  margin: 5px 0 0 0 !important;
+}
+
+.modal-body {
+  padding: 20px;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.warning-text {
+  font-size: 16px;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.visit-details {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border-left: 4px solid #dc3545;
+  text-align: left;
+  font-size: 13px;
+}
+
+.visit-details strong {
+  color: #dc3545;
+}
+
+.consequences {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 15px 0;
+  text-align: left;
+  font-size: 13px;
+}
+
+.consequences h4 {
+  color: #d63031;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.consequences ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #6c757d;
+}
+
+.consequences li {
+  margin-bottom: 3px;
+}
+
+.modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  padding: 0 20px 20px;
+}
+
+.btn-cancel,
+.btn-confirm {
+  padding: 10px 20px;
+  font-size: 14px;
+  flex: none;
+  width: 100%;
+}
+
+.countdown {
+  font-size: 13px;
+  color: #dc3545;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ping {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes warning-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Mobile Responsive - Info Box */
+@media (max-width: 768px) {
+  .info-box {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .info-box .title,
+  .info-box .desc {
+    white-space: normal;
+  }
+}
+
+/* Desktop Responsive - Larger Screens */
+@media (min-width: 769px) {
+  .visit-box {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .visit-info-section {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  .visit-info {
+    font-size: 14px;
+  }
+
+  .status-pill {
+    font-size: 12px;
+  }
+
+  .close-button {
+    font-size: 12px;
+  }
+
+  .visit-modal-content {
+    margin: 5% auto;
+    width: 90%;
+  }
+
+  .modal-header {
+    padding: 20px;
+  }
+
+  .modal-header::before {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+
+  .modal-header h2 {
+    font-size: 24px;
+  }
+
+  .modal-header p {
+    font-size: 16px !important;
+  }
+
+  .modal-body {
+    padding: 30px;
+    font-size: 16px;
+  }
+
+  .warning-text {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .visit-details {
+    padding: 15px;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  .consequences {
+    padding: 15px;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  .consequences h4 {
+    font-size: 16px;
+  }
+
+  .modal-buttons {
+    flex-direction: row;
+    gap: 15px;
+    padding: 0 30px 30px;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    padding: 12px 30px;
+    font-size: 16px;
+    flex: 1;
+    width: auto;
+  }
+
+  .countdown {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+}
+</style>
 {% endblock %}
