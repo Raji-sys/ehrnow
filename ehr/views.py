@@ -5423,3 +5423,15 @@ def hospital_dashboard_optimized(request):
     }
 
     return render(request, 'ehr/analytics/hospital_dashboard.html', context)
+
+
+from django.views.decorators.csrf import csrf_protect
+@login_required
+@csrf_protect
+def extend_session(request):
+    if request.method == 'POST':
+        # Update session activity timestamp
+        request.session['last_activity'] = timezone.now().timestamp()
+        request.session.modified = True
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=405)

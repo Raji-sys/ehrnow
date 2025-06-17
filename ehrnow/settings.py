@@ -44,9 +44,10 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "django.middleware.common.CommonMiddleware",
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'ehr.middleware.SessionTimeoutMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -198,3 +199,13 @@ QUILL_CONFIGS = {
         }
     }
 }
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+SESSION_COOKIE_AGE = 180
+
+# Additional security settings
+SESSION_SAVE_EVERY_REQUEST = True  # Refresh session on each request
+SESSION_COOKIE_SECURE = False  # HTTPS only (set to False for development)
+SESSION_COOKIE_HTTPONLY = True  # Prevent XSS attacks
+SESSION_COOKIE_SAMESITE = 'Strict'  # CSRF protection

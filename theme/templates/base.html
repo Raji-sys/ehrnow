@@ -567,5 +567,136 @@ a:hover {
             {% endblock %}
         </main>
     </div>
+
+<!-- base.html - Add this before closing </body> tag -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Only run for authenticated users
+    {% if user.is_authenticated %}
+    
+    let sessionTimeout = 3 * 60 * 1000; // 30 minutes in milliseconds
+    let warningTime = 2 * 60 * 1000;     // Warn 5 minutes before timeout
+    let timeoutId;
+    let warningTimeoutId;
+    let warningShown = false;
+    
+    function resetTimer() {
+        clearTimeout(timeoutId);
+        clearTimeout(warningTimeoutId);
+        warningShown = false;
+        
+        // Hide warning if it's showing
+        const warningModal = document.getElementById('session-warning');
+        if (warningModal) {
+            warningModal.style.display = 'none';
+        }
+        
+        // Set warning timer
+        warningTimeoutId = setTimeout(showWarning, sessionTimeout - warningTime);
+        
+        // Set logout timer
+        timeoutId = setTimeout(logoutUser, sessionTimeout);
+    }
+    
+    function showWarning() {
+        if (warningShown) return;
+        warningShown = true;
+        
+        // Create or show warning modal
+        let modal = document.getElementById('session-warning');
+        if (!modal) {
+            modal = createWarningModal();
+            document.body.appendChild(modal);
+        }
+        modal.style.display = 'block';
+        
+        // Start countdown
+        startCountdown(warningTime / 1000);
+    }
+    
+    function createWarningModal() {
+        const modal = document.createElement('div');
+        modal.id = 'session-warning';
+        modal.innerHTML = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                <div style="background: white; padding: 20px; border-radius: 8px; max-width: 400px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h3>Session Expiring Soon</h3>
+                    <p>Your session will expire in <span id="countdown">5:00</span></p>
+                    <p>Click "Stay Logged In" to continue your session.</p>
+                    <button id="extend-session" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; margin-right: 10px; cursor: pointer;">Stay Logged In</button>
+                    <button id="logout-now" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Logout Now</button>
+                </div>
+            </div>
+        `;
+        
+        // Add event listeners
+        modal.querySelector('#extend-session').addEventListener('click', extendSession);
+        modal.querySelector('#logout-now').addEventListener('click', logoutUser);
+        
+        return modal;
+    }
+    
+    function startCountdown(seconds) {
+        const countdownEl = document.getElementById('countdown');
+        if (!countdownEl) return;
+        
+        const interval = setInterval(() => {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            countdownEl.textContent = `${minutes}:${secs.toString().padStart(2, '0')}`;
+            
+            if (seconds <= 0) {
+                clearInterval(interval);
+                logoutUser();
+            }
+            seconds--;
+        }, 1000);
+    }
+    
+    function extendSession() {
+        // Make AJAX call to refresh session
+        fetch('{% url "extend_session" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                resetTimer();
+            } else {
+                logoutUser();
+            }
+        })
+        .catch(() => logoutUser());
+    }
+    
+    function logoutUser() {
+        window.location.href = '{% url "logout" %}';
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Initialize timer (no automatic activity detection)
+    resetTimer();
+    
+    {% endif %}
+});
+</script>
 </body>
 </html>
