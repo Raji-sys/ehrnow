@@ -77,25 +77,13 @@ body, html {
     margin: 0;
     /* font-family: 'Lato', sans-serif; */
     font-family: 'Segoe UI', Roboto, sans-serif;
-    background-image: url('{% static "images/1-min.png" %}');
+    background-image: url('{% static "images/4.jpg" %}');
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
     overflow-x: hidden;
 }
 
-/* body, html {
-    height: 100%;
-    margin: 0;
-    font-family: 'Lato', sans-serif;
-    
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.5), rgba(255, 255, 255, 0.7), rgba(83, 166, 138, 0.5)), 
-                linear-gradient(to bottom right, #e0f2fe, #ffffff, #d1fae5);
-    background-size: 300% 300%;
-    animation: softFlow 15s ease infinite;
-    background-attachment: fixed;
-    overflow-x: hidden;
-} */
 
 /* ✨ Subtle animated gradient movement */
 @keyframes softFlow {
@@ -575,8 +563,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Only run for authenticated users
     {% if user.is_authenticated %}
     
-    let sessionTimeout = 3 * 60 * 1000; // 30 minutes in milliseconds
-    let warningTime = 2 * 60 * 1000;     // Warn 5 minutes before timeout
+    let sessionTimeout = 60 * 60 * 1000; // 1 hour in milliseconds
+    let warningTime = 5 * 60 * 1000;     // Warn 5 minutes before timeout
     let timeoutId;
     let warningTimeoutId;
     let warningShown = false;

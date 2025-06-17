@@ -202,10 +202,11 @@ QUILL_CONFIGS = {
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-SESSION_COOKIE_AGE = 180
+SESSION_COOKIE_AGE = 60 * 3600  # 1 hour in seconds
 
 # Additional security settings
 SESSION_SAVE_EVERY_REQUEST = True  # Refresh session on each request
 SESSION_COOKIE_SECURE = False  # HTTPS only (set to False for development)
 SESSION_COOKIE_HTTPONLY = True  # Prevent XSS attacks
 SESSION_COOKIE_SAMESITE = 'Strict'  # CSRF protection
+LOGOUT_REDIRECT_URL = '/'

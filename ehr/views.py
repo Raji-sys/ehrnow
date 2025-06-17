@@ -128,10 +128,7 @@ class CustomLoginView(LoginView):
     template_name = 'login.html'
 
     def get_success_url(self):
-        if self.request.user.is_superuser:
-            return reverse_lazy('get_started')
-        else:
-            return reverse_lazy('profile_details', args=[self.request.user.username])
+        return reverse_lazy('get_started')
 
 
 def reg_anonymous_required(view_function, redirect_to=None):
