@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date
+from datetime import date, timedelta
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils import timezone
@@ -326,7 +326,7 @@ class Paypoint(models.Model):
         ]
 
 class MedicalRecord(models.Model):
-    services=(('new registration','new registration'),('follow up','follow up'),('review','review'),('card replacement','card replacement'))
+    services=(('new registration','new registration'),('follow up','follow up'),('review','review'),('dressing','dressing'),('card replacement','card replacement'))
     name = models.CharField(choices=services,max_length=100, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
     updated = models.DateTimeField(auto_now=True)
@@ -420,13 +420,35 @@ class ClinicalNote(models.Model):
     diagnosis=models.CharField(max_length=200,null=True,blank=True)
     needs_review = models.BooleanField(default=False)    
     updated = models.DateTimeField(auto_now=True)
-
+    # created_at= models.DateField(auto_now_add=True, null=True)
     def get_absolute_url(self):
         return reverse('clincal_note_details', args=[self.user])
 
     def __str__(self):
         return f"notes for: {self.patient.file_no}"
 
+    def is_editable(self):
+            """Check if the clinical note is still within the 30-minute edit window"""
+            if not self.updated:
+                return False
+            
+            time_since_creation = timezone.now() - self.updated
+            edit_window = timedelta(minutes=3)
+            return time_since_creation <= edit_window
+        
+    def minutes_remaining_for_edit(self):
+        """Get remaining minutes for editing, returns 0 if window expired"""
+        if not self.updated:
+            return 0
+        
+        time_since_creation = timezone.now() - self.updated
+        edit_window = timedelta(minutes=3)
+        time_remaining = edit_window - time_since_creation
+        
+        if time_remaining.total_seconds() <= 0:
+            return 0
+        
+        return int(time_remaining.total_seconds() // 60)
 
 class RadiologyTest(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)

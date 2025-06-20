@@ -43,7 +43,7 @@ from xhtml2pdf import pisa
 from django.forms import modelformset_factory
 from django.http import JsonResponse, request
 from django.db import transaction
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Count, Q, Avg
 from datetime import datetime
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -62,6 +62,13 @@ from results.models import GenericTest
 from django.db.models import OuterRef, Subquery
 from django.core.paginator import Paginator
 from django.db.models import Subquery, OuterRef
+from django.utils import timezone
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.http import Http404
+from datetime import timedelta
+from django.db.models.functions import TruncMonth, TruncWeek, TruncDay
+from django.db.models.functions import ExtractWeekDay, ExtractHour, TruncMonth
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -1550,6 +1557,13 @@ class VisitCreateView(LoginRequiredMixin, CreateView):
                     self.object.record.name.lower() == 'review')
         
         if is_review:
+            if not self.request.user.is_superuser:
+                form.add_error(None, ValidationError(
+                    _("You are not authorized to register a review visit."),
+                    code='unauthorized_review'
+                ))
+                return self.form_invalid(form)
+
             # BYPASS LOGIC FOR REVIEW VISITS
             self.object.vitals = True  # Skip nursing/vitals
             self.object.review = True  # Mark as review
@@ -2661,123 +2675,6 @@ class UnitRevenueView(TemplateView):
         if count == 0:
             return 0
         return round(total / count, 2)  
-# class UnitRevenueView(TemplateView):
-#     template_name = 'ehr/revenue/unit_revenue.html'
-    
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-        
-#         # Get current date
-#         today = timezone.now().date()
-        
-#         # Calculate date ranges
-#         start_of_week = today - timezone.timedelta(days=today.weekday())
-#         start_of_month = today.replace(day=1)
-        
-#         # Calculate start of quarter
-#         current_month = today.month
-#         current_quarter = (current_month - 1) // 3 + 1
-#         quarter_start_month = (current_quarter - 1) * 3 + 1
-#         start_of_quarter = today.replace(month=quarter_start_month, day=1)
-        
-#         # Calculate start of year
-#         start_of_year = today.replace(month=1, day=1)
-        
-#         # Get all distinct units
-#         units = Paypoint.objects.filter(status=True).values_list('unit', flat=True).distinct()
-#         # Prepare data structure directly accessible in templates without custom filters
-#         unit_revenues = []
-        
-#         for unit in units:
-#             if not unit:  # Skip empty unit names
-#                 continue
-                
-#             # Get base queryset for this unit with approved payments
-#             unit_qs = Paypoint.objects.filter(unit=unit, status=True)
-            
-#             # Calculate revenue for different time periods
-#             today_revenue = unit_qs.filter(created=today).aggregate(total=Sum('price'))['total'] or 0
-#             weekly_revenue = unit_qs.filter(created__gte=start_of_week).aggregate(total=Sum('price'))['total'] or 0
-#             monthly_revenue = unit_qs.filter(created__gte=start_of_month).aggregate(total=Sum('price'))['total'] or 0
-#             quarterly_revenue = unit_qs.filter(created__gte=start_of_quarter).aggregate(total=Sum('price'))['total'] or 0
-#             yearly_revenue = unit_qs.filter(created__gte=start_of_year).aggregate(total=Sum('price'))['total'] or 0
-#             all_time_revenue = unit_qs.aggregate(total=Sum('price'))['total'] or 0
-            
-#             # Count transactions for each period
-#             today_count = unit_qs.filter(created=today).count()
-#             weekly_count = unit_qs.filter(created__gte=start_of_week).count()
-#             monthly_count = unit_qs.filter(created__gte=start_of_month).count()
-#             quarterly_count = unit_qs.filter(created__gte=start_of_quarter).count()
-#             yearly_count = unit_qs.filter(created__gte=start_of_year).count()
-#             all_time_count = unit_qs.count()
-            
-#             unit_revenues.append({
-#                 'name': unit,
-#                 'today_revenue': today_revenue,
-#                 'today_count': today_count,
-#                 'week_revenue': weekly_revenue,
-#                 'week_count': weekly_count,
-#                 'month_revenue': monthly_revenue,
-#                 'month_count': monthly_count,
-#                 'quarter_revenue': quarterly_revenue,
-#                 'quarter_count': quarterly_count,
-#                 'year_revenue': yearly_revenue,
-#                 'year_count': yearly_count,
-#                 'all_time_revenue': all_time_revenue,
-#                 'all_time_count': all_time_count,
-
-#             })
-        
-#         # Sort units by yearly revenue (highest first)
-#         unit_revenues.sort(key=lambda x: x['year_revenue'], reverse=True)
-        
-#         # Calculate overall totals (flattened for direct template access)
-#         total_today = Paypoint.objects.filter(status=True, created=today).aggregate(
-#             total=Sum('price'), count=Count('id')
-#         )
-#         total_week = Paypoint.objects.filter(status=True, created__gte=start_of_week).aggregate(
-#             total=Sum('price'), count=Count('id')
-#         )
-#         total_month = Paypoint.objects.filter(status=True, created__gte=start_of_month).aggregate(
-#             total=Sum('price'), count=Count('id')
-#         )
-#         total_quarter = Paypoint.objects.filter(status=True, created__gte=start_of_quarter).aggregate(
-#             total=Sum('price'), count=Count('id')
-#         )
-#         total_year = Paypoint.objects.filter(status=True, created__gte=start_of_year).aggregate(
-#             total=Sum('price'), count=Count('id')
-#         )
-#         total_all_time = Paypoint.objects.filter(status=True).aggregate(
-#             total=Sum('price'), count=Count('id')
-#         )
-#         # Replace None with 0
-#         context['total_today'] = total_today['total'] or 0
-#         context['count_today'] = total_today['count'] or 0
-#         context['total_week'] = total_week['total'] or 0
-#         context['count_week'] = total_week['count'] or 0
-#         context['total_month'] = total_month['total'] or 0
-#         context['count_month'] = total_month['count'] or 0
-#         context['total_quarter'] = total_quarter['total'] or 0
-#         context['count_quarter'] = total_quarter['count'] or 0
-#         context['total_year'] = total_year['total'] or 0
-#         context['count_year'] = total_year['count'] or 0
-#         context['total_all_time'] = total_all_time['total'] or 0
-#         context['count_all_time'] = total_all_time['count'] or 0
-        
-#         context['unit_revenues'] = unit_revenues
-        
-#         # Define periods for the tab navigation
-#         context['periods'] = [
-#             {'id': 'today', 'name': 'Today'},
-#             {'id': 'week', 'name': 'This Week'},
-#             {'id': 'month', 'name': 'This Month'},
-#             {'id': 'quarter', 'name': 'This Quarter'},
-#             {'id': 'year', 'name': 'This Year'},
-#             {'id': 'all_time', 'name': 'All Time'}
-#         ]
-        
-#         return context
-
     
 @login_required
 def thermal_receipt(request):
@@ -4767,8 +4664,6 @@ class CloseVisitView(DoctorRequiredMixin, View): # Or a more general permission 
         
         return redirect(patient.get_absolute_url()) # Redirect back to patient folder
 
-# --- Your ClinicalNoteCreateView ---
-# Consider if the dispatch logic should also check for active consultation
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
     model = ClinicalNote
@@ -4778,13 +4673,6 @@ class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         
-        # Current logic: Checks if *any* visit record exists.
-        # visit = VisitRecord.objects.filter(patient=patient_data).order_by('-id').first()
-        # if visit is None:
-        # messages.error(request, f'Cannot create clinical note for {patient_data.first_name} {patient_data.last_name} ({patient_data.file_no}). No visit record found...')
-        # return redirect(patient_data.get_absolute_url())
-
-        # Suggested alternative: Check for an *active* visit if notes can only be added to active ones.
         active_visit = VisitRecord.objects.filter(patient=patient_data, consultation=True).order_by('-id').first()
         if active_visit is None:
             messages.error(
@@ -4800,89 +4688,139 @@ class ClinicalNoteCreateView(DoctorRequiredMixin, CreateView):
         form.instance.user = self.request.user
         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         form.instance.patient = patient_data
-        # self.object = form.save() # Save later after visit update or if needed before
-
-        # Use the active_visit identified in dispatch
-        # visit = VisitRecord.objects.filter(patient=patient_data).order_by('-id').first()
         visit = self.active_visit # Use the one from dispatch
 
-        # It's good practice to ensure 'visit' is not None here, though dispatch should handle it.
         if not visit:
              messages.error(self.request, "Error: Could not find the associated visit record.")
              return redirect(patient_data.get_absolute_url())
 
-        # Save the clinical note first
         self.object = form.save()
 
         if form.instance.needs_review:
             visit.review = True
             visit.seen = True 
-            visit.save(update_fields=['review', 'seen']) # Be specific about fields to update
+            visit.save(update_fields=['review', 'seen']) 
             messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} created. Patient awaiting review.')
         else:
-            # visit.close_visit() # This method handles setting consultation=False, seen=True, review=False and saving.
-            messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} created. Patient consultation completed.')
+            messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} created.')
         
-        # The super().form_valid(form) typically handles saving the object and redirection.
-        # Since we saved `self.object` and handled messages, we might just need to redirect.
-        # However, CreateView's form_valid expects to return an HttpResponse.
-        # return redirect(self.get_success_url()) # Original super().form_valid would do this.
-        return super().form_valid(form) # Let CreateView handle the rest if self.object is set.
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         context['patient'] = patient
-        context['active_visit'] = getattr(self, 'active_visit', None) # Pass active visit to template if needed
+        context['active_visit'] = getattr(self, 'active_visit', None)
         return context
 
     def get_success_url(self):
-        # Ensure self.object is set (form.save() does this)
         if self.object:
             return self.object.patient.get_absolute_url()
-        # Fallback if self.object isn't set, though it should be
         patient_data = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
         return patient_data.get_absolute_url()
 
-# --- Your ClinicalNoteUpdateView ---
-# Similar considerations for using the latest active visit if updates should only happen on active ones.
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
+#     model = ClinicalNote
+#     template_name = 'ehr/doctor/update_clinical_note.html'
+#     form_class = ClinicalNoteUpdateForm # Assuming ClinicalNoteUpdateForm exists
+    
+#     def form_valid(self, form):
+#         form.instance.user = self.request.user
+        
+#         clinical_note = self.get_object()
+#         patient_data = clinical_note.patient
+        
+#         self.object = form.save() # Save clinical note changes
+        
+#         visit = VisitRecord.objects.filter(patient=patient_data, consultation=True).order_by('-id').first()
+        
+#         if visit: 
+#             if form.instance.needs_review:
+#                 visit.review = True
+#                 visit.seen = False
+#                 visit.save(update_fields=['review',])
+#                 # visit.save(update_fields=['review', 'seen'])
+#                 messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient awaiting review.')
+#             else:
+#                 # visit.close_visit()
+#                 messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient consultation completed.')
+#         else:
+#             # No active visit found to update status for, but the note itself is updated.
+#             messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated successfully. (No active visit to modify status for).')
+        
+#         return redirect(self.get_success_url())
+    
+#     def get_success_url(self):
+#         return self.object.patient.get_absolute_url()
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         clinical_note = self.get_object()
+#         context['patient'] = clinical_note.patient
+        
+#         return context
+
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
     model = ClinicalNote
     template_name = 'ehr/doctor/update_clinical_note.html'
-    form_class = ClinicalNoteUpdateForm # Assuming ClinicalNoteUpdateForm exists
+    form_class = ClinicalNoteUpdateForm
+    
+    def dispatch(self, request, *args, **kwargs):
+        """Check if the clinical note is still within the editable time window"""
+        clinical_note = self.get_object()
+        
+        if not clinical_note.is_editable():
+            messages.error(
+                request, 
+                f'Clinical note cannot be edited. The 30-minute edit window has expired.'
+            )
+            return redirect(clinical_note.patient.get_absolute_url())
+        
+        return super().dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        
+        # Double-check the time window before saving (in case user took long to submit)
         clinical_note = self.get_object()
+        
+        if not clinical_note.is_editable():
+            messages.error(
+                self.request, 
+                f'Clinical note cannot be edited. The 30-minute edit window has expired while you were editing.'
+            )
+            return redirect(clinical_note.patient.get_absolute_url())
+        
+        form.instance.user = self.request.user
         patient_data = clinical_note.patient
         
-        # form.instance.patient = patient_data # Not needed if patient is not a field in the form being changed
-        self.object = form.save() # Save clinical note changes
+        self.object = form.save()
         
-        # Get the latest active visit record for this patient to update its status
-        # If notes can be updated even for closed visits, then fetch latest overall.
-        # If updates should only affect status of an *active* visit:
         visit = VisitRecord.objects.filter(patient=patient_data, consultation=True).order_by('-id').first()
         
-        # If you want to update the status of the visit associated at the time of note creation (even if now closed),
-        # you might need to link ClinicalNote directly to a VisitRecord, or fetch based on creation time proximity.
-        # For now, let's assume we act on the *current latest active visit* if one exists.
-
         if visit: 
             if form.instance.needs_review:
                 visit.review = True
                 visit.seen = False
-                visit.save(update_fields=['review',])
-                # visit.save(update_fields=['review', 'seen'])
-                messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient awaiting review.')
+                visit.save(update_fields=['review'])
+                messages.success(
+                    self.request, 
+                    f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. '
+                    f'Patient awaiting review.'
+                )
             else:
-                # visit.close_visit()
-                messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. Patient consultation completed.')
+                messages.success(
+                    self.request, 
+                    f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated. '
+                    f'Patient consultation completed.'
+                )
         else:
-            # No active visit found to update status for, but the note itself is updated.
-            messages.success(self.request, f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated successfully. (No active visit to modify status for).')
+            messages.success(
+                self.request, 
+                f'Clinical note for {patient_data.first_name} {patient_data.last_name} updated successfully. '
+                f'(No active visit to modify status for).'
+            )
         
         return redirect(self.get_success_url())
     
@@ -4893,25 +4831,10 @@ class ClinicalNoteUpdateView(DoctorRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         clinical_note = self.get_object()
         context['patient'] = clinical_note.patient
-        # Optionally, pass the relevant visit if needed in the template
-        # context['visit_associated_with_note'] = VisitRecord.objects.filter(patient=clinical_note.patient, consultation=True).order_by('-id').first()
+        context['minutes_remaining'] = clinical_note.minutes_remaining_for_edit()
+        
         return context
-
-from django.shortcuts import render
-from django.views.generic import TemplateView
-from django.utils import timezone
-from django.db.models import Count, Q, Avg
-from django.db.models.functions import TruncMonth, TruncWeek, TruncDay
-from datetime import timedelta, datetime
-from collections import defaultdict, Counter
-import json
-from django.db.models.functions import ExtractWeekDay, ExtractHour, TruncMonth
-from django.db.models import Count, Avg, Q # Q is already used, Count, Avg are good to have grouped
-from django.utils import timezone # already used
-from datetime import timedelta # already used
-from django.contrib.auth.models import User
-from .models import PatientData, ClinicalNote, VisitRecord, Clinic, Team
-
+    
 class AnalyticsView(TemplateView):
     template_name = 'analytics.html'
 

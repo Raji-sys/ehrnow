@@ -1,6 +1,6 @@
 {%extends "base.html" %}
-{% block title %}CLINICAL NOTE{% endblock%}
-{%block page_title%}<div class="flex justify-center">CLINICAL NOTE</div>{%endblock%}
+{% block title %}UPDATE CLINICAL NOTE{% endblock%}
+{%block page_title%}<div class="flex justify-center">UPDATE CLINICAL NOTE</div>{%endblock%}
 {% block content %}
 <div class="">
   <div class="mt-4 mx-2 md:mx-auto w-fit rounded-xl bg-white">
@@ -14,13 +14,31 @@
         </div>
         {% endfor %}
       </section>
+      
+      <!-- ADD THE COUNTDOWN TIMER HERE -->
+      {% if minutes_remaining and minutes_remaining > 0 %}
+      <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 mx-2">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <i class="fa-solid fa-clock text-yellow-400"></i>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-yellow-700">
+              <strong>Edit Window:</strong> You have <span id="countdown">{{ minutes_remaining }}</span> minutes remaining to edit this clinical note.
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      
       {% if form.errors %}
       <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
           <a href class="uk-alert-close font-bold" uk-close></a>
           <p>{{form.errors}}</p>
       </div>
-          {% endif %}
-<form method="post" enctype="multipart/form-data"class="text-xs" >
+      {% endif %}
+
+<form method="post" enctype="multipart/form-data" class="text-xs" >
   {% csrf_token %}
   <div class="mb-2 text-cyan-900 px-6">
     {% for field in form %}
@@ -42,5 +60,49 @@ bg-green-700 text-white p-4 rounded shadow-lg hover:shadow-xl">
   </div>
   </form>
   </div>
-  </div>
+</div>
+
+<!-- ADD THE JAVASCRIPT AT THE BOTTOM -->
+{% if minutes_remaining and minutes_remaining > 0 %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let timeRemaining = {{ minutes_remaining }} * 60;
+    const countdownElement = document.getElementById('countdown');
+    const form = document.querySelector('form[method="post"]');
+    
+    const timer = setInterval(function() {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        
+        if (timeRemaining <= 0) {
+            clearInterval(timer);
+            
+            if (form) {
+                const inputs = form.querySelectorAll('input, textarea, select');
+                const submitBtn = form.querySelector('input[type="submit"]');
+                
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.classList.add('opacity-50', 'cursor-not-allowed');
+                });
+                
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitBtn.value = 'Expired';
+                }
+            }
+            
+            setTimeout(() => {
+                alert('Edit window has expired. Redirecting to patient details...');
+                window.location.href = "{{ patient.get_absolute_url }}";
+            }, 3000);
+        } else {
+            countdownElement.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            timeRemaining--;
+        }
+    }, 1000);
+});
+</script>
+{% endif %}
 {% endblock %}

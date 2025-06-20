@@ -3,18 +3,38 @@
 {% block title %}VISIT FORM{% endblock%}
 {%block page_title%}<div class="flex justify-center">HOSPITAL VISIT</div>{%endblock%}
 {% block content %}
-<div class="flex justify-center mt-4  w-fit mx-auto bg-white rounded-xl p-6">
-        {% if form.errors %}
-      <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl" uk-alert>
-          <a href class="uk-alert-close font-bold" uk-close></a>
-          <p>{{form.errors}}</p>
-      </div>
-          {% endif %}
+<section class="text-center border-cyan-700 w-fit mx-auto">
+  {% if form.errors %}
+    <div class="uk-alert-danger block text-xs uppercase text-rose-700 rounded-xl p-3 shadow" uk-alert>
+      <a href="#" class="uk-alert-close font-bold" uk-close></a>
+
+      <!-- Non-field errors -->
+      {% if form.non_field_errors %}
+        <ul class="list-disc list-inside text-left text-rose-700 mb-2">
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <!-- Field-specific errors -->
+      <ul class="list-disc list-inside text-left text-rose-700">
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</section>
+
+<div class="mt-4  w-fit mx-auto bg-white rounded-xl p-6">
 <form method="post" enctype="multipart/form-data" >
   {% csrf_token %}
   <div class="mb-2 uppercase text-cyan-900 px-10">
     <div class="">
-      <div class=" grid grid-cols-1 md:flex p-2 gap-6 text-xs">
+      <div class=" grid grid-cols-1 p-2 gap-6 text-xs">
 {% for field in form %}
       <div class="grid grid-cols-1 align-middle text-center">
           <label for="{{field.id_for_label}}">{{ field.label_tag }}</label>

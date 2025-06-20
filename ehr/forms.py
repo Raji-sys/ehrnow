@@ -125,7 +125,7 @@ class VisitForm(forms.ModelForm):
         super(VisitForm, self).__init__(*args, **kwargs)
         self.file_no = file_no
         self.fields['record'].queryset = MedicalRecord.objects.filter(
-            name__in=['new registration', 'follow up', 'review']
+            name__in=['new registration', 'follow up', 'review','dressing']
         )
         
         # Set all fields required by default
