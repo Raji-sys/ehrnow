@@ -4,9 +4,9 @@
 {% block title %}DASHBOARD{% endblock %}
 
 {% block page_title %}
-<nav class="bg-white shadow-sm border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-xl">
-        <div class="flex justify-between h-16 ">
+<nav class="bg-white shadow-sm border-b border-gray-100 lg:max-w-7xl rounded max-w-3xl mx-auto">
+    <div class="w-fit mx-auto px-4 rounded-xl">
+        <div class="flex justify-between h-10">
             <!-- Mobile menu button -->
             <div class="flex items-center sm:hidden">
                 <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
@@ -16,63 +16,71 @@
             </div>
 
             <!-- Desktop Navigation -->
-            <div class="hidden sm:flex sm:space-x-2 md:space-x-4 ">
+            <div class="hidden sm:flex sm:space-x-2 md:space-x-4 lg:gap-10 items-center">
+                         {% if request.user.is_superuser %}
+                <a href="{% url 'admin:index' %}" 
+                   class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 group {% if request.path == '/patient_list/' %}text-blue-600 bg-blue-50{% else %}text-gray-600 hover:text-gray-600 hover:bg-gray-50{% endif %}">
+                    <i class="fa-solid fa-gears mr-2 text-gray-500 group-hover:text-gray-800"></i>
+                    <span>CONTROL</span>
+                </a>
+                {% endif %}
                 <a href="{% url 'patient_list' %}" 
-                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 group {% if request.path == '/patient_list/' %}text-blue-600 bg-blue-50{% else %}text-gray-600 hover:text-blue-600 hover:bg-blue-50{% endif %}">
+                   class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 group {% if request.path == '/patient_list/' %}text-blue-600 bg-blue-50{% else %}text-gray-600 hover:text-blue-600 hover:bg-blue-50{% endif %}">
                     <i class="fa-solid fa-user-injured mr-2 text-blue-500 group-hover:text-blue-600"></i>
                     <span>PATIENTS</span>
                 </a>
                 
                 <a href="{% url 'staff' %}" 
-                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 group {% if request.path == '/staff/' %}text-indigo-600 bg-indigo-50{% else %}text-gray-600 hover:text-indigo-600 hover:bg-indigo-50{% endif %}">
+                   class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 group {% if request.path == '/staff/' %}text-indigo-600 bg-indigo-50{% else %}text-gray-600 hover:text-indigo-600 hover:bg-indigo-50{% endif %}">
                     <i class="fa-solid fa-user-group mr-2 text-indigo-500 group-hover:text-indigo-600"></i>
                     <span>STAFF</span>
                 </a>
                 
                 <a href="{% url 'hospital_services' %}" 
-                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 group {% if request.path == '/services/' %}text-teal-600 bg-teal-50{% else %}text-gray-600 hover:text-teal-600 hover:bg-teal-50{% endif %}">
+                   class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 group {% if request.path == '/services/' %}text-teal-600 bg-teal-50{% else %}text-gray-600 hover:text-teal-600 hover:bg-teal-50{% endif %}">
                     <i class="fa-solid fa-list-check mr-2 text-teal-500 group-hover:text-teal-600"></i>
                     <span>SERVICES</span>
                 </a>
                 
                 <a href="{% url 'erp:accounting_index' %}" 
-                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 group {% if request.path == '/accounting/' %}text-emerald-600 bg-emerald-50{% else %}text-gray-600 hover:text-emerald-600 hover:bg-emerald-50{% endif %}">
-                    <i class="fa-solid fa-list-numeric mr-2 text-emerald-500 group-hover:text-emerald-600"></i>
+                   class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 group {% if request.path == '/accounting/' %}text-emerald-600 bg-emerald-50{% else %}text-gray-600 hover:text-fuchsia-600 hover:bg-fuchsia-50{% endif %}">
+                    <i class="fa-solid fa-list-numeric mr-2 text-fuchsia-500 group-hover:text-fuchsia-600"></i>
                     <span>ACCOUNTING</span>
                 </a>
             </div>
 
-            <!-- Right side elements -->
-            <div class="flex items-center text-gray">
-                <div class="text-gray-600 text-sm  xs:block">
-                    <i class="far fa-calendar-alt mr-1 "></i>
-                    {% now "j M, Y, g:i A" %}
-                </div>
-            </div>
+      
         </div>
     </div>
 
     <!-- Mobile menu -->
     <div class="sm:hidden hidden" id="mobile-menu">
-        <div class="pt-2 pb-3 space-y-1">
+        <div class="pt-2 pb-3 flex">
+                         {% if request.user.is_superuser %}
             <a href="{% url 'patient_list' %}" 
-               class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium {% if request.path == '/patient_list/' %}border-blue-500 bg-blue-50 text-blue-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
+               class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/patient_list/' %}border-gray-500 bg-gray-50 text-gray-800{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
+                <i class="fa-solid fa-gears mr-2 text-gray-500"></i>
+                CONTROL
+            </a>
+            {%endif%}
+            <a href="{% url 'patient_list' %}" 
+               class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/patient_list/' %}border-blue-500 bg-blue-50 text-blue-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
                 <i class="fa-solid fa-user-injured mr-2 text-blue-500"></i>
                 PATIENTS
             </a>
             <a href="{% url 'staff' %}" 
-               class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium {% if request.path == '/staff/' %}border-indigo-500 bg-indigo-50 text-indigo-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
+               class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/staff/' %}border-indigo-500 bg-indigo-50 text-indigo-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
                 <i class="fa-solid fa-user-group mr-2 text-indigo-500"></i>
                 STAFF
             </a>
             <a href="{% url 'hospital_services' %}" 
-               class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium {% if request.path == '/services/' %}border-teal-500 bg-teal-50 text-teal-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
+               class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/services/' %}border-teal-500 bg-teal-50 text-teal-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
                 <i class="fa-solid fa-list-check mr-2 text-teal-500"></i>
                 SERVICES
             </a>
             <a href="{% url 'erp:accounting_index' %}" 
-               class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium {% if request.path == '/accounting/' %}border-emerald-500 bg-emerald-50 text-emerald-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
-                <i class="fa-solid fa-list-numeric mr-2 text-emerald-500"></i>
+               class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/accounting/' %}border-fuchsia-500 bg-fuchsia-50 text-fuchsia-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
+                <i class="fa-solid fa-list-numeric mr-2 text-fuchsia-500"></i>
                 ACCOUNTING
             </a>
         </div>
@@ -99,7 +107,7 @@
     <div class="mx-2 md:mx-20">
 
         <!-- Dashboard Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4  gap-10">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4  gap-10">
             <!-- HIM Card -->
             <a href="{% url 'medical_record' %}" class="group relative">
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl shadow-lg transform group-hover:scale-105 transition duration-300"></div>

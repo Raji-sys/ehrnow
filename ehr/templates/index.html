@@ -4,18 +4,27 @@
 
 {% block content %}
 <div class="relative h-screen w-full overflow-hidden">
-  <!-- Background overlay -->
   <div class="absolute inset-0 bg-cover bg-center opacity-20 animate-pulse duration-[6000ms] ease-in-out z-10 pointer-events-none"></div>
 
-  <!-- Landing content -->
-  <div class="absolute z-20 h-[80%] w-full flex flex-col items-center justify-center text-center p-4">
-    <h1 class="text-4xl md:text-6xl bg-gradient-to-r from-sky-800 to-emerald-700 bg-clip-text text-transparent drop-shadow animate-fade-in animate-bounce">
+<div class="relative h-screen w-full overflow-hidden">
+  <div class="absolute inset-0 bg-cover bg-center opacity-20 animate-pulse duration-[6000ms] ease-in-out z-10 pointer-events-none"></div>
+
+  <div class="absolute z-20
+              w-full h-full  /* Start with full width/height for small screens */
+              flex flex-col items-center justify-center text-center
+              p-4             /* Default padding for all screens */
+
+              sm:w-3/4 sm:h-[80%] sm:p-6 sm:right-0 /* On small screens (sm), make it 3/4 width, 80% height, right-aligned, more padding */
+              md:w-1/2 md:h-[80%] md:p-8 md:right-0 /* On medium screens (md), make it 1/2 width, 80% height, right-aligned, even more padding */
+              lg:w-1/3 lg:h-[50%] lg:p-10 lg:right-0 /* On large screens (lg), make it 1/3 width, 80% height, right-aligned, largest padding */
+              ">
+    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl bg-gradient-to-r from-sky-800 to-emerald-700 bg-clip-text text-transparent drop-shadow animate-fade-in animate-bounce">
       AudaxEMR
     </h1>
-    <p class="mt-4 text-sm md:text-lg bg-gradient-to-r from-sky-900 to-emerald-900 bg-clip-text animate-fade-in  animation-delay-1000">
+    <p class="mt-2 text-sm sm:text-base md:text-lg lg:text-xl bg-gradient-to-r from-sky-900 to-emerald-900 bg-clip-text animate-fade-in animation-delay-1000">
       <i class="fas fa-user-md mr-2"></i>Your reliable partner for Electronic Medical Records
     </p>
-    <a href="{% url 'get_started' %}" class="mt-8 px-8 py-3 bg-gradient-to-r from-emerald-800 to-blue-800 text-white font-semibold uppercase text-sm rounded-xl shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 animate-bounce inline-block">
+    <a href="{% url 'get_started' %}" class="mt-4 px-6 py-2 sm:px-8 sm:py-3 bg-gradient-to-r from-emerald-800 to-blue-800 text-white font-semibold uppercase text-sm sm:text-base rounded-xl shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 animate-bounce inline-block">
       <i class="fas fa-rocket mr-2"></i>Get Started
     </a>
   </div>
@@ -26,20 +35,20 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 1s ease forwards;
   }
-  
+
   .animation-delay-1000 {
     animation-delay: 1s;
   }
-  
+
   @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
   }
-  
+
   .animate-bounce {
     animation: bounce 2s infinite;
   }

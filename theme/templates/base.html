@@ -473,17 +473,17 @@ a:hover {
                     <a href="{% url 'get_started' %}" class="icon-button group">
                         <i class="fa-solid fa-home-user md:fa-lg group-hover:scale-110 transition-transform"></i>
                     </a>
-                    {% if request.user.is_superuser %}
-                    <a href="{% url 'admin:index' %}" class="text-button">
-                        control panel
-                    </a>
-                    {% endif %}
                 </div>
-                
+        <div class="nav-item">
+            <div class="text-white text-xs xs:block">
+                <i class="far fa-calendar-alt mr-1"></i>
+                <span id="live-clock"></span>
+            </div>
+        </div>
                 <div class="nav-item">
                     <span class="text-button">
                         <span class="mr-2">logged-in as:</span>
-                        <span class="font-semibold text-white">{{request.user}}</span>
+                        <span class="font-medium text-white text-xs">{{request.user}}</span>
                     </span>
                     <form method="POST" action="{% url 'logout' %}" class="inline ml-3">
                         {% csrf_token %}
@@ -494,7 +494,28 @@ a:hover {
                 </div>
             </nav>
         </header>
+<script>
+    function updateClock() {
+        const now = new Date();
+        const options = {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        };
+        const formattedTime = now.toLocaleString('en-US', options);
+        document.getElementById('live-clock').textContent = formattedTime;
+    }
 
+    // Update the clock every second
+    setInterval(updateClock, 1000);
+
+    // Initial call to display the clock immediately
+    updateClock();
+</script>
         <!-- Enhanced Page Title Section -->
         <div class="page-title-section">
             {% if request.path_info != "/get-started/" and request.path_info != "/" %}
@@ -556,7 +577,6 @@ a:hover {
         </main>
     </div>
 
-<!-- base.html - Add this before closing </body> tag -->
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -662,7 +682,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function logoutUser() {
-        window.location.href = '{% url "logout" %}';
+        // Create a form and submit it as POST
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{% url "logout" %}';
+        
+        // Add CSRF token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = getCookie('csrftoken');
+        form.appendChild(csrfInput);
+        
+        document.body.appendChild(form);
+        form.submit();
     }
     
     function getCookie(name) {
@@ -680,7 +713,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return cookieValue;
     }
     
-    // Initialize timer (no automatic activity detection)
     resetTimer();
     
     {% endif %}
