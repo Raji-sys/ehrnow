@@ -53,7 +53,6 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.translation import gettext_lazy as _
 from django.template.loader import get_template
-from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.db import transaction
 from django.contrib import messages
@@ -69,6 +68,7 @@ from django.http import Http404
 from datetime import timedelta
 from django.db.models.functions import TruncMonth, TruncWeek, TruncDay
 from django.db.models.functions import ExtractWeekDay, ExtractHour, TruncMonth
+from django.views.decorators.http import require_http_methods
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -3388,6 +3388,41 @@ def get_category(request, category_id):
     item_list = [{'id': item.id, 'name': item.name, 'price': float(item.price)} for item in items]
     return JsonResponse({'items': item_list})
 
+# views.py
+
+@require_http_methods(["GET"])
+def theatre_item_autocomplete(request):
+    """
+    Autocomplete view for TheatreItem
+    Returns JSON response with matching items including price
+    """
+    query = request.GET.get('q', '').strip()
+    
+    if len(query) < 2:  # Minimum 2 characters to search
+        return JsonResponse({'items': []})
+    
+    # Search for items containing the query (case-insensitive)
+    # Search in both name and category name for better results
+    items = TheatreItem.objects.filter(
+        Q(name__icontains=query) | Q(category__name__icontains=query)
+    ).select_related('category').values(
+        'id', 'name', 'price', 'category__name'
+    )[:15]  # Limit to 15 results
+    
+    # Format the response
+    items_list = [
+        {
+            'id': item['id'],
+            'name': item['name'],
+            'price': float(item['price']) if item['price'] else 0.0,
+            'category': item['category__name'] or '',
+            'display_name': f"{item['name']} - ${float(item['price']):.2f}" if item['price'] else item['name'],
+            'value': item['name']  # For autocomplete display
+        }
+        for item in items
+    ]
+    
+    return JsonResponse({'items': items_list})
 
 class BillDetailView(DetailView):
     model = Bill
@@ -4046,6 +4081,34 @@ class PrivateBillPDFView(DetailView):
             return response
         return HttpResponse("Error generating PDF", status=400) 
 
+
+@require_http_methods(["GET"])
+def private_theatre_item_autocomplete(request):
+    """
+    Autocomplete view for PrivateTheatreItem
+    Returns JSON response with matching items
+    """
+    query = request.GET.get('q', '').strip()
+    
+    if len(query) < 2:  # Minimum 2 characters to search
+        return JsonResponse({'items': []})
+    
+    # Search for items containing the query (case-insensitive)
+    items = PrivateTheatreItem.objects.filter(
+        name__icontains=query
+    ).values('id', 'name')[:10]  # Limit to 10 results
+    
+    # Format the response
+    items_list = [
+        {
+            'id': item['id'],
+            'name': item['name'],
+            'value': item['name']  # For autocomplete display
+        }
+        for item in items
+    ]
+    
+    return JsonResponse({'items': items_list})
 
 class FundWalletView(RevenueRequiredMixin,CreateView):
     model = WalletTransaction

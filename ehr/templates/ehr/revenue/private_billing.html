@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 {% block title %}Surgery Bill{% endblock %}
-{% block page_title %}
-<div class="flex justify-center"><a href="#"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>QUICK BILL</div>
-{% endblock %}
 {% block content %}
 <div class="container mx-auto p-4 bg-white rounded-lg shadow-sm border border-teal-100 max-w-4xl mt-2">
     <!-- Header Section -->
@@ -13,7 +10,7 @@
         <p class="text-xs text-teal-600 mt-1">File No: {{ patient.file_no }} | {{ patient.gender }} | Age: {{ patient.age }}</p>
     </div>
     
-    <form method="post" class="space-y-3">
+<form method="post" class="space-y-3">
         {% csrf_token %}
         {{ formset.management_form }}
         
@@ -23,24 +20,24 @@
                 <thead>
                     <tr class="bg-teal-600 text-white">
                         <th class="px-3 py-2 border-b text-xs font-semibold text-center">Item</th>
-                        <th class="px-3 py-2 border-b text-xs font-semibold text-center">Custom Item</th>
                         <th class="px-3 py-2 border-b text-xs font-semibold text-center">Price</th>
-                        <th class="px-3 py-2 border-b text-xs font-semibold text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody id="formset-container" class="divide-y divide-teal-50">
                     {% for form in formset %}
                         <tr class="formset-row hover:bg-teal-50 transition-colors">
-                            <td class="px-3 py-2 border-b text-xs">
-                                {{ form.item }}
+                            <td class="px-3 py-2 border-b text-xs relative">
+                                <div class="autocomplete-container">
+                                    <input type="text" 
+                                           class="item-autocomplete w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-teal-500"
+                                           placeholder="Type to search items..."
+                                           data-form-index="{{ forloop.counter0 }}"
+                                           autocomplete="off">
+                                    <div class="autocomplete-dropdown absolute z-50 w-full bg-white border border-gray-300 rounded-b shadow-lg hidden max-h-48 overflow-y-auto"></div>
+                                </div>
+                                {{ form.item.as_hidden }}
                                 {% if form.item.errors %}
                                     <div class="text-red-500 text-xs mt-1">{{ form.item.errors }}</div>
-                                {% endif %}
-                            </td>
-                            <td class="px-3 py-2 border-b text-xs">
-                                {{ form.custom_item_name }}
-                                {% if form.custom_item_name.errors %}
-                                    <div class="text-red-500 text-xs mt-1">{{ form.custom_item_name.errors }}</div>
                                 {% endif %}
                             </td>
                             <td class="px-3 py-2 border-b text-xs">
@@ -49,12 +46,7 @@
                                     <div class="text-red-500 text-xs mt-1">{{ form.price.errors }}</div>
                                 {% endif %}
                             </td>
-                            <td class="px-3 py-2 border-b text-xs text-center">
-                                <button type="button" onclick="clearRow(this)" 
-                                    class="text-red-400 hover:text-red-600 transition-colors">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
+
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -86,25 +78,246 @@
     </form>
 </div>
 
+<style>
+.autocomplete-container {
+    position: relative;
+}
+
+.autocomplete-dropdown {
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+.autocomplete-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected {
+    background-color: #e6fffa;
+    color: #0d9488;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.no-results {
+    padding: 8px 12px;
+    color: #666;
+    font-size: 12px;
+    font-style: italic;
+}
+</style>
+
 <script>
-function toggleCustomItem(selectElement) {
-    const row = selectElement.closest('tr');
-    const customItemInput = row.querySelector('input[name*="custom_item_name"]');
+class AutocompleteManager {
+    constructor() {
+        this.debounceDelay = 300;
+        this.minSearchLength = 2;
+        this.activeDropdown = null;
+        this.selectedIndex = -1;
+        
+        this.init();
+    }
     
-    console.log('Toggle called, value:', selectElement.value); // Debug log
+    init() {
+        this.setupEventListeners();
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.autocomplete-container')) {
+                this.hideAllDropdowns();
+            }
+        });
+    }
     
-    if (selectElement.value === 'other') {
-        customItemInput.classList.remove('hidden');
-        customItemInput.style.display = 'block';
-        customItemInput.required = true;
-        customItemInput.focus(); // Focus on the input when shown
-    } else {
-        customItemInput.classList.add('hidden');
-        customItemInput.style.display = 'none';
-        customItemInput.required = false;
-        customItemInput.value = '';
+    setupEventListeners() {
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('item-autocomplete')) {
+                this.handleInput(e.target);
+            }
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.target.classList.contains('item-autocomplete')) {
+                this.handleKeydown(e);
+            }
+        });
+        
+        document.addEventListener('focus', (e) => {
+            if (e.target.classList.contains('item-autocomplete')) {
+                this.handleFocus(e.target);
+            }
+        }, true);
+    }
+    
+    handleInput(input) {
+        const query = input.value.trim();
+        
+        if (query.length < this.minSearchLength) {
+            this.hideDropdown(input);
+            this.clearHiddenField(input);
+            return;
+        }
+        
+        clearTimeout(input.searchTimeout);
+        input.searchTimeout = setTimeout(() => {
+            this.search(input, query);
+        }, this.debounceDelay);
+    }
+    
+    handleKeydown(e) {
+        const dropdown = e.target.closest('.autocomplete-container').querySelector('.autocomplete-dropdown');
+        
+        if (!dropdown.classList.contains('hidden')) {
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    this.selectedIndex = Math.min(this.selectedIndex + 1, items.length - 1);
+                    this.updateSelection(items);
+                    break;
+                    
+                case 'ArrowUp':
+                    e.preventDefault();
+                    this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+                    this.updateSelection(items);
+                    break;
+                    
+                case 'Enter':
+                    e.preventDefault();
+                    if (this.selectedIndex >= 0 && items[this.selectedIndex]) {
+                        this.selectItem(e.target, items[this.selectedIndex]);
+                    }
+                    break;
+                    
+                case 'Escape':
+                    this.hideDropdown(e.target);
+                    break;
+            }
+        }
+    }
+    
+    handleFocus(input) {
+        const query = input.value.trim();
+        if (query.length >= this.minSearchLength) {
+            this.search(input, query);
+        }
+    }
+    
+    async search(input, query) {
+        try {
+            const response = await fetch(`/api/private-theatre-items/?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            
+            this.showDropdown(input, data.items);
+        } catch (error) {
+            console.error('Autocomplete search error:', error);
+            this.showDropdown(input, []);
+        }
+    }
+    
+    showDropdown(input, items) {
+        const container = input.closest('.autocomplete-container');
+        const dropdown = container.querySelector('.autocomplete-dropdown');
+        
+        this.hideAllDropdowns();
+        
+        if (items.length === 0) {
+            dropdown.innerHTML = '<div class="no-results">No items found</div>';
+        } else {
+            dropdown.innerHTML = items.map(item => 
+                `<div class="autocomplete-item" data-id="${item.id}" data-name="${item.name}">
+                    ${this.highlightText(item.name, input.value)}
+                </div>`
+            ).join('');
+            
+            // Add click listeners to items
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    this.selectItem(input, item);
+                });
+            });
+        }
+        
+        dropdown.classList.remove('hidden');
+        this.activeDropdown = dropdown;
+        this.selectedIndex = -1;
+    }
+    
+    hideDropdown(input) {
+        const dropdown = input.closest('.autocomplete-container').querySelector('.autocomplete-dropdown');
+        dropdown.classList.add('hidden');
+        this.selectedIndex = -1;
+        
+        if (this.activeDropdown === dropdown) {
+            this.activeDropdown = null;
+        }
+    }
+    
+    hideAllDropdowns() {
+        document.querySelectorAll('.autocomplete-dropdown').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+        this.activeDropdown = null;
+        this.selectedIndex = -1;
+    }
+    
+    selectItem(input, item) {
+        const itemId = item.dataset.id;
+        const itemName = item.dataset.name;
+        
+        input.value = itemName;
+        this.setHiddenField(input, itemId);
+        this.hideDropdown(input);
+    }
+    
+    setHiddenField(input, value) {
+        const formIndex = input.dataset.formIndex;
+        const hiddenField = document.querySelector(`#id_form-${formIndex}-item`);
+        if (hiddenField) {
+            hiddenField.value = value;
+        }
+    }
+    
+    clearHiddenField(input) {
+        const formIndex = input.dataset.formIndex;
+        const hiddenField = document.querySelector(`#id_form-${formIndex}-item`);
+        if (hiddenField) {
+            hiddenField.value = '';
+        }
+    }
+    
+    updateSelection(items) {
+        items.forEach((item, index) => {
+            item.classList.toggle('selected', index === this.selectedIndex);
+        });
+    }
+    
+    highlightText(text, query) {
+        if (!query) return text;
+        
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<strong>$1</strong>');
+    }
+    
+    initializeRow(row) {
+        const input = row.querySelector('.item-autocomplete');
+        if (input) {
+            const formIndex = row.querySelectorAll('.formset-row').length - 1;
+            input.dataset.formIndex = formIndex;
+        }
     }
 }
+
+// Initialize autocomplete manager
+const autocompleteManager = new AutocompleteManager();
 
 function clearRow(button) {
     const row = button.closest('tr');
@@ -124,6 +337,8 @@ function clearRow(button) {
         customItemInput.style.display = 'none';
         customItemInput.required = false;
     }
+    
+    autocompleteManager.hideAllDropdowns();
 }
 
 function addNewRow() {
@@ -153,6 +368,20 @@ function addNewRow() {
         }
     });
     
+    // Update autocomplete input
+    const autocompleteInput = newRow.querySelector('.item-autocomplete');
+    if (autocompleteInput) {
+        autocompleteInput.dataset.formIndex = formCount;
+        autocompleteInput.value = '';
+    }
+    
+    // Clear dropdown content
+    const dropdown = newRow.querySelector('.autocomplete-dropdown');
+    if (dropdown) {
+        dropdown.innerHTML = '';
+        dropdown.classList.add('hidden');
+    }
+    
     // Ensure the new row's custom input is hidden and set up properly
     const customItemInput = newRow.querySelector('input[name*="custom_item_name"]');
     if (customItemInput) {
@@ -161,26 +390,19 @@ function addNewRow() {
         customItemInput.required = false;
     }
     
-    // Ensure the select has the onChange handler
-    const selectElement = newRow.querySelector('select[name*="item"]');
-    if (selectElement) {
-        selectElement.setAttribute('onchange', 'toggleCustomItem(this)');
-    }
-    
     container.appendChild(newRow);
     totalForms.value = formCount + 1;
 }
 
-// Initialize all existing rows on page load
+// Initialize existing rows on page load
 document.addEventListener('DOMContentLoaded', function() {
-    const selects = document.querySelectorAll('select[name*="item"]');
-    selects.forEach(select => {
-        // Ensure each select has the onChange handler
-        select.setAttribute('onchange', 'toggleCustomItem(this)');
-        // Initialize the visibility based on current value
-        toggleCustomItem(select);
+    const rows = document.querySelectorAll('.formset-row');
+    rows.forEach((row, index) => {
+        const autocompleteInput = row.querySelector('.item-autocomplete');
+        if (autocompleteInput) {
+            autocompleteInput.dataset.formIndex = index;
+        }
     });
 });
 </script>
-
 {% endblock %}

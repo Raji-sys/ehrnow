@@ -180,4 +180,7 @@ urlpatterns = [
     path('analytics/doctor/<int:doctor_id>/', DoctorDetailAnalyticsView.as_view(), name='doctor_detail_analytics'),
     path('analytics/dashboard/', views.hospital_dashboard_optimized, name='hospital_dashboard'),
     path('extend-session/', views.extend_session, name='extend_session'),
+    path('api/private-theatre-items/', views.private_theatre_item_autocomplete, name='private_theatre_item_autocomplete'),
+    path('api/theatre-items/', views.theatre_item_autocomplete, name='theatre_item_autocomplete'),
+   
 ]

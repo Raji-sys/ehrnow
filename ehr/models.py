@@ -154,7 +154,7 @@ class PatientData(models.Model):
     other_name = models.CharField(max_length=300, null=True, blank=True)
     phone = models.CharField(max_length=22, null=True, unique=True)
     # photo = models.ImageField(null=True, blank=True)
-    sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'))
+    sex = (('MALE', 'MALE'), ('FEMALE', 'FEMALE'),('FAMILY', 'FAMILY'))
     gender = models.CharField(choices=sex, max_length=10, null=True)
     age=models.PositiveIntegerField(null=True)
     dob = models.DateField('date of birth', null=True, blank=True)
@@ -433,7 +433,7 @@ class ClinicalNote(models.Model):
                 return False
             
             time_since_creation = timezone.now() - self.updated
-            edit_window = timedelta(minutes=3)
+            edit_window = timedelta(minutes=30)
             return time_since_creation <= edit_window
         
     def minutes_remaining_for_edit(self):
@@ -442,7 +442,7 @@ class ClinicalNote(models.Model):
             return 0
         
         time_since_creation = timezone.now() - self.updated
-        edit_window = timedelta(minutes=3)
+        edit_window = timedelta(minutes=30)
         time_remaining = edit_window - time_since_creation
         
         if time_remaining.total_seconds() <= 0:

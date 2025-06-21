@@ -28,41 +28,46 @@
     </div>
     {% endfor %}
 </section>
-
-<!-- Main Form -->
 <form method="post" class="max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-teal-100 p-4">
     {% csrf_token %}
     {{ form.management_form }}
     
     <!-- Scrollable Items Container -->
-    <div class="max-h-[65vh] overflow-y-auto p-2 mb-4">
+    <div class="max-h-[80vh] overflow-y-auto p-2 mb-4">
         <div class="grid md:grid-cols-1 gap-3">
             {% for form in formset %}
-            <div class="p-3 border border-teal-100 rounded-lg bg-teal-50 hover:bg-teal-100 transition-colors">
-                <div class="space-y-2">
+            <div class="p-2 border border-teal-100 rounded-lg bg-teal-50 hover:bg-teal-100 transition-colors form-item">
+                <div class="space-y-1">
                     <p class="text-xs font-medium text-teal-700">Item #{{ forloop.counter }}</p>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <div>
-                            {{ form.category }}
-                            {% if form.category.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.category.errors }}</p>
-                            {% endif %}
-                        </div>
-                        <div>
-                            {{ form.item }}
+        
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="relative">
+                            <label class="block text-xs uppercase font-medium text-gray-700 mb-1">
+                                Item
+                            </label>
+                            <div class="autocomplete-container">
+                                <input type="text" 
+                                       class="item-autocomplete text-xs border border-gray-300 rounded px-2 py-1.5 w-full focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400 bg-white"
+                                       placeholder="Type to search items..."
+                                       data-form-index="{{ forloop.counter0 }}"
+                                       autocomplete="off">
+                                <div class="autocomplete-dropdown hidden"></div>
+                            </div>
+                            {{ form.item.as_hidden }}
                             {% if form.item.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.item.errors }}</p>
+                                <p class="text-red-500 text-xs mt-1">{{ form.item.errors }}</p>
                             {% endif %}
                         </div>
                         <div>
+                            <label for="{{ form.quantity.id_for_label }}" class="block text-xs uppercase font-medium text-gray-700 mb-1">
+                                Quantity
+                            </label>
                             {{ form.quantity }}
                             {% if form.quantity.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.quantity.errors }}</p>
+                                <p class="text-red-500 text-xs mt-1">{{ form.quantity.errors }}</p>
                             {% endif %}
                         </div>
-                    </div>
-                    
+                    </div>        
                     {% if form.non_field_errors %}
                     <div class="text-red-500 text-xs italic">
                         {% for error in form.non_field_errors %}
@@ -85,51 +90,329 @@
     </div>
 </form>
 
-<script>
-function initializePage() {
-    function load_items(index) {
-        const categoryId = document.getElementsByName(`form-${index}-category`)[0].value;
-        const url = `/get_category/${categoryId}/`;
-        
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                const itemSelect = document.getElementsByName(`form-${index}-item`)[0];
-                itemSelect.innerHTML = '<option value="">Select an item</option>';
-                
-                data.items.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.text = `${item.name} - ${item.price.toFixed(2)}`;
-                    itemSelect.add(option);
-                });
-            })
-            .catch(error => console.error('Error:', error));
+<style>
+    select, input {
+        min-height: 32px;
+    }
+    .form-item {
+        position: relative;
+        z-index: 1;
+    }
+    .form-item:focus-within {
+  z-index: 50; /* bring entire item above others */
+}
+
+    .form-item:hover {
+        transform: none;
+        z-index: 2;
+    }
+    
+    .autocomplete-container {
+        position: relative;
+        z-index: 20;
     }
 
-    // Event listeners for category selects
-    {% for form in formset %}
-    document.getElementsByName('{{ form.category.html_name }}')[0].addEventListener('change', function() {
-        load_items('{{ forloop.counter0 }}');
-    });
-    {% endfor %}
+    .autocomplete-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 9999 !important;
+        background-color: white !important;
+        border: 1px solid #d1d5db !important;
+        border-top: none;
+        border-radius: 0 0 6px 6px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        max-height: 200px;
+        overflow-y: auto;
+    }
     
-    // Style form elements
-    document.querySelectorAll('select, input').forEach(el => {
+    .autocomplete-dropdown:not(.hidden) {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .autocomplete-item {
+        padding: 10px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 12px;
+        line-height: 1.4;
+        background-color: white !important;
+        transition: background-color 0.15s ease-in-out;
+        position: relative;
+        z-index: 10000;
+    }
+
+    .autocomplete-item:hover,
+    .autocomplete-item.selected {
+        background-color: #f0fdfa !important;
+        color: #0d9488 !important;
+    }
+
+    .autocomplete-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-name {
+        font-weight: 500;
+    }
+
+    .item-price {
+        color: #059669;
+        font-weight: 600;
+    }
+
+    .item-category {
+        color: #6b7280;
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+
+    .no-results {
+        padding: 10px 12px;
+        color: #6b7280;
+        font-size: 12px;
+        font-style: italic;
+        background-color: white;
+    }
+    
+    .max-h-\[65vh\] {
+    overflow-y: auto;
+    position: relative;
+    z-index: 0; /* don't elevate this over your dropdown */
+    }
+
+</style>
+
+<script>
+    
+class TheatreAutocompleteManager {
+    constructor() {
+        this.debounceDelay = 300;
+        this.minSearchLength = 2;
+        this.activeDropdown = null;
+        this.selectedIndex = -1;
+        
+        this.init();
+    }
+    
+    init() {
+        this.setupEventListeners();
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.autocomplete-container')) {
+                this.hideAllDropdowns();
+            }
+        });
+    }
+    
+    setupEventListeners() {
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('item-autocomplete')) {
+                this.handleInput(e.target);
+            }
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.target.classList.contains('item-autocomplete')) {
+                this.handleKeydown(e);
+            }
+        });
+        
+        document.addEventListener('focus', (e) => {
+            if (e.target.classList.contains('item-autocomplete')) {
+                this.handleFocus(e.target);
+            }
+        }, true);
+    }
+    
+    handleInput(input) {
+        const query = input.value.trim();
+        
+        if (query.length < this.minSearchLength) {
+            this.hideDropdown(input);
+            this.clearHiddenField(input);
+            return;
+        }
+        
+        clearTimeout(input.searchTimeout);
+        input.searchTimeout = setTimeout(() => {
+            this.search(input, query);
+        }, this.debounceDelay);
+    }
+    
+    handleKeydown(e) {
+        const dropdown = e.target.closest('.autocomplete-container').querySelector('.autocomplete-dropdown');
+        
+        if (!dropdown.classList.contains('hidden')) {
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+            
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    this.selectedIndex = Math.min(this.selectedIndex + 1, items.length - 1);
+                    this.updateSelection(items);
+                    break;
+                    
+                case 'ArrowUp':
+                    e.preventDefault();
+                    this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+                    this.updateSelection(items);
+                    break;
+                    
+                case 'Enter':
+                    e.preventDefault();
+                    if (this.selectedIndex >= 0 && items[this.selectedIndex]) {
+                        this.selectItem(e.target, items[this.selectedIndex]);
+                    }
+                    break;
+                    
+                case 'Escape':
+                    this.hideDropdown(e.target);
+                    break;
+            }
+        }
+    }
+    
+    handleFocus(input) {
+        const query = input.value.trim();
+        if (query.length >= this.minSearchLength) {
+            this.search(input, query);
+        }
+    }
+    
+    async search(input, query) {
+        try {
+            const response = await fetch(`/api/theatre-items/?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            
+            this.showDropdown(input, data.items);
+        } catch (error) {
+            console.error('Autocomplete search error:', error);
+            this.showDropdown(input, []);
+        }
+    }
+    
+    showDropdown(input, items) {
+        const container = input.closest('.autocomplete-container');
+        const dropdown = container.querySelector('.autocomplete-dropdown');
+        
+        this.hideAllDropdowns();
+        
+        if (items.length === 0) {
+            dropdown.innerHTML = '<div class="no-results">No items found</div>';
+        } else {
+            dropdown.innerHTML = items.map(item => 
+                `<div class="autocomplete-item" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">
+                    <div class="item-name">${this.highlightText(item.name, input.value)}</div>
+                    <div class="flex justify-between items-center">
+                        <span class="item-price">$${item.price.toFixed(2)}</span>
+                        ${item.category ? `<span class="item-category">${item.category}</span>` : ''}
+                    </div>
+                </div>`
+            ).join('');
+            
+            // Add click listeners to items
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    this.selectItem(input, item);
+                });
+            });
+        }
+        
+        dropdown.classList.remove('hidden');
+        this.activeDropdown = dropdown;
+        this.selectedIndex = -1;
+    }
+    
+    hideDropdown(input) {
+        const dropdown = input.closest('.autocomplete-container').querySelector('.autocomplete-dropdown');
+        dropdown.classList.add('hidden');
+        this.selectedIndex = -1;
+        
+        if (this.activeDropdown === dropdown) {
+            this.activeDropdown = null;
+        }
+    }
+    
+    hideAllDropdowns() {
+        document.querySelectorAll('.autocomplete-dropdown').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+        this.activeDropdown = null;
+        this.selectedIndex = -1;
+    }
+    
+    selectItem(input, item) {
+        const itemId = item.dataset.id;
+        const itemName = item.dataset.name;
+        
+        input.value = itemName;
+        this.setHiddenField(input, itemId);
+        this.hideDropdown(input);
+    }
+    
+    setHiddenField(input, value) {
+        const formIndex = input.dataset.formIndex;
+        const hiddenField = document.querySelector(`#id_form-${formIndex}-item`);
+        if (hiddenField) {
+            hiddenField.value = value;
+        }
+    }
+    
+    clearHiddenField(input) {
+        const formIndex = input.dataset.formIndex;
+        const hiddenField = document.querySelector(`#id_form-${formIndex}-item`);
+        if (hiddenField) {
+            hiddenField.value = '';
+        }
+    }
+    
+    updateSelection(items) {
+        items.forEach((item, index) => {
+            item.classList.toggle('selected', index === this.selectedIndex);
+        });
+        
+        // Scroll selected item into view
+        if (this.selectedIndex >= 0 && items[this.selectedIndex]) {
+            items[this.selectedIndex].scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth'
+            });
+        }
+    }
+    
+    highlightText(text, query) {
+        if (!query) return text;
+        
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<strong>$1</strong>');
+    }
+}
+
+// Initialize autocomplete manager
+const theatreAutocompleteManager = new TheatreAutocompleteManager();
+
+function initializePage() {
+    // Style form elements (excluding our autocomplete inputs which are already styled)
+    document.querySelectorAll('select, input:not(.item-autocomplete)').forEach(el => {
         el.classList.add('text-xs', 'border', 'border-gray-300', 'rounded', 'px-2', 'py-1.5', 'w-full', 
                          'focus:outline-none', 'focus:ring-1', 'focus:ring-teal-400', 'focus:border-teal-400');
+    });
+    
+    // Initialize autocomplete inputs with form indices
+    const rows = document.querySelectorAll('.form-item');
+    rows.forEach((row, index) => {
+        const autocompleteInput = row.querySelector('.item-autocomplete');
+        if (autocompleteInput) {
+            autocompleteInput.dataset.formIndex = index;
+        }
     });
 }
 
 window.addEventListener('DOMContentLoaded', initializePage);
 </script>
-
-<style>
-    select, input {
-        min-height: 32px;
-    }
-    .form-item:hover {
-        transform: translateY(-1px);
-    }
-</style>
 {% endblock %}

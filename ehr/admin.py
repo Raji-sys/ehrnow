@@ -1,5 +1,8 @@
+from re import I
 from .models import *
 from django.contrib import admin
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 
 @admin.register(Admission)
@@ -83,18 +86,122 @@ class MedicalRecordAdmin(admin.ModelAdmin):
     list_display = ('name','price')
 
 
-@admin.register(TheatreItem)
-class TheatreItemAdmin(admin.ModelAdmin):
-    list_display = ('category','name','price')
-    search_fields = ('cateogry','name','price')
-    list_filter = ('category','name','price')
+from import_export import resources, fields
+from import_export.widgets import ForeignKeyWidget
+
+
+class TheatreItemCategoryResource(resources.ModelResource):
+    # Define the field to use name instead of ID
+    name = fields.Field(
+        column_name='name',
+        attribute='name',
+    )
+    
+    class Meta:
+        model = TheatreItemCategory
+        fields = ('name',)  # Only export/import the name field
+        export_order = ('name',)
+        import_id_fields = ('name',)  # Use name as the unique identifier for imports
+        skip_unchanged = True
+        report_skipped = True
+
+    def before_import_row(self, row, **kwargs):
+        """
+        Optional: Clean or validate data before import
+        """
+        if 'name' in row:
+            row['name'] = row['name'].strip()  # Remove whitespace
+        return super().before_import_row(row, **kwargs)
 
 
 @admin.register(TheatreItemCategory)
-class TheatreItemCategoryAdmin(admin.ModelAdmin):
+class TheatreItemCategoryAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    resource_class = TheatreItemCategoryResource
     list_display = ('name',)
     search_fields = ('name',)
     list_filter = ('name',)
+    
+    # Optional: Customize the import/export interface
+    def get_export_queryset(self, request):
+        """Optional: Filter what gets exported"""
+        queryset = super().get_export_queryset(request)
+        return queryset.order_by('name')
+
+
+# If you need to reference this category from other models during import,
+# you might also need a custom widget for foreign key relationships:
+class TheatreItemCategoryWidget(ForeignKeyWidget):
+    def clean(self, value, row=None, *args, **kwargs):
+        """
+        Convert category name to category instance
+        """
+        if not value:
+            return None
+        try:
+            return TheatreItemCategory.objects.get(name=value)
+        except TheatreItemCategory.DoesNotExist:
+            # Optionally create the category if it doesn't exist
+            return TheatreItemCategory.objects.create(name=value)
+        except TheatreItemCategory.MultipleObjectsReturned:
+            # Handle duplicate names if they exist
+            return TheatreItemCategory.objects.filter(name=value).first()
+
+# TheatreItem Resource Class
+class TheatreItemResource(resources.ModelResource):
+    # Define category field to use name instead of ID
+    category = fields.Field(
+        column_name='category',
+        attribute='category',
+        widget=TheatreItemCategoryWidget(TheatreItemCategory, field='name')
+    )
+    
+    name = fields.Field(
+        column_name='name',
+        attribute='name',
+    )
+    
+    price = fields.Field(
+        column_name='price',
+        attribute='price',
+    )
+    
+    class Meta:
+        model = TheatreItem
+        fields = ('category', 'name', 'price')
+        export_order = ('category', 'name', 'price')
+        import_id_fields = ('name',)  # Use name as unique identifier
+        skip_unchanged = True
+        report_skipped = True
+
+    def before_import_row(self, row, **kwargs):
+        """Clean data before import"""
+        # Clean name field
+        if 'name' in row and row['name']:
+            row['name'] = row['name'].strip()
+        
+        # Clean category field
+        if 'category' in row and row['category']:
+            row['category'] = row['category'].strip()
+            
+        # Clean price field
+        if 'price' in row and row['price']:
+            # Remove any currency symbols or spaces
+            price_str = str(row['price']).strip()
+            try:
+                row['price'] = float(price_str)
+            except ValueError:
+                row['price'] = None
+                
+        return super().before_import_row(row, **kwargs)
+
+
+@admin.register(TheatreItem)
+class TheatreItemAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    resource_class = TheatreItemResource
+    list_display = ('category', 'name', 'price')
+    search_fields = ('category__name', 'name', 'price')  # Fixed typo: 'cateogry' -> 'category__name'
+    list_filter = ('category', 'name', 'price')
+
 
 
 @admin.register(RadiologyTest)
@@ -144,7 +251,7 @@ class WardShiftNoteAdmin(admin.ModelAdmin):
 
 
 @admin.register(PrivateTheatreItem)
-class PrivateTheatreItemAdmin(admin.ModelAdmin):
+class PrivateTheatreItemAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     list_filter = ('name',)
