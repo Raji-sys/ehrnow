@@ -1933,39 +1933,47 @@ class RoomDetailView(DoctorNurseRequiredMixin, DetailView):
     ).select_related('patient').order_by('-updated')
         return context
 
-class AppointmentCreateView(RecordRequiredMixin, CreateView):
+
+class AppointmentConflictMixin:
+    """Mixin to handle appointment conflicts in both create and update views"""
+    
+    def handle_appointment_conflicts(self, form, appointment_instance):
+        """
+        Handle appointment conflicts with override confirmation
+        Returns True if form should proceed, False if conflict needs user confirmation
+        """
+        confirm_override = self.request.POST.get('confirm_override')
+        
+        if appointment_instance.has_conflicts() and not confirm_override:
+            messages.warning(
+                self.request, 
+                'APPOINTMENT CONFLICT: An appointment already exists at this exact date and time. Do you want to proceed anyway?'
+            )
+            return False
+        return True
+
+
+class AppointmentCreateView(RecordRequiredMixin, AppointmentConflictMixin, CreateView):
     model = Appointment
     form_class = AppointmentForm
     template_name = 'ehr/record/new_appointment.html'
 
     def form_valid(self, form):
+        # Set the user and patient
         form.instance.user = self.request.user
         patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient
 
-        # Get the proposed date and time from the form
-        proposed_date = form.cleaned_data.get('date')
-        proposed_time = form.cleaned_data.get('time')
-
-        # Check for existing appointments with the same date and time
-        conflicting_appointments_exist = Appointment.objects.filter(
-            date=proposed_date,
-            time=proposed_time
-        ).exists()
-
-        # Check if the user has confirmed to override the conflict
-        confirm_override = self.request.POST.get('confirm_override')
-
-        if conflicting_appointments_exist and not confirm_override:
-            # If there's a conflict and no override confirmation,
-            # add a warning and return the form. The template will show the modal.
-            messages.warning(self.request, 'APPOINTMENT CONFLICT: An appointment already exists at this exact date and time. Do you want to proceed anyway?')
-            return self.render_to_response(self.get_context_data(form=form)) # Render the form to display the message
-        else:
-            # No conflict, or conflict confirmed to be overridden
-            self.object = form.save()
-            messages.success(self.request, 'APPOINTMENT ADDED SUCCESSFULLY!')
-            return super().form_valid(form)
+        # Create temporary instance to check conflicts
+        temp_appointment = form.save(commit=False)
+        
+        # Handle conflicts using mixin
+        if not self.handle_appointment_conflicts(form, temp_appointment):
+            return self.render_to_response(self.get_context_data(form=form))
+        
+        # No conflict or override confirmed
+        messages.success(self.request, 'APPOINTMENT ADDED SUCCESSFULLY!')
+        return super().form_valid(form)
 
     def get_success_url(self):
         if hasattr(self, 'object') and self.object:
@@ -1973,7 +1981,7 @@ class AppointmentCreateView(RecordRequiredMixin, CreateView):
         return reverse_lazy("appointments")
 
 
-class AppointmentUpdateView(UpdateView):
+class AppointmentUpdateView(AppointmentConflictMixin, UpdateView):
     model = Appointment
     template_name = 'ehr/record/update_appt.html'
     form_class = AppointmentForm
@@ -1982,30 +1990,18 @@ class AppointmentUpdateView(UpdateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         
-        # Get the proposed date and time from the form
-        proposed_date = form.cleaned_data.get('date')
-        proposed_time = form.cleaned_data.get('time')
-
-        # Check for existing appointments with the same date and time, excluding the current appointment
-        conflicting_appointments_exist = Appointment.objects.filter(
-            date=proposed_date,
-            time=proposed_time
-        ).exclude(pk=self.object.pk).exists()
-
-        # Check if the user has confirmed to override the conflict
-        confirm_override = self.request.POST.get('confirm_override')
-
-        if conflicting_appointments_exist and not confirm_override:
-            messages.warning(self.request, 'APPOINTMENT CONFLICT: An appointment already exists at this exact date and time. Do you want to proceed anyway?')
+        # Handle conflicts using mixin
+        if not self.handle_appointment_conflicts(form, form.instance):
             return self.render_to_response(self.get_context_data(form=form))
-        else:
-            form.save()
-            messages.success(self.request, 'APPOINTMENT UPDATED SUCCESSFULLY!')
-            return super().form_valid(form)
+        
+        # No conflict or override confirmed
+        messages.success(self.request, 'APPOINTMENT UPDATED SUCCESSFULLY!')
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request, 'Error updating appointment information.')
-        return self.render_to_response(self.get_context_data(form=form))    
+        return self.render_to_response(self.get_context_data(form=form))
+
 
 # class AppointmentCreateView(RecordRequiredMixin, CreateView):
 #     model = Appointment

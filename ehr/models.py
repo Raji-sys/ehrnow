@@ -379,19 +379,74 @@ class VisitRecord(models.Model):
         verbose_name_plural = 'visit record'
 
 
+# class Appointment(models.Model):
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+#     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
+#     clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True)
+#     team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
+#     date = models.DateField(null=True)
+#     time = models.TimeField(null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated = models.DateTimeField(auto_now=True)
+    
+#     def str(self):
+#         f"Appointment for {self.patient.file_no} in {self.clinic} with {self.team} team"
+# BONUS: Enhanced model method for more detailed conflict information
 class Appointment(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, on_delete=models.CASCADE, related_name='appointments')
-    clinic = models.ForeignKey(Clinic,on_delete=models.CASCADE, null=True)
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True)
-    date = models.DateField(null=True)
+    date = models.DateField(null=True)  
     time = models.TimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     
-    def str(self):
-        f"Appointment for {self.patient.file_no} in {self.clinic} with {self.team} team"
+    def __str__(self):
+        return f"Appointment for {self.patient.file_no} in {self.clinic} with {self.team} team"
 
+    class Meta:
+        ordering = ['-date', '-time']
+        
+    def has_conflicts(self):
+        """Check if this appointment conflicts with existing appointments"""
+        conflicting_appointments = Appointment.objects.filter(
+            date=self.date,
+            time=self.time,
+            clinic=self.clinic
+        )
+        
+        # Exclude self if this is an existing appointment (for updates)
+        if self.pk:
+            conflicting_appointments = conflicting_appointments.exclude(pk=self.pk)
+            
+        return conflicting_appointments.exists()
+    
+    def get_conflicting_appointments(self):
+        """Get the actual conflicting appointment objects"""
+        conflicting_appointments = Appointment.objects.filter(
+            date=self.date,
+            time=self.time,
+            clinic=self.clinic
+        )
+        
+        if self.pk:
+            conflicting_appointments = conflicting_appointments.exclude(pk=self.pk)
+            
+        return conflicting_appointments
+    
+    def get_conflict_details(self):
+        """Get detailed information about conflicts"""
+        conflicts = self.get_conflicting_appointments()
+        if conflicts.exists():
+            return {
+                'has_conflicts': True,
+                'conflict_count': conflicts.count(),
+                'conflicting_patients': [appt.patient.file_no for appt in conflicts],
+                'conflicting_appointments': conflicts
+            }
+        return {'has_conflicts': False}
+    
 class VitalSigns(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     room = models.ForeignKey(Room,on_delete=models.CASCADE, null=True)
