@@ -7,20 +7,20 @@
     .main-content {
         padding: 0 !important;
         display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-height: calc(100vh - 120px) !important; /* Account for header height */
+        align-items: center !important; /* Center vertically */
+        justify-content: center !important; /* Center horizontally */
+        min-height: calc(100vh - 120px) !important;
     }
 
     .homepage-container {
         position: relative;
         width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 1rem 0.5rem;
+        max-width: 1400px;
+        margin: 0 auto; /* Center the container */
+        padding: 1rem 2rem;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        align-items: center; /* Center content vertically */
+        justify-content: center; /* Center content horizontally */
         min-height: 60vh;
     }
 
@@ -29,66 +29,96 @@
         z-index: 20;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: center; /* Center all content horizontally */
         justify-content: center;
-        text-align: center;
-        padding: 3rem 2rem;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        border-radius: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        max-width: 600px;
+        text-align: center; /* Center all text */
+        padding: 3rem 2.5rem;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(25px);
+        border-radius: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15),
+                    inset 0 0 15px rgba(255, 255, 255, 0.1);
+        max-width: 550px;
         width: 100%;
+        transform: translateY(0);
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .homepage-content:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2),
+                    inset 0 0 20px rgba(255, 255, 255, 0.15);
     }
 
     .homepage-title {
-        font-size: 1.5rem;
+        font-size: 2.5rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #056a99, #077b54);
+        background: linear-gradient(135deg, #056a99, #04543c, #047081);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
         color: transparent;
-        margin-bottom: 1rem;
-        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        animation: fadeInUp 1s ease-out, titleGlow 2s ease-in-out infinite alternate;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: fadeInUp 0.8s ease-out, titleGlow 2.5s ease-in-out infinite alternate;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+        text-align: center; /* Ensure title is centered */
     }
 
     .homepage-subtitle {
-        font-size: 0.4rem;
-        color: rgba(255, 255, 255, 0.9);
-        margin-bottom: 2rem;
+        font-size: 1.1rem;
+        color: rgba(2, 41, 23, 0.95);
+        margin-bottom: 2.5rem;
         font-weight: 400;
-        line-height: 1.6;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        line-height: 1.7;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
         animation: fadeInUp 1s ease-out 0.3s both;
+        position: relative;
+        padding-left: 0;
+        text-align: center; /* Ensure subtitle is centered */
+    }
+
+    .homepage-subtitle::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.5rem;
+        height: calc(100% - 1rem);
+        width: 3px;
+        background: linear-gradient(to bottom, #10b981, #056a99);
+        border-radius: 3px;
+        display: none !important;
     }
 
     .homepage-subtitle .icon {
-        font-size: 1.2rem;
-        margin-right: 0.5rem;
+        font-size: 1.3rem;
+        margin-right: 0.75rem;
         color: #10b981;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
+        vertical-align: middle;
     }
 
     .homepage-cta {
         display: inline-flex;
         align-items: center;
-        padding: 1rem 2.5rem;
-        background: linear-gradient(135deg, #023625, #084a69);
+        padding: 1.1rem 3rem;
+        background: linear-gradient(135deg, #023625, #0a5a7a, #084a69);
         color: white;
         font-weight: 600;
         text-transform: uppercase;
-        font-size: 0.9rem;
-        letter-spacing: 0.5px;
-        border-radius: 1rem;
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+        border-radius: 1.2rem;
         text-decoration: none;
-        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-        transition: all 0.3s ease;
+        box-shadow: 0 12px 35px rgba(16, 185, 129, 0.35),
+                    0 0 0 1px rgba(255, 255, 255, 0.1);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         position: relative;
         overflow: hidden;
-        animation: fadeInUp 1s ease-out 0.6s both, buttonPulse 2s ease-in-out infinite;
+        animation: fadeInUp 1s ease-out 0.6s both, buttonPulse 2.5s ease-in-out infinite;
+        margin: 0 auto; /* Center the button */
     }
 
     .homepage-cta::before {
@@ -98,8 +128,8 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s ease;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+        transition: left 0.7s ease;
     }
 
     .homepage-cta:hover::before {
@@ -107,18 +137,50 @@
     }
 
     .homepage-cta:hover {
-        transform: translateY(-3px) scale(1.05);
-        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 18px 45px rgba(16, 185, 129, 0.5),
+                    0 0 0 1px rgba(255, 255, 255, 0.15);
+        letter-spacing: 1.2px;
+    }
+
+    .homepage-cta:active {
+        transform: translateY(-1px) scale(0.98);
     }
 
     .homepage-cta .icon {
-        margin-right: 0.75rem;
-        font-size: 1.1rem;
-        transition: transform 0.3s ease;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+        transition: all 0.4s ease;
     }
 
     .homepage-cta:hover .icon {
-        transform: translateX(3px);
+        transform: translateX(5px) rotate(5deg);
+    }
+
+    /* Background elements */
+    .homepage-decoration {
+        position: absolute;
+        z-index: 10;
+        opacity: 0.15;
+        pointer-events: none;
+    }
+
+    .decoration-1 {
+        top: 10%;
+        left: 10%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, #10b981 0%, transparent 70%);
+        filter: blur(30px);
+    }
+
+    .decoration-2 {
+        bottom: 15%;
+        right: 15%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, #056a99 0%, transparent 70%);
+        filter: blur(40px);
     }
 
     /* Animations */
@@ -135,99 +197,116 @@
 
     @keyframes titleGlow {
         0% {
-            filter: drop-shadow(0 0 5px rgba(14, 165, 233, 0.3));
+            text-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
+        }
+        50% {
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6),
+                        0 0 30px rgba(16, 185, 129, 0.3);
         }
         100% {
-            filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.4));
+            text-shadow: 0 0 15px rgba(14, 165, 233, 0.5);
         }
     }
 
     @keyframes buttonPulse {
         0%, 100% {
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.35),
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
         }
         50% {
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 12px 40px rgba(16, 185, 129, 0.5),
+                        0 0 0 1px rgba(255, 255, 255, 0.15);
         }
     }
 
     /* Responsive Design */
+    @media (max-width: 1024px) {
+        .homepage-container {
+            justify-content: center;
+            margin: 0 auto;
+        }
+        
+        .homepage-content {
+            align-items: center;
+            text-align: center;
+        }
+        
+        .homepage-subtitle::before {
+            display: none;
+        }
+        
+        .homepage-subtitle {
+            padding-left: 0;
+        }
+    }
+
     @media (max-width: 768px) {
         .homepage-container {
             padding: 1rem;
-            min-height: 60vh;
+            min-height: 50vh;
         }
 
         .homepage-content {
-            padding: 2rem 1.5rem;
-            border-radius: 1.5rem;
+            padding: 2.5rem 2rem;
+            border-radius: 2rem;
         }
 
         .homepage-title {
-            font-size: 2rem;
+            font-size: 2.2rem;
+            text-align: center;
         }
 
         .homepage-subtitle {
-            font-size: 0.4rem;
-            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
         }
 
         .homepage-cta {
-            padding: 0.875rem 2rem;
-            font-size: 0.8rem;
+            padding: 1rem 2.5rem;
+            font-size: 0.9rem;
         }
     }
 
     @media (max-width: 480px) {
         .homepage-title {
-            font-size: 1.75rem;
+            font-size: 1.8rem;
+            text-align: center;
         }
 
         .homepage-subtitle {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            text-align: center;
         }
 
         .homepage-cta {
-            padding: 0.75rem 1.5rem;
-            font-size: 0.75rem;
+            padding: 0.9rem 2rem;
+            font-size: 0.85rem;
         }
-    }
-
-    /* Larger screens */
-    @media (min-width: 1024px) {
-        .homepage-container {
-            padding: 3rem 2rem;
-        }
-
+        
         .homepage-content {
-            padding: 4rem 3rem;
-            margin-right: 2rem; /* Align more to the right on larger screens */
-            margin-left: auto;
-            max-width: 500px;
-        }
-
-        .homepage-title {
-            font-size: 3rem;
-        }
-
-        .homepage-subtitle {
-            font-size: 1.2rem;
+            padding: 2rem 1.5rem;
+            border-radius: 1.8rem;
         }
     }
 </style>
 
 <div class="homepage-container">
+    <!-- Decorative background elements -->
+    <div class="homepage-decoration decoration-1"></div>
+    <div class="homepage-decoration decoration-2"></div>
+    
     <div class="homepage-content">
         <h1 class="homepage-title">
             AudaxEMR
         </h1>
         <p class="homepage-subtitle">
             <span class="icon">⚕️</span>
-            Your reliable partner for Electronic Medical Records
+            Your reliable partner for modern Electronic Medical Records
         </p>
         <a href="{% url 'get_started' %}" class="homepage-cta">
             <span class="icon">🚀</span>
-            Get Started
+            Get Started Now
         </a>
     </div>
 </div>
