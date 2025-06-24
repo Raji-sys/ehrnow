@@ -76,12 +76,12 @@ NPM_BIN_PATH = "/usr/bin/npm"
 
 WSGI_APPLICATION = 'ehrnow.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 # DATABASES = {
 #     'default': dj_database_url.config(
 #         default='postgresql://raji:8080mali@localhost:5432/emr',
@@ -89,16 +89,16 @@ DATABASES = {
 #     )
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ["PGDATABASE"],
-#         'USER': os.environ["PGUSER"],
-#         'PASSWORD': os.environ["PGPASSWORD"],
-#         'HOST': os.environ["PGHOST"],
-#         'PORT': os.environ["PGPORT"],
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ["PGDATABASE"],
+        'USER': os.environ["PGUSER"],
+        'PASSWORD': os.environ["PGPASSWORD"],
+        'HOST': os.environ["PGHOST"],
+        'PORT': os.environ["PGPORT"],
+    }
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -202,7 +202,7 @@ QUILL_CONFIGS = {
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-SESSION_COOKIE_AGE = 60 * 60  # 1 hour in seconds
+SESSION_COOKIE_AGE = 55 * 60
 # Additional security settings
 SESSION_SAVE_EVERY_REQUEST = True  # Refresh session on each request
 SESSION_COOKIE_SECURE = False  # HTTPS only (set to False for development)

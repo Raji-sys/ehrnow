@@ -583,8 +583,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Only run for authenticated users
     {% if user.is_authenticated %}
     
-    let sessionTimeout = 60 * 60 * 1000; // 1 hour in milliseconds
-    let warningTime = 5 * 60 * 1000;     // Warn 5 minutes before timeout
+    let sessionTimeout = 60 * 55 * 1000;
+    let warningTime = 1 * 60 * 1000;
     let timeoutId;
     let warningTimeoutId;
     let warningShown = false;
@@ -628,9 +628,9 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.id = 'session-warning';
         modal.innerHTML = `
             <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
-                <div style="background: white; padding: 20px; border-radius: 8px; max-width: 400px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="background: white; padding: 20px; border-radius: 8px; max-width: 400px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); ">
                     <h3>Session Expiring Soon</h3>
-                    <p>Your session will expire in <span id="countdown">5:00</span></p>
+                    <p>Your session will expire in <span id="countdown">1:00</span></p>
                     <p>Click "Stay Logged In" to continue your session.</p>
                     <button id="extend-session" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; margin-right: 10px; cursor: pointer;">Stay Logged In</button>
                     <button id="logout-now" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Logout Now</button>
@@ -684,8 +684,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function logoutUser() {
         // Create a form and submit it as POST
         const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{% url "logout" %}';
+        form.method = 'GET';
+        form.action = '{% url "index" %}';
         
         // Add CSRF token
         const csrfInput = document.createElement('input');
