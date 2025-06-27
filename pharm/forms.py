@@ -6,7 +6,7 @@ class DrugForm(forms.ModelForm):
     
     class Meta:
         model = Drug
-        fields = ['name','trade_name','strength','category','supplier','dosage_form','pack_size','cost_price','selling_price','total_purchased_quantity','supply_date','expiration_date']  
+        fields = ['name','trade_name','strength','supplier','dosage_form','pack_size','cost_price','selling_price','total_purchased_quantity','supply_date','expiration_date']  
         widgets = {
             'supply_date': DateInput(attrs={'type': 'date'})
         }

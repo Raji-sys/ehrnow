@@ -368,27 +368,78 @@ class Prescription(models.Model):
 
 
 class DispenseRecord(models.Model):
-    dispensary = models.ForeignKey(DispensaryLocker, on_delete=models.CASCADE, related_name='issuing_dispensary')
+    """Fixed version - remove double creation of PatientDispensedDrug"""
+    dispensary = models.ForeignKey('DispensaryLocker', on_delete=models.CASCADE, related_name='issuing_dispensary')
     patient = models.ForeignKey(PatientData, null=True, blank=True, on_delete=models.CASCADE, related_name='dispensed_drugs')
-    prescription = models.OneToOneField(Prescription, on_delete=models.CASCADE, related_name='dispensary_rel',null=True,blank=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name='dispensary_category')
-    drug = models.ForeignKey(Drug, on_delete=models.CASCADE, related_name='dispense_drugs')
+    prescription = models.OneToOneField('Prescription', on_delete=models.CASCADE, related_name='dispensary_rel', null=True, blank=True)
+    category = models.ForeignKey('Category', on_delete=models.CASCADE, null=True, blank=True, related_name='dispensary_category')
+    drug = models.ForeignKey('Drug', on_delete=models.CASCADE, related_name='dispense_drugs')
     quantity = models.PositiveIntegerField('QTY ISSUED', null=True, blank=True)
     dispensed_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    dispense_date = models.DateTimeField(auto_now=True)
+    dispense_date = models.DateTimeField(auto_now_add=True)  # Changed to auto_now_add
     updated = models.DateField(auto_now=True)
     
-    def clean(self):
-        pass    
-    
     def save(self, *args, **kwargs):
-        dispense_locker = LockerInventory.objects.get(locker=self.dispensary, drug=self.drug)
-        if self.quantity > dispense_locker.quantity:
-            raise ValidationError(_("Not enough drugs in the unit store."), code='invalid_quantity')
-        # Deduct from the dispensary locker
-        dispense_locker.quantity -= self.quantity
-        dispense_locker.save()
-        super().save(*args, **kwargs)
+        """Improved save method with better transaction handling"""
+        with transaction.atomic():
+            # Only process if this is a new record
+            if not self.pk:
+                # Check dispensary stock
+                try:
+                    dispense_locker = LockerInventory.objects.select_for_update().get(
+                        locker=self.dispensary, 
+                        drug=self.drug
+                    )
+                except LockerInventory.DoesNotExist:
+                    raise ValidationError(_("Drug not available in dispensary."))
+                
+                if self.quantity > dispense_locker.quantity:
+                    raise ValidationError(
+                        _("Insufficient stock. Only {} units available.").format(dispense_locker.quantity)
+                    )
+                
+                # Deduct from dispensary stock
+                dispense_locker.quantity -= self.quantity
+                dispense_locker.save(update_fields=['quantity'])
+                
+                # Save the dispense record first
+                super().save(*args, **kwargs)
+                
+                # Create or update patient dispensed drug record
+                if self.patient:
+                    self._create_or_update_patient_drug_stock()
+            else:
+                # Just save if it's an update
+                super().save(*args, **kwargs)
+    
+    def _create_or_update_patient_drug_stock(self):
+        from ehr.models import PatientDispensedDrug
+        """Separate method to handle patient drug stock creation/update"""
+        dispensed_drug, created = PatientDispensedDrug.objects.get_or_create(
+            patient=self.patient,
+            drug_name=self.drug.name,
+            dispensed_date__date=self.dispense_date.date(),
+            defaults={
+                'total_dispensed': self.quantity,
+                'remaining_quantity': self.quantity,
+                'dispensed_date': self.dispense_date,
+                'dispensed_by': self.dispensed_by.get_full_name() if self.dispensed_by else 'Unknown'
+            }
+        )
+        
+        if not created:
+            # Update existing record
+            dispensed_drug.total_dispensed += self.quantity
+            dispensed_drug.remaining_quantity += self.quantity
+            dispensed_drug.save(update_fields=['total_dispensed', 'remaining_quantity'])
+    # def save(self, *args, **kwargs):
+    #     dispense_locker = LockerInventory.objects.get(locker=self.dispensary, drug=self.drug)
+    #     if self.quantity > dispense_locker.quantity:
+    #         raise ValidationError(_("Not enough drugs in the unit store."), code='invalid_quantity')
+    #     # Deduct from the dispensary locker
+    #     dispense_locker.quantity -= self.quantity
+    #     dispense_locker.save()
+    #     super().save(*args, **kwargs)
 
 
 class ReturnedDrugs(models.Model):

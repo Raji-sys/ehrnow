@@ -306,3 +306,8 @@ class RadiologyResultAdmin(admin.ModelAdmin):
 @admin.register(PhysioRequest)
 class PhysioRequestAdmin(admin.ModelAdmin):
     list_display = ('id','patient')
+
+
+@admin.register(WardMedication)
+class WardMedicationAdmin(admin.ModelAdmin):
+    list_display = ('id',)

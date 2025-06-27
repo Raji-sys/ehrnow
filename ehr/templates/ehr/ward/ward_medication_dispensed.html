@@ -1,0 +1,112 @@
+<!-- ward_medication_dispensed.html - Single drug administration -->
+{% extends 'base.html' %}
+{% block title %}WARD MEDICATION - SINGLE DRUGS{% endblock %}
+{% block page_title %}<div class="flex justify-center">WARD MEDICATION - SINGLE DRUG</div>{% endblock %}
+{% block content %}
+<div class="p-3 max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <!-- Available Drugs Summary -->
+        {% if available_drugs %}
+        <div class="mb-4 bg-blue-50 rounded-md p-3 border border-blue-100">
+            <h4 class="text-xs font-semibold text-blue-700 mb-1 flex items-center">
+                <i class="fas fa-pills mr-1 text-xs"></i> Available Drugs
+            </h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {% for drug in available_drugs %}
+                <div class="bg-white rounded border border-blue-50 p-2 text-xs">
+                    <div class="font-medium text-blue-800 truncate">{{ drug.drug_name }}</div>
+                    <div class="flex justify-between">
+                        <span class="text-blue-600"> stock {{ drug.remaining_quantity }} </span>
+                        <span class="text-gray-400">{{ drug.dispensed_date|date:"d M" }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <form method="post" class="space-y-3">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label for="{{ form.dispensed_drug.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        <i class="fas fa-pills mr-1 text-xs"></i>Select Drug
+                    </label>
+                    {{ form.dispensed_drug }}
+                    {% if form.dispensed_drug.errors %}
+                        <p class="mt-1 text-xs text-red-600">{{ form.dispensed_drug.errors.as_text }}</p>
+                    {% endif %}
+                    <div id="available-quantity" class="mt-1 text-xs text-green-600"></div>
+                </div>
+                
+                <div>
+                    <label for="{{ form.dose_administered.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        <i class="fas fa-syringe mr-1 text-xs"></i>Dose to Administer
+                    </label>
+                    {{ form.dose_administered }}
+                    {% if form.dose_administered.errors %}
+                        <p class="mt-1 text-xs text-red-600">{{ form.dose_administered.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div>
+                <label for="{{ form.comments.id_for_label }}" class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                    <i class="fas fa-comment-medical mr-1 text-xs"></i>Notes
+                </label>
+                {{ form.comments }}
+                {% if form.comments.errors %}
+                    <p class="mt-1 text-xs text-red-600">{{ form.comments.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="pt-3 flex gap-2">
+                <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-3 rounded-md text-sm flex items-center justify-center">
+                    <i class="fas fa-save mr-1"></i> Record
+                </button>
+                <a href="{% url 'ward_medication_multiple' patient.file_no %}" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-3 rounded-md text-sm flex items-center justify-center">
+                    <i class="fas fa-layer-group mr-1"></i> Multiple
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Drug quantities mapping
+const drugQuantities = {
+    {% for drug in available_drugs %}
+    "{{ drug.id }}": {{ drug.remaining_quantity }},
+    {% endfor %}
+};
+
+function updateMaxQuantity(select) {
+    const drugId = select.value;
+    const quantityInput = document.getElementById('{{ form.dose_administered.id_for_label }}');
+    const availableDiv = document.getElementById('available-quantity');
+    
+    if (drugId && drugQuantities[drugId]) {
+        const available = drugQuantities[drugId];
+        quantityInput.setAttribute('max', available);
+        availableDiv.textContent = `${available} units available`;
+        availableDiv.className = 'mt-1 text-xs text-green-600';
+    } else {
+        quantityInput.removeAttribute('max');
+        availableDiv.textContent = '';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const drugSelect = document.getElementById('{{ form.dispensed_drug.id_for_label }}');
+    drugSelect.addEventListener('change', function() { updateMaxQuantity(this); });
+    if (drugSelect.value) updateMaxQuantity(drugSelect);
+    
+    // Style form inputs consistently
+    document.querySelectorAll('select, input, textarea').forEach(el => {
+        el.classList.add('text-xs', 'p-2', 'border', 'rounded', 'w-full');
+    });
+});
+</script>
+{% endblock %}

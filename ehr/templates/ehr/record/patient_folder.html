@@ -2604,43 +2604,187 @@ class="text-xs text-green-600 hover:text-green-700">
             </div>
          </div>
         
-          <div>
-            <div>
-              <a href="{% url 'ward_medication' patient.file_no %}" class="text-xs text-cyan-600 hover:text-green-700"><i class="fa-solid fa-file-prescription fa-2xl"></i></a>
-            </div>
-            <div class="overflow-x-auto max-h-[50vh] p-2">
-              <table class="min-w-full divide-y divide-cyan-200 mb-4">
-                <thead class="bg-cyan-50">
-                  <tr class="text-xs">
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Drug</th>
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Dose</th>
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Comment</th>
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">By</th>
-                    <th class=" p-3  text-xs font-medium text-cyan-500 uppercase tracking-wider">Date</th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-cyan-200">
-                  {% for w in ward_medication%}
-                  <tr class="text-xs bg-cyan-100 hover:bg-cyan-200 transition-colors duration-300">
-                    <td class=" p-3 whitespace-nowrap">{{ forloop.counter }}</td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.drug|default_if_none:''}}</td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.dose|default_if_none:'' }}</td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.comments|default_if_none:'' }}</td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.user|default_if_none:'' }}</td>
-                    <td class=" p-3 whitespace-nowrap">{{ w.updated|default_if_none:'' }}</td>
-               
-                  </tr>
-                  {%empty%}
-                  <div class="p-2">
-                      <p>No in-patient medications found</p>
-                  </div>
-                 {%endfor%}
-                </tbody>
-              </table>
-            </div>
-          </div>
+<!-- Updated dispensed tab for patient folder template -->
+<!-- Updated dispensed tab for patient folder template -->
+<div>
+    <!-- Header with multiple options -->
+    <div class="flex justify-between items-center mb-3">
+        <h3 class="text-sm font-medium text-cyan-700">Ward Medications</h3>
+        <div class="flex gap-2">
+            <!-- Manual entry (existing) -->
+            <a href="{% url 'ward_medication' patient.file_no %}" 
+               class="text-xs text-cyan-600 hover:text-green-700 flex items-center gap-1 px-2 py-1 rounded hover:bg-cyan-50" 
+               title="Manual Entry">
+                <i class="fa-solid fa-file-prescription"></i>
+                <span class="hidden sm:inline">Manual</span>
+            </a>
+            
+            <!-- Single dispensed drug administration -->
+            {% if dispensed_drugs %}
+            <a href="{% url 'ward_medication_dispensed' patient.file_no %}" 
+               class="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50" 
+               title="Single Drug Administration">
+                <i class="fa-solid fa-pills"></i>
+                <span class="hidden sm:inline">Single</span>
+            </a>
+            
+            <!-- Multiple dispensed drugs administration -->
+            <a href="{% url 'ward_medication_multiple' patient.file_no %}" 
+               class="text-xs text-green-600 hover:text-green-700 flex items-center gap-1 px-2 py-1 rounded hover:bg-green-50" 
+               title="Multiple Drug Administration">
+                <i class="fa-solid fa-layer-group"></i>
+                <span class="hidden sm:inline">Multiple</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Available Dispensed Drugs Section -->
+    {% if dispensed_drugs %}
+    <div class="mb-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 border border-green-200">
+        <h4 class="text-xs font-semibold text-green-700 mb-2 flex items-center">
+            <i class="fas fa-pills mr-1 text-xs"></i> 
+            Available Drugs 
+            <span class="ml-2 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-[0.6rem]">
+                {{ dispensed_drugs|length }} types
+            </span>
+        </h4>
         
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+            {% for drug in dispensed_drugs %}
+                <div class="bg-white rounded-lg border border-green-100 p-2 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-1">
+                        <div class="font-medium text-green-800 text-xs truncate flex-1">
+                            {{ drug.drug_name }}
+                        </div>
+                        <div class="ml-2 flex flex-col items-end">
+                            <span class="bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-[0.6rem] font-semibold">
+                                {{ drug.remaining_quantity }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-[0.6rem] text-gray-500">
+                        <span>{{ drug.dispensed_date|date:"d M" }}</span>
+                        <span>{{ drug.dispensed_by|truncatechars:8 }}</span>
+                    </div>
+                    {% if drug.remaining_quantity <= 2 %}
+                    <div class="mt-1 text-[0.6rem] text-orange-600 font-medium">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>Low stock
+                    </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Quick stats -->
+        <div class="mt-2 pt-2 border-t border-green-200 flex justify-between text-[0.6rem] text-green-600">
+            <span>
+                <i class="fas fa-check-circle mr-1"></i>
+                Available: {{ dispensed_drugs|length }}
+            </span>
+            <span>
+                <i class="fas fa-clock mr-1"></i>
+                {% if dispensed_drugs %}
+                    Last dispensed: {{ dispensed_drugs.0.dispensed_date|date:"d M Y" }}
+                {% else %}
+                    Last dispensed: Never
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    {% else %}
+    <div class="mb-3 bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+        <div class="flex items-center text-yellow-700">
+            <i class="fas fa-info-circle mr-2"></i>
+            <span class="text-xs">No dispensed drugs available. Use manual entry or dispense drugs first.</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Combined Administration History -->
+    <div class="overflow-x-auto max-h-[50vh]">
+        <table class="min-w-full divide-y divide-cyan-200">
+            <thead class="bg-cyan-50">
+                <tr class="text-xs">
+                    <th class="p-2 text-xs font-medium text-cyan-500 uppercase tracking-wider">#</th>
+                    <th class="p-2 text-xs font-medium text-cyan-500 uppercase tracking-wider">
+                        <i class="fas fa-pills mr-1"></i>Drug
+                    </th>
+                    <th class="p-2 text-xs font-medium text-cyan-500 uppercase tracking-wider">
+                        <i class="fas fa-syringe mr-1"></i>Dose/Qty
+                    </th>
+                    <th class="p-2 text-xs font-medium text-cyan-500 uppercase tracking-wider">
+                        <i class="fas fa-comment mr-1"></i>Comment
+                    </th>
+                    <th class="p-2 text-xs font-medium text-cyan-500 uppercase tracking-wider">
+                        <i class="fas fa-user mr-1"></i>By
+                    </th>
+                    <th class="p-2 text-xs font-medium text-cyan-500 uppercase tracking-wider">
+                        <i class="fas fa-calendar mr-1"></i>Date
+                    </th>
+                    <th class="p-2 text-xs font-medium text-cyan-500 uppercase tracking-wider">
+                        <i class="fas fa-tag mr-1"></i>Type
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-cyan-200">
+                {% for w in combined_medications %}
+                <tr class="text-xs {% if w.type == 'dispensed' %}bg-blue-50 hover:bg-blue-100{% else %}bg-cyan-50 hover:bg-cyan-100{% endif %} transition-colors duration-200">
+                    <td class="p-2 whitespace-nowrap font-medium">{{ forloop.counter }}</td>
+                    <td class="p-2 whitespace-nowrap">
+                        <div class="flex items-center">
+                            {% if w.type == 'dispensed' %}
+                                <i class="fas fa-prescription-bottle-alt text-blue-500 mr-1"></i>
+                            {% else %}
+                                <i class="fas fa-edit text-cyan-500 mr-1"></i>
+                            {% endif %}
+                            {{ w.drug_name }}
+                        </div>
+                    </td>
+                    <td class="p-2 whitespace-nowrap">
+                        <span class="bg-white px-2 py-1 rounded border {% if w.type == 'dispensed' %}border-blue-200{% else %}border-cyan-200{% endif %}">
+                            {{ w.dose_qty }}
+                        </span>
+                    </td>
+                    <td class="p-2 whitespace-nowrap">
+                        <span class="text-gray-600">{{ w.comments|default_if_none:'-' }}</span>
+                    </td>
+                    <td class="p-2 whitespace-nowrap">
+                        <span class="text-gray-600">
+                            {% if w.type == 'dispensed' %}
+                                {{ w.user|default_if_none:'-' }}
+                            {% else %}
+                                {{ w.user.get_full_name|default:w.user.username|default:'-' }}
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td class="p-2 whitespace-nowrap">
+                        <span class="text-gray-600">{{ w.updated|date:"d M Y H:i" }}</span>
+                    </td>
+                    <td class="p-2 whitespace-nowrap">
+                        {% if w.type == 'dispensed' %}
+                            <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[0.6rem] font-medium">
+                                <i class="fas fa-prescription-bottle-alt mr-1"></i>Dispensed
+                            </span>
+                        {% else %}
+                            <span class="bg-cyan-100 text-cyan-800 px-2 py-0.5 rounded-full text-[0.6rem] font-medium">
+                                <i class="fas fa-edit mr-1"></i>Manual
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="p-4 text-center text-xs text-gray-500">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        No medications administered yet
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>      
         
           <div>
             <div>

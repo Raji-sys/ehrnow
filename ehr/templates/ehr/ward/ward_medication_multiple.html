@@ -1,0 +1,99 @@
+<!-- ward_medication_multiple.html - Multiple drug administration -->
+{% extends 'base.html' %}
+{% block title %}WARD MEDICATION - MULTIPLE DRUGS{% endblock %}
+{% block page_title %}<div class="flex justify-center">WARD MEDICATION - MULTIPLE DRUGS</div>{% endblock %}
+{% block content %}
+<div class="p-3 max-w-6xl mx-auto">
+    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div class="mb-3 flex justify-between items-center">
+            <h2 class="text-sm font-semibold text-gray-800 flex items-center">
+                <i class="fas fa-pills mr-2 text-blue-500"></i>Administer Multiple Medications
+            </h2>
+            <a href="{% url 'ward_medication_dispensed' patient.file_no %}" class="text-blue-600 hover:text-blue-800 text-xs">
+                <i class="fas fa-arrow-left mr-1"></i> Single Drug Mode
+            </a>
+        </div>
+
+        {% if available_drugs %}
+        <form method="post" class="space-y-3">
+            {% csrf_token %}
+            
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 text-xs font-medium text-gray-600">
+                            <th class="border-b border-gray-200 p-2 text-left">Drug</th>
+                            <th class="border-b border-gray-200 p-2 text-center">Stock</th>
+                            <th class="border-b border-gray-200 p-2 text-center">Dose</th>
+                            <th class="border-b border-gray-200 p-2 text-left">Notes</th>
+                            <th class="border-b border-gray-200 p-2 text-center">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for drug_field in drug_form_fields %}
+                        <tr class="hover:bg-gray-50 text-xs">
+                            <td class="border-b border-gray-100 p-2 font-medium text-gray-800">
+                                {{ drug_field.drug.drug_name }}
+                            </td>
+                            <td class="border-b border-gray-100 p-2 text-center">
+                                <span class="bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full">
+                                    {{ drug_field.drug.remaining_quantity }}
+                                </span>
+                            </td>
+                            <td class="border-b border-gray-100 p-2 text-center">
+                                {% if drug_field.quantity_field %}
+                                    {{ drug_field.quantity_field }}
+                                {% endif %}
+                            </td>
+                            <td class="border-b border-gray-100 p-2">
+                                {% if drug_field.comments_field %}
+                                    {{ drug_field.comments_field }}
+                                {% endif %}
+                            </td>
+                            <td class="border-b border-gray-100 p-2 text-center text-gray-500">
+                                {{ drug_field.drug.dispensed_date|date:"d M" }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pt-2">
+                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md transition duration-150 flex items-center justify-center text-sm">
+                    <i class="fas fa-save mr-2"></i> Record All Administrations
+                </button>
+            </div>
+        </form>
+        {% else %}
+        <div class="text-center py-6 text-sm text-gray-500">
+            <i class="fas fa-pills text-3xl text-gray-300 mb-2"></i>
+            <p>No dispensed drugs available for administration</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInputs = document.querySelectorAll('input[name^="quantity_"]');
+    
+    quantityInputs.forEach(input => {
+        input.classList.add('text-xs', 'p-1', 'border', 'rounded', 'text-center', 'w-16');
+        
+        input.addEventListener('input', function() {
+            const max = parseInt(this.getAttribute('max'));
+            const value = parseInt(this.value) || 0;
+            
+            if (value > max) {
+                this.value = max;
+                this.classList.add('border-red-400');
+                setTimeout(() => {
+                    this.classList.remove('border-red-400');
+                }, 1000);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

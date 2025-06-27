@@ -589,20 +589,74 @@ class WardVitalSigns(models.Model):
 
     def __str__(self):
         return self.patient
-
+    
+# ehr/models.py
 class WardMedication(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
-    patient=models.ForeignKey(PatientData,null=True, on_delete=models.CASCADE,related_name='ward_medication')
-    drug=models.CharField(max_length=10, null=True, blank=True)
-    dose=models.CharField(max_length=10, null=True, blank=True)
-    comments=models.CharField(max_length=10, null=True, blank=True)
+    patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name='ward_medication')
+    drug = models.CharField(max_length=200, null=True, blank=True)  # Keep as CharField!
+    dose = models.CharField(max_length=10, null=True, blank=True)
+    comments = models.CharField(max_length=200, null=True, blank=True)  # Increased length
     updated = models.DateTimeField(auto_now=True)
-
+    
     class Meta:
-        verbose_name_plural = 'ward vital signs'
-
+        verbose_name_plural = 'ward medications'
+    
     def __str__(self):
-        return self.patient
+        return str(self.patient)
+
+class PatientDispensedDrug(models.Model):
+    """Track dispensed drugs for each patient"""
+    patient = models.ForeignKey('PatientData', on_delete=models.CASCADE, related_name='dispensed_drugs_stock')
+    drug_name = models.CharField(max_length=200)
+    total_dispensed = models.PositiveIntegerField('Total Dispensed')
+    remaining_quantity = models.PositiveIntegerField('Remaining Quantity')
+    dispensed_date = models.DateTimeField()
+    dispensed_by = models.CharField(max_length=100, blank=True)
+    
+    class Meta:
+        ordering = ['-dispensed_date']
+        
+    def __str__(self):
+        return f"{self.drug_name} - {self.remaining_quantity} remaining"
+
+
+class WardMedicationDispensed(models.Model):
+    """Model for dispensed drug administration - FIXED VERSION"""
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey('PatientData', null=True, on_delete=models.CASCADE, related_name='ward_medication_dispensed')
+    dispensed_drug = models.ForeignKey(PatientDispensedDrug, on_delete=models.CASCADE, related_name='administrations')
+    dose_administered = models.PositiveIntegerField('Qty Given')
+    comments = models.CharField(max_length=200, null=True, blank=True)
+    updated = models.DateTimeField(auto_now_add=True)  # Changed to auto_now_add to prevent updates
+    
+    class Meta:
+        verbose_name_plural = 'Ward Medications (Dispensed)'
+        ordering = ['-updated']
+    
+    def save(self, *args, **kwargs):
+        """Fixed save method to prevent double deduction"""
+        with transaction.atomic():
+            # Only process if this is a new record (not an update)
+            if not self.pk:
+                # Refresh the dispensed_drug object to get latest data
+                self.dispensed_drug.refresh_from_db()
+                
+                # Validate quantity
+                if self.dose_administered > self.dispensed_drug.remaining_quantity:
+                    raise ValidationError(
+                        f"Insufficient quantity. Only {self.dispensed_drug.remaining_quantity} units available for {self.dispensed_drug.drug_name}."
+                    )
+                
+                # Deduct from remaining quantity
+                self.dispensed_drug.remaining_quantity -= self.dose_administered
+                self.dispensed_drug.save(update_fields=['remaining_quantity'])
+            
+            # Save the administration record
+            super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.dispensed_drug.drug_name} - {self.dose_administered} administered to {self.patient}"
 
 
 class WardClinicalNote(models.Model):

@@ -183,4 +183,7 @@ urlpatterns = [
     path('api/private-theatre-items/', views.private_theatre_item_autocomplete, name='private_theatre_item_autocomplete'),
     path('api/theatre-items/', views.theatre_item_autocomplete, name='theatre_item_autocomplete'),
    
+    path('ward-medication-dispensed/<str:file_no>/', WardMedicationDispensedCreateView.as_view(), name='ward_medication_dispensed'),
+    path('ward-medication-multiple/<str:file_no>/', MultipleWardMedicationView.as_view(),name='ward_medication_multiple'),
+    path('api/drug-quantity/<int:drug_id>/', DrugQuantityCheckView.as_view(), name='drug_quantity_check'),
 ]

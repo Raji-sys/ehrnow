@@ -5,6 +5,7 @@ from django import forms
 from .models import *
 from django.forms import inlineformset_factory
 from django.utils.translation import gettext_lazy as _
+from django.apps import apps
 
 class CustomUserCreationForm(UserCreationForm):
     middle_name = forms.CharField(max_length=30, required=False)
@@ -351,17 +352,103 @@ class WardVitalSignsForm(forms.ModelForm):
             })
 
 
+# ehr/forms.py
 class WardMedicationForm(forms.ModelForm):
+    """For manual drug entry (existing workflow)"""
     class Meta:
         model = WardMedication
-        fields = [
-            'drug', 'dose', 'comments',]
+        fields = ['drug', 'dose', 'comments']
+    
     def __init__(self, *args, **kwargs):
-        super(WardMedicationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': 'text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
             })
+
+
+class WardMedicationDispensedForm(forms.ModelForm):
+    class Meta:
+        model = WardMedicationDispensed
+        fields = ['dispensed_drug', 'dose_administered', 'comments']
+        widgets = {
+            'dispensed_drug': forms.Select(attrs={
+                'class': 'form-control block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+            }),
+            'dose_administered': forms.NumberInput(attrs={
+                'class': 'form-control block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500',
+                'min': '1'
+            }),
+            'comments': forms.Textarea(attrs={
+                'class': 'form-control block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500',
+                'rows': 3
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        patient = kwargs.pop('patient', None)
+        super().__init__(*args, **kwargs)
+        
+        if patient:
+            # Only show drugs with remaining quantity > 0
+            self.fields['dispensed_drug'].queryset = PatientDispensedDrug.objects.filter(
+                patient=patient,
+                remaining_quantity__gt=0
+            )
+            # Add JavaScript for dynamic quantity validation
+            self.fields['dispensed_drug'].widget.attrs.update({
+                'onchange': 'updateMaxQuantity(this)'
+            })
+
+    def clean(self):
+        cleaned_data = super().clean()
+        dispensed_drug = cleaned_data.get('dispensed_drug')
+        dose_administered = cleaned_data.get('dose_administered')
+        
+        if dispensed_drug and dose_administered:
+            if dose_administered > dispensed_drug.remaining_quantity:
+                raise forms.ValidationError(
+                    f"Only {dispensed_drug.remaining_quantity} units available for {dispensed_drug.drug_name}"
+                )
+        
+        return cleaned_data
+
+
+# Multiple drug administration form
+class MultipleWardMedicationForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        patient = kwargs.pop('patient', None)
+        super().__init__(*args, **kwargs)
+        
+        if patient:
+            available_drugs = PatientDispensedDrug.objects.filter(
+                patient=patient,
+                remaining_quantity__gt=0
+            )
+            
+            for drug in available_drugs:
+                # Create quantity field for each available drug
+                self.fields[f'quantity_{drug.id}'] = forms.IntegerField(
+                    required=False,
+                    min_value=0,
+                    max_value=drug.remaining_quantity,
+                    widget=forms.NumberInput(attrs={
+                        'class': 'form-control w-20 px-2 py-1 border border-gray-300 rounded text-center',
+                        'placeholder': '0',
+                        'max': drug.remaining_quantity
+                    }),
+                    label=f'{drug.drug_name} (Max: {drug.remaining_quantity})'
+                )
+                
+                # Comments field for each drug
+                self.fields[f'comments_{drug.id}'] = forms.CharField(
+                    required=False,
+                    max_length=200,
+                    widget=forms.TextInput(attrs={
+                        'class': 'form-control w-full px-2 py-1 border border-gray-300 rounded text-sm',
+                        'placeholder': 'Optional comments...'
+                    })
+                )
 
 class WardNotesForm(forms.ModelForm):
     class Meta:

@@ -1320,7 +1320,36 @@ class PatientFolderView(DetailView):
 
         context['vitals'] = vitals
         context['payments'] = payments
+        from django.db.models import CharField, Value, F
+        from django.db.models.functions import Cast
 
+        manual_meds = patient.ward_medication.all().annotate(
+        drug_name=F('drug'),
+        dose_qty=F('dose'),
+        type=Value('manual', output_field=CharField())
+    )
+    
+        dispensed_meds = patient.ward_medication_dispensed.all().annotate(
+            drug_name=F('dispensed_drug__drug_name'),
+            dose_qty=Cast('dose_administered', CharField()),
+            type=Value('dispensed', output_field=CharField())
+        )
+        
+        from itertools import chain
+        combined_medications = sorted(
+            chain(manual_meds, dispensed_meds),
+            key=lambda x: x.updated,
+            reverse=True
+        )
+        
+        context['combined_medications'] = combined_medications
+        context['dispensed_drugs'] = patient.dispensed_drugs_stock.filter(
+        remaining_quantity__gt=0).order_by('-dispensed_date')
+            # Add this line to get the latest dispensed drug
+        try:
+            context['latest_dispensed_drug'] = patient.dispensed_drugs_stock.latest('dispensed_date')
+        except patient.dispensed_drugs_stock.model.DoesNotExist:
+            context['latest_dispensed_drug'] = None
         # Calculate totals with filtered payments
         credit_payments = payments.filter(payment_method='CREDIT')
         total_credit_amount = credit_payments.aggregate(total=Sum('price'))['total'] or 0
@@ -3072,29 +3101,244 @@ class WardVitalSignCreateView(NurseRequiredMixin,CreateView):
         return self.object.patient.get_absolute_url()
 
 
-class WardMedicationCreateView(NurseRequiredMixin,CreateView):
+# ehr/views.py
+class WardMedicationCreateView(NurseRequiredMixin, CreateView):
+    """For manual drug entry"""
     model = WardMedication
     form_class = WardMedicationForm
     template_name = 'ehr/ward/ward_medication.html'
-
+    
     def form_valid(self, form):
         form.instance.user = self.request.user
         patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
         form.instance.patient = patient_data
         self.object = form.save()
-
-        messages.success(self.request, 'Medication Given')
+        messages.success(self.request, 'Medication Given (Manual Entry)')
         return super().form_valid(form)
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        patient = PatientData.objects.get(file_no=self.kwargs['file_no'])
+        context['patient'] = patient
+        context['available_drugs'] = PatientDispensedDrug.objects.filter(
+            patient=patient,
+            remaining_quantity__gt=0
+        )
         return context
-
+    
     def get_success_url(self):
         return self.object.patient.get_absolute_url()
 
+# class WardMedicationDispensedCreateView(NurseRequiredMixin, CreateView):
+#     """For dispensed drug administration"""
+#     model = WardMedicationDispensed
+#     form_class = WardMedicationDispensedForm
+#     template_name = 'ehr/ward/ward_medication_dispensed.html'
+    
+#     def get_form_kwargs(self):
+#         kwargs = super().get_form_kwargs()
+#         kwargs['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+#         return kwargs
+    
+#     def form_valid(self, form):
+#         form.instance.user = self.request.user
+#         patient_data = PatientData.objects.get(file_no=self.kwargs['file_no'])
+#         form.instance.patient = patient_data
+#         self.object = form.save()
+#         messages.success(self.request, 'Dispensed Medication Administered')
+#         return super().form_valid(form)
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['patient'] = PatientData.objects.get(file_no=self.kwargs['file_no'])
+#         return context
+    
+#     def get_success_url(self):
+#         return self.object.patient.get_absolute_url()
+class WardMedicationDispensedCreateView(NurseRequiredMixin, CreateView):
+    """Enhanced single drug administration view"""
+    model = WardMedicationDispensed
+    form_class = WardMedicationDispensedForm
+    template_name = 'ehr/ward/ward_medication_dispensed.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        self.patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['patient'] = self.patient
+        return kwargs
+    
+    def form_valid(self, form):
+        try:
+            with transaction.atomic():
+                form.instance.user = self.request.user
+                form.instance.patient = self.patient
+                self.object = form.save()
+                
+                messages.success(
+                    self.request, 
+                    f'Successfully administered {form.instance.dose_administered} units of {form.instance.dispensed_drug.drug_name}'
+                )
+                
+        except ValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except Exception as e:
+            messages.error(self.request, f'An error occurred: {str(e)}')
+            return self.form_invalid(form)
+        
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = self.patient
+        context['available_drugs'] = PatientDispensedDrug.objects.filter(
+            patient=self.patient,
+            remaining_quantity__gt=0
+        ).order_by('drug_name')
+        return context
+    
+    def get_success_url(self):
+        return self.patient.get_absolute_url()
 
+class MultipleWardMedicationView(NurseRequiredMixin, FormView):
+    """Enhanced multiple drug administration view"""
+    form_class = MultipleWardMedicationForm
+    template_name = 'ehr/ward/ward_medication_multiple.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        self.patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['patient'] = self.patient
+        return kwargs
+    
+    def form_valid(self, form):
+        administered_drugs = []
+        errors = []
+        
+        available_drugs = PatientDispensedDrug.objects.filter(
+            patient=self.patient,
+            remaining_quantity__gt=0
+        )
+        
+        try:
+            with transaction.atomic():
+                for drug in available_drugs:
+                    quantity_field = f'quantity_{drug.id}'
+                    comments_field = f'comments_{drug.id}'
+                    
+                    quantity = form.cleaned_data.get(quantity_field, 0)
+                    comments = form.cleaned_data.get(comments_field, '')
+                    
+                    if quantity and quantity > 0:
+                        try:
+                            administration = WardMedicationDispensed.objects.create(
+                                user=self.request.user,
+                                patient=self.patient,
+                                dispensed_drug=drug,
+                                dose_administered=quantity,
+                                comments=comments
+                            )
+                            administered_drugs.append((drug.drug_name, quantity))
+                            
+                        except ValidationError as e:
+                            errors.append(f"{drug.drug_name}: {str(e)}")
+                
+                if errors:
+                    raise ValidationError("; ".join(errors))
+                
+                if administered_drugs:
+                    drug_list = ", ".join([f"{name} ({qty})" for name, qty in administered_drugs])
+                    messages.success(
+                        self.request, 
+                        f'Successfully administered: {drug_list}'
+                    )
+                else:
+                    messages.warning(self.request, 'No medications were administered')
+                    
+        except ValidationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+        except Exception as e:
+            messages.error(self.request, f'An error occurred: {str(e)}')
+            return self.form_invalid(form)
+        
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = self.patient
+        
+        available_drugs = PatientDispensedDrug.objects.filter(
+            patient=self.patient,
+            remaining_quantity__gt=0
+        ).order_by('drug_name')
+        
+        context['available_drugs'] = available_drugs
+        
+        # Prepare form fields for each drug
+        form = context['form']
+        drug_form_fields = []
+        
+        for drug in available_drugs:
+            quantity_field_name = f'quantity_{drug.id}'
+            comments_field_name = f'comments_{drug.id}'
+            
+            drug_form_fields.append({
+                'drug': drug,
+                'quantity_field': form[quantity_field_name] if quantity_field_name in form.fields else None,
+                'comments_field': form[comments_field_name] if comments_field_name in form.fields else None,
+            })
+        
+        context['drug_form_fields'] = drug_form_fields
+        return context
+    
+    def get_success_url(self):
+        return self.patient.get_absolute_url()
+
+# API endpoint for real-time quantity checking
+class DrugQuantityCheckView(View):
+    """AJAX endpoint to check drug quantity"""
+    def get(self, request, drug_id):
+        try:
+            drug = PatientDispensedDrug.objects.get(id=drug_id)
+            return JsonResponse({
+                'available': drug.remaining_quantity,
+                'drug_name': drug.drug_name
+            })
+        except PatientDispensedDrug.DoesNotExist:
+            return JsonResponse({'error': 'Drug not found'}, status=404)
+
+# Context processor for the combined medications view
+def get_combined_medications(patient):
+    """Helper function to combine manual and dispensed medications"""
+    from django.db.models import Value, CharField
+    
+    # Get manual medications
+    manual_meds = patient.ward_medication.annotate(
+        drug_name=models.F('drug'),
+        dose_qty=models.F('dose'),
+        type=Value('manual', output_field=CharField())
+    ).values('drug_name', 'dose_qty', 'comments', 'user__first_name', 'user__username', 'updated', 'type')
+    
+    # Get dispensed medications  
+    dispensed_meds = patient.ward_medication_dispensed.annotate(
+        drug_name=models.F('dispensed_drug__drug_name'),
+        dose_qty=models.F('dose_administered'),
+        type=Value('dispensed', output_field=CharField())
+    ).values('drug_name', 'dose_qty', 'comments', 'user__first_name', 'user__username', 'updated', 'type')
+    
+    # Combine and sort by date
+    combined = list(manual_meds) + list(dispensed_meds)
+    combined.sort(key=lambda x: x['updated'], reverse=True)
+    
+    return combined
+    
 class WardNotesCreateView(NurseRequiredMixin,CreateView):
     model = WardClinicalNote
     form_class = WardNotesForm
