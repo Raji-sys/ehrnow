@@ -1111,6 +1111,42 @@ class PregnancyForm(forms.ModelForm):
             test_info.save()
         return pregnancy
     
+class LabTestForm(forms.ModelForm):
+    class Meta:
+        model = LabTest
+        fields = ['ward', 'priority']
+        widgets = {
+            'ward': forms.Select(attrs={
+                'class': 'w-full text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            }),
+            'priority': forms.Select(attrs={
+                'class': 'w-full text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200'
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        show_ward_fields = kwargs.pop('show_ward_fields', False)
+        patient_ward = kwargs.pop('patient_ward', None)
+        super(LabTestForm, self).__init__(*args, **kwargs)
+        
+        if show_ward_fields and patient_ward:
+            # Patient is admitted - restrict to their current ward only
+            self.fields['ward'].queryset = Ward.objects.filter(id=patient_ward.id)
+            self.fields['ward'].initial = patient_ward
+            self.fields['ward'].empty_label = None  # No empty option
+            self.fields['ward'].required = True
+            self.fields['priority'].required = True
+        elif show_ward_fields:
+            # Fallback if no specific ward (shouldn't happen)
+            self.fields['ward'].empty_label = "Select Ward"
+            self.fields['ward'].required = True
+            self.fields['priority'].required = True
+        else:
+            # Patient is outpatient - remove ward and priority fields
+            del self.fields['ward']
+            del self.fields['priority']
+
+
 class LabTestingForm(forms.ModelForm):
     class Meta:
         model = LabTesting

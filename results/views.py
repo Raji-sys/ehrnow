@@ -24,16 +24,20 @@ User = get_user_model()
 from django.db import transaction
 from django.db import reset_queries
 reset_queries()
-from ehr.models import PatientData
+from ehr.models import PatientData, Admission
 from django.utils.http import url_has_allowed_host_and_scheme
 from datetime import datetime
 from django.forms import modelformset_factory
 from django.http import JsonResponse
 
+
 class DoctorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.groups.filter(name='doctor').exists()
 
+class DoctorNurseRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='doctor').exists() or self.request.user.groups.filter(name='nurse').exists()
 
 def log_anonymous_required(view_function, redirect_to=None):
     if redirect_to is None:
@@ -48,7 +52,7 @@ def fetch_resources(uri, rel):
         path = os.path.join(settings.MEDIA_ROOT,uri.replace(settings.MEDIA_URL, ""))
     return path
 
-
+from datetime import timedelta
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class DashboardView(TemplateView):
@@ -57,26 +61,139 @@ class DashboardView(TemplateView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class HematologyView(TemplateView):
     template_name = "hema/hematology.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        time_threshold = timezone.now() - timedelta(hours=24)
+        
+        incoming_count = LabTesting.objects.filter(
+            lab__icontains='HEMATOLOGY',
+            # payment__status=False,
+            labtest__requested_at__gte=time_threshold
+        ).count()
+        paid_count = Testinfo.objects.filter(
+            test_handler__lab__iexact="HEMATOLOGY",
+            cleared=False,
+            updated__gte=time_threshold
+        ).count()
+
+        result_count = Testinfo.objects.filter(
+            test_handler__lab__iexact="HEMATOLOGY",
+            cleared=True,
+            updated__gte=time_threshold
+        ).count()
+
+        context['paid_count'] = paid_count
+        context['result_count'] = result_count
+        context['incoming_count'] = incoming_count
+        return context
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ChempathView(TemplateView):
     template_name = "chempath/chempath.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        time_threshold = timezone.now() - timedelta(hours=24)
+        
+        incoming_count = LabTesting.objects.filter(
+            lab__icontains='CHEMICAL PATHOLOGY',
+            payment__status=False,
+            labtest__requested_at__gte=time_threshold
+        ).count()
+        
+        paid_count = Testinfo.objects.filter(
+            test_handler__lab__iexact="Chemical pathology",
+            cleared=False,
+            updated__gte=time_threshold
+        ).count()
+
+        result_count = Testinfo.objects.filter(
+            test_handler__lab__iexact="Chemical pathology",
+            cleared=True,
+            updated__gte=time_threshold
+        ).count()
+
+        context['incoming_count'] = incoming_count
+        context['paid_count'] = paid_count
+        context['result_count'] = result_count
+        return context
+    
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class MicrobiologyView(TemplateView):
     template_name = "micro/micro.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        time_threshold = timezone.now() - timedelta(hours=24)
+        
+        incoming_count = LabTesting.objects.filter(
+            lab__icontains='MICROBIOLOGY',
+            payment__status=False,
+            labtest__requested_at__gte=time_threshold
+        ).count()
+        
+        paid_count = Testinfo.objects.filter(
+            test_handler__lab__iexact="MICROBIOLOGY",
+            cleared=False,
+            updated__gte=time_threshold
+        ).count()
+
+        result_count = Testinfo.objects.filter(
+            test_handler__lab__iexact="MICROBIOLOGY",
+            cleared=True,
+            updated__gte=time_threshold
+        ).count()
+
+        context['incoming_count'] = incoming_count
+        context['paid_count'] = paid_count
+        context['result_count'] = result_count
+        return context
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class SerologyView(TemplateView):
     template_name = "serology/serology.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        time_threshold = timezone.now() - timedelta(hours=24)
+        
+        incoming_count = LabTesting.objects.filter(
+            lab__icontains='SEROLOGY',
+            payment__status=False,
+            labtest__requested_at__gte=time_threshold
+        ).count()
+        
+        paid_count = Testinfo.objects.filter(
+            test_handler__lab__iexact="SEROLOGY",
+            cleared=False,
+            updated__gte=time_threshold
+        ).count()
+
+        result_count = Testinfo.objects.filter(
+            test_handler__lab__iexact="SEROLOGY",
+            cleared=True,
+            updated__gte=time_threshold
+        ).count()
+
+        context['incoming_count'] = incoming_count
+        context['paid_count'] = paid_count
+        context['result_count'] = result_count
+        return context
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class GeneralView(TemplateView):
     template_name = "general/general.html"
 
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ReportView(TemplateView):
     template_name = "report.html"
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class RevenueView(TemplateView):
@@ -1898,47 +2015,103 @@ class LabTestingCreateView(DoctorRequiredMixin, FormView):
             return LabTestingFormSet(self.request.POST)
         return LabTestingFormSet(queryset=LabTesting.objects.none())
 
+    def get_labtest_form(self):
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        
+        # Check if patient is currently admitted
+        current_admission = Admission.objects.filter(
+            patient=patient, 
+            status__in=['ADMIT', 'RECEIVED']
+        ).first()
+        
+        if self.request.method == 'POST':
+            return LabTestForm(
+                self.request.POST, 
+                show_ward_fields=bool(current_admission),
+                patient_ward=current_admission.ward if current_admission else None
+            )
+        return LabTestForm(
+            show_ward_fields=bool(current_admission),
+            patient_ward=current_admission.ward if current_admission else None
+        )
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        
+        # Check admission status
+        current_admission = Admission.objects.filter(
+            patient=patient, 
+            status__in=['ADMIT', 'RECEIVED']
+        ).first()
+        
         context['formset'] = self.get_form()
-        context['patient'] = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        context['labtest_form'] = self.get_labtest_form()
+        context['patient'] = patient
+        context['is_inpatient'] = bool(current_admission)
+        context['current_admission'] = current_admission
         context['get_lab_url'] = reverse('results:get_lab', kwargs={'lab_name': 'PLACEHOLDER'})
         return context
 
     def post(self, request, *args, **kwargs):
         formset = self.get_form()
-        if not formset.is_valid():
-            print("Formset errors:", formset.errors)  # Debug print
-        if formset.is_valid():
-            return self.formset_valid(formset)
-        return self.formset_invalid(formset)
+        labtest_form = self.get_labtest_form()
+        
+        if formset.is_valid() and labtest_form.is_valid():
+            return self.form_valid(formset, labtest_form)
+        else:
+            return self.form_invalid(formset, labtest_form)
+
+    def form_invalid(self, formset, labtest_form):
+        context = self.get_context_data()
+        context['formset'] = formset
+        context['labtest_form'] = labtest_form
+        return self.render_to_response(context)
 
     @transaction.atomic
-    def formset_valid(self, formset):
+    def form_valid(self, formset, labtest_form):
         patient = get_object_or_404(PatientData, file_no=self.kwargs['file_no'])
+        
+        # Check if patient is currently admitted
+        current_admission = Admission.objects.filter(
+            patient=patient, 
+            status__in=['ADMIT', 'RECEIVED']
+        ).first()
+        
+        # Create LabTest
+        labtest = labtest_form.save(commit=False)
+        labtest.user = self.request.user
+        labtest.patient = patient
+        
+        # For inpatients, validate ward selection matches their admission
+        if current_admission:
+            if not labtest.ward:
+                messages.error(self.request, 'Ward selection is required for admitted patients')
+                return self.form_invalid(formset, labtest_form)
+            # Ensure selected ward matches patient's current admission ward
+            if labtest.ward != current_admission.ward:
+                messages.error(self.request, 'Lab test must be sent to patient\'s current admission ward')
+                return self.form_invalid(formset, labtest_form)
+        else:
+            # For outpatients, clear ward and set default priority
+            labtest.ward = None
+            labtest.priority = 'normal'
             
-        labtest = LabTest.objects.create(
-            user=self.request.user, 
-            patient=patient,
-        )
+        labtest.save()
+        
         total_amount = 0
         instances = formset.save(commit=False)
         
         for instance in instances:
-            if instance.item:  # Only skip rows where no test item was selected
+            if instance.item:
                 instance.labtest = labtest
                 total_amount += instance.total_item_price or 0
                 instance.save()
-
-        # for instance in instances:
-        #     if instance.total_item_price:  # Only process non-empty forms
-        #         instance.labtest = labtest
-        #         total_amount += instance.total_item_price
-        #         instance.save()
-        
+                
         labtest.total_amount = total_amount
         labtest.save()
 
+        # Create payment point
         paypoint = Paypoint.objects.create(
             user=self.request.user,
             patient=patient,
@@ -1949,16 +2122,12 @@ class LabTestingCreateView(DoctorRequiredMixin, FormView):
         )
         LabTesting.objects.filter(labtest=labtest).update(payment=paypoint)
 
-        messages.success(self.request, 'TEST REQUEST ADDED')
+        messages.success(self.request, 'TEST REQUEST SENT')
         return HttpResponseRedirect(self.get_success_url())
-
-    def formset_invalid(self, formset):
-        return self.render_to_response(self.get_context_data(formset=formset))
 
     def get_success_url(self):
         return reverse('patient_details', kwargs={'file_no': self.kwargs['file_no']})
-
-
+    
 def get_lab(request, lab_name):
     items = GenericTest.objects.filter(lab=lab_name)
     item_list = [{
@@ -1971,6 +2140,99 @@ def get_lab(request, lab_name):
         return JsonResponse({'items': []}) 
 
     return JsonResponse({'items': item_list})
+
+
+class WardLabRequestsView(DoctorNurseRequiredMixin, ListView):
+    """View to display all lab test requests for a specific ward"""
+    model = LabTest
+    template_name = 'lab_requests.html'
+    context_object_name = 'lab_requests'
+    paginate_by = 20
+    
+    def get_queryset(self):
+        ward = get_object_or_404(Ward, id=self.kwargs['ward_id'])
+        priority_filter = self.request.GET.get('priority', 'all')
+        seen_filter = self.request.GET.get('seen', 'all')
+        
+        queryset = LabTest.objects.filter(ward=ward).select_related(
+            'patient', 'user', 'seen_by'
+        ).prefetch_related('items__item')
+        
+        if priority_filter != 'all':
+            queryset = queryset.filter(priority=priority_filter)
+            
+        if seen_filter == 'unseen':
+            queryset = queryset.filter(seen_by_ward=False)
+        elif seen_filter == 'seen':
+            queryset = queryset.filter(seen_by_ward=True)
+            
+        return queryset.order_by('seen_by_ward', '-requested_at')  # Unseen first
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['ward'] = get_object_or_404(Ward, id=self.kwargs['ward_id'])
+        context['priority_filter'] = self.request.GET.get('priority', 'all')
+        context['seen_filter'] = self.request.GET.get('seen', 'all')
+        
+        # Count unseen requests
+        context['unseen_count'] = LabTest.objects.filter(
+            ward=context['ward'],
+            seen_by_ward=False
+        ).count()
+        
+        return context
+
+@login_required 
+def mark_lab_request_seen(request, labtest_id):
+    """AJAX endpoint to mark lab request as seen by ward nurse"""
+    try:
+        labtest = get_object_or_404(LabTest, id=labtest_id)
+        
+        # Mark as seen
+        labtest.seen_by_ward = True
+        labtest.seen_at = timezone.now()
+        labtest.seen_by = request.user
+        labtest.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Lab request marked as seen',
+            'seen_by': request.user.get_full_name() or request.user.username,
+            'seen_at': labtest.seen_at.strftime('%M/%d/%Y %H:%M')
+        })
+        
+    except LabTest.DoesNotExist:
+        return JsonResponse({
+            'success': False, 
+            'error': 'Lab test not found'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': str(e)
+        })
+
+@login_required
+def ward_lab_badge_count(request, ward_id):
+    """AJAX endpoint to get unseen lab request count for a ward"""
+    ward = get_object_or_404(Ward, id=ward_id)
+    
+    unseen_count = LabTest.objects.filter(
+        ward=ward,
+        seen_by_ward=False
+    ).count()
+    
+    urgent_unseen_count = LabTest.objects.filter(
+        ward=ward,
+        seen_by_ward=False,
+        priority__in=['urgent', 'stat']
+    ).count()
+    
+    return JsonResponse({
+        'unseen_count': unseen_count,
+        'urgent_unseen_count': urgent_unseen_count,
+        'has_notifications': unseen_count > 0
+    })
 
 
 from django.db.models import Prefetch
@@ -2073,7 +2335,7 @@ class MicrobiologyTestListView(LoginRequiredMixin, ListView):
     model = LabTesting
     template_name = 'incoming_req.html'
     context_object_name = 'tests'
-    paginate_by = 10  # Adjust as needed
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(lab__icontains='MICROBIOLOGY').select_related(
@@ -2107,7 +2369,7 @@ class ChempathTestListView(LoginRequiredMixin, ListView):
     model = LabTesting
     template_name = 'incoming_req.html'
     context_object_name = 'tests'
-    paginate_by = 10  # Adjust as needed
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(lab__icontains='CHEMICAL PATHOLOGY').select_related(
@@ -2139,7 +2401,7 @@ class HematologyTestListView(LoginRequiredMixin, ListView):
     model = LabTesting
     template_name = 'incoming_req.html'
     context_object_name = 'tests'
-    paginate_by = 10  # Adjust as needed
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(lab__icontains='HEMATOLOGY').select_related(
@@ -2172,7 +2434,7 @@ class SerologyTestListView(LoginRequiredMixin, ListView):
     model = LabTesting
     template_name = 'incoming_req.html'
     context_object_name = 'tests'
-    paginate_by = 10  # Adjust as needed
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(lab__icontains='SEROLOGY').select_related(

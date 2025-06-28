@@ -149,6 +149,9 @@ urlpatterns = [
     path('hema-req/list/',HematologyTestListView.as_view(),name='hema_incoming_req'),
     path('serology-req/list/',SerologyTestListView.as_view(),name='serology_incoming_req'),
     path('all-test/list/',AllTestListView.as_view(),name='all_test'),
-
+    
+    path('ward/<int:ward_id>/lab-requests/', WardLabRequestsView.as_view(), name='ward_lab_requests'),
+    path('ward/<int:ward_id>/lab-badge-count/', ward_lab_badge_count, name='ward_lab_badge_count'),
+    path('lab-request/<int:labtest_id>/update-status/', mark_lab_request_seen, name='mark_lab_request_seen'),
     path('', include('django.contrib.auth.urls')),
 ]

@@ -371,20 +371,78 @@ class WardListView(DoctorNurseRequiredMixin, ListView):
     template_name = "ehr/dashboard/ward_list.html"
 
 
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class WardDetailView(DoctorNurseRequiredMixin, DetailView):
+#     model = Ward
+#     template_name = "ehr/ward/ward_details.html"
+#     context_object_name = 'ward'
+#     paginate_by=10
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['admit_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'admit'})
+#         context['received_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'received'})
+#         context['discharged_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'discharge'})
+#         return context
+# Updated WardDetailView context
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class WardDetailView(DoctorNurseRequiredMixin, DetailView):
     model = Ward
     template_name = "ehr/ward/ward_details.html"
     context_object_name = 'ward'
-    paginate_by=10
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['admit_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'admit'})
-        context['received_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'received'})
-        context['discharged_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'discharge'})
+        ward = self.get_object()
+        
+        # Existing context
+        context['admit_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'admit'})
+        context['received_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'received'})
+        context['discharged_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'discharge'})
+        
+        # Simplified lab notifications
+        context['unseen_lab_requests'] = self.get_unseen_lab_requests(ward)
+        context['recent_lab_requests'] = self.get_recent_lab_requests(ward)
+        context['unseen_count'] = self.get_unseen_count(ward)
+        context['urgent_unseen_count'] = self.get_urgent_unseen_count(ward)
+        context['lab_requests_url'] = reverse('results:ward_lab_requests', kwargs={'ward_id': ward.id})
+        
         return context
-
+    
+    def get_unseen_lab_requests(self, ward):
+        """Get unseen lab test requests for this ward"""
+        from results.models import LabTest  # Import here to avoid circular import issues
+        return LabTest.objects.filter(
+            ward=ward,
+            seen_by_ward=False
+        ).select_related('patient', 'user').prefetch_related('items')[:5]
+    
+    def get_recent_lab_requests(self, ward):
+        """Get recent seen lab test requests for this ward"""
+        from results.models import LabTest  # Import here to avoid circular import issues
+        return LabTest.objects.filter(
+            ward=ward,
+            seen_by_ward=True
+        ).select_related('patient', 'user', 'seen_by').prefetch_related('items')[:5]
+    
+    def get_unseen_count(self, ward):
+        """Count unseen lab test requests"""
+        from results.models import LabTest  # Import here to avoid circular import issues
+        return LabTest.objects.filter(
+            ward=ward,
+            seen_by_ward=False
+        ).count()
+    
+    def get_urgent_unseen_count(self, ward):
+        """Count urgent unseen lab test requests"""
+        from results.models import LabTest  # Import here to avoid circular import issues
+        return LabTest.objects.filter(
+            ward=ward,
+            seen_by_ward=False,
+            priority__in=['urgent', 'stat']
+        ).count()
+    
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class GenericWardListView(DoctorNurseRequiredMixin, ListView):
     model = Admission  # Changed from Ward to Admission
     context_object_name = 'admissions'  # Changed from 'ward' to 'admissions'

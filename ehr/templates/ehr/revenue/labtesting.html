@@ -1,136 +1,392 @@
-
 {% extends 'base.html' %}
 {% block title %}PATHOLOGY INVESTIGATION{% endblock %}
 {% block page_title %}
-<div class="flex justify-center">PATHOLOGY INVESTIGATION</div>
+<div class="flex justify-center items-center">
+    <i class="fas fa-microscope mr-2"></i>
+    PATHOLOGY INVESTIGATION
+</div>
 {% endblock %}
+
 {% block content %}
-<form method="post" class="bg-white shadow-xl rounded px-4 pt-3 pb-4 text-xs mx-auto w-fit mt-1">
-    {% csrf_token %}
-    {{ formset.management_form }}
-    {% if formset.non_form_errors %}
-    <div class="text-red-500 text-xs italic">
-        {{ formset.non_form_errors }}
-    </div>
-    {% endif %}
-    <div class="max-h-[70vh] overflow-y-auto p-2">
-        <div class="grid md:grid-cols-1 p-1 gap-1 text-center">
-            {% for form in formset %}
-            <div class="p-2 border rounded shadow-md max-w-5xl">
-                <div class="flex justify-center flex-col"> <!-- Changed to flex-col -->
-                    <p class="text-left text-xs text-green-700">#{{ forloop.counter }}
-                        {{ form.lab }}
-                        {{ form.item }}
-                    </p>
-                    {% if form.non_field_errors %}
-                        {% for error in form.non_field_errors %}
-                        <p class="text-red-500 text-xs italic">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
-                    {% for field in form %}
-                        {% if field.errors %}
-                            <div class="text-red-500 text-xs italic">
-                                {{ field.label }}: {{ field.errors }}
-                            </div>
-                        {% endif %}
+<div class="w-fit mx-auto px-2 py-3">
+
+    <!-- Lab Test Form -->
+    <div class="bg-white rounded-xl shadow-lg p-3">
+        <form method="post" id="lab-test-form">
+            {% csrf_token %}
+            
+            {{ formset.management_form }}
+            
+            <!-- Form Errors -->
+            {% if formset.non_form_errors %}
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-3">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                    <span class="font-semibold text-red-800">Form Errors:</span>
+                </div>
+                <ul class="mt-2 text-xs text-red-700">
+                    {% for error in formset.non_form_errors %}
+                    <li>{{ error }}</li>
                     {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Ward and Priority Selection (Only for Inpatients) -->
+            {% if is_inpatient %}
+            <div class="bg-blue-50 rounded-lg p-2 border border-blue-200 mb-3">
+                <div class="mb-2">
+                    <div class="flex items-center">
+                        <i class="fas fa-bed text-blue-600 mr-2"></i>
+                        <span class="text-sm font-semibold text-blue-800">Inpatient Lab Request</span>
+                    </div>
+                    <p class="text-xs text-blue-600 mt-1">
+                        Sending to ward: <strong>{{ current_admission.ward.name }}</strong>
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Ward Selection (Pre-filled and locked) -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-gray-700">
+                            Ward (Auto-selected)
+                        </label>
+                        {{ labtest_form.ward }}
+                        {% if labtest_form.ward.errors %}
+                        <div class="text-red-500 text-xs mt-1">
+                            {% for error in labtest_form.ward.errors %}
+                            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Priority Selection -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-gray-700">
+                            Priority
+                        </label>
+                        {{ labtest_form.priority }}
+                        {% if labtest_form.priority.errors %}
+                        <div class="text-red-500 text-xs mt-1">
+                            {% for error in labtest_form.priority.errors %}
+                            <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-            {% endfor %}
-        </div>
+            {% else %}
+            <!-- Outpatient Header -->
+            <div class="bg-green-50 rounded-lg p-2 border border-green-200 mb-3">
+                <div class="flex items-center">
+                    <i class="fas fa-user-check text-green-600 mr-2"></i>
+                    <span class="text-sm font-semibold text-green-800">Outpatient Lab Request</span>
+                </div>
+                <p class="text-xs text-green-600 mt-1">Standard processing for outpatient</p>
+            </div>
+            {% endif %}
+
+            <!-- Test Forms Container -->
+            <div class="space-y-4 max-h-[90vh] overflow-y-auto pr-2">
+                {% for form in formset %}
+                <div class="bg-gray-50 rounded-lg p-2 border border-gray-200 hover:border-purple-300 transition-colors duration-200" id="form-{{ forloop.counter0 }}">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            {% if form.instance.pk %}
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                                <i class="fas fa-check mr-1"></i>Saved
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Form Fields Grid -->
+                    <div class="flex justify-around gap-4">
+                        <!-- Lab Selection -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-semibold text-gray-700">
+                                Laboratory:
+                            </label>
+                            {{ form.lab }}
+                            {% if form.lab.errors %}
+                            <div class="text-red-500 text-xs mt-1">
+                                {% for error in form.lab.errors %}
+                                <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Test Item Selection -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-semibold text-gray-700">
+                                Test:
+                            </label>
+                            {{ form.item }}
+                            {% if form.item.errors %}
+                            <div class="text-red-500 text-xs mt-1">
+                                {% for error in form.item.errors %}
+                                <p><i class="fas fa-exclamation-circle mr-1"></i>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                    </div>
+
+                    <!-- Non-field Errors -->
+                    {% if form.non_field_errors %}
+                    <div class="mt-4 bg-red-50 border border-red-200 rounded p-3">
+                        {% for error in form.non_field_errors %}
+                        <p class="text-red-600 text-xs">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>{{ error }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Hidden Fields -->
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <i class="fas fa-flask fa-3x text-gray-300 mb-4"></i>
+                    <p class="text-gray-500">No test forms available</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Total Cost Summary -->
+            <div class="mt-2 bg-blue-50 rounded-lg p-2 border border-blue-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-calculator text-blue-600 mr-2"></i>
+                        <span class="font-semibold text-blue-800">Total Cost:</span>
+                    </div>
+                    <span class="text-sm font-bold text-blue-800" id="total-cost">₦0.00</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
+                <button type="button" onclick="history.back()" 
+                        class="mr-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 text-xs">
+                    <i class="fas fa-arrow-left mr-2"></i>Back
+                </button>
+                
+                <div class="space-x-3">
+                    <button type="button" id="preview-btn"
+                            class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 text-xs">
+                        <i class="fas fa-eye mr-2"></i>Preview
+                    </button>
+                    <button type="submit" 
+                            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 text-xs">
+                        <i class="fas fa-save mr-2"></i>Save Tests
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
-    <div class="flex items-center justify-center mt-4">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                type="submit">
-            Save
-        </button>
-    </div>
-</form>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    let testPrices = {};
+    
     function initializePage() {
-        function loadItems(index) {
-            const labSelect = document.getElementsByName(`form-${index}-lab`)[0];
-            const itemSelect = document.getElementsByName(`form-${index}-item`)[0];
-            
-            if (!labSelect || !itemSelect) {
-                console.error(`Could not find lab or item select for index ${index}`);
-                return;
-            }
-            
-            const selectedLab = labSelect.value;
-            console.log(`Selected lab: ${selectedLab} for index ${index}`);
-            
-            if (!selectedLab) {
-                itemSelect.innerHTML = '<option value="">Select test</option>';
-                itemSelect.disabled = true;
-                return;
-            }
-
-            // Enable item select and show loading state
-            itemSelect.disabled = true;
-            itemSelect.innerHTML = '<option value="">Loading...</option>';
-
-            // Use the URL from context, replacing PLACEHOLDER with the selected lab
-            const url = '{{ get_lab_url }}'.replace('PLACEHOLDER', encodeURIComponent(selectedLab));
-            console.log(`Fetching from URL: ${url}`);
-
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(`Received data:`, data);
-                    if (!data.items || !Array.isArray(data.items)) {
-                        throw new Error('Invalid data format received');
-                    }
-                    
-                    itemSelect.innerHTML = '<option value="">Select test</option>';
-                    data.items.forEach(item => {
-                        const option = document.createElement('option');
-                        option.value = item.id;
-                        option.textContent = `${item.name} - ${item.price.toFixed(2)}`;
-                        itemSelect.appendChild(option);
-                    });
-                    itemSelect.disabled = false;
-                })
-                .catch(error => {
-                    console.error('Error loading tests:', error);
-                    itemSelect.innerHTML = '<option value="">Error loading tests</option>';
-                    itemSelect.disabled = true;
-                    
-                    // Add visual feedback for the error
-                    labSelect.classList.add('border-red-500');
-                    setTimeout(() => {
-                        labSelect.classList.remove('border-red-500');
-                    }, 3000);
-                });
-        }
-
-        // Add change event listeners to all lab selects
         const formCount = parseInt(document.querySelector('[name="form-TOTAL_FORMS"]').value);
+        
+        // Initialize each form
         for (let i = 0; i < formCount; i++) {
+            setupFormHandlers(i);
+            // Load initial data if lab is already selected
             const labSelect = document.getElementsByName(`form-${i}-lab`)[0];
-            if (labSelect) {
-                labSelect.addEventListener('change', function() {
-                    loadItems(i);
-                });
-                
-                // Initialize item select state
-                const itemSelect = document.getElementsByName(`form-${i}-item`)[0];
-                if (itemSelect && !labSelect.value) {
-                    itemSelect.disabled = true;
-                    itemSelect.innerHTML = '<option value="">Select lab first</option>';
-                }
+            if (labSelect && labSelect.value) {
+                loadItems(i);
             }
+        }
+        
+        calculateTotal();
+    }
+    
+    function setupFormHandlers(index) {
+        const labSelect = document.getElementsByName(`form-${index}-lab`)[0];
+        const itemSelect = document.getElementsByName(`form-${index}-item`)[0];
+        
+        if (!labSelect || !itemSelect) {
+            console.error(`Could not find lab or item select for index ${index}`);
+            return;
+        }
+        
+        // Lab selection change handler
+        labSelect.addEventListener('change', function() {
+            loadItems(index);
+        });
+        
+        // Item selection change handler
+        itemSelect.addEventListener('change', function() {
+            updateTestPrice(index);
+        });
+        
+        // Initialize item select state
+        if (!labSelect.value) {
+            itemSelect.disabled = true;
+            itemSelect.innerHTML = '<option value="">Select lab first</option>';
         }
     }
-
+    
+    function loadItems(index) {
+        const labSelect = document.getElementsByName(`form-${index}-lab`)[0];
+        const itemSelect = document.getElementsByName(`form-${index}-item`)[0];
+        
+        const selectedLab = labSelect.value;
+        console.log(`Loading items for lab: ${selectedLab}, index: ${index}`);
+        
+        if (!selectedLab) {
+            itemSelect.innerHTML = '<option value="">Select test</option>';
+            itemSelect.disabled = true;
+            updateTestPrice(index, 0);
+            return;
+        }
+        
+        // Show loading state
+        itemSelect.disabled = true;
+        itemSelect.innerHTML = '<option value="">Loading tests...</option>';
+        
+        // Use the URL from context
+        const url = '{{ get_lab_url }}'.replace('PLACEHOLDER', encodeURIComponent(selectedLab));
+        
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.items || !Array.isArray(data.items)) {
+                    throw new Error('Invalid data format received');
+                }
+                
+                itemSelect.innerHTML = '<option value="">Select test</option>';
+                data.items.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = `${item.name} - ₦${parseFloat(item.price).toFixed(2)}`;
+                    option.dataset.price = item.price;
+                    itemSelect.appendChild(option);
+                });
+                itemSelect.disabled = false;
+                
+                // Clear price when lab changes
+                updateTestPrice(index, 0);
+            })
+            .catch(error => {
+                console.error('Error loading tests:', error);
+                itemSelect.innerHTML = '<option value="">Error loading tests</option>';
+                itemSelect.disabled = true;
+                updateTestPrice(index, 0);
+                
+                // Visual feedback for error
+                labSelect.classList.add('border-red-500');
+                setTimeout(() => {
+                    labSelect.classList.remove('border-red-500');
+                }, 3000);
+            });
+    }
+    
+    function updateTestPrice(index, price = null) {
+        const priceElement = document.getElementById(`price-${index}`);
+        
+        if (price === null) {
+            const itemSelect = document.getElementsByName(`form-${index}-item`)[0];
+            const selectedOption = itemSelect.options[itemSelect.selectedIndex];
+            price = selectedOption && selectedOption.dataset.price ? parseFloat(selectedOption.dataset.price) : 0;
+        }
+        
+        testPrices[index] = price;
+        
+        if (priceElement) {
+            priceElement.textContent = `₦${price.toFixed(2)}`;
+            priceElement.classList.add('animate-pulse');
+            setTimeout(() => {
+                priceElement.classList.remove('animate-pulse');
+            }, 500);
+        }
+        
+        calculateTotal();
+    }
+    
+    function calculateTotal() {
+        const total = Object.values(testPrices).reduce((sum, price) => sum + price, 0);
+        const totalElement = document.getElementById('total-cost');
+        if (totalElement) {
+            totalElement.textContent = `₦${total.toFixed(2)}`;
+        }
+    }
+    
+    // Preview functionality
+    document.getElementById('preview-btn')?.addEventListener('click', function() {
+        const formData = new FormData(document.getElementById('lab-test-form'));
+        const formCount = parseInt(document.querySelector('[name="form-TOTAL_FORMS"]').value);
+        
+        let selectedTests = [];
+        for (let i = 0; i < formCount; i++) {
+            const lab = formData.get(`form-${i}-lab`);
+            const item = formData.get(`form-${i}-item`);
+            if (lab && item) {
+                const itemSelect = document.getElementsByName(`form-${i}-item`)[0];
+                const selectedOption = itemSelect.options[itemSelect.selectedIndex];
+                selectedTests.push({
+                    lab: lab,
+                    test: selectedOption.textContent,
+                    price: testPrices[i] || 0
+                });
+            }
+        }
+        
+        if (selectedTests.length === 0) {
+            alert('Please select at least one test to preview.');
+            return;
+        }
+        
+        // Create preview modal or alert
+        let previewText = 'Selected Tests:\n\n';
+        selectedTests.forEach((test, index) => {
+            previewText += `${index + 1}. ${test.test}\n`;
+        });
+        previewText += `\nTotal Cost: ₦${Object.values(testPrices).reduce((sum, price) => sum + price, 0).toFixed(2)}`;
+        
+        alert(previewText);
+    });
+    
     // Initialize the page
     initializePage();
 });
 </script>
+
+<style>
+/* Custom styles for form elements */
+.form-select, .form-control {
+    @apply text-center text-xs focus:outline-none border border-green-400 p-3 rounded shadow-lg focus:shadow-xl focus:border-green-200 transition-all duration-200;
+}
+
+.form-select:disabled {
+    @apply bg-gray-100 text-gray-500 cursor-not-allowed;
+}
+
+/* Animation for price updates */
+@keyframes price-update {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.price-update {
+    animation: price-update 0.3s ease-in-out;
+}
+</style>
 {% endblock %}

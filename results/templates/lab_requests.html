@@ -1,0 +1,316 @@
+<!-- simplified_lab_requests.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LAB REQUESTS - {{ ward.name|upper }}{% endblock %}
+
+{% block page_title %}
+<div class="flex justify-center items-center">
+    <a href="{% url 'ward_details' ward.id %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>
+    <i class="fas fa-flask mr-2"></i> LAB REQUESTS - {{ ward.name|upper }} WARD
+    {% if unseen_count > 0 %}
+    <span class="ml-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+        {{ unseen_count }} NEW
+    </span>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="mx-2 md:mx-20 bg-zinc-50 rounded-md shadow-black h-fit shadow-sm mt-4 p-6">
+    <!-- Filters -->
+    <div class="bg-white rounded-xl shadow-lg p-4 mb-6">
+        <form method="get" class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-32">
+                <label class="block text-gray-700 text-xs font-bold mb-2 uppercase">View:</label>
+                <select name="seen" class="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:border-purple-500" onchange="this.form.submit()">
+                    <option value="all" {% if seen_filter == 'all' %}selected{% endif %}>All Requests</option>
+                    <option value="unseen" {% if seen_filter == 'unseen' %}selected{% endif %}>Unseen Only ({{ unseen_count }})</option>
+                    <option value="seen" {% if seen_filter == 'seen' %}selected{% endif %}>Seen Only</option>
+                </select>
+            </div>
+            <div class="flex-1 min-w-32">
+                <label class="block text-gray-700 text-xs font-bold mb-2 uppercase">Priority:</label>
+                <select name="priority" class="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:border-purple-500" onchange="this.form.submit()">
+                    <option value="all" {% if priority_filter == 'all' %}selected{% endif %}>All</option>
+                    <option value="normal" {% if priority_filter == 'normal' %}selected{% endif %}>Normal</option>
+                    <option value="urgent" {% if priority_filter == 'urgent' %}selected{% endif %}>Urgent</option>
+                    <option value="stat" {% if priority_filter == 'stat' %}selected{% endif %}>STAT</option>
+                </select>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Lab Requests Table -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="p-1 text-center text-xs ">S/N</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Details</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tests</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for labtest in lab_requests %}
+                <tr class="{% if not labtest.seen_by_ward %}
+                            {% if labtest.priority == 'stat' %}bg-red-50 animate-pulse{% elif labtest.priority == 'urgent' %}bg-orange-50{% else %}bg-blue-50{% endif %}
+                          {% endif %}"
+                    data-labtest-id="{{ labtest.id }}">
+                    
+                    <!-- Patient Info -->
+                    <td class="px-4 py-3 whitespace-nowrap">
+                    {{forloop.counter }}    
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <div class="text-xs font-bold text-gray-800">{{ labtest.patient.file_no }}</div>
+                        <div class="text-xs text-gray-600">{{ labtest.patient.first_name }} {{ labtest.patient.last_name }}</div>
+                        <div class="text-xs text-gray-500">Age: {{ labtest.patient.age|default:"N/A" }}</div>
+                    </td>
+                    
+                    <!-- Priority -->
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold 
+                            {% if labtest.priority == 'stat' %}bg-red-100 text-red-800
+                            {% elif labtest.priority == 'urgent' %}bg-orange-100 text-orange-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ labtest.get_priority_display|upper }}
+                        </span>
+                    </td>
+                    
+                    <!-- Request Details -->
+                    <td class="px-4 py-3">
+                        <div class="text-xs text-gray-600">Requested by: <span class="font-semibold">{{ labtest.user.get_full_name|default:labtest.user.username }}</span></div>
+                        <div class="text-xs text-gray-500">{{ labtest.requested_at|date:"M d, Y H:i" }} ({{ labtest.requested_at|timesince }} ago)</div>
+                    </td>
+                    
+                    <!-- Tests Ordered -->
+                    <td class="px-4 py-3">
+                        <div class="flex flex-wrap gap-1">
+                            {% for item in labtest.items.all %}
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
+                                {{ item.item.name }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    
+                    <!-- Amount -->
+                    <td class="px-4 py-3 whitespace-nowrap text-xs font-bold text-green-600">
+                        ₦{{ labtest.total_amount|floatformat:2 }}
+                    </td>
+                    
+                    <!-- Status -->
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        {% if not labtest.seen_by_ward %}
+                        <div class="new-request-badge bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold mb-1 animate-bounce">
+                            <i class="fas fa-bell mr-1"></i> NEW
+                        </div>
+                        {% else %}
+                        <div class="seen-status text-green-600 text-xs">
+                            <i class="fas fa-check-circle mr-1"></i> Seen
+                            <div class="text-xs text-gray-500">{{ labtest.seen_at|date:"M d, H:i" }}</div>
+                        </div>
+                        {% endif %}
+                    </td>
+                    
+                    <!-- Actions -->
+                    <td class="px-4 py-3 whitespace-nowrap text-left text-xs font-medium">
+                        {% if not labtest.seen_by_ward %}
+                        <button class="mark-seen-btn bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs font-semibold transition duration-300" 
+                                data-labtest-id="{{ labtest.id }}">
+                            <i class="fas fa-eye mr-1"></i> SEEN
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-6 py-12 text-center">
+                        <i class="fas fa-flask fa-3x text-gray-300 mb-2"></i>
+                        <p class="text-gray-500 text-xs">No lab requests found for the selected filters.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="flex justify-center mt-6">
+        <div class="flex space-x-2">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if seen_filter != 'all' %}&seen={{ seen_filter }}{% endif %}{% if priority_filter != 'all' %}&priority={{ priority_filter }}{% endif %}" 
+               class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs font-semibold transition duration-300">
+                Previous
+            </a>
+            {% endif %}
+            
+            <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-semibold">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if seen_filter != 'all' %}&seen={{ seen_filter }}{% endif %}{% if priority_filter != 'all' %}&priority={{ priority_filter }}{% endif %}" 
+               class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs font-semibold transition duration-300">
+                Next
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const markSeenButtons = document.querySelectorAll('.mark-seen-btn');
+    
+    markSeenButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const labtestId = this.dataset.labtestId;
+            const row = this.closest('tr');
+            
+            // Show loading state
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Processing...';
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                             '{{ csrf_token }}';
+            
+            // Send request to mark as seen
+            fetch(`{% url 'results:mark_lab_request_seen' 0 %}`.replace('0', labtestId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update row appearance
+                    row.classList.remove('bg-blue-50', 'bg-orange-50', 'bg-red-50', 'animate-pulse');
+                    
+                    // Replace button with seen status
+                    const statusCell = row.querySelector('td:nth-child(6)');
+                    statusCell.innerHTML = `
+                        <div class="seen-status text-green-600 text-xs">
+                            <i class="fas fa-check-circle mr-1"></i> Seen
+                            <div class="text-xs text-gray-500">${data.seen_at}</div>
+                        </div>
+                    `;
+                    
+                    // Remove action button
+                    const actionCell = row.querySelector('td:nth-child(7)');
+                    actionCell.innerHTML = '';
+                    
+                    // Show success message
+                    showNotification('Lab request marked as seen!', 'success');
+                    
+                    // Update page title badge count
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error(data.error || 'Failed to mark as seen');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification(`Error: ${error.message}`, 'error');
+                
+                // Reset button
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-eye mr-1"></i> SEEN';
+            });
+        });
+    });
+});
+
+// Notification system
+function showNotification(message, type = 'info') {
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = `notification fixed top-4 right-4 px-4 py-2 rounded text-white text-xs font-semibold z-50 transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500' : 
+        type === 'error' ? 'bg-red-500' : 
+        'bg-blue-500'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-1"></i>
+            ${message}
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Auto-refresh for unseen requests
+setInterval(() => {
+    const hasUnseenRequests = document.querySelector('.new-request-badge') !== null;
+    if (hasUnseenRequests) {
+        window.location.reload();
+    }
+}, 120000); // 2 minutes
+</script>
+
+<style>
+/* Enhanced visual indicators for new requests */
+.new-request-badge {
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    display: inline-block;
+}
+
+/* Priority animations */
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+    animation: bounce 1s infinite;
+}
+
+/* Button states */
+.mark-seen-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.mark-seen-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+/* Seen status styling */
+.seen-status {
+    padding: 4px 6px;
+    background-color: rgba(16, 185, 129, 0.1);
+    border-radius: 4px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    display: inline-block;
+}
+
+/* Table row hover effect */
+tbody tr:hover {
+    background-color: rgba(249, 250, 251, 0.8);
+}
+</style>
+{% endblock %}
