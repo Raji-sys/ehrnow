@@ -2075,3 +2075,129 @@ class InPatientPrescriptionCreateView(PrescriptionCreateView):
         else:
             messages.error(self.request, "No In-Patient unit found.")
         return prescription
+
+# Define a simple DoctorNurseRequiredMixin if not already defined elsewhere
+from django.contrib.auth.mixins import UserPassesTestMixin
+
+class DoctorNurseRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name__in=['doctor', 'nurse']).exists()
+
+class WardPharmacyRequestsView(DoctorNurseRequiredMixin, ListView):
+    """View to display all pharmacy requests for a specific ward"""
+    model = Prescription
+    template_name = 'dispensary/pharmacy_request.html'
+    context_object_name = 'pharmacy_requests'
+    paginate_by = 20
+    
+    def get_queryset(self):
+        from ehr.models import Ward  # Import Ward model
+        ward = get_object_or_404(Ward, id=self.kwargs['ward_id'])
+        payment_filter = self.request.GET.get('payment', 'all')
+        seen_filter = self.request.GET.get('seen', 'all')
+        
+        queryset = Prescription.objects.filter(
+            unit_id=ward.id,
+            prescription_drugs__isnull=False,
+            is_dispensed=False
+        ).select_related(
+            'patient', 'prescribed_by', 'seen_by', 'payment'
+        ).prefetch_related('prescription_drugs__drug').distinct()
+        
+        if payment_filter == 'unpaid':
+            queryset = queryset.filter(
+                Q(payment__isnull=True) | Q(payment__status=False)
+            )
+        elif payment_filter == 'paid':
+            queryset = queryset.filter(payment__status=True)
+            
+        if seen_filter == 'unseen':
+            queryset = queryset.filter(seen_by_ward=False)
+        elif seen_filter == 'seen':
+            queryset = queryset.filter(seen_by_ward=True)
+            
+        return queryset.order_by('seen_by_ward', '-updated')  # Unseen first
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from ehr.models import Ward
+        context['ward'] = get_object_or_404(Ward, id=self.kwargs['ward_id'])
+        context['payment_filter'] = self.request.GET.get('payment', 'all')
+        context['seen_filter'] = self.request.GET.get('seen', 'all')
+        
+        # Count unseen requests
+        context['unseen_count'] = Prescription.objects.filter(
+            unit_id=context['ward'].id,
+            prescription_drugs__isnull=False,
+            is_dispensed=False,
+            seen_by_ward=False
+        ).distinct().count()
+        
+        # Count unpaid requests
+        context['unpaid_count'] = Prescription.objects.filter(
+            Q(payment__isnull=True) | Q(payment__status=False),
+            unit_id=context['ward'].id,
+            prescription_drugs__isnull=False,
+            is_dispensed=False
+        ).distinct().count()
+        
+        return context
+
+
+@login_required 
+def mark_pharmacy_request_seen(request, prescription_id):
+    """AJAX endpoint to mark pharmacy request as seen by ward nurse"""
+    try:
+        prescription = get_object_or_404(Prescription, id=prescription_id)
+        
+        # Mark as seen
+        prescription.seen_by_ward = True
+        prescription.seen_at = timezone.now()
+        prescription.seen_by = request.user
+        prescription.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Pharmacy request marked as seen',
+            'seen_by': request.user.get_full_name() or request.user.username,
+            'seen_at': prescription.seen_at.strftime('%m/%d/%Y %H:%M')
+        })
+        
+    except Prescription.DoesNotExist:
+        return JsonResponse({
+            'success': False, 
+            'error': 'Prescription not found'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': str(e)
+        })
+
+
+@login_required
+def ward_pharmacy_badge_count(request, ward_id):
+    """AJAX endpoint to get unseen pharmacy request count for a ward"""
+    from ehr.models import Ward
+    ward = get_object_or_404(Ward, id=ward_id)
+    
+    unseen_count = Prescription.objects.filter(
+        unit_id=ward.id,
+        prescription_drugs__isnull=False,
+        is_dispensed=False,
+        seen_by_ward=False
+    ).distinct().count()
+    
+    unpaid_count = Prescription.objects.filter(
+        Q(payment__isnull=True) | Q(payment__status=False),
+        unit_id=ward.id,
+        prescription_drugs__isnull=False,
+        is_dispensed=False,
+        seen_by_ward=False
+    ).distinct().count()
+    
+    return JsonResponse({
+        'unseen_count': unseen_count,
+        'unpaid_count': unpaid_count,
+        'has_notifications': unseen_count > 0
+    })

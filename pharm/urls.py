@@ -80,6 +80,17 @@ urlpatterns=[
     path('get_drugs/', views.get_drugs, name='get_drugs'),
     path('get_dispense_drugs/', views.get_dispense_drugs, name='get_dispense_drugs'),
 
-    # path('get_drugs_by_category/<int:category_id>/', views.get_drugs_by_category, name='get_drugs_by_category'),
+    # Ward pharmacy integration URLs
+    path('ward/<int:ward_id>/requests/', 
+         views.WardPharmacyRequestsView.as_view(), 
+         name='ward_pharmacy_requests'),
+    
+    path('ajax/mark-seen/<int:prescription_id>/', 
+         views.mark_pharmacy_request_seen, 
+         name='mark_pharmacy_request_seen'),
+    
+    path('ajax/ward-badge-count/<int:ward_id>/', 
+         views.ward_pharmacy_badge_count, 
+         name='ward_pharmacy_badge_count'),
     path('',include('django.contrib.auth.urls')),  
 ]

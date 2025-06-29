@@ -385,6 +385,63 @@ class WardListView(DoctorNurseRequiredMixin, ListView):
 #         context['discharged_list_url'] = reverse('admission_list', kwargs={'ward_id': self.object.id, 'status': 'discharge'})
 #         return context
 # Updated WardDetailView context
+
+# @method_decorator(login_required(login_url='login'), name='dispatch')
+# class WardDetailView(DoctorNurseRequiredMixin, DetailView):
+#     model = Ward
+#     template_name = "ehr/ward/ward_details.html"
+#     context_object_name = 'ward'
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         ward = self.get_object()
+        
+#         # Existing context
+#         context['admit_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'admit'})
+#         context['received_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'received'})
+#         context['discharged_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'discharge'})
+        
+#         # Simplified lab notifications
+#         context['unseen_lab_requests'] = self.get_unseen_lab_requests(ward)
+#         context['recent_lab_requests'] = self.get_recent_lab_requests(ward)
+#         context['unseen_count'] = self.get_unseen_count(ward)
+#         context['urgent_unseen_count'] = self.get_urgent_unseen_count(ward)
+#         context['lab_requests_url'] = reverse('results:ward_lab_requests', kwargs={'ward_id': ward.id})
+        
+#         return context
+    
+#     def get_unseen_lab_requests(self, ward):
+#         """Get unseen lab test requests for this ward"""
+#         from results.models import LabTest  # Import here to avoid circular import issues
+#         return LabTest.objects.filter(
+#             ward=ward,
+#             seen_by_ward=False
+#         ).select_related('patient', 'user').prefetch_related('items')[:5]
+    
+#     def get_recent_lab_requests(self, ward):
+#         """Get recent seen lab test requests for this ward"""
+#         from results.models import LabTest  # Import here to avoid circular import issues
+#         return LabTest.objects.filter(
+#             ward=ward,
+#             seen_by_ward=True
+#         ).select_related('patient', 'user', 'seen_by').prefetch_related('items')[:5]
+    
+#     def get_unseen_count(self, ward):
+#         """Count unseen lab test requests"""
+#         from results.models import LabTest  # Import here to avoid circular import issues
+#         return LabTest.objects.filter(
+#             ward=ward,
+#             seen_by_ward=False
+#         ).count()
+    
+#     def get_urgent_unseen_count(self, ward):
+#         """Count urgent unseen lab test requests"""
+#         from results.models import LabTest  # Import here to avoid circular import issues
+#         return LabTest.objects.filter(
+#             ward=ward,
+#             seen_by_ward=False,
+#             priority__in=['urgent', 'stat']
+#         ).count()
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class WardDetailView(DoctorNurseRequiredMixin, DetailView):
     model = Ward
@@ -394,21 +451,39 @@ class WardDetailView(DoctorNurseRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ward = self.get_object()
+         # Get counts matching the exact list view filters
+        
+        context['admitted'] = self.get_filtered_queryset(ward, 'ADMIT').count()
+        context['received'] = self.get_filtered_queryset(ward, 'RECEIVED').count()
+        context['discharged'] = self.get_filtered_queryset(ward, 'DISCHARGE').count()
         
         # Existing context
         context['admit_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'admit'})
         context['received_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'received'})
         context['discharged_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'discharge'})
         
-        # Simplified lab notifications
+        # Lab notifications
         context['unseen_lab_requests'] = self.get_unseen_lab_requests(ward)
         context['recent_lab_requests'] = self.get_recent_lab_requests(ward)
         context['unseen_count'] = self.get_unseen_count(ward)
         context['urgent_unseen_count'] = self.get_urgent_unseen_count(ward)
         context['lab_requests_url'] = reverse('results:ward_lab_requests', kwargs={'ward_id': ward.id})
         
+        # Pharmacy notifications
+        context['unseen_pharmacy_requests'] = self.get_unseen_pharmacy_requests(ward)
+        context['recent_pharmacy_requests'] = self.get_recent_pharmacy_requests(ward)
+        context['pharmacy_unseen_count'] = self.get_pharmacy_unseen_count(ward)
+        context['pharmacy_unpaid_count'] = self.get_pharmacy_unpaid_count(ward)
+        context['pharmacy_requests_url'] = reverse('pharm:ward_pharmacy_requests', kwargs={'ward_id': ward.id})
+        
         return context
-    
+    def get_filtered_queryset(self, ward, status):
+        """Replicates the filtering logic from GenericWardListView"""
+        return Admission.objects.filter(
+            ward=ward,
+            status=status
+        ).order_by('-updated')
+    # Existing lab methods
     def get_unseen_lab_requests(self, ward):
         """Get unseen lab test requests for this ward"""
         from results.models import LabTest  # Import here to avoid circular import issues
@@ -442,19 +517,62 @@ class WardDetailView(DoctorNurseRequiredMixin, DetailView):
             priority__in=['urgent', 'stat']
         ).count()
     
+    # New pharmacy methods
+    def get_unseen_pharmacy_requests(self, ward):
+        """Get unseen pharmacy requests for this ward"""
+        from pharm.models import Prescription  # Import from pharmacy app
+        return Prescription.objects.filter(
+            unit_id=ward.id,  # Using ward.id as unit_id to link them
+            prescription_drugs__isnull=False,
+            is_dispensed=False,
+            seen_by_ward=False  # You'll need to add this field to Prescription model
+        ).select_related('patient', 'prescribed_by').prefetch_related('prescription_drugs__drug').distinct()[:5]
+    
+    def get_recent_pharmacy_requests(self, ward):
+        """Get recent seen pharmacy requests for this ward"""
+        from pharm.models import Prescription
+        return Prescription.objects.filter(
+            unit_id=ward.id,
+            prescription_drugs__isnull=False,
+            seen_by_ward=True  # You'll need to add this field to Prescription model
+        ).select_related('patient', 'prescribed_by', 'seen_by').prefetch_related('prescription_drugs__drug').distinct()[:5]
+    
+    def get_pharmacy_unseen_count(self, ward):
+        """Count unseen pharmacy requests"""
+        from pharm.models import Prescription
+        return Prescription.objects.filter(
+            unit_id=ward.id,
+            prescription_drugs__isnull=False,
+            is_dispensed=False,
+            seen_by_ward=False  # You'll need to add this field to Prescription model
+        ).distinct().count()
+    
+    def get_pharmacy_unpaid_count(self, ward):
+        """Count unpaid pharmacy requests"""
+        from pharm.models import Prescription
+        from django.db.models import Q
+        return Prescription.objects.filter(
+            Q(unit_id=ward.id) &
+            Q(prescription_drugs__isnull=False) &
+            Q(is_dispensed=False) &
+            Q(seen_by_ward=False) &
+            (Q(payment__isnull=True) | Q(payment__status=False))
+        ).distinct().count()
+
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class GenericWardListView(DoctorNurseRequiredMixin, ListView):
-    model = Admission  # Changed from Ward to Admission
-    context_object_name = 'admissions'  # Changed from 'ward' to 'admissions'
+    model = Admission
+    context_object_name = 'admissions'
     template_name = 'ehr/ward/generic_ward_list.html'
-    paginate_by = 20  # Add pagination
+    paginate_by = 20
 
     def get_queryset(self):
         ward = get_object_or_404(Ward, pk=self.kwargs['ward_id'])
         status = self.kwargs['status'].upper()
         queryset = Admission.objects.filter(ward=ward, status=status)
 
-        # Add search functionality
+        # Replicate search functionality exactly as in your original
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -471,14 +589,24 @@ class GenericWardListView(DoctorNurseRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ward = get_object_or_404(Ward, pk=self.kwargs['ward_id'])
-        context['ward'] = ward
-        context['status'] = self.kwargs['status'].upper()
-        context['admitted'] = Admission.objects.filter(ward=ward, status='ADMIT').count()
-        context['received'] = Admission.objects.filter(ward=ward, status='RECEIVED').count()
-        context['discharged'] = Admission.objects.filter(ward=ward, status='DISCHARGE').count()
+        status = self.kwargs['status'].upper()
         
-        context['query'] = self.request.GET.get('q', '')        
+        # Get counts for all statuses (for sidebar/header display)
+        context['ward'] = ward
+        context['status'] = status
+        context['admitted_count'] = self.get_filtered_queryset(ward, 'ADMIT').count()
+        context['received_count'] = self.get_filtered_queryset(ward, 'RECEIVED').count()
+        context['discharged_count'] = self.get_filtered_queryset(ward, 'DISCHARGE').count()
+        
+        # Current filtered count (respecting search)
+        context['current_count'] = context['admissions'].count()
+        context['query'] = self.request.GET.get('q', '')
+        
         return context
+    
+    def get_filtered_queryset(self, ward, status):
+        """Helper method to get queryset without search filters"""
+        return Admission.objects.filter(ward=ward, status=status).order_by('-updated')
 
 
 class PatientCreateView(RecordRequiredMixin, CreateView):
@@ -3013,31 +3141,61 @@ class AdmissionCreateView(RevenueRequiredMixin, CreateView):
 
         
 class AdmissionListView(ListView):
-    model=Admission
-    template_name='ehr/ward/admission_list.html'
-    context_object_name='admissions'
+    model = Admission
+    template_name = 'ehr/ward/admission_list.html'
+    context_object_name = 'admissions'
+    paginate_by = 10 # Example pagination size, adjust as needed
 
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(payment__status__isnull=False)
-        # Add search functionality
+
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
                 Q(patient__first_name__icontains=query) |
                 Q(patient__last_name__icontains=query) |
                 Q(patient__other_name__icontains=query) |
-                Q(patient__file_no__icontains=query)|
-                Q(patient__title__icontains=query)|
-                Q(patient__phone__icontains=query)
+                Q(patient__file_no__icontains=query) |
+                Q(patient__title__icontains=query) |
+                Q(patient__phone__icontains=query) |
+                Q(ward__name__icontains=query)
             )
-
         return queryset.order_by('-updated')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q', '')        
-        return context
+        context['query'] = self.request.GET.get('q', '')
 
+        # Calculate counts for each admission status
+        all_admissions = self.model.objects.filter(payment__status__isnull=False)
+        status_counts = all_admissions.values('status').annotate(count=Count('status'))
+
+        admit_count = 0
+        received_count = 0
+        discharge_count = 0
+
+        for item in status_counts:
+            if item['status'] == 'ADMIT':
+                admit_count = item['count']
+            elif item['status'] == 'RECEIVED':
+                received_count = item['count']
+            elif item['status'] == 'DISCHARGE':
+                discharge_count = item['count']
+
+        context['admit_count'] = admit_count
+        context['received_count'] = received_count
+        context['discharge_count'] = discharge_count
+
+        # --- THE CORRECTED LINE ---
+        # Call .start_index() as a method to get its integer value
+        start_index = context['page_obj'].start_index()
+        # --- END OF CORRECTION ---
+
+        for i, admission in enumerate(context['admissions']):
+            admission.display_index = start_index + i
+
+        return context
 
 class AdmissionPayListView(ListView):
     model = Paypoint

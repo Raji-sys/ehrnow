@@ -13,6 +13,7 @@
 
 {% block content %}
 <div class="md:mx-20 mx-auto">
+  <!-- Messages Section -->
   <section class="text-center border-cyan-700 p-1 m-1">
     {% for message in messages %}
     <div class="">
@@ -22,115 +23,138 @@
         </div>
     </div>
     {% endfor %}
-</section>
+  </section>
 
-<form method="get" class="mb-2 flex justify-center">
-  <input type="text" name="q" placeholder="Search patients..." value="{{ query|default:'' }}"
-         class="p-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
-         <button type="submit"
-         class="p-3 bg-blue-500 text-white rounded-r hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs">
-         <i class="fa-solid fa-search fa-xl"></i>
- </button>
- {% if request.GET.urlencode %}
-  <a href="{% url 'admission_list' ward_id=ward.id status=status %}"
-     class="p-3 bg-white text-amber-600 rounded-r-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs">
-      <i class="fa fa-solid fa-rotate fa-xl"></i>
-  </a>
-  {%endif%}
-</form>
 
-  <div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200 uppercase">
-        <thead class="bg-gradient-to-r from-cyan-400 to-emerald-500">
-          <tr class="text-center">
-            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">#</th>
-            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">File Number</th>
-            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Patient</th>
-            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Phone Number</th>
-            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Gender</th>
-            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Bed Number</th>
-            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Process</th>
-            <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-900 uppercase tracking-wider">Actions</th>
-          </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            {% for a in admissions %}
-            <tr class="hover:bg-gray-100 text-center">
-              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ forloop.counter }}</td>
-              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.file_no|default_if_none:'' }}</td>
-              <td class="p-3 whitespace-nowrap text-xs font-medium text-cyan-900"><a href="{{a.patient.get_absolute_url}}">{{ a.patient|default_if_none:''|upper }} </a></td>
 
-              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.phone|default_if_none:'' }}</td>
-              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.patient.gender|default_if_none:'' }}</td>
-              <td class="p-3 whitespace-nowrap text-xs text-cyan-600">{{ a.bed_number|default_if_none:'' }}</td>
-              {%if a.payment.status == True %}
-              {% if a.status == 'ADMIT' %}
-              <td colspan="2" class="p-3 whitespace-nowrap text-xs font-medium">
-                <a href="{% url 'receive_patient' a.pk %}" class="text-amber-600 hover:text-emerald-900 uppercase">
-                  <i class="fa-solid fa-handshake fa-2x"></i><br>Accept Patient
-                </a>
-              </td>
-              <td class="p-3 whitespace-nowrap text-xs font-medium">{{ a.created }}</td>
-              {% elif a.status == 'RECEIVED' %}
-              <td class="p-3 whitespace-nowrap text-xs font-medium">
-                <a href="{% url 'ward_vital_signs' a.patient.file_no %}" class="text-blue-600 hover:text-blue-900 mr-3">
-                  <i class="fa-solid fa-heartbeat fa-2x"></i>
-                </a>
-                <a href="{% url 'ward_medication_multiple' a.patient.file_no %}" class="text-green-600 hover:text-green-900 mr-3">
-                  <i class="fa-solid fa-file-prescription fa-2x"></i>
-                </a>
-                <a href="{% url 'ward_notes' a.patient.file_no %}" class="text-yellow-600 hover:text-yellow-900 mr-3">
-                  <i class="fa-solid fa-clipboard-list fa-2x"></i>
-                </a>
-              </td>
-              <td class="p-3 whitespace-nowrap text-xs font-medium">
-                <a href="{% url 'discharge_patient' a.pk %}" class="text-emerald-600 hover:text-emerald-900 uppercase">
-                  <i class="fa-solid fa-hospital-user fa-2x"></i><br>Discharge Patient
-                </a>
-              </td>
-              {% else %}
-              <td colspan="2" class="p-3 whitespace-nowrap text-xs font-medium text-center uppercase text-cyan-500">
-                <i class="fa-solid fa-thumbs-up fa-2x text-cyan-600"></i><br>Discharged
-              </td>
-              {% endif %}
-              {%else%}
-              <td class="p-3 whitespace-nowrap text-rose-700 text-xs ">
-                admission fee unpaid <br><br>
-                <i class="fa-solid fa-xmark-circle fa-2xl text-rose-600"></i>
-              </td>  
-             {%endif%}
-            </tr>
-            {% endfor %}
-          </tbody>
-      </table>
+ <div class="bg-white shadow-lg rounded-xl overflow-hidden mb-2">
+    <div class="p-2 bg-gradient-to-r from-cyan-500 to-emerald-600 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-2">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide
+                {% if status == 'ADMIT' %}bg-red-100 text-red-700
+                {% elif status == 'RECEIVED' %}bg-green-100 text-green-700
+                {% else %}bg-blue-100 text-blue-700{% endif %}">
+                {{ status|title }} Patients ({{ current_count }})
+            </span>
+            {% if current_count != admissions.count %}
+            <span class="text-xs text-white opacity-80">
+                Showing {{ admissions.count }} of {{ current_count }} after search
+            </span>
+            {% endif %}
+        </div>
+
+        <form method="get" class="flex w-full sm:w-auto">
+            <input type="text" name="q" placeholder="Search patients..." value="{{ query|default:'' }}"
+                   class="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-300 text-xs text-gray-800">
+            <button type="submit"
+                    class="p-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-300 text-xs">
+                    <i class="fa-solid fa-search"></i>
+            </button>
+            {% if request.GET.urlencode %}
+            <a href="{% url 'admission_list' ward_id=ward.id status=status %}"
+               class="ml-2 p-2 bg-white text-gray-700 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-300 text-xs">
+                <i class="fa-solid fa-rotate"></i>
+            </a>
+            {% endif %}
+        </form>
     </div>
-  </div>
 
-  {% if is_paginated %}
-  <div class="flex justify-center mt-6">
-    <nav class="inline-flex rounded-md shadow">
-      {% if page_obj.has_previous %}
-        <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-xs font-medium text-cyan-600 hover:bg-gray-50">
-          First
-        </a>
-        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-xs font-medium text-cyan-600 hover:bg-gray-50">
-          Previous
-        </a>
-      {% endif %}
-      <span class="px-3 py-2 border border-gray-300 bg-white text-xs font-medium text-gray-700">
-        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-      </span>
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-3 py-2 border-t border-b border-gray-300 bg-white text-xs font-medium text-cyan-600 hover:bg-gray-50">
-          Next
-        </a>
-        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-xs font-medium text-cyan-600 hover:bg-gray-50">
-          Last
-        </a>
-      {% endif %}
-    </nav>
-  </div>
-  {% endif %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-4 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
+                    <th scope="col" class="px-4 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">File Number</th>
+                    <th scope="col" class="px-4 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Patient</th>
+                    <th scope="col" class="px-4 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Phone Number</th>
+                    <th scope="col" class="px-4 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Gender</th>
+                    <th scope="col" class="px-4 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Bed Number</th>
+                    <th scope="col" class="px-4 py-2 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Status & Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for a in admissions %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">{{ forloop.counter }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">{{ a.patient.file_no|default_if_none:'' }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs font-medium text-blue-700">
+                        <a href="{{ a.patient.get_absolute_url }}" class="hover:underline">{{ a.patient|default_if_none:''|upper }}</a>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">{{ a.patient.phone|default_if_none:'' }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">{{ a.patient.gender|default_if_none:'' }}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">{{ a.bed_number|default_if_none:'' }}</td>
+
+                    {% if a.payment.status %}
+                        {% if a.status == 'ADMIT' %}
+                        <td class="px-4 py-3 whitespace-nowrap text-xs text-center">
+                            <a href="{% url 'receive_patient' a.pk %}" class="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors">
+                                <i class="fa-solid fa-handshake fa-xl mr-2"></i> Accept Patient
+                            </a>
+                        </td>
+                        {% elif a.status == 'RECEIVED' %}
+                        <td class="px-4 py-3 whitespace-nowrap text-xs text-center space-x-2">
+                            <a href="{% url 'ward_vital_signs' a.patient.file_no %}" title="Vital Signs" class="text-blue-500 hover:text-blue-700">
+                                <i class="fa-solid fa-heartbeat fa-xl"></i>
+                            </a>
+                            <a href="{% url 'ward_medication_multiple' a.patient.file_no %}" title="Medication" class="text-green-500 hover:text-green-700">
+                                <i class="fa-solid fa-file-prescription fa-xl"></i>
+                            </a>
+                            <a href="{% url 'ward_notes' a.patient.file_no %}" title="Notes" class="text-yellow-500 hover:text-yellow-700">
+                                <i class="fa-solid fa-clipboard-list fa-xl"></i>
+                            </a>
+                            <span class="inline-block mx-2 text-gray-300">|</span>
+                            <a href="{% url 'discharge_patient' a.pk %}" class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors">
+                                <i class="fa-solid fa-hospital-user fa-xl mr-2"></i> Discharge
+                            </a>
+                        </td>
+                        {% else %} {# Discharged status #}
+                        <td class="px-4 py-3 whitespace-nowrap text-xs text-center text-cyan-600">
+                            <i class="fa-solid fa-thumbs-up fa-xl mr-1"></i> Discharged
+                        </td>
+                        {% endif %}
+                    {% else %} {# Payment unpaid #}
+                        <td class="px-4 py-3 whitespace-nowrap text-rose-600 text-xs text-center">
+                            <i class="fa-solid fa-xmark-circle fa-xl mr-1"></i> Admission fee unpaid
+                        </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-4 py-8 text-center text-sm text-gray-500">No patients found for this status or search.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+{% if is_paginated %}
+<div class="flex justify-center mt-6">
+    <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+               class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50">
+                First
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+               class="relative inline-flex items-center px-3 py-2 border-t border-b border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50">
+                Previous
+            </a>
+        {% endif %}
+        <span class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-xs font-medium text-gray-700">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+               class="relative inline-flex items-center px-3 py-2 border-t border-b border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50">
+                Next
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+               class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50">
+                Last
+            </a>
+        {% endif %}
+    </nav>
+</div>
+{% endif %}
 {% endblock %}
