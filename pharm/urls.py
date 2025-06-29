@@ -59,10 +59,6 @@ urlpatterns=[
     path('unit-worth/<int:pk>', UnitWorthView.as_view(), name='unit_value'),
 
     
-    # Prescription
-    # path('pharmacy/prescription/prescribed/<int:store_pk>/', views.PrescriptionListView.as_view(), name='prescription_list'),
-    # path('pharmacy/prescription/prescribe/<str:file_no>/', views.create_prescription, name='add_prescription'),
-    # path('pharmacy/prescription/update/<int:pk>/', views.PrescriptionUpdateView.as_view(), name='update_prescription'),
     path('patient-prescription-pdf/<str:file_no>/<int:prescription_id>/', views.prescription_pdf, name='prescription_pdf'),
     path('revenue/pharm-list/', PharmPayListView.as_view(), name='pharm_pay_list'),
     path('prescriptions/<int:store_pk>/', views.PrescriptionListView.as_view(), name='prescription_list'),
