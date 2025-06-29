@@ -451,12 +451,14 @@ class WardDetailView(DoctorNurseRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ward = self.get_object()
-         # Get counts matching the exact list view filters
+        # NEW: Get drug dispensed notifications
         
+
         context['admitted'] = self.get_filtered_queryset(ward, 'ADMIT').count()
         context['received'] = self.get_filtered_queryset(ward, 'RECEIVED').count()
         context['discharged'] = self.get_filtered_queryset(ward, 'DISCHARGE').count()
         
+        context.update(self.get_drug_notifications(ward))
         # Existing context
         context['admit_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'admit'})
         context['received_list_url'] = reverse('admission_list', kwargs={'ward_id': ward.id, 'status': 'received'})
@@ -471,6 +473,34 @@ class WardDetailView(DoctorNurseRequiredMixin, DetailView):
         
         
         return context
+    def get_drug_notifications(self, ward):
+        """Get drug dispensed notifications for patients in this ward"""
+        from datetime import datetime, timedelta
+        
+        # Get all received patients in this ward
+        received_patients = Admission.objects.filter(
+            ward=ward, 
+            status='RECEIVED'
+        ).values_list('patient_id', flat=True)
+        
+        # Get recent drug dispensations (last 24 hours)
+        recent_cutoff = datetime.now() - timedelta(hours=24)
+        
+        recent_dispensations = PatientDispensedDrug.objects.filter(
+            patient_id__in=received_patients,
+            dispensed_date__gte=recent_cutoff
+        ).select_related('patient').order_by('-dispensed_date')
+        
+        # Count total and urgent (low stock) notifications
+        urgent_dispensations = recent_dispensations.filter(remaining_quantity__lte=5)
+        
+        return {
+            'recent_drug_dispensations': recent_dispensations,
+            'drug_notifications_count': recent_dispensations.count(),
+            'urgent_drug_notifications_count': urgent_dispensations.count(),
+        }
+
+    
     def get_filtered_queryset(self, ward, status):
         """Replicates the filtering logic from GenericWardListView"""
         return Admission.objects.filter(
@@ -554,13 +584,48 @@ class GenericWardListView(DoctorNurseRequiredMixin, ListView):
         context['current_count'] = context['admissions'].count()
         context['query'] = self.request.GET.get('q', '')
         
+        # NEW: Add drug dispensations for each patient
+        context.update(self.get_patient_drug_notifications())
+        
         return context
     
     def get_filtered_queryset(self, ward, status):
         """Helper method to get queryset without search filters"""
         return Admission.objects.filter(ward=ward, status=status).order_by('-updated')
-
-
+    
+    def get_patient_drug_notifications(self):
+        """Get drug notifications for each patient in the current list"""
+        from datetime import datetime, timedelta
+        
+        # Get all patients in current queryset
+        patient_ids = self.get_queryset().values_list('patient_id', flat=True)
+        
+        # Get recent dispensations (last 24 hours)
+        recent_cutoff = datetime.now() - timedelta(hours=24)
+        
+        patient_drug_counts = {}
+        patient_urgent_counts = {}
+        patient_out_of_stock_counts = {}
+        
+        for patient_id in patient_ids:
+            recent_drugs = PatientDispensedDrug.objects.filter(
+                patient_id=patient_id,
+                dispensed_date__gte=recent_cutoff
+            )
+            
+            patient_drug_counts[patient_id] = recent_drugs.count()
+            patient_urgent_counts[patient_id] = recent_drugs.filter(
+                remaining_quantity__lte=5, remaining_quantity__gt=0
+            ).count()
+            patient_out_of_stock_counts[patient_id] = recent_drugs.filter(
+                remaining_quantity=0
+            ).count()
+        
+        return {
+            'patient_drug_counts': patient_drug_counts,
+            'patient_urgent_drug_counts': patient_urgent_counts,
+            'patient_out_of_stock_counts': patient_out_of_stock_counts,
+        }
 class PatientCreateView(RecordRequiredMixin, CreateView):
     model = PatientData
     form_class = PatientForm

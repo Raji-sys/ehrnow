@@ -1,6 +1,6 @@
 {% extends 'base.html'%}
 {% load static %}
-
+{% load dict_extras %}
 {% block title %}{{ ward.name|upper }}{% endblock %}
 
 {% block page_title %}
@@ -83,41 +83,60 @@
                     <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">{{ a.patient.phone|default_if_none:'' }}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">{{ a.patient.gender|default_if_none:'' }}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">{{ a.bed_number|default_if_none:'' }}</td>
-
-                    {% if a.payment.status %}
-                        {% if a.status == 'ADMIT' %}
-                        <td class="px-4 py-3 whitespace-nowrap text-xs text-center">
-                            <a href="{% url 'receive_patient' a.pk %}" class="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors">
-                                <i class="fa-solid fa-handshake fa-xl mr-2"></i> Accept Patient
-                            </a>
-                        </td>
-                        {% elif a.status == 'RECEIVED' %}
-                        <td class="px-4 py-3 whitespace-nowrap text-xs text-center space-x-2">
-                            <a href="{% url 'ward_vital_signs' a.patient.file_no %}" title="Vital Signs" class="text-blue-500 hover:text-blue-700">
-                                <i class="fa-solid fa-heartbeat fa-xl"></i>
-                            </a>
-                            <a href="{% url 'ward_medication_multiple' a.patient.file_no %}" title="Medication" class="text-green-500 hover:text-green-700">
-                                <i class="fa-solid fa-file-prescription fa-xl"></i>
-                            </a>
-                            <a href="{% url 'ward_notes' a.patient.file_no %}" title="Notes" class="text-yellow-500 hover:text-yellow-700">
-                                <i class="fa-solid fa-clipboard-list fa-xl"></i>
-                            </a>
-                            <span class="inline-block mx-2 text-gray-300">|</span>
-                            <a href="{% url 'discharge_patient' a.pk %}" class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors">
-                                <i class="fa-solid fa-hospital-user fa-xl mr-2"></i> Discharge
-                            </a>
-                        </td>
-                        {% else %} {# Discharged status #}
-                        <td class="px-4 py-3 whitespace-nowrap text-xs text-center text-cyan-600">
-                            <i class="fa-solid fa-thumbs-up fa-xl mr-1"></i> Discharged
-                        </td>
-                        {% endif %}
-                    {% else %} {# Payment unpaid #}
-                        <td class="px-4 py-3 whitespace-nowrap text-rose-600 text-xs text-center">
-                            <i class="fa-solid fa-xmark-circle fa-xl mr-1"></i> Admission fee unpaid
-                        </td>
-                    {% endif %}
-                </tr>
+{% if a.payment.status %}
+    {% if a.status == 'ADMIT' %}
+    <td class="px-4 py-3 whitespace-nowrap text-xs text-center">
+        <a href="{% url 'receive_patient' a.pk %}" class="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors">
+            <i class="fa-solid fa-handshake fa-xl mr-2"></i> Accept Patient
+        </a>
+    </td>
+    {% elif a.status == 'RECEIVED' %}
+    <td class="px-4 py-3 whitespace-nowrap text-xs text-center space-x-2">
+        <a href="{% url 'ward_vital_signs' a.patient.file_no %}" title="Vital Signs" class="text-blue-500 hover:text-blue-700">
+            <i class="fa-solid fa-heartbeat fa-xl"></i>
+        </a>
+        
+        <!-- Medication link with consolidated drug notification badge -->
+        <a href="{% url 'ward_medication_multiple' a.patient.file_no %}" title="Medication" class="text-green-500 hover:text-green-700 relative inline-block">
+            <i class="fa-solid fa-file-prescription fa-xl"></i>
+            
+            <!-- Single consolidated badge -->
+            {% if patient_out_of_stock_counts|get_item:a.patient.id > 0 %}
+                <!-- Out of stock - Red with X -->
+                <span class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold animate-pulse" title="Out of stock items">
+                    <i class="fas fa-times"></i>
+                </span>
+            {% elif patient_urgent_drug_counts|get_item:a.patient.id > 0 %}
+                <!-- Low stock - Orange with count -->
+                <span class="absolute -top-2 -right-2 bg-orange-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold animate-pulse" title="Low stock items">
+                    {{ patient_urgent_drug_counts|get_item:a.patient.id }}
+                </span>
+            {% elif patient_drug_counts|get_item:a.patient.id > 0 %}
+                <!-- Recent dispensations - Blue with count -->
+                <span class="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" title="Recent dispensations">
+                    {{ patient_drug_counts|get_item:a.patient.id }}
+                </span>
+            {% endif %}
+        </a>
+        
+        <a href="{% url 'ward_notes' a.patient.file_no %}" title="Notes" class="text-yellow-500 hover:text-yellow-700">
+            <i class="fa-solid fa-clipboard-list fa-xl"></i>
+        </a>
+        <span class="inline-block mx-2 text-gray-300">|</span>
+        <a href="{% url 'discharge_patient' a.pk %}" class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors">
+            <i class="fa-solid fa-hospital-user fa-xl mr-2"></i> Discharge
+        </a>
+    </td>
+    {% else %} {# Discharged status #}
+    <td class="px-4 py-3 whitespace-nowrap text-xs text-center text-cyan-600">
+        <i class="fa-solid fa-thumbs-up fa-xl mr-1"></i> Discharged
+    </td>
+    {% endif %}
+{% else %} {# Payment unpaid #}
+    <td class="px-4 py-3 whitespace-nowrap text-rose-600 text-xs text-center">
+        <i class="fa-solid fa-xmark-circle fa-xl mr-1"></i> Admission fee unpaid
+    </td>
+{% endif %}                </tr>
                 {% empty %}
                 <tr>
                     <td colspan="7" class="px-4 py-8 text-center text-sm text-gray-500">No patients found for this status or search.</td>

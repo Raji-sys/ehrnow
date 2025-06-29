@@ -9,8 +9,9 @@
     <a href="{% url 'ward_list' %}"><i class="fa-solid fa-backward fa-2xl mr-4"></i></a>
     {{ ward.name|upper }} DASHBOARD
     
-    <!-- Lab Request Badge Notifications -->
+    <!-- Notification Badges -->
     <div class="ml-8 flex space-x-2">
+        <!-- Lab Request Badge Notifications -->
         <a href="{{ lab_requests_url }}" class="relative">
             <div class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-full text-xs font-semibold transition duration-300">
                 <i class="fas fa-flask mr-1"></i> LAB REQUESTS
@@ -33,8 +34,86 @@
         </a>
         {% endif %}
 
+        <!-- NEW: Drug Dispensed Notifications -->
+        {% if drug_notifications_count > 0 %}
+        <a href="#" onclick="showDrugNotifications()" class="relative">
+            <div class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-full text-xs font-semibold transition duration-300">
+                <i class="fas fa-pills mr-1"></i> DRUGS DISPENSED
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                    {{ drug_notifications_count }}
+                </span>
+            </div>
+        </a>
+        {% endif %}
+
+        {% if urgent_drug_notifications_count > 0 %}
+        <a href="#" onclick="showUrgentDrugNotifications()" class="relative">
+            <div class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold transition duration-300 animate-pulse">
+                <i class="fas fa-exclamation-circle mr-1"></i> LOW STOCK
+                <span class="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                    {{ urgent_drug_notifications_count }}
+                </span>
+            </div>
+        </a>
+        {% endif %}
+
     </div>
 </div>
+
+<!-- Drug Notifications Modal -->
+<div id="drugNotificationsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-96 overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200 relative">
+                <h3 class="text-lg font-medium text-gray-900">Recent Drug Dispensations (Last 24 Hours)</h3>
+                <button onclick="closeDrugNotifications()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="px-6 py-4">
+                {% for dispensation in recent_drug_dispensations %}
+                <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+                    <div>
+                        <p class="font-semibold text-sm text-black uppercase">{{ dispensation.patient.first_name }} {{ dispensation.patient.last_name }}</p>
+                        <p class="text-xs text-gray-600">{{ dispensation.drug_name }} - {{ dispensation.total_dispensed }} dispensed</p>
+                        <p class="text-xs text-gray-500">{{ dispensation.dispensed_date|date:"M d, Y H:i" }}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-2 py-1 rounded-full text-xs {% if dispensation.remaining_quantity <= 5 %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                            {{ dispensation.remaining_quantity }} left
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 text-center py-4">No recent drug dispensations.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showDrugNotifications() {
+    document.getElementById('drugNotificationsModal').classList.remove('hidden');
+}
+
+function showUrgentDrugNotifications() {
+    // Filter to show only urgent notifications
+    showDrugNotifications();
+    // You can add additional filtering logic here if needed
+}
+
+function closeDrugNotifications() {
+    document.getElementById('drugNotificationsModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('drugNotificationsModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDrugNotifications();
+    }
+});
+</script>
 {% endblock %}
 
 {% block content %}

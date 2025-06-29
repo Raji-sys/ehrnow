@@ -590,7 +590,6 @@ class WardVitalSigns(models.Model):
     def __str__(self):
         return self.patient
     
-# ehr/models.py
 class WardMedication(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey(PatientData, null=True, on_delete=models.CASCADE, related_name='ward_medication')
@@ -622,7 +621,6 @@ class PatientDispensedDrug(models.Model):
 
 
 class WardMedicationDispensed(models.Model):
-    """Model for dispensed drug administration - FIXED VERSION"""
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     patient = models.ForeignKey('PatientData', null=True, on_delete=models.CASCADE, related_name='ward_medication_dispensed')
     dispensed_drug = models.ForeignKey(PatientDispensedDrug, on_delete=models.CASCADE, related_name='administrations')
