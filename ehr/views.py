@@ -469,12 +469,6 @@ class WardDetailView(DoctorNurseRequiredMixin, DetailView):
         context['urgent_unseen_count'] = self.get_urgent_unseen_count(ward)
         context['lab_requests_url'] = reverse('results:ward_lab_requests', kwargs={'ward_id': ward.id})
         
-        # Pharmacy notifications
-        context['unseen_pharmacy_requests'] = self.get_unseen_pharmacy_requests(ward)
-        context['recent_pharmacy_requests'] = self.get_recent_pharmacy_requests(ward)
-        context['pharmacy_unseen_count'] = self.get_pharmacy_unseen_count(ward)
-        context['pharmacy_unpaid_count'] = self.get_pharmacy_unpaid_count(ward)
-        context['pharmacy_requests_url'] = reverse('pharm:ward_pharmacy_requests', kwargs={'ward_id': ward.id})
         
         return context
     def get_filtered_queryset(self, ward, status):
@@ -517,49 +511,7 @@ class WardDetailView(DoctorNurseRequiredMixin, DetailView):
             priority__in=['urgent', 'stat']
         ).count()
     
-    # New pharmacy methods
-    def get_unseen_pharmacy_requests(self, ward):
-        """Get unseen pharmacy requests for this ward"""
-        from pharm.models import Prescription  # Import from pharmacy app
-        return Prescription.objects.filter(
-            unit_id=ward.id,  # Using ward.id as unit_id to link them
-            prescription_drugs__isnull=False,
-            is_dispensed=False,
-            seen_by_ward=False  # You'll need to add this field to Prescription model
-        ).select_related('patient', 'prescribed_by').prefetch_related('prescription_drugs__drug').distinct()[:5]
     
-    def get_recent_pharmacy_requests(self, ward):
-        """Get recent seen pharmacy requests for this ward"""
-        from pharm.models import Prescription
-        return Prescription.objects.filter(
-            unit_id=ward.id,
-            prescription_drugs__isnull=False,
-            seen_by_ward=True  # You'll need to add this field to Prescription model
-        ).select_related('patient', 'prescribed_by', 'seen_by').prefetch_related('prescription_drugs__drug').distinct()[:5]
-    
-    def get_pharmacy_unseen_count(self, ward):
-        """Count unseen pharmacy requests"""
-        from pharm.models import Prescription
-        return Prescription.objects.filter(
-            unit_id=ward.id,
-            prescription_drugs__isnull=False,
-            is_dispensed=False,
-            seen_by_ward=False  # You'll need to add this field to Prescription model
-        ).distinct().count()
-    
-    def get_pharmacy_unpaid_count(self, ward):
-        """Count unpaid pharmacy requests"""
-        from pharm.models import Prescription
-        from django.db.models import Q
-        return Prescription.objects.filter(
-            Q(unit_id=ward.id) &
-            Q(prescription_drugs__isnull=False) &
-            Q(is_dispensed=False) &
-            Q(seen_by_ward=False) &
-            (Q(payment__isnull=True) | Q(payment__status=False))
-        ).distinct().count()
-
-
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class GenericWardListView(DoctorNurseRequiredMixin, ListView):
     model = Admission

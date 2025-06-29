@@ -339,11 +339,6 @@ class Prescription(models.Model):
     dose = models.CharField('dosage', max_length=300, null=True, blank=True)
     remark = models.CharField('REMARKS', max_length=100, null=True, blank=True)
     is_dispensed = models.BooleanField(default=False)
-  # New fields for ward tracking (similar to LabTest)
-    seen_by_ward = models.BooleanField(default=False, help_text="Has this prescription been seen by ward staff?")
-    seen_at = models.DateTimeField(null=True, blank=True, help_text="When was this prescription seen by ward?")
-    seen_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, 
-                               related_name='seen_prescriptions', help_text="Who saw this prescription?")
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

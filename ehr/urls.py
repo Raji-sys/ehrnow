@@ -186,5 +186,4 @@ urlpatterns = [
     path('ward-medication-dispensed/<str:file_no>/', WardMedicationDispensedCreateView.as_view(), name='ward_medication_dispensed'),
     path('ward-medication-multiple/<str:file_no>/', MultipleWardMedicationView.as_view(),name='ward_medication_multiple'),
     path('api/drug-quantity/<int:drug_id>/', DrugQuantityCheckView.as_view(), name='drug_quantity_check'),
-    
 ]

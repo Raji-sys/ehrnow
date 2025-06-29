@@ -32,29 +32,7 @@
             </div>
         </a>
         {% endif %}
-        
-        <!-- Pharmacy Request Badge Notifications -->
-        <a href="{{ pharmacy_requests_url }}" class="relative">
-            <div class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-full text-xs font-semibold transition duration-300">
-                <i class="fas fa-pills mr-1"></i> PHARMACY
-                {% if pharmacy_unseen_count > 0 %}
-                <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
-                    {{ pharmacy_unseen_count }}
-                </span>
-                {% endif %}
-            </div>
-        </a>
-        
-        {% if pharmacy_unpaid_count > 0 %}
-        <a href="{{ pharmacy_requests_url }}?payment=unpaid" class="relative">
-            <div class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-semibold transition duration-300 animate-pulse">
-                <i class="fas fa-credit-card mr-1"></i> UNPAID
-                <span class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
-                    {{ pharmacy_unpaid_count }}
-                </span>
-            </div>
-        </a>
-        {% endif %}
+
     </div>
 </div>
 {% endblock %}
