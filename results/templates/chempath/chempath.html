@@ -5,34 +5,34 @@
 {%block page_title%}<div class="flex justify-center"><a href="{%url 'results:dashboard' %}"><i class="fa-solid fa-arrow-left fa-xl mr-4"></i></a>CHEMPATH DASHBOARD</div>{%endblock%}
 {% block content %}
 <div class="bg-gray-50 rounded-3xl shadow-sm mt-4 py-8 mx-2 md:mx-20 border border-gray-100">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 md:p-12 text-center">
-    <!-- Incoming Request Card -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-10 p-6 md:p-12 text-center">
     <div class="group relative">
-      <div class="absolute -inset-1 bg-orange-200 blur opacity-0 group-hover:opacity-100 rounded-2xl transition-all duration-300"></div>
+      <div class="absolute -inset-1 bg-sky-200 blur opacity-0 group-hover:opacity-100 rounded-2xl transition-all duration-300"></div>
       <a href="{% url 'results:chempath_incoming_req' %}" class="relative block h-full">
-        <div class="h-full flex flex-col justify-center bg-orange-400 text-orange-50 rounded-2xl p-6 border-2 border-orange-50 transition-all duration-300 group-hover:bg-orange-600 group-hover:text-white group-hover:border-orange-600 group-hover:-translate-y-1 shadow-md">
-          <div class="text-sm font-semibold tracking-wide uppercase">Incoming Request</div>
+        <div class="h-full flex flex-col justify-center bg-sky-700 text-sky-50 rounded-2xl p-6 border-2 border-sky-50 transition-all duration-300 group-hover:bg-sky-600 group-hover:text-white group-hover:border-sky-600 group-hover:-translate-y-1 shadow-md">
+          <div class="text-sm font-semibold tracking-wide uppercase">Incoming Requests</div>
+          <p class="text-xs mt-1 opacity-90">All new requests awaiting processing.</p>
           {% if incoming_count > 0 %}
-            <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-white bg-blue-700 rounded-full ring-2 ring-white group-hover:scale-110 transition-all">
-              {{ incoming_count }}
+            <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-fit h-fit p-2 text-sm font-bold text-white bg-orange-700 rounded-full ring-2 ring-white group-hover:scale-110 transition-all">
+              {{ incoming_count }} unpaid
             </span>
           {% endif %}
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mt-3 text-orange-50 group-hover:text-orange-200 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mt-3 text-sky-50 group-hover:text-sky-200 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
         </div>
       </a>
     </div>
     
-    <!-- Request List Card -->
     <div class="group relative">
       <div class="absolute -inset-1 bg-slate-200 blur opacity-0 group-hover:opacity-100 rounded-2xl transition-all duration-300"></div>
       <a href="{% url 'results:chempath_request' %}" class="relative block h-full">
-        <div class="h-full flex flex-col justify-center bg-slate-500 text-slate-50 rounded-2xl p-6 border-2 border-slate-50 transition-all duration-300 group-hover:bg-slate-600 group-hover:text-white group-hover:border-slate-600 group-hover:-translate-y-1 shadow-md">
-          <div class="text-sm font-semibold tracking-wide uppercase">Request List</div>
-           {% if paid_count > 0 %}
+        <div class="h-full flex flex-col justify-center bg-slate-700 text-slate-50 rounded-2xl p-6 border-2 border-slate-50 transition-all duration-300 group-hover:bg-slate-600 group-hover:text-white group-hover:border-slate-600 group-hover:-translate-y-1 shadow-md">
+          <div class="text-sm font-semibold tracking-wide uppercase">Tests in Progress</div>
+          <p class="text-xs mt-1 opacity-90">Samples collected, results pending.</p>
+            {% if paid_count > 0 %}
             <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-white bg-blue-700 rounded-full ring-2 ring-white group-hover:scale-110 transition-all">
-              {{ paid_count }}
+              {{ paid_count }} Paid
             </span>
           {% endif %}
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mt-3 text-slate-50 group-hover:text-slate-200 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,13 +42,13 @@
       </a>
     </div>
     
-    <!-- Result List Card -->
     <div class="group relative">
       <div class="absolute -inset-1 bg-emerald-200 blur opacity-0 group-hover:opacity-100 rounded-2xl transition-all duration-300"></div>
       <a href="{% url 'results:chempath_list' %}" class="relative block h-full">
-        <div class="h-full flex flex-col justify-center bg-emerald-500 text-emerald-50 rounded-2xl p-6 border-2 border-emerald-50 transition-all duration-300 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500 group-hover:-translate-y-1 shadow-md">
-          <div class="text-sm font-semibold tracking-wide uppercase">Result List</div>
-                    {% if result_count > 0 %}
+        <div class="h-full flex flex-col justify-center bg-emerald-700 text-emerald-50 rounded-2xl p-6 border-2 border-emerald-50 transition-all duration-300 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500 group-hover:-translate-y-1 shadow-md">
+          <div class="text-sm font-semibold tracking-wide uppercase">Results Ready</div>
+          <p class="text-xs mt-1 opacity-90">Completed tests with results available.</p>
+            {% if result_count > 0 %}
             <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-white bg-blue-700 rounded-full ring-2 ring-white group-hover:scale-110 transition-all">
               {{ result_count }}
             </span>
