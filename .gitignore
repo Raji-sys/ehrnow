@@ -1,22 +1,80 @@
+# Python Virtual Environment
 include/
 share/
 bin/
 lib/
 lib64/
 pyvenv.cfg
-share/
 *.cfg
+
+# Python Bytecode
 *.pyc
 *.pyo
 *.pyd
-db.sqlite3
 **/__pycache__/
-.vscode/
-node_modules/
-.env
+
+# Django
+db.sqlite3
+staticfiles/
+media/
+*.log
+
+# Python Package Files
 *.egg-info/
 *.egg
-*.log
-*.DS_Store
+dist/
+build/
+
+# Environment Variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE/Editor Files
+.vscode/
+.idea/
 *.swp
 *.swo
+*~
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node.js (for Django Tailwind)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage Reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# Logs
+*.log
+logs/
+
+# Temporary Files
+*.tmp
+*.temp
+
+# Django Migrations (optional - uncomment if you want to ignore migrations)
+*/migrations/
+!*/migrations/__init__.py

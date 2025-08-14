@@ -130,21 +130,20 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL="/login/"
 LOGOUT_REDIRECT_URL = '/'
 
-# import os
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # -----------------------------------------------------------------------------
 # RAILWAY / PaaS CONFIGURATION
 # Uncomment this entire block when you’re deploying on Railway (or similar PaaS)
 # -----------------------------------------------------------------------------
 
+STATICFILES_DIRS = [
+
+]
+
+# Your existing settings
 STATIC_URL = 'static/'
-
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'  # More forgiving
 
 
 # -----------------------------------------------------------------------------

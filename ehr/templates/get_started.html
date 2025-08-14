@@ -55,33 +55,33 @@
 
     <!-- Mobile menu -->
     <div class="sm:hidden hidden" id="mobile-menu">
-        <div class="pt-2 pb-3 flex">
+        <div class="gap-10 flex justify-center">
                          {% if request.user.is_superuser %}
-            <a href="{% url 'patient_list' %}" 
+            <a href="{% url 'admin:index' %}" 
                class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/patient_list/' %}border-gray-500 bg-gray-50 text-gray-800{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
                 <i class="fa-solid fa-gears mr-2 text-gray-500"></i>
-                CONTROL
+                
             </a>
             {%endif%}
             <a href="{% url 'patient_list' %}" 
                class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/patient_list/' %}border-blue-500 bg-blue-50 text-blue-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
                 <i class="fa-solid fa-user-injured mr-2 text-blue-500"></i>
-                PATIENTS
+                
             </a>
             <a href="{% url 'staff' %}" 
                class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/staff/' %}border-indigo-500 bg-indigo-50 text-indigo-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
                 <i class="fa-solid fa-user-group mr-2 text-indigo-500"></i>
-                STAFF
+                
             </a>
             <a href="{% url 'hospital_services' %}" 
                class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/services/' %}border-teal-500 bg-teal-50 text-teal-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
                 <i class="fa-solid fa-list-check mr-2 text-teal-500"></i>
-                SERVICES
+                
             </a>
             <a href="{% url 'erp:accounting_index' %}" 
                class="block pl-3 pr-1 py-2 border-l-4 text-xs font-medium {% if request.path == '/accounting/' %}border-fuchsia-500 bg-fuchsia-50 text-fuchsia-700{% else %}border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800{% endif %}">
                 <i class="fa-solid fa-list-numeric mr-2 text-fuchsia-500"></i>
-                ACCOUNTING
+                
             </a>
         </div>
     </div>
